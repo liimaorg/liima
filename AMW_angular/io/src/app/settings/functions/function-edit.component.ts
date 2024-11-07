@@ -9,14 +9,23 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
-import { DiffEditor } from '../../shared/codemirror/diff-editor.component';
+import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-function-edit',
   templateUrl: './function-edit.component.html',
   standalone: true,
-  imports: [CodeEditorComponent, DiffEditor, FormsModule, CommonModule, IconComponent, NgbDropdownModule, ModalHeaderComponent, ButtonComponent],
+  imports: [
+    CodeEditorComponent,
+    DiffEditorComponent,
+    FormsModule,
+    CommonModule,
+    IconComponent,
+    NgbDropdownModule,
+    ModalHeaderComponent,
+    ButtonComponent,
+  ],
 })
 export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;

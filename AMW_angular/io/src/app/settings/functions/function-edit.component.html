@@ -9,9 +9,9 @@
     <div class="mb-3">
       <div class="d-flex justify-content-between align-items-start">
         <label class="form-label">Function content</label>
-        <button type="button" class="btn btn-light fullscreen" aria-label="Fullscreen" (click)="toggleFullscreen()">
+        <app-button [variant]="'light'" (click)="toggleFullscreen()">
           <app-icon [icon]="toggleFullscreenIcon"></app-icon>
-        </button>
+        </app-button>
       </div>
       @if (!revision) {
       <app-code-editor [theme]="'light'" [(ngModel)]="function.content"></app-code-editor>

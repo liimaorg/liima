@@ -59,12 +59,12 @@ export interface DiffEditorModel {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DiffEditor),
+      useExisting: forwardRef(() => DiffEditorComponent),
       multi: true,
     },
   ],
 })
-export class DiffEditor implements OnChanges, OnInit, OnDestroy, ControlValueAccessor {
+export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, ControlValueAccessor {
   /**
    * The editor's built-in setup. The value can be set to
    * [`basic`](https://codemirror.net/docs/ref/#codemirror.basicSetup),
