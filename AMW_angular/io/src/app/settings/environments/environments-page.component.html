@@ -1,7 +1,6 @@
 <div class="container w-50">
-  {{ loadingPermissions() }}
   <h1>Environments</h1>
-  @if (canAdd){
+  @if (permissions().canAdd) {
   <app-button [variant]="'primary'" (click)="addDomain()">
     <app-icon icon="plus-circle"></app-icon> Add Domain</app-button
   >
@@ -13,14 +12,14 @@
           <strong>{{ domain.name }}</strong>
         </div>
         <div class="col">
-          @if (canEdit){
+          @if (permissions().canEdit){
           <app-button [variant]="'primary'" [size]="'sm'" (click)="editContext(domain)">
             <app-icon icon="pencil"></app-icon
           ></app-button>
           }
         </div>
         <div class="col">
-          @if(canDelete){
+          @if(permissions().canDelete){
           <app-button [variant]="'danger'" [size]="'sm'" (click)="deleteContext(domain)">
             <app-icon icon="trash"></app-icon>
           </app-button>
@@ -33,14 +32,14 @@
       <div class="row">
         <div class="col">{{ env.name }}</div>
         <div class="col">
-          @if (canEdit){
+          @if (permissions().canEdit){
           <app-button [variant]="'primary'" [size]="'sm'" (click)="editContext(env)">
             <app-icon icon="pencil"></app-icon>
           </app-button>
           }
         </div>
         <div class="col">
-          @if(canDelete){
+          @if(permissions().canDelete){
           <app-button [variant]="'danger'" [size]="'sm'" [additionalClasses]="'mb-2'" (click)="deleteContext(env)">
             <app-icon icon="trash"></app-icon>
           </app-button>
@@ -50,7 +49,7 @@
       </div>
       } } @else{
       <p>No environments added yet.</p>
-      } @if (canAdd){
+      } @if (permissions().canAdd){
       <app-button [variant]="'primary'" [additionalClasses]="'mb-2'" (click)="addEnvironment(domain)">
         <app-icon icon="plus-circle"></app-icon> Add Environment</app-button
       >
