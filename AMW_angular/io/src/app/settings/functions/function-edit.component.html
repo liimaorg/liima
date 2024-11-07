@@ -23,10 +23,9 @@
     <div class="mb-3">
       <label class="form-label">Compare with history</label>
       <div ngbDropdown>
-        <!-- TODO: convert this button-->
-        <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
+        <app-button [variant]="'secondary'" ngbDropdownToggle [dataCy]="'button-drpdown'">
           {{ selectedRevisionName || 'Select Revision' }}
-        </button>
+        </app-button>
         <ul ngbDropdownMenu>
           @for (revision of revisions.slice().reverse(); track revision) {
           <li ngbDropdownItem>
@@ -42,7 +41,7 @@
   </div>
 </div>
 <div class="modal-footer">
-  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
   @if (canManage) {
   <span
     class="d-inline-block"
