@@ -26,7 +26,7 @@ describe("Functions -CRUD", () => {
     cy.get('[data-cy="button-add"]').click();
     cy.get("#name").type("testFunction");
     cy.get('.cm-activeLine').invoke('text', "differentContent");
-    cy.get('[data-cy="button-save"]').click({ force: true });
+    cy.get('[data-cy="button-save"]').click();
     cy.contains("Function with same name already exists");
     cy.get('[data-cy="button-add"]').click();
     cy.get('.cm-activeLine').invoke('text', "testContent");
