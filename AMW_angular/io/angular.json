@@ -33,13 +33,7 @@
               }
             ],
             "styles": ["src/styles.scss", "./node_modules/bootstrap-icons/font/bootstrap-icons.scss"],
-            "scripts": [
-              /*"node_modules/codemirror/lib/codemirror.js",
-              "node_modules/codemirror/addon/mode/simple.js",
-              "node_modules/codemirror/addon/dialog/dialog.js",
-              "node_modules/codemirror/addon/search/searchcursor.js",
-              "node_modules/codemirror/addon/search/search.js"*/
-            ],
+            "scripts": [],
             "extractLicenses": false,
             "sourceMap": true,
             "optimization": true,
