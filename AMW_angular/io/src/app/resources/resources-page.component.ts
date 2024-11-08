@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } 
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
-import { ResourceType } from './resourceType';
 import { ResourceTypesService } from './resource-types.service';
+import { ResourceType } from '../resource/resource-type';
 
 @Component({
   selector: 'app-resources-page',

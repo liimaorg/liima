@@ -8,8 +8,12 @@
       >}
     </nav>
     <nav class="nav flex-column">
-      @for (resourceType of rootResourceTypes(); track resourceType.name){<a href="#">{{ resourceType.name }}</a
-      >}
+      @for (resourceType of rootResourceTypes(); track resourceType.name){
+      <a href="#">
+        {{ resourceType.name }}
+        @if (resourceType.hasChildren) {<span class="plus-sign">+</span>}
+      </a>
+      }
     </nav>
   </div></app-page
 >

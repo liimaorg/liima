@@ -27,6 +27,8 @@ import lombok.NoArgsConstructor;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @XmlRootElement(name = "resourceType")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -36,9 +38,15 @@ public class ResourceTypeDTO {
 
     private Integer id;
     private String name;
+    private boolean hasChildren;
+    private List<ResourceTypeDTO> children;
 
     public ResourceTypeDTO(ResourceTypeEntity resourceType){
         this.id = resourceType.getId();
         this.name = resourceType.getName();
+        this.hasChildren = resourceType.hasChildren();
+        this.children = resourceType.getChildrenResourceTypes().stream()
+                .map(ResourceTypeDTO::new)
+                .collect(Collectors.toList());
     }
 }

@@ -1,10 +1,10 @@
-import { Injectable, Signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { shareReplay, switchMap } from 'rxjs/operators';
-import { ResourceType } from './resourceType';
 import { BaseService } from '../base/base.service';
+import { ResourceType } from '../resource/resource-type';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceTypesService extends BaseService {
@@ -23,6 +23,10 @@ export class ResourceTypesService extends BaseService {
 
   constructor(private http: HttpClient) {
     super();
+  }
+
+  getAllResourceTypes(): Observable<ResourceType[]> {
+    return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resources/resourceTypes`);
   }
 
   getPredefinedResourceTypes(): Observable<ResourceType[]> {

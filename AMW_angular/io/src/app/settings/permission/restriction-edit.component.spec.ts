@@ -110,8 +110,18 @@ describe('RestrictionEditComponent', () => {
     (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'APPSERVER' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 2,
+          name: 'APPSERVER',
+          hasChildren: false,
+          children: [],
+        },
       ];
       restrictionComponent.restriction = {
         resourceTypeName: 'INVALID',
@@ -126,8 +136,18 @@ describe('RestrictionEditComponent', () => {
     (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'APPSERVER' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 2,
+          name: 'APPSERVER',
+          hasChildren: false,
+          children: [],
+        },
       ];
       restrictionComponent.restriction = {
         resourceTypeName: 'APPSERVER',
@@ -428,9 +448,24 @@ describe('RestrictionEditComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'AS' },
-        { id: 3, name: 'FOO' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 2,
+          name: 'AS',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 3,
+          name: 'FOO',
+          hasChildren: false,
+          children: [],
+        },
       ];
       restrictionComponent.restriction = {
         action: 'CREATE',
@@ -472,9 +507,24 @@ describe('RestrictionEditComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'AS' },
-        { id: 3, name: 'FOO' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 2,
+          name: 'AS',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 3,
+          name: 'FOO',
+          hasChildren: false,
+          children: [],
+        },
       ];
       restrictionComponent.restriction = {
         action: 'CREATE',
@@ -515,9 +565,24 @@ describe('RestrictionEditComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'AS' },
-        { id: 3, name: 'FOO' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 2,
+          name: 'AS',
+          hasChildren: false,
+          children: [],
+        },
+        {
+          id: 3,
+          name: 'FOO',
+          hasChildren: false,
+          children: [],
+        },
       ];
       restrictionComponent.restriction = {
         action: 'CREATE',

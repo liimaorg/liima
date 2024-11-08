@@ -67,14 +67,13 @@ public class ResourceTypeLocator {
         return predefinedResourceTypes;
     }
 
-    public List<ResourceTypeEntity> getRootResourceTypes() throws NotFoundException {
-        List<ResourceTypeEntity> allResourceTypes = getAllResourceTypes();
-        List<ResourceTypeEntity> predefinedResourceTypes = getPredefinedResourceTypes();
-        allResourceTypes.removeAll(predefinedResourceTypes);
-        return allResourceTypes;
-    }
-
-    public boolean hasChildren(Integer resourceTypeId) {
-        return resourceTypeDomainService.hasChildren(resourceTypeId);
+    public List<ResourceTypeEntity> getRootResourceTypes() {
+        List<ResourceTypeEntity> rootResourceTypes = new ArrayList<>();
+        for (ResourceTypeEntity e : resourceTypeDomainService.getResourceTypes()) {
+            if (e.getParentResourceType() == null && !ResourceType.createByResourceType(e, null).isDefaultResourceType()) {
+                    rootResourceTypes.add(e);
+                }
+            }
+        return rootResourceTypes;
     }
 }
