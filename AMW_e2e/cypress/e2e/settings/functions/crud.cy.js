@@ -60,7 +60,7 @@ describe("Functions -CRUD", () => {
     cy.get('[data-cy="button-save"]').click({ force: true });
     cy.contains("Function saved successfully.");
     cy.get('[data-cy="button-edit"]').click();
-    cy.get('[data-cy="button-drpdown"]').click();
+    cy.get('[data-cy="button-dropdown"]').click();
     cy.get('.dropdown-item').first().click();
     cy.get('app-diff-editor').should('be.visible');
     cy.get('[data-cy="button-cancel"]').click();
