@@ -114,8 +114,9 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
   /** Controls whether a gutter marker is shown next to changed lines. */
   @Input({ transform: booleanAttribute }) gutter = true;
 
-  /** Whether the diff-editor is disabled. */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  /** Whether the diff-editor is disabled.  */
+  @Input({ transform: booleanAttribute }) disableA = false;
+  @Input({ transform: booleanAttribute }) disableB = true;
 
   /**
    * When given, long stretches of unchanged text are collapsed.
@@ -123,7 +124,8 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
    * a change (default is 3), and `minSize` gives the minimum amount
    * of collapsible lines that need to be present (defaults to 4).
    */
-  @Input() collapseUnchanged?: { margin?: number; minSize?: number };
+  @Input()
+  collapseUnchanged?: { margin?: number; minSize?: number };
 
   /** Pass options to the diff algorithm. */
   @Input() diffConfig?: DiffConfig;
@@ -202,8 +204,8 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
       this.mergeView?.reconfigure({ diffConfig: this.diffConfig });
     }
     if (changes['disabled']) {
-      this.setEditable('a', !this.disabled);
-      this.setEditable('b', !this.disabled);
+      this.setEditable('a', !this.disableA);
+      this.setEditable('b', !this.disableB);
     }
   }
 
@@ -257,8 +259,8 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
       this.modifiedBlur.emit();
     });
 
-    this.setEditable('a', !this.disabled);
-    this.setEditable('b', !this.disabled);
+    this.setEditable('a', !this.disableA);
+    this.setEditable('b', !this.disableB);
   }
 
   ngOnDestroy(): void {
@@ -280,12 +282,6 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
 
   registerOnTouched(fn: () => void) {
     this._onTouched = fn;
-  }
-
-  setDisabledState(isDisabled: boolean) {
-    this.disabled = isDisabled;
-    this.setEditable('a', !isDisabled);
-    this.setEditable('b', !isDisabled);
   }
 
   /** Sets diff-editor's value. */
