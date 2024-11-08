@@ -49,3 +49,10 @@ $toast-padding-y: 0;
 .btn {
   margin-right: 0.3rem;
 }
+
+.editor {
+  min-height: 20vh;
+  max-height: 50vh;
+  overflow-y: auto;
+  
+}

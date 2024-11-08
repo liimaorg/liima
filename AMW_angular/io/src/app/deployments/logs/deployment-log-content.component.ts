@@ -10,7 +10,7 @@ type Failed = 'failed';
     <div class="m-2 h-100">
       @if (content !== null && content !== 'failed') {
 
-      <div class="h-100">
+      <div class="editor border border-primary-subtle rounded">
         <app-code-editor
           [theme]="'light'"
           [setup]="'minimal'"
