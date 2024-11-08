@@ -75,7 +75,7 @@ describe("Functions -CRUD", () => {
     cy.get('[data-cy="button-dropdown"]').click();
     cy.get('.dropdown-item').first().click();
     cy.get('app-diff-editor').should('be.visible');
-    cy.get('[data-cy="button-cancel"]').click();
+    cy.get('[data-cy="button-cancel"]').click({force: true});
     cy.get('[data-cy="icon-delete"]').first().click();
     cy.get('[data-cy="button-delete"]').click();
     cy.contains("Function deleted");
