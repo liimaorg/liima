@@ -295,9 +295,4 @@ public class ResourceTypeDomainService {
 		  return nextIdentifier;
 	   }
     }
-
-	public boolean hasChildren(Integer resourceTypeId) {
-		ResourceTypeEntity resourceType = getResourceType(resourceTypeId);
-		return resourceType.hasChildren();
-	}
 }
