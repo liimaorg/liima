@@ -49,7 +49,7 @@ public class PersistingEntityBuilder extends AmwEntityBuilder {
 
 	@Override
 	protected void build() {
-		// dont build amw by default
+		// don't build amw by default
 	}
 
 	public PersistingEntityBuilder buildAmw() {

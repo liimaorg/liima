@@ -35,7 +35,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 
 public class GeneratorDomainServiceWithAppServerRelationsTest {
 

@@ -56,7 +56,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class PermissionBoundaryTest {
@@ -724,7 +724,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.hasPermissionToAddTemplate(resource);
         // then
-        verify(permissionService, never()).hasPermissionToAddResourceTypeTemplate((ResourceTypeEntity) anyObject());
+        verify(permissionService, never()).hasPermissionToAddResourceTypeTemplate(any(ResourceTypeEntity.class));
         verify(permissionService).hasPermissionToAddResourceTemplate(resource);
     }
 
@@ -737,7 +737,7 @@ public class PermissionBoundaryTest {
         // when
         permissionBoundary.hasPermissionToAddTemplate(type);
         // then
-        verify(permissionService, never()).hasPermissionToAddResourceTemplate((ResourceEntity) anyObject());
+        verify(permissionService, never()).hasPermissionToAddResourceTemplate(any(ResourceEntity.class));
         verify(permissionService).hasPermissionToAddResourceTypeTemplate(type);
     }
 
