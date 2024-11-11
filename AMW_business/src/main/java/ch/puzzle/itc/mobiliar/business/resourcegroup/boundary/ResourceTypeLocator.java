@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,23 +47,14 @@ public class ResourceTypeLocator {
      * @return
      */
     public List<ResourceTypeEntity> getAllResourceTypes() throws NotFoundException {
-        List<ResourceTypeEntity> allResourceTypes = resourceTypeDomainService.getAllResourceTypesWithoutChildren();
-        if (allResourceTypes.isEmpty()) {
-            throw new NotFoundException("No resource types found");
-        }
-        return allResourceTypes;
+        return resourceTypeDomainService.getAllResourceTypesWithoutChildren();
     }
 
-    public List<ResourceTypeEntity> getPredefinedResourceTypes() throws NotFoundException {
-        List<ResourceTypeEntity> predefinedResourceTypes = resourceTypeDomainService.getResourceTypes()
+    public List<ResourceTypeEntity> getPredefinedResourceTypes() {
+        return resourceTypeDomainService.getResourceTypes()
                 .stream()
                 .filter(e -> e.getParentResourceType() == null && ResourceType.createByResourceType(e, null).isDefaultResourceType())
                 .collect(Collectors.toList());
-
-        if (predefinedResourceTypes.isEmpty()) {
-            throw new NotFoundException("No predefined resource types found");
-        }
-        return predefinedResourceTypes;
     }
 
     public List<ResourceTypeEntity> getRootResourceTypes() {

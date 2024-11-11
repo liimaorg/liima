@@ -20,7 +20,6 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,6 @@ import javax.ws.rs.Path;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,7 +49,7 @@ public class ResourceTypesRest {
     @Path("/resourceTypes")
     @GET
     @ApiOperation(value = "Get all resource types")
-    public List<ResourceTypeDTO> getAllResourceTypes() throws NotFoundException {
+    public List<ResourceTypeDTO> getAllResourceTypes() {
         return resourceTypeLocator.getAllResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
@@ -60,7 +58,7 @@ public class ResourceTypesRest {
     @Path("/predefinedResourceTypes")
     @GET
     @ApiOperation(value = "Get predefined resource types")
-    public List<ResourceTypeDTO> getPredefinedResourceTypes() throws NotFoundException {
+    public List<ResourceTypeDTO> getPredefinedResourceTypes() {
         return resourceTypeLocator.getPredefinedResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
@@ -69,7 +67,7 @@ public class ResourceTypesRest {
     @Path("/rootResourceTypes")
     @GET
     @ApiOperation(value = "Get root resource types")
-    public List<ResourceTypeDTO> getRootResourceTypes() throws NotFoundException {
+    public List<ResourceTypeDTO> getRootResourceTypes() {
         return resourceTypeLocator.getRootResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
