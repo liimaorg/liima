@@ -90,10 +90,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Envers -->
-		<!-- <dependency> <groupId>org.hibernate</groupId> <artifactId>hibernate-envers</artifactId> <version>3.6.8.Final</version> 
-			</dependency> -->
-
 		<!-- JSR-303 (Bean Validation) Implementation -->
 		<!-- Provides portable constraints such as @Email -->
 		<!-- Hibernate Validator is shipped in JBoss AS 7 -->
