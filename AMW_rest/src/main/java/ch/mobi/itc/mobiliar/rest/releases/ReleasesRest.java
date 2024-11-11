@@ -23,7 +23,6 @@ package ch.mobi.itc.mobiliar.rest.releases;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
-import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
@@ -45,8 +44,6 @@ import static javax.ws.rs.core.Response.Status.*;
 @Api(value = "/releases", description = "Releases")
 public class ReleasesRest {
 
-    @Inject
-    private ReleaseMgmtService releaseMgmtService;
     @Inject
     private ReleaseLocator releaseLocator;
     @Inject
@@ -89,10 +86,12 @@ public class ReleasesRest {
     @GET()
     @Path("/upcomingRelease")
     @ApiOperation(value = "Get upcoming release")
-    public ReleaseEntity getUpcomingRelease() {
-        List<ReleaseEntity> result = releaseLocator.loadAllReleases(false);
+    public ReleaseEntity getUpcomingRelease() throws NotFoundException {
+        List<ReleaseEntity> allReleases = releaseLocator.loadAllReleases(false);
+        if (allReleases.isEmpty())
+            throw new NotFoundException("No releases found");
         return resourceDependencyResolverService.findMostRelevantRelease(
-                new TreeSet<ReleaseEntity>(result),
+                new TreeSet<ReleaseEntity>(allReleases),
                 new Date());
     }
 
