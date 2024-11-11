@@ -20,13 +20,13 @@ export class ResourcesPageComponent {
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
   isLoading = signal(false);
 
-  loadingPermissions = computed(() => {
+  permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      this.getUserPermissions();
+      return {
+        canViewResourceTypes: this.authService.hasPermission('RES_TYPE_LIST_TAB', 'ALL'),
+      };
     } else {
-      return `<div>Could not load permissions</div>`;
+      return { canViewResourceTypes: false };
     }
   });
-
-  private getUserPermissions() {}
 }

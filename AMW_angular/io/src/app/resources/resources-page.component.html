@@ -2,7 +2,7 @@
 <app-page>
   <div class="page-title">Resources</div>
   <div class="page-content">
-    {{ loadingPermissions() }}
+    @if (permissions().canViewResourceTypes) {
     <nav class="nav flex-column">
       @for (resourceType of predefinedResourceTypes(); track resourceType.name){<a href="#">{{ resourceType.name }}</a
       >}
@@ -15,5 +15,6 @@
       </a>
       }
     </nav>
+    }
   </div></app-page
 >

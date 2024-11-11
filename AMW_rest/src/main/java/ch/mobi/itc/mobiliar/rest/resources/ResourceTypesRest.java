@@ -31,7 +31,6 @@ import javax.ws.rs.Path;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 

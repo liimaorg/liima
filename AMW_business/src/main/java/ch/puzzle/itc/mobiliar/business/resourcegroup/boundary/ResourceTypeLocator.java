@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
 @Stateless
 public class ResourceTypeLocator {
@@ -46,7 +45,7 @@ public class ResourceTypeLocator {
      *
      * @return
      */
-    public List<ResourceTypeEntity> getAllResourceTypes() throws NotFoundException {
+    public List<ResourceTypeEntity> getAllResourceTypes() {
         return resourceTypeDomainService.getAllResourceTypesWithoutChildren();
     }
 
