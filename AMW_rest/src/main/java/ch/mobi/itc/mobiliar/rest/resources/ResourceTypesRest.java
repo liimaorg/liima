@@ -22,6 +22,7 @@ package ch.mobi.itc.mobiliar.rest.resources;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -51,35 +52,26 @@ public class ResourceTypesRest {
     @GET
     @ApiOperation(value = "Get all resource types")
     public List<ResourceTypeDTO> getAllResourceTypes() throws NotFoundException {
-        List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getAllResourceTypes();
-        List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
-        for (ResourceTypeEntity resourceType : resourceTypes) {
-            resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
-        }
-        return resourceTypeDTOs;
+        return resourceTypeLocator.getAllResourceTypes().stream()
+                .map(ResourceTypeDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Path("/predefinedResourceTypes")
     @GET
     @ApiOperation(value = "Get predefined resource types")
     public List<ResourceTypeDTO> getPredefinedResourceTypes() throws NotFoundException {
-        List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getPredefinedResourceTypes();
-        List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
-        for (ResourceTypeEntity resourceType : resourceTypes) {
-            resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
-        }
-        return resourceTypeDTOs;
+        return resourceTypeLocator.getPredefinedResourceTypes().stream()
+                .map(ResourceTypeDTO::new)
+                .collect(Collectors.toList());
     }
 
     @Path("/rootResourceTypes")
     @GET
     @ApiOperation(value = "Get root resource types")
     public List<ResourceTypeDTO> getRootResourceTypes() throws NotFoundException {
-        List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getRootResourceTypes();
-        List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
-        for (ResourceTypeEntity resourceType : resourceTypes) {
-            resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
-        }
-        return resourceTypeDTOs;
+        return resourceTypeLocator.getRootResourceTypes().stream()
+                .map(ResourceTypeDTO::new)
+                .collect(Collectors.toList());
     }
 }

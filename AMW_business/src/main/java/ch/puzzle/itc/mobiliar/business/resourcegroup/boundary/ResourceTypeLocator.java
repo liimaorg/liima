@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -55,12 +56,11 @@ public class ResourceTypeLocator {
     }
 
     public List<ResourceTypeEntity> getPredefinedResourceTypes() throws NotFoundException {
-        List<ResourceTypeEntity> predefinedResourceTypes = new ArrayList<>();
-        for (ResourceTypeEntity e : resourceTypeDomainService.getResourceTypes()) {
-            if (e.getParentResourceType() == null && ResourceType.createByResourceType(e, null).isDefaultResourceType()) {
-                predefinedResourceTypes.add(e);
-            }
-        }
+        List<ResourceTypeEntity> predefinedResourceTypes = resourceTypeDomainService.getResourceTypes()
+                .stream()
+                .filter(e -> e.getParentResourceType() == null && ResourceType.createByResourceType(e, null).isDefaultResourceType())
+                .collect(Collectors.toList());
+
         if (predefinedResourceTypes.isEmpty()) {
             throw new NotFoundException("No predefined resource types found");
         }
@@ -68,12 +68,9 @@ public class ResourceTypeLocator {
     }
 
     public List<ResourceTypeEntity> getRootResourceTypes() {
-        List<ResourceTypeEntity> rootResourceTypes = new ArrayList<>();
-        for (ResourceTypeEntity e : resourceTypeDomainService.getResourceTypes()) {
-            if (e.getParentResourceType() == null && !ResourceType.createByResourceType(e, null).isDefaultResourceType()) {
-                    rootResourceTypes.add(e);
-                }
-            }
-        return rootResourceTypes;
+        return resourceTypeDomainService.getResourceTypes()
+                .stream()
+                .filter(e -> e.getParentResourceType() == null && !ResourceType.createByResourceType(e, null).isDefaultResourceType())
+                .collect(Collectors.toList());
     }
 }
