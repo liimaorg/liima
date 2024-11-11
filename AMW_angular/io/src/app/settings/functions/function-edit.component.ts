@@ -15,6 +15,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
 @Component({
   selector: 'app-function-edit',
   templateUrl: './function-edit.component.html',
+  styleUrl: './function-edit.component.scss',
   standalone: true,
   imports: [
     CodeEditorComponent,
