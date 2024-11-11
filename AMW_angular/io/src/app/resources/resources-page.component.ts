@@ -19,6 +19,7 @@ export class ResourcesPageComponent {
   predefinedResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.predefinedResourceTypes;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
   isLoading = signal(false);
+  expandedResourceTypeId: number | null = null;
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -29,4 +30,8 @@ export class ResourcesPageComponent {
       return { canViewResourceTypes: false };
     }
   });
+
+  toggleChildren(resourceType: ResourceType): void {
+    this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
+  }
 }

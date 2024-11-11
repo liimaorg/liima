@@ -4,17 +4,28 @@
   <div class="page-content">
     @if (permissions().canViewResourceTypes) {
     <nav class="nav flex-column">
-      @for (resourceType of predefinedResourceTypes(); track resourceType.name){<a href="#">{{ resourceType.name }}</a
-      >}
-    </nav>
-    <nav class="nav flex-column">
-      @for (resourceType of rootResourceTypes(); track resourceType.name){
-      <a href="#">
-        {{ resourceType.name }}
-        @if (resourceType.hasChildren) {<span class="plus-sign">+</span>}
-      </a>
+      @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
+      <a>{{ resourceType.name }}</a>
       }
     </nav>
+    <nav class="nav flex-column">
+      @for (resourceType of rootResourceTypes(); track resourceType.name) {
+      <a (click)="toggleChildren(resourceType)">
+        {{ resourceType.name }}
+        @if (resourceType.hasChildren) {
+        <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
+        }
+      </a>
+      @if (expandedResourceTypeId === resourceType.id) {
+      <ul class="subnav">
+        @for (child of resourceType.children; track child.name) {
+        <div class="grid-item">
+          <a>{{ child.name }}</a>
+        </div>
+        }
+      </ul>
+      } }
+    </nav>
     }
-  </div></app-page
->
+  </div>
+</app-page>
