@@ -35,6 +35,7 @@ describe('EnvironmentService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+    httpTestingController.expectOne('/AMW_rest/resources/environments');
   });
 
   it('should invoke the correct endpoint on getAll()', () => {
@@ -42,11 +43,16 @@ describe('EnvironmentService', () => {
       expect(environments).toEqual([environment]);
     });
 
-    const req = httpTestingController.expectOne('/AMW_rest/resources/environments');
+    const requests = httpTestingController.match('/AMW_rest/resources/environments');
+    expect(requests.length).toBe(2);
     httpTestingController.expectNone('/AMW_rest/resources/environments?includingGroups=true');
 
-    expect(req.request.method).toEqual('GET');
-    req.flush([environment]);
+    requests.forEach((req) => {
+      expect(req.request.method).toEqual('GET');
+    });
+
+    requests[0].flush([environment]);
+    requests[1].flush([environment]);
   });
 
   it('should invoke the correct endpoint on getAllIncludingGroups ', () => {
@@ -54,7 +60,7 @@ describe('EnvironmentService', () => {
       expect(environmentIncludingGroups).toEqual([environment]);
     });
 
-    httpTestingController.expectNone('/AMW_rest/resources/environments');
+    httpTestingController.expectOne('/AMW_rest/resources/environments');
     const req = httpTestingController.expectOne('/AMW_rest/resources/environments?includingGroups=true');
 
     expect(req.request.method).toEqual('GET');

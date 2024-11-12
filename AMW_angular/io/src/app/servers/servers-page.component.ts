@@ -7,16 +7,25 @@ import { ServersService } from './servers.service';
 import { ConfigurationService } from '../shared/service/configuration.service';
 import { ENVIRONMENT } from '../core/amw-constants';
 import { Config, pluck } from '../shared/configuration';
+import { ServersFilterComponent } from './servers-filter/servers-filter.component';
+import { EnvironmentService } from '../deployment/environment.service';
+import { ServerFilter } from './servers-filter/server-filter';
 
 @Component({
   selector: 'app-servers-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent],
+  imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent, ServersFilterComponent],
   template: ` <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
+        <app-servers-filter
+          [environments]="environments()"
+          [runtimes]="runtimes()"
+          [appServerSuggestions]="appServerSuggestions()"
+          (searchFilter)="searchFilter($event)"
+        />
         <app-servers-list
           [servers]="servers()"
           [canReadAppServer]="permissions().canReadAppServer"
@@ -28,10 +37,14 @@ import { Config, pluck } from '../shared/configuration';
 export class ServersPageComponent {
   private authService = inject(AuthService);
   private serversService = inject(ServersService);
+  private environmentsService = inject(EnvironmentService);
   private configurationService = inject(ConfigurationService);
 
   isLoading = signal(false);
 
+  environments = this.environmentsService.envs;
+  runtimes = this.serversService.runtimes;
+  appServerSuggestions = this.serversService.appServersSuggestions;
   servers = this.serversService.servers;
   configuration: Signal<Config[]> = this.configurationService.configuration;
 
@@ -56,4 +69,8 @@ export class ServersPageComponent {
       };
     }
   });
+
+  searchFilter($event: ServerFilter) {
+    this.serversService.setServerFilter($event);
+  }
 }

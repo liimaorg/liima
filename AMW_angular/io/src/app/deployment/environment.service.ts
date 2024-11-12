@@ -14,7 +14,13 @@ export class EnvironmentService extends BaseService {
     switchMap(() => this.getContexts()),
     shareReplay(1),
   );
+  private reloadedEnvs = this.reload$.pipe(
+    startWith(null),
+    switchMap(() => this.getAll()),
+    shareReplay(1),
+  );
   contexts: Signal<Environment[]> = toSignal(this.reloadedContexts, { initialValue: [] as Environment[] });
+  envs: Signal<Environment[]> = toSignal(this.reloadedEnvs, { initialValue: [] as Environment[] });
 
   constructor(private http: HttpClient) {
     super();
