@@ -7,11 +7,12 @@ import { ServerFilter } from './server-filter';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, OperatorFunction } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-servers-filter',
   standalone: true,
-  imports: [NgSelectModule, ReactiveFormsModule, FormsModule, NgbTypeahead],
+  imports: [NgSelectModule, ReactiveFormsModule, FormsModule, NgbTypeahead, ButtonComponent],
   templateUrl: './servers-filter.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

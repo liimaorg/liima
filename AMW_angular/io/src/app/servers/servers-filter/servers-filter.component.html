@@ -58,12 +58,8 @@
             </div>
         </div>
         <div class="card-footer">
-            <div class="row justify-content-between">
-                <div class="col-sm">
-                    <button type="submit" class="btn btn-primary btn-main" (click)="searchServerFilter()">Search</button>
-                    <button type="submit" class="btn btn-danger btn-main float-end" (click)="reset()">Reset</button>
-                </div>
-            </div>
+          <app-button [variant]="'danger'" [additionalClasses]="'float-end'" (click)="reset()">Reset</app-button>
+          <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="searchServerFilter()">Search</app-button>
         </div>
     </div>
 </div>
