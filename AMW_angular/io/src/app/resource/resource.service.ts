@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, of, startWith, Subject } from 'rxjs';
+import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Resource } from './resource';
 import { Release } from './release';
 import { Relation } from './relation';
 import { Property } from './property';
 import { AppWithVersion } from '../deployment/app-with-version';
 import { BaseService } from '../base/base.service';
+import { ResourceType } from './resource-type';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 interface Named {
   name: string;
@@ -15,8 +17,22 @@ interface Named {
 
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
+  private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
+
+  private resourceGroupListForType: Observable<Resource[]> = this.resourceType$.pipe(
+    startWith(null),
+    switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
+    shareReplay(1),
+  );
+
+  resourceGroupListForTypeSignal = toSignal(this.resourceGroupListForType, { initialValue: [] as Resource[] });
+
   constructor(private http: HttpClient) {
     super();
+  }
+
+  setTypeForResourceGroupList(resourcesType: ResourceType) {
+    this.resourceType$.next(resourcesType);
   }
 
   getAll(): Observable<Resource[]> {
@@ -38,6 +54,19 @@ export class ResourceService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
+  getGroupsForType(resourceType: ResourceType): Observable<Resource[]> {
+    console.log(resourceType);
+    console.log(resourceType.name);
+    /*    return this.http
+      .get<Resource[]>(`${this.getBaseUrl()}/resources?&type=${resourceTypeName}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((resources) => resources.map(toResource)),
+        catchError(this.handleError),
+      );*/
+    return of([]);
+  }
   get(resourceGroupName: string): Observable<Resource> {
     return this.http
       .get(`${this.getBaseUrl()}/resources/${resourceGroupName}`, {
