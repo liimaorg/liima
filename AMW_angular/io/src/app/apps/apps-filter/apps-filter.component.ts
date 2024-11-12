@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, Input, signal } from '@angular/core';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Release } from '../../settings/releases/release';
@@ -12,16 +12,19 @@ import { IconComponent } from '../../shared/icon/icon.component';
   standalone: true,
   imports: [FormsModule, NgSelectModule, ButtonComponent, IconComponent],
   templateUrl: './apps-filter.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsFilterComponent {
   @Input() releases: Release[];
 
+  upcoming = input<number>();
+  selected = signal<number>(this.upcoming());
+
   @Output() filterEvent = new EventEmitter<{ filter: string; releaseId: number }>();
 
-  releaseId: number = 50;
   appName: string;
 
   search() {
-    this.filterEvent.emit({ filter: this.appName, releaseId: this.releaseId });
+    this.filterEvent.emit({ filter: this.appName, releaseId: this.selected() });
   }
 }

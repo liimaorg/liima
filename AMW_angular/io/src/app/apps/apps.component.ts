@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, Signal } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AsyncPipe } from '@angular/common';
@@ -37,6 +37,7 @@ import { ButtonComponent } from '../shared/button/button.component';
     ButtonComponent,
   ],
   templateUrl: './apps.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsComponent implements OnInit {
   private appsService = inject(AppsService);
@@ -46,6 +47,7 @@ export class AppsComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private toastService = inject(ToastService);
 
+  upcomingRelease: Signal<Release> = toSignal(this.releaseService.getUpcomingRelease());
   releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
   appServerGroups = toSignal(this.resourceService.getByType('APPLICATIONSERVER'), {
     initialValue: [] as Resource[],
