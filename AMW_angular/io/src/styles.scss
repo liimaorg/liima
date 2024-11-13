@@ -15,8 +15,6 @@ $toast-padding-y: 0;
 
 @import 'bootstrap/scss/bootstrap';
 @import '@ng-select/ng-select/themes/default.theme.css';
-@import 'codemirror/lib/codemirror';
-@import 'codemirror/addon/dialog/dialog.css';
 
 .text-warning-2 {
   color: #8a6d3b;
@@ -50,4 +48,11 @@ $toast-padding-y: 0;
 
 .btn {
   margin-right: 0.3rem;
+}
+
+.editor {
+  min-height: 20vh;
+  max-height: 60vh;
+  overflow-y: auto;
+
 }

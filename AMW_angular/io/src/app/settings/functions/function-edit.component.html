@@ -2,41 +2,73 @@
 <div class="modal-body">
   <div class="form-horizontal mx-2">
     <div class="mb-3">
-      <label for="name" class="form-label">Function name</label>
+      <label for="name" class="form-label align-self-center">Function name</label>
       <input type="text" class="form-control" id="name" [(ngModel)]="function.name" />
     </div>
+
     <div class="mb-3">
-      <label class="form-label">Function content</label>
-      <ngx-codemirror
-        class="h-100"
-        [(ngModel)]="function.content"
-        [options]="{
-          lineNumbers: true,
-          theme: 'default',
-          mode: 'simplemode'
-        }"
-      ></ngx-codemirror>
-    </div>
-    <div class="mb-3" *ngIf="revisions.length > 0">
-      <label class="form-label">Compare with history</label>
-      <div ngbDropdown>
-        <!-- TODO: convert this button-->
-        <button class="btn btn-secondary dropdown-toggle" id="revisionDropdown" ngbDropdownToggle>
-          {{ selectedRevisionName || 'Select Revision' }}
-        </button>
-        <ul ngbDropdownMenu>
-          <li ngbDropdownItem *ngFor="let revision of revisions.slice().reverse()">
-            <a class="dropdown-item" (click)="selectRevision(function.id, revision.revision, revision.displayName)">{{
-              revision.displayName
-            }}</a>
-          </li>
-        </ul>
+      <div class="d-flex justify-content-between align-content-center mb-1">
+        <div>
+          <label class="form-label">Function content</label>
+        </div>
+        <div class="d-flex">
+          @if (revisions.length > 0) {
+          <div class="d-flex me-1">
+            <label class="align-self-center me-1">Compare with history</label>
+            <div ngbDropdown>
+              <app-button
+                [additionalClasses]="'dropdown-toggle'"
+                [variant]="'secondary'"
+                ngbDropdownToggle
+                [dataCy]="'button-dropdown'"
+              >
+                {{ selectedRevisionName || 'Select Revision' }}
+              </app-button>
+
+              <ul ngbDropdownMenu>
+                @for (revision of revisions.slice().reverse(); track revision) {
+                <li ngbDropdownItem>
+                  <a
+                    class="dropdown-item"
+                    (click)="selectRevision(function.id, revision.revision, revision.displayName)"
+                    >{{ revision.displayName }}</a
+                  >
+                </li>
+                }
+              </ul>
+            </div>
+          </div>
+
+          }
+          <div class="col-1">
+            <app-button [variant]="'light'" (click)="toggleFullscreen()">
+              <app-icon [icon]="toggleFullscreenIcon"></app-icon>
+            </app-button>
+          </div>
+        </div>
       </div>
+      @if (!revision) {
+      <div class="editor border border-primary-subtle rounded">
+        <app-code-editor
+          [theme]="'light'"
+          [placeholder]="'Enter your code...'"
+          [(ngModel)]="function.content"
+        ></app-code-editor>
+      </div>
+      } @else {
+      <div class="mx-0 row">
+        <label class="col badge bg-info">Current version</label>
+        <label class="col badge bg-secondary">Version: {{ selectedRevisionName }}</label>
+      </div>
+      <div class="editor border border-primary-subtle rounded">
+        <app-diff-editor [(ngModel)]="diffValue" revertControls="b-to-a"></app-diff-editor>
+      </div>
+      }
     </div>
   </div>
 </div>
 <div class="modal-footer">
-  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
   @if (canManage) {
   <span
     class="d-inline-block"

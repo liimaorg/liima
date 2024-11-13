@@ -3,18 +3,30 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { AppFunction } from './appFunction';
-import { CodemirrorModule } from '@ctrl/ngx-codemirror';
 import { FunctionsService } from './functions.service';
 import { RevisionInformation } from './revisionInformation';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
+import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
+import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-function-edit',
   templateUrl: './function-edit.component.html',
+  styleUrl: './function-edit.component.scss',
   standalone: true,
-  imports: [FormsModule, CodemirrorModule, CommonModule, NgbDropdownModule, ModalHeaderComponent, ButtonComponent],
+  imports: [
+    CodeEditorComponent,
+    DiffEditorComponent,
+    FormsModule,
+    CommonModule,
+    IconComponent,
+    NgbDropdownModule,
+    ModalHeaderComponent,
+    ButtonComponent,
+  ],
 })
 export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;
@@ -23,8 +35,15 @@ export class FunctionEditComponent implements OnInit {
 
   private functionsService = inject(FunctionsService);
   public revisions: RevisionInformation[] = [];
-  private revision: AppFunction;
+  public revision: AppFunction;
   public selectedRevisionName: string;
+  public isFullscreen = false;
+  public toggleFullscreenIcon = 'arrows-fullscreen';
+
+  public diffValue = {
+    original: '',
+    modified: '',
+  };
 
   constructor(public activeModal: NgbActiveModal) {}
 
@@ -44,6 +63,7 @@ export class FunctionEditComponent implements OnInit {
   }
 
   save() {
+    if (this.revision) this.function.content = this.diffValue.original;
     this.saveFunction.emit(this.function);
     this.activeModal.close();
   }
@@ -58,6 +78,13 @@ export class FunctionEditComponent implements OnInit {
     this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe((revision) => {
       this.revision = revision;
       this.selectedRevisionName = displayName;
+      this.diffValue = { original: this.function.content, modified: this.revision.content };
     });
+  }
+
+  toggleFullscreen() {
+    this.isFullscreen = !this.isFullscreen;
+    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
+    this.activeModal.update({ fullscreen: this.isFullscreen });
   }
 }
