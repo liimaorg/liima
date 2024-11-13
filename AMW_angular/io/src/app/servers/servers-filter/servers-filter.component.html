@@ -1,65 +1,65 @@
 <div class="container">
-    <div class="card">
-        <div class="card-header">
-            Filter
-        </div>
-        <div class="card-body">
-            <div class="row align-items-center mb-3">
-                <div class="col-sm-1">
-                    <label for="appServer" class="form-label">AppServer</label>
-                </div>
-                <div class="col-sm-3">
-                    <input type="text" class="form-control" id="appServer"
-                           [ngbTypeahead]="search"
-                           [(ngModel)]="appServer">
-                </div>
-            </div>
-            <div class="row align-items-center mb-3">
-                <div class="col-sm-1">
-                    <label class="form-label">Runtime</label>
-                </div>
-                <div class="col-sm-3">
-                    <select class="form-select" [(ngModel)]="selectedRuntimeName">
-                      <option [value]="'All'">All</option>
-                      @for(runtime of runtimes(); track runtime.id){
-                        <option [value]="runtime.name">{{ runtime.name }}</option>
-                      }
-                    </select>
-                </div>
-            </div>
-            <div class="row align-items-center mb-3">
-                <div class="col-sm-1">
-                    <label class="form-label">Env</label>
-                </div>
-                <div class="col-sm-3">
-                    <select class="form-select" [(ngModel)]="selectedEnvironmentName">
-                        <option [value]="'All'">All</option>
-                        @for(env of environments(); track env.id){
-                            <option [value]="env.name">{{ env.name }}</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="row align-items-center mb-3">
-                <div class="col-sm-1">
-                    <label for="host" class="form-label">Host</label>
-                </div>
-                <div class="col-sm-3">
-                    <input type="text" class="form-control" id="host" [(ngModel)]="host">
-                </div>
-            </div>
-            <div class="row align-items-center mb-3">
-                <div class="col-sm-1">
-                    <label for="node" class="form-label">Node</label>
-                </div>
-                <div class="col-sm-3">
-                    <input type="text" class="form-control" id="node" [(ngModel)]="node">
-                </div>
-            </div>
-        </div>
-        <div class="card-footer">
-          <app-button [variant]="'danger'" [additionalClasses]="'float-end'" (click)="reset()">Reset</app-button>
-          <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="searchServerFilter()">Search</app-button>
-        </div>
+  <div class="row mb-3">
+    <div class="col-sm">
+      <b>Filter</b>
     </div>
+  </div>
+  <div class="row align-items-center mb-3">
+    <div class="col-sm-1">
+      <label for="appServer" class="form-label">AppServer</label>
+    </div>
+    <div class="col-sm-3">
+      <input type="text" class="form-control" id="appServer" [ngbTypeahead]="search" [(ngModel)]="appServer" />
+    </div>
+  </div>
+  <div class="row align-items-center mb-3">
+    <div class="col-sm-1">
+      <label class="form-label">Runtime</label>
+    </div>
+    <div class="col-sm-3">
+      <select class="form-select" [(ngModel)]="selectedRuntimeName">
+        <option [value]="'All'">All</option>
+        @for (runtime of runtimes(); track runtime.id) {
+        <option [value]="runtime.name">{{ runtime.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <div class="row align-items-center mb-3">
+    <div class="col-sm-1">
+      <label class="form-label">Env</label>
+    </div>
+    <div class="col-sm-3">
+      <select class="form-select in" [(ngModel)]="selectedEnvironmentName">
+        <option [value]="'All'">All</option>
+        @for (env of environments(); track env.id) {
+        <option [value]="env.name">{{ env.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <div class="row align-items-center mb-3">
+    <div class="col-sm-1">
+      <label for="host" class="form-label">Host</label>
+    </div>
+    <div class="col-sm-3">
+      <input type="text" class="form-control" id="host" [(ngModel)]="host" />
+    </div>
+  </div>
+  <div class="row align-items-center mb-3">
+    <div class="col-sm-1">
+      <label for="node" class="form-label">Node</label>
+    </div>
+    <div class="col-sm-3">
+      <input type="text" class="form-control" id="node" [(ngModel)]="node" />
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col">
+      <app-button [variant]="'primary'" [additionalClasses]="'float-start'" (click)="searchServerFilter()"
+        >Search</app-button
+      >
+      <app-button [variant]="'light'" [additionalClasses]="'float-start'" (click)="reset()">Reset</app-button>
+    </div>
+  </div>
 </div>

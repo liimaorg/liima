@@ -20,19 +20,28 @@ import { ServerFilter } from './servers-filter/server-filter';
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
-        <app-servers-filter
-          [environments]="environments()"
-          [runtimes]="runtimes()"
-          [appServerSuggestions]="appServerSuggestions()"
-          (searchFilter)="searchFilter($event)"
-        />
-        <app-servers-list
-          [servers]="servers()"
-          [canReadAppServer]="permissions().canReadAppServer"
-          [canReadResources]="permissions().canReadResources"
-          [linkToHostUrl]="linkToHostUrl()"
-        /></div
-    ></app-page>`,
+        <div class="container">
+          <div class="card">
+            <div class="card-header"><b>Servers</b></div>
+            <div class="card-body">
+              <app-servers-filter
+                [environments]="environments()"
+                [runtimes]="runtimes()"
+                [appServerSuggestions]="appServerSuggestions()"
+                (searchFilter)="searchFilter($event)"
+              />
+              <app-servers-list
+                [servers]="servers()"
+                [canReadAppServer]="permissions().canReadAppServer"
+                [canReadResources]="permissions().canReadResources"
+                [linkToHostUrl]="linkToHostUrl()"
+              />
+            </div>
+            <div class="card-footer"></div>
+          </div>
+        </div>
+      </div>
+    </app-page>`,
 })
 export class ServersPageComponent {
   private authService = inject(AuthService);

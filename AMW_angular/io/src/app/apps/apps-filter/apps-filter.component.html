@@ -4,7 +4,7 @@
       <b>Add Filter</b>
     </div>
   </div>
-  <div class="row justify-content-between align-items-center">
+  <div class="row justify-content-between align-items-end">
     <div class="col-sm-4">
       <label for="appName" class="form-label">Application/AS name</label>
       <input class="form-control" id="appName" type="text" [(ngModel)]="appName" />
@@ -23,7 +23,7 @@
       </ng-select>
     </div>
     <div class="col-sm">
-      <app-button [variant]="'primary'" [additionalClasses]="'mt-4 float-end'" (click)="search()">Search</app-button>
+      <app-button [variant]="'primary'" [additionalClasses]="'float-start'" (click)="search()">Search</app-button>
     </div>
   </div>
 </div>
