@@ -14,8 +14,8 @@ export class ServersService extends BaseService {
   private serversUrl = `${this.getBaseUrl()}/servers`;
   private serverFilter$: Subject<ServerFilter> = new Subject<ServerFilter>();
   private reloadedServers: Observable<Server[]> = this.serverFilter$.pipe(
-    startWith(null),
     switchMap((filter: ServerFilter) => this.getServers(filter)),
+    startWith(null),
     shareReplay(1),
   );
 
