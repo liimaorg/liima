@@ -18,13 +18,18 @@ export class AppsFilterComponent {
   @Input() releases: Release[];
 
   upcoming = input<number>();
-  selected = signal<number>(this.upcoming());
+  selected = signal<number>(undefined);
+  pristine: boolean = true;
 
   @Output() filterEvent = new EventEmitter<{ filter: string; releaseId: number }>();
 
   appName: string;
 
   search() {
+    if (this.pristine && this.selected() === undefined) {
+      this.selected.set(this.upcoming());
+      this.pristine = false;
+    }
     this.filterEvent.emit({ filter: this.appName, releaseId: this.selected() });
   }
 }

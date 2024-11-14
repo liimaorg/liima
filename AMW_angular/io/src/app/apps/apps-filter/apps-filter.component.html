@@ -11,12 +11,7 @@
     </div>
     <div class="col-sm-2">
       <label class="form-label">Release</label>
-      <ng-select
-        id="selectRelease"
-        [ngModel]="upcoming()"
-        (ngModelChange)="selected.set($event)"
-        placeholder="Select release"
-      >
+      <ng-select id="selectRelease" [ngModel]="upcoming()" (change)="selected.set($event)" placeholder="Select release">
         @for (release of releases; track release.id) {
         <ng-option [value]="release.id">{{ release.name }}</ng-option>
         }
