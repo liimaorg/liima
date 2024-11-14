@@ -65,8 +65,8 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   isLoading = false;
 
-  currentPage: number;
-  lastPage: number;
+  // currentPage: number;
+  // lastPage: number;
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -80,12 +80,8 @@ export class AppsComponent implements OnInit, OnDestroy {
     }
   });
 
-  pagination = computed(() => {
-    return {
-      currentPage: Math.floor(this.offset() / this.maxResults()) + 1,
-      lastPage: Math.ceil(this.count() / this.maxResults()),
-    };
-  });
+  currentPage = computed(() => Math.floor(this.offset() / this.maxResults()) + 1);
+  lastPage = computed(() => Math.ceil(this.count() / this.maxResults()));
 
   constructor() {
     toObservable(this.upcomingRelease)
