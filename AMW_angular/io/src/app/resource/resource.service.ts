@@ -20,8 +20,8 @@ export class ResourceService extends BaseService {
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
 
   private resourceGroupListForType: Observable<Resource[]> = this.resourceType$.pipe(
-    startWith(null),
     switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
+    startWith(null),
     shareReplay(1),
   );
 
@@ -55,17 +55,14 @@ export class ResourceService extends BaseService {
   }
 
   getGroupsForType(resourceType: ResourceType): Observable<Resource[]> {
-    console.log(resourceType);
-    console.log(resourceType.name);
-    /*    return this.http
-      .get<Resource[]>(`${this.getBaseUrl()}/resources?&type=${resourceTypeName}`, {
+    return this.http
+      .get<Resource[]>(`${this.getBaseUrl()}/resources?typeId=${resourceType.id}`, {
         headers: this.getHeaders(),
       })
       .pipe(
         map((resources) => resources.map(toResource)),
         catchError(this.handleError),
-      );*/
-    return of([]);
+      );
   }
   get(resourceGroupName: string): Observable<Resource> {
     return this.http
@@ -176,7 +173,7 @@ function toAppWithVersion(r: any): AppWithVersion {
 }
 
 function toResource(r: Resource): Resource {
-  r.release = r.release && toRelease(r.release);
+  r.defaultRelease = r.defaultRelease && toRelease(r.defaultRelease);
   r.releases = (r.releases || []).map(toRelease);
   return r;
 }

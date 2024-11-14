@@ -36,13 +36,9 @@ export class ResourcesPageComponent {
     }
   });
 
-  toggleChildrenOrLoadResourcesList(resourceType: ResourceType): void {
-    if (!resourceType.hasChildren) this.loadResourcesList(resourceType);
+  toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType): void {
+    this.resourceService.setTypeForResourceGroupList(resourceType);
     if (resourceType.hasChildren)
       this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
-  }
-
-  loadResourcesList(resourceType: ResourceType) {
-    this.resourceService.setTypeForResourceGroupList(resourceType);
   }
 }

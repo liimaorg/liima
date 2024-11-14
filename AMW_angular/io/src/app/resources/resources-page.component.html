@@ -7,13 +7,13 @@
         @if (permissions().canViewResourceTypes) {
           <nav class="nav flex-column">
             @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
-              <a (click)="loadResourcesList(resourceType)">{{ resourceType.name }} predefined</a>
+              <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">{{ resourceType.name }}</a>
             }
           </nav>
           <nav class="nav flex-column">
             @for (resourceType of rootResourceTypes(); track resourceType.name) {
-              <a (click)="toggleChildrenOrLoadResourcesList(resourceType)">
-                {{ resourceType.name }} {{ resourceType.hasChildren }}
+              <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
+                {{ resourceType.name }}
                 @if (resourceType.hasChildren) {
                   <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
                 }
@@ -22,7 +22,7 @@
                 <ul class="subnav">
                   @for (child of resourceType.children; track child.name) {
                     <div class="grid-item">
-                      <a (click)="loadResourcesList(child)">{{ child.name }}</a>
+                      <a (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
                     </div>
                   }
                 </ul>
@@ -32,7 +32,7 @@
         }
       </div>
       <div class="col-10">
-        <app-resources-list [resourceGroupList]="[]"></app-resources-list>
+        <app-resources-list [resourceGroupList]="resourceGroupListForTypeSignal()"></app-resources-list>
       </div>
     </div>
   </div>
