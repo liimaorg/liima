@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, Signal } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, Signal } from '@angular/core';
+import { BehaviorSubject, skip, Subject, take } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AsyncPipe } from '@angular/common';
 import { IconComponent } from '../shared/icon/icon.component';
@@ -16,12 +16,13 @@ import { AppsServersListComponent } from './apps-servers-list/apps-servers-list.
 import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
 import { ResourceService } from '../resource/resource.service';
 import { Resource } from '../resource/resource';
 import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
+import { offset } from '@popperjs/core';
 
 @Component({
   selector: 'app-apps',
@@ -39,7 +40,7 @@ import { ButtonComponent } from '../shared/button/button.component';
   templateUrl: './apps.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppsComponent implements OnInit {
+export class AppsComponent implements OnInit, OnDestroy {
   private appsService = inject(AppsService);
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
@@ -48,6 +49,7 @@ export class AppsComponent implements OnInit {
   private toastService = inject(ToastService);
 
   upcomingRelease: Signal<Release> = toSignal(this.releaseService.getUpcomingRelease());
+
   releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
   appServerGroups = toSignal(this.resourceService.getByType('APPLICATIONSERVER'), {
     initialValue: [] as Resource[],
@@ -78,18 +80,26 @@ export class AppsComponent implements OnInit {
     }
   });
 
+  pagination = computed(() => {
+    return {
+      currentPage: Math.floor(this.offset() / this.maxResults()) + 1,
+      lastPage: Math.ceil(this.count() / this.maxResults()),
+    };
+  });
+
+  constructor() {
+    toObservable(this.upcomingRelease)
+      .pipe(takeUntil(this.destroy$), skip(1), take(1))
+      .subscribe((release) => {
+        this.releaseId.set(release.id);
+        this.appsService.refreshData();
+      });
+  }
+
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
       msg !== '' ? this.toastService.error(msg) : null;
     });
-    this.isLoading = true;
-    this.setPagination();
-    this.isLoading = false;
-  }
-
-  private setPagination() {
-    this.currentPage = Math.floor(this.offset() / this.maxResults()) + 1;
-    this.lastPage = Math.ceil(this.count() / this.maxResults());
   }
 
   addApp() {
@@ -145,13 +155,11 @@ export class AppsComponent implements OnInit {
     this.maxResults.set(max);
     this.offset.set(0);
     this.appsService.refreshData();
-    this.setPagination();
   }
 
   setNewOffset(offset: number) {
     this.offset.set(offset);
     this.appsService.refreshData();
-    this.setPagination();
   }
 
   updateFilter(values: { filter: string; releaseId: number }) {
@@ -168,5 +176,9 @@ export class AppsComponent implements OnInit {
     if (update) {
       this.appsService.refreshData();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(undefined);
   }
 }
