@@ -55,6 +55,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CREATED;
@@ -128,6 +129,28 @@ public class ResourceGroupsRest {
         }
         return result;
     }
+
+    @GET
+    @ApiOperation(value = "Get resource groups by resource type id")
+    public List<ResourceGroupDTO> getResourceGroupsByResourceTypeId(
+            @ApiParam(value = "a resource type id, the list should be filtered by") @QueryParam("typeId") Integer typeId) {
+        List<ResourceGroupEntity> resourceGroups;
+        if (typeId != null) {
+            resourceGroups = resourceGroupLocator.getGroupsForType(typeId, true, true);
+        } else {
+            resourceGroups = resourceGroupLocator.getResourceGroups();
+        }
+
+        return resourceGroups.stream().map(resourceGroupEntity -> {
+            List<ReleaseEntity> releases = resourceGroupEntity.getResources().stream().map(ResourceEntity::getRelease).collect(Collectors.toList());
+            SortedSet<ReleaseEntity> sortedReleases = releases.stream()
+                    .sorted(Comparator.comparing(ReleaseEntity::getInstallationInProductionAt))
+                    .collect(Collectors.toCollection(TreeSet::new));
+            ReleaseEntity mostRelevantRelease = this.resourceDependencyResolverService.findMostRelevantRelease(sortedReleases, new Date());
+            return new ResourceGroupDTO(resourceGroupEntity, mostRelevantRelease, releases);
+        }).collect(Collectors.toList());
+    }
+
 
     @Path("/{resourceGroupName}")
     @GET

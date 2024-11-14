@@ -41,11 +41,22 @@ public class ResourceGroupDTO {
     private String name;
     private String type;
     private List<ReleaseEntity> releases;
+    private ReleaseDTO defaultRelease;
 
     public ResourceGroupDTO(ResourceGroupEntity resourceGroup, List<ReleaseEntity> releases){
         this.id = resourceGroup.getId();
         this.name = resourceGroup.getName();
         this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName(): null;
+        if(releases!=null && !releases.isEmpty()){
+            this.releases = releases;
+        }
+    }
+
+    public ResourceGroupDTO(ResourceGroupEntity resourceGroup, ReleaseEntity defaultRelease, List<ReleaseEntity> releases){
+        this.id = resourceGroup.getId();
+        this.name = resourceGroup.getName();
+        this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName(): null;
+        this.defaultRelease = new ReleaseDTO(defaultRelease.getId(), defaultRelease.getName());
         if(releases!=null && !releases.isEmpty()){
             this.releases = releases;
         }
