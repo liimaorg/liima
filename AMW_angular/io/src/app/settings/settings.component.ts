@@ -1,5 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, computed, inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 
@@ -10,8 +10,10 @@ import { PageComponent } from '../layout/page/page.component';
   standalone: true,
   imports: [RouterLink, RouterLinkActive, RouterOutlet, PageComponent],
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   authService = inject(AuthService);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -24,4 +26,8 @@ export class SettingsComponent {
       return { canViewSettings: false, canViewPermissionsTab: false, canViewAppInfo: false };
     }
   });
+
+  ngOnInit(): void {
+    this.router.navigate(['environments'], { relativeTo: this.route });
+  }
 }
