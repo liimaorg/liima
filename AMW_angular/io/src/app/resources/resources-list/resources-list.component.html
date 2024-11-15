@@ -4,7 +4,7 @@
     <table class="table table-sm table-striped">
       <thead>
       <tr>
-        <th>Resource Name</th>
+        <th>Resource name</th>
         <th>Release</th>
         <th>Actions</th>
       </tr>
@@ -12,9 +12,15 @@
       <tbody>
         @for (resource of resourceGroupList(); track resource.id) {
           <tr>
-            <th>{{ resource.name }}</th>
+            <td>{{ resource.name }}</td>
             <td>{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
-            <td>action_buttons</td>
+            <td>
+              <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ resource.id }}">
+                <app-button [variant]="'primary'" [size]="'sm'">
+                  <app-icon icon="pencil"></app-icon
+                  ></app-button>
+              </a>
+            </td>
           </tr>
         }
       </tbody>
