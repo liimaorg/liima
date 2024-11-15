@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { Resource } from '../../resource/resource';
+import { ResourceType } from '../../resource/resource-type';
 
 @Component({
   selector: 'app-resources-list',
@@ -8,5 +9,6 @@ import { Resource } from '../../resource/resource';
   imports: [],
 })
 export class ResourcesListComponent {
+  resourceType = input.required<ResourceType>();
   resourceGroupList = input<Resource[]>();
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
@@ -21,10 +21,11 @@ export class ResourcesPageComponent {
   private resourceService = inject(ResourceService);
 
   predefinedResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.predefinedResourceTypes;
-  resourceGroupListForTypeSignal: Signal<Resource[]> = this.resourceService.resourceGroupListForTypeSignal;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
+  resourceGroupListForTypeSignal: Signal<Resource[]> = this.resourceService.resourceGroupListForTypeSignal;
   isLoading = signal(false);
   expandedResourceTypeId: number | null = null;
+  selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -36,9 +37,18 @@ export class ResourcesPageComponent {
     }
   });
 
+  selectedResourceTypeOrDefault: Signal<ResourceType> = computed(() => {
+    if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
+      this.resourceService.setTypeForResourceGroupList(this.rootResourceTypes()[0]);
+      return this.rootResourceTypes()[0];
+    }
+    return this.selectedResourceType() || null;
+  });
+
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType): void {
     this.resourceService.setTypeForResourceGroupList(resourceType);
-    if (resourceType.hasChildren)
+    if (resourceType && resourceType.hasChildren)
       this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
+    this.selectedResourceType.set(resourceType);
   }
 }

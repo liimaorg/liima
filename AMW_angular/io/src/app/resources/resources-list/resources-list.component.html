@@ -1,21 +1,23 @@
 <div class="container">
-  <h1>Resource groups</h1>
-  <table class="table table-sm table-striped">
-    <thead>
-    <tr>
-      <th>Resource Name</th>
-      <th>Release</th>
-      <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-      @for (resource of resourceGroupList(); track resource.id) {
-        <tr>
-          <th>{{ resource.name }}</th>
-          <td>{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
-          <td>action_buttons</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+  @if (resourceType()){
+    <h1>{{resourceType().name}}</h1>
+    <table class="table table-sm table-striped">
+      <thead>
+      <tr>
+        <th>Resource Name</th>
+        <th>Release</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (resource of resourceGroupList(); track resource.id) {
+          <tr>
+            <th>{{ resource.name }}</th>
+            <td>{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
+            <td>action_buttons</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
 </div>
