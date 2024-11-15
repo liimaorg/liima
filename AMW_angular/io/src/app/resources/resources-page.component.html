@@ -16,7 +16,7 @@
         <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
         }
       </a>
-      @if (expandedResourceTypeId === resourceType.id) {
+      @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
       <ul class="subnav">
         @for (child of resourceType.children; track child.name) {
         <div class="grid-item">
