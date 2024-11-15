@@ -25,25 +25,33 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeRequestDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 @RequestScoped
 @Path("/resources")
 @Api(value = "/resources", description = "ResourceTypes")
+@Consumes(APPLICATION_JSON)
+@Produces(APPLICATION_JSON)
 public class ResourceTypesRest {
 
     @Inject
     private ResourceTypeLocator resourceTypeLocator;
 
     @Inject
-    PropertyEditor propertyEditor;
+    private ResourceTypeDomainService domainService;
 
     @Path("/resourceTypes")
     @GET
@@ -71,4 +79,15 @@ public class ResourceTypesRest {
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
     }
+
+    @Path("/resourceTypes")
+    @POST
+    @ApiOperation(value = "Add a new resource type")
+    @Consumes("application/json")
+    public Response addNewResourceType(@ApiParam("Resource type details") ResourceTypeRequestDTO request)
+            throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
+        domainService.addResourceType(request.getNewResourceTypeName(), request.getParentId());
+        return Response.status(Response.Status.CREATED).build();
+    }
+
 }

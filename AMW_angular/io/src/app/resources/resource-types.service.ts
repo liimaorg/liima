@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { shareReplay, switchMap } from 'rxjs/operators';
 import { BaseService } from '../base/base.service';
 import { ResourceType } from '../resource/resource-type';
+import { ResourceTypeRequest } from '../resource/resource-type-request';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceTypesService extends BaseService {
@@ -35,6 +36,10 @@ export class ResourceTypesService extends BaseService {
 
   getRootResourceTypes(): Observable<ResourceType[]> {
     return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resources/rootResourceTypes`);
+  }
+
+  addNewResourceType(resourceTypeRequest: ResourceTypeRequest): Observable<void> {
+    return this.http.post<void>(`${this.getBaseUrl()}/resources/resourceTypes`, resourceTypeRequest);
   }
 
   refreshData() {

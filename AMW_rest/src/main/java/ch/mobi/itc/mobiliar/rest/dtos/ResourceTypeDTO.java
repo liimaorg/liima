@@ -41,7 +41,7 @@ public class ResourceTypeDTO {
     private boolean hasChildren;
     private List<ResourceTypeDTO> children;
 
-    public ResourceTypeDTO(ResourceTypeEntity resourceType){
+    public ResourceTypeDTO(ResourceTypeEntity resourceType) {
         this.id = resourceType.getId();
         this.name = resourceType.getName();
         this.hasChildren = resourceType.hasChildren();
@@ -49,4 +49,15 @@ public class ResourceTypeDTO {
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
     }
+
+    public ResourceTypeEntity convertEntity() {
+        ResourceTypeEntity entity = new ResourceTypeEntity();
+        entity.setId(this.id);
+        entity.setName(this.name);
+        entity.setChildrenResourceTypes(this.children.stream()
+                .map(ResourceTypeDTO::convertEntity)
+                .collect(Collectors.toSet()));
+        return entity;
+    }
+
 }

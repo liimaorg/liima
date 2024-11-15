@@ -10,7 +10,7 @@
     </nav>
     <nav class="nav flex-column">
       @for (resourceType of rootResourceTypes(); track resourceType.name) {
-      <a (click)="toggleChildren(resourceType)">
+      <a (click)="toggleChildrenResourceTypes(resourceType)">
         {{ resourceType.name }}
         @if (resourceType.hasChildren) {
         <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
@@ -27,5 +27,10 @@
       } }
     </nav>
     }
+    <div>
+      @if (permissions().canCreateResourceTypes) {
+      <app-button [variant]="'primary'"><app-icon icon="plus-circle"></app-icon> New Resource Type</app-button>
+      }
+    </div>
   </div>
 </app-page>
