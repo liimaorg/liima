@@ -23,10 +23,11 @@ export class ButtonComponent {
   size = input<'sm' | 'lg'>();
   additionalClasses = input<string>('');
   disabled = input<boolean>(false);
+  isOutlined = input<boolean>(false);
   dataCy = input<string>('');
 
   variantClass(): string {
-    return this.variant() ? `btn-${this.variant()}` : '';
+    return this.variant() ? (this.isOutlined() ? `btn-outline-${this.variant()}` : `btn-${this.variant()}`) : '';
   }
 
   sizeClass(): string {
