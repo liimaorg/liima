@@ -88,7 +88,7 @@ public class EnvironmentsScreenDomainService {
      * Erstellt einen neuen Context anhand den Name und den superContext. Der Kontext ist an einen Benutzer zugewisen
      */
     @HasPermission(permission = Permission.ADD_NEW_ENV_OR_DOM)
-    public ContextEntity createContextByName(String newName, Integer superContextId) throws ResourceNotFoundException, ElementAlreadyExistsException {
+    public ContextEntity createContextByName(String newName, String newAliasName, Integer superContextId) throws ResourceNotFoundException, ElementAlreadyExistsException {
         try {
             if (getContextByName(newName) != null) {
                 String message = "Der Kontext mit dem Namen " + newName + " ist bereits vorhanden und kann nicht erstellen werden";
@@ -113,6 +113,8 @@ public class EnvironmentsScreenDomainService {
             throw new ResourceNotFoundException("Der Superkontext mit der Id " + superContextId + " konnte nicht gefunden werden");
         }
         entity.setName(newName);
+        if(newAliasName != null)
+            entity.setNameAlias(newAliasName);
         entity.setContextType(resourceTypeProvider.getOrCreateContextType(contextName));
         entityManager.persist(entity);
         return entity;

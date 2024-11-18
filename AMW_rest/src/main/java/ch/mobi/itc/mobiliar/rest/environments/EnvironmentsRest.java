@@ -61,7 +61,7 @@ public class EnvironmentsRest {
     @Path("/contexts")
     @ApiOperation(value = "Add new context")
     public Response addContext(@ApiParam() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException {
-        environmentsScreenDomainService.createContextByName(request.getName(), request.getParentId());
+        environmentsScreenDomainService.createContextByName(request.getName(), request.getNameAlias(), request.getParentId());
         return Response.status(Response.Status.OK).build();
     }
 

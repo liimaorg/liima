@@ -41,11 +41,6 @@ export class EnvironmentEditComponent {
     return this.environment.parentName === this.globalName;
   }
 
-  isEdit(): boolean {
-    if (!this.environment) return;
-    return !!this.environment.id;
-  }
-
   cancel() {
     this.activeModal.close();
   }

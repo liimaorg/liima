@@ -5,7 +5,7 @@
       <label for="name" class="form-label">Name</label>
       <input type="text" class="form-control" id="name" [(ngModel)]="environment.name" />
     </div>
-    @if (isEdit() && !isDomain()){
+    @if (!isDomain()){
     <div class="mb-3">
       <label for="nameAlias" class="form-label">Alias</label>
       <input type="text" class="form-control" id="nameAlias" [(ngModel)]="environment.nameAlias" />
