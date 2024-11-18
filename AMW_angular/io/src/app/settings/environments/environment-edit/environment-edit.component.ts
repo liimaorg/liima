@@ -46,7 +46,17 @@ export class EnvironmentEditComponent {
   }
 
   save() {
-    this.saveEnvironment.emit(this.environment);
-    this.activeModal.close();
+    let forms = document.querySelectorAll('.needs-validation');
+    if (this.isValidForm()) {
+      this.saveEnvironment.emit(this.environment);
+      this.activeModal.close();
+    } else {
+      console.log(forms);
+      forms[0].classList.add('was-validated');
+    }
+  }
+
+  isValidForm() {
+    return this.environment.name.length !== 0;
   }
 }
