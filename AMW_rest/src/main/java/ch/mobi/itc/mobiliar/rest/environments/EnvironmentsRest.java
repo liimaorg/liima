@@ -7,6 +7,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -60,7 +61,8 @@ public class EnvironmentsRest {
     @POST
     @Path("/contexts")
     @ApiOperation(value = "Add new context")
-    public Response addContext(@ApiParam() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException {
+    public Response addContext(@ApiParam() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException, ValidationException {
+        if(request.getName() == null || request.getName().isEmpty()) throw new ValidationException("Context name must not be null");
         environmentsScreenDomainService.createContextByName(request.getName(), request.getNameAlias(), request.getParentId());
         return Response.status(Response.Status.OK).build();
     }
