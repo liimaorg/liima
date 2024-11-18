@@ -14,6 +14,7 @@ export const settingsRoutes = [
     component: SettingsComponent,
     title: 'Settings',
     children: [
+      { path: '', component: EnvironmentsPageComponent },
       { path: 'releases', component: ReleasesComponent },
       { title: 'Settings - Tags', path: 'tags', component: TagsComponent },
       {
