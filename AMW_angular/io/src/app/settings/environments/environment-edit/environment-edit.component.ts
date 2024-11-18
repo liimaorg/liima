@@ -31,12 +31,14 @@ export class EnvironmentEditComponent {
 
   getTitle(): string {
     if (!this.environment) return;
-    return this.environment.id ? `Edit ${this.getContextType()}` : `Add ${this.getContextType()}`;
+    return this.environment.id
+      ? `Edit ${this.isDomain() ? 'domain' : 'environment'}`
+      : `Add ${this.isDomain() ? 'domain' : 'environment'}`;
   }
 
-  getContextType(): string {
+  isDomain(): boolean {
     if (!this.environment) return;
-    return this.environment.parentName === this.globalName ? 'domain' : 'environment';
+    return this.environment.parentName === this.globalName;
   }
 
   isEdit(): boolean {
