@@ -2,7 +2,6 @@
   <h1>Environments</h1>
   @if (permissions().canAdd) {
     <app-button [variant]="'primary'"
-                [size]="'sm'"
                 [additionalClasses]="'mt-3 mb-4'"
                 (click)="addDomain()">
       <app-icon icon="plus-circle"></app-icon>
@@ -11,14 +10,13 @@
     >
   }
   @for (domain of environmentTree(); track domain.id) {
-    <div class="row w-75">
+    <div class="row">
       <div class="col">
         <h3>{{ domain.name }}</h3>
       </div>
       <div class="col">
         @if (permissions().canDelete) {
           <app-button [variant]="'danger'"
-                      [size]="'sm'"
                       [isOutlined]="true"
                       [additionalClasses]="'float-end'"
                       (click)="deleteContext(domain)">
@@ -28,7 +26,6 @@
         }
         @if (permissions().canEdit) {
           <app-button [variant]="'primary'"
-                      [size]="'sm'"
                       [isOutlined]="true"
                       [additionalClasses]="'float-end'"
                       (click)="editContext(domain)">
@@ -38,7 +35,7 @@
         }
       </div>
       @if (domain.children.length > 0) {
-        <table class="table table-sm table-group-divider mb-3">
+        <table class="table table-group-divider mb-3">
           <thead>
           <tr>
             <th scope="col">Environment name</th>
@@ -54,14 +51,12 @@
               <td class="text-end mb-5">
                 @if (permissions().canEdit) {
                   <app-button [variant]="'link'"
-                              [size]="'sm'"
                               (click)="editContext(env)">
                     <app-icon icon="pencil"></app-icon>
                   </app-button>
                 }
                 @if (permissions().canDelete) {
                   <app-button [variant]="'link'"
-                              [size]="'sm'"
                               [additionalClasses]="'link-danger'"
                               (click)="deleteContext(env)">
                     <app-icon icon="trash"></app-icon>
@@ -75,7 +70,6 @@
         @if (permissions().canAdd) {
           <app-button style="padding: 0;"
                       [variant]="'primary'"
-                      [size]="'sm'"
                       [additionalClasses]="'mb-5'"
                       (click)="addEnvironment(domain)">
             <app-icon icon="plus-circle"></app-icon>
@@ -88,7 +82,6 @@
           <p class="p-2 mb-3">No environments added yet.</p>
           @if (permissions().canAdd) {
             <app-button [variant]="'primary'"
-                        [size]="'sm'"
                         [additionalClasses]="'mb-5'"
                         (click)="addEnvironment(domain)">
               <app-icon icon="plus-circle"></app-icon>
