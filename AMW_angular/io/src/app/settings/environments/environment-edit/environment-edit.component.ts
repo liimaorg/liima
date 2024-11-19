@@ -32,7 +32,7 @@ export class EnvironmentEditComponent {
   getTitle(): string {
     if (!this.environment) return;
     return this.environment.id
-      ? `Edit ${this.isDomain() ? 'domain' : 'environment'}`
+      ? `Edit ${this.isDomain() ? 'domain' : 'environment'} ${this.environment.name}`
       : `Add ${this.isDomain() ? 'domain' : 'environment'}`;
   }
 
