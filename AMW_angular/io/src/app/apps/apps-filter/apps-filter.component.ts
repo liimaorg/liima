@@ -1,30 +1,33 @@
-import { ChangeDetectionStrategy, Component, computed, input, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Release } from '../../settings/releases/release';
 import { FormsModule } from '@angular/forms';
-import { Output, EventEmitter } from '@angular/core';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-apps-filter',
   standalone: true,
-  imports: [FormsModule, NgSelectModule, ButtonComponent, IconComponent],
+  imports: [FormsModule, NgSelectModule, ButtonComponent],
   templateUrl: './apps-filter.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsFilterComponent {
-  @Input() releases: Release[];
+  releases = input.required<Release[]>();
+  upcoming = input.required<number>();
 
-  upcoming = input<number>();
-  selected = signal<number>(this.upcoming());
+  selection = computed(() => {
+    return {
+      releases: this.releases(),
+      selected: signal(this.upcoming()),
+    };
+  });
 
-  @Output() filterEvent = new EventEmitter<{ filter: string; releaseId: number }>();
+  appName = signal<string>('');
 
-  appName: string;
+  filterEvent = output<{ filter: string; releaseId: number }>();
 
   search() {
-    this.filterEvent.emit({ filter: this.appName, releaseId: this.selected() });
+    this.filterEvent.emit({ filter: this.appName(), releaseId: this.selection().selected() });
   }
 }

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppsFilterComponent } from './apps-filter.component';
+import { InputSignal, signal } from '@angular/core';
+import { Release } from '../../settings/releases/release';
 
 describe('AppsFilterComponent', () => {
   let component: AppsFilterComponent;
@@ -13,6 +15,8 @@ describe('AppsFilterComponent', () => {
 
     fixture = TestBed.createComponent(AppsFilterComponent);
     component = fixture.componentInstance;
+    component.releases = signal<Release[]>([]) as unknown as InputSignal<Release[]>;
+    component.upcoming = signal<number>(0) as unknown as InputSignal<number>;
     fixture.detectChanges();
   });
 
