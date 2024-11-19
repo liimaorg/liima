@@ -1,60 +1,96 @@
-<div class="container w-50">
+<div class="container">
   <h1>Environments</h1>
   @if (permissions().canAdd) {
-  <app-button [variant]="'primary'" (click)="addDomain()">
-    <app-icon icon="plus-circle"></app-icon> Add Domain</app-button
-  >
-  } @for(domain of environmentTree(); track domain.id){
-  <div class="card my-3">
-    <div class="card-header">
-      <div class="row">
-        <div class="col">
-          <strong>{{ domain.name }}</strong>
-        </div>
-        <div class="col">
-          @if (permissions().canEdit){
-          <app-button [variant]="'primary'" [size]="'sm'" (click)="editContext(domain)">
-            <app-icon icon="pencil"></app-icon
-          ></app-button>
-          }
-        </div>
-        <div class="col">
-          @if(permissions().canDelete){
-          <app-button [variant]="'danger'" [size]="'sm'" (click)="deleteContext(domain)">
-            <app-icon icon="trash"></app-icon>
-          </app-button>
-          }
-        </div>
+    <app-button [variant]="'primary'"
+                [additionalClasses]="'mt-3 mb-4'"
+                (click)="addDomain()">
+      <app-icon icon="plus-circle"></app-icon>
+      Add Domain
+    </app-button
+    >
+  }
+  @for (domain of environmentTree(); track domain.id) {
+    <div class="row">
+      <div class="col">
+        <h3>{{ domain.name }}</h3>
       </div>
-    </div>
-    <div class="card-body">
-      @if(domain.children.length > 0) { @for (env of domain.children; track env.id) {
-      <div class="row">
-        <div class="col">{{ env.name }}</div>
-        <div class="col">
-          @if (permissions().canEdit){
-          <app-button [variant]="'primary'" [size]="'sm'" (click)="editContext(env)">
+      <div class="col">
+        @if (permissions().canDelete) {
+          <app-button [variant]="'danger'"
+                      [isOutlined]="true"
+                      [additionalClasses]="'float-end'"
+                      (click)="deleteContext(domain)">
+            <app-icon icon="trash"></app-icon>
+            Delete domain
+          </app-button>
+        }
+        @if (permissions().canEdit) {
+          <app-button [variant]="'primary'"
+                      [isOutlined]="true"
+                      [additionalClasses]="'float-end'"
+                      (click)="editContext(domain)">
             <app-icon icon="pencil"></app-icon>
+            Edit domain
           </app-button>
-          }
-        </div>
-        <div class="col">
-          @if(permissions().canDelete){
-          <app-button [variant]="'danger'" [size]="'sm'" [additionalClasses]="'mb-2'" (click)="deleteContext(env)">
-            <app-icon icon="trash"></app-icon>
-          </app-button>
-          }
-        </div>
-        <hr />
+        }
       </div>
-      } } @else{
-      <p>No environments added yet.</p>
-      } @if (permissions().canAdd){
-      <app-button [variant]="'primary'" [additionalClasses]="'mb-2'" (click)="addEnvironment(domain)">
-        <app-icon icon="plus-circle"></app-icon> Add Environment</app-button
-      >
+      @if (domain.children.length > 0) {
+        <table class="table table-group-divider mb-3">
+          <thead>
+          <tr>
+            <th scope="col">Environment name</th>
+            <th scope="col">Environment alias</th>
+            <th class="text-end" scope="col">Actions</th>
+          </tr>
+          </thead>
+          @for (env of domain.children; track env.id) {
+            <tbody>
+            <tr>
+              <th>{{ env.name }}</th>
+              <td>{{ env.nameAlias ? env.nameAlias : '-' }}</td>
+              <td class="text-end mb-5">
+                @if (permissions().canEdit) {
+                  <app-button [variant]="'link'"
+                              (click)="editContext(env)">
+                    <app-icon icon="pencil"></app-icon>
+                  </app-button>
+                }
+                @if (permissions().canDelete) {
+                  <app-button [variant]="'link'"
+                              [additionalClasses]="'link-danger'"
+                              (click)="deleteContext(env)">
+                    <app-icon icon="trash"></app-icon>
+                  </app-button>
+                }
+              </td>
+            </tr>
+            </tbody>
+          }
+        </table>
+        @if (permissions().canAdd) {
+          <app-button style="padding: 0;"
+                      [variant]="'primary'"
+                      [additionalClasses]="'mb-5'"
+                      (click)="addEnvironment(domain)">
+            <app-icon icon="plus-circle"></app-icon>
+            Add Environment
+          </app-button
+          >
+        }
+      } @else {
+        <div class="table-group-divider p-0">
+          <p class="p-2 mb-3">No environments added yet.</p>
+          @if (permissions().canAdd) {
+            <app-button [variant]="'primary'"
+                        [additionalClasses]="'mb-5'"
+                        (click)="addEnvironment(domain)">
+              <app-icon icon="plus-circle"></app-icon>
+              Add Environment
+            </app-button
+            >
+          }
+        </div>
       }
     </div>
-  </div>
   }
 </div>
