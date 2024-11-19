@@ -1,18 +1,18 @@
 <div class="container">
   <app-modal-header [title]="getTitle() + ' ' + environment.name" (cancel)="cancel()"></app-modal-header>
   <div class="modal-body">
-    <form class="needs-validation mb-3">
+    <div class="needs-validation mb-3">
       <label for="name" class="form-label">Name</label>
       <input type="text" class="form-control" id="name" [(ngModel)]="environment.name" required>
       <div class="invalid-feedback">
         Please enter a name
       </div>
-    </form>
+    </div>
     @if (!isDomain()) {
-      <form class="mb-3">
+      <div class="mb-3">
         <label for="nameAlias" class="form-label">Alias</label>
         <input type="text" class="form-control" id="nameAlias" [(ngModel)]="environment.nameAlias"/>
-      </form>
+      </div>
     }
   </div>
   <div class="modal-footer">

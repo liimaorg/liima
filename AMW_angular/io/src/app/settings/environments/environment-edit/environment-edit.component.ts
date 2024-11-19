@@ -46,12 +46,11 @@ export class EnvironmentEditComponent {
   }
 
   save() {
-    let forms = document.querySelectorAll('.needs-validation');
+    let forms: NodeListOf<Element> = document.querySelectorAll('.needs-validation');
     if (this.isValidForm()) {
       this.saveEnvironment.emit(this.environment);
       this.activeModal.close();
     } else {
-      console.log(forms);
       forms[0].classList.add('was-validated');
     }
   }
