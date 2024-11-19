@@ -62,7 +62,7 @@ public class EnvironmentsRest {
     @Path("/contexts")
     @ApiOperation(value = "Add new context")
     public Response addContext(@ApiParam() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException, ValidationException {
-        if(request.getName() == null || request.getName().isEmpty()) throw new ValidationException("Context name must not be null");
+        if(request.getName() == null || request.getName().trim().isEmpty()) throw new ValidationException("Context name must not be null or blank");
         environmentsScreenDomainService.createContextByName(request.getName(), request.getNameAlias(), request.getParentId());
         return Response.status(Response.Status.OK).build();
     }

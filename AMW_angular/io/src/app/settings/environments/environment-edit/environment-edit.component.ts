@@ -56,6 +56,6 @@ export class EnvironmentEditComponent {
   }
 
   isValidForm() {
-    return this.environment.name.length !== 0;
+    return this.environment.name.trim().length !== 0;
   }
 }
