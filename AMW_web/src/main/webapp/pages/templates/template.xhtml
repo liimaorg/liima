@@ -153,8 +153,12 @@
                 </li>
                 </ui:fragment>
 
-                <li class="#{screen eq 'newSettings' ? ' current' : ''}"><h:link
-                        outcome="settings" onclick="showLoader();">Settings</h:link></li>
+                <li class="#{screen eq 'newSettings' ? ' current' : ''}">
+                    <h:outputLink value="/AMW_angular/#/settings"
+                                  onclick="showLoader();confirmLeave(event);">
+                        <h:outputText value="Settings" />
+                    </h:outputLink>
+                </li>
                 <li>
                 <h:commandLink action="#{securityDataProvider.logout()}"
                     value="Logout #{securityDataProvider.userName}" /></li>
