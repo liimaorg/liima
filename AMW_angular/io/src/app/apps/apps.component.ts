@@ -65,9 +65,6 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   isLoading = false;
 
-  // currentPage: number;
-  // lastPage: number;
-
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
