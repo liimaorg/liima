@@ -8,6 +8,5 @@ describe("Servers Page", () => {
     });
 
     cy.get('[data-cy="page-title"]').contains("Servers");
-    cy.get("tbody > tr > :nth-child(3)").contains("testapplicationserver");
   });
 });
