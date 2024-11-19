@@ -18,7 +18,7 @@ export class AppsFilterComponent {
 
   selection = computed(() => {
     return {
-      options: this.releases(),
+      releases: this.releases(),
       selected: signal(this.upcoming()),
     };
   });

@@ -17,7 +17,7 @@
         [ngModel]="selection().selected()"
         (change)="selection().selected.set($event)"
       >
-        @for (release of selection().options; track release.id) {
+        @for (release of selection().releases; track release.id) {
         <ng-option [value]="release.id">{{ release.name }}</ng-option>
         }
       </ng-select>
