@@ -32,7 +32,7 @@ export class EnvironmentEditComponent {
   getTitle(): string {
     if (!this.environment) return;
     return this.environment.id
-      ? `Edit ${this.isDomain() ? 'domain' : 'environment'}`
+      ? `Edit ${this.isDomain() ? 'domain' : 'environment'} ${this.environment.name}`
       : `Add ${this.isDomain() ? 'domain' : 'environment'}`;
   }
 
@@ -41,17 +41,21 @@ export class EnvironmentEditComponent {
     return this.environment.parentName === this.globalName;
   }
 
-  isEdit(): boolean {
-    if (!this.environment) return;
-    return !!this.environment.id;
-  }
-
   cancel() {
     this.activeModal.close();
   }
 
   save() {
-    this.saveEnvironment.emit(this.environment);
-    this.activeModal.close();
+    let forms: NodeListOf<Element> = document.querySelectorAll('.needs-validation');
+    if (this.isValidForm()) {
+      this.saveEnvironment.emit(this.environment);
+      this.activeModal.close();
+    } else {
+      forms[0].classList.add('was-validated');
+    }
+  }
+
+  isValidForm() {
+    return this.environment.name.trim().length !== 0;
   }
 }

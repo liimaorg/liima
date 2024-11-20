@@ -1,21 +1,27 @@
 <div class="container">
-  <app-modal-header [title]="getTitle() + ' ' + environment.name" (cancel)="cancel()"></app-modal-header>
+  <app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
   <div class="modal-body">
-    <div class="mb-3">
+    <div class="needs-validation mb-3">
       <label for="name" class="form-label">Name</label>
-      <input type="text" class="form-control" id="name" [(ngModel)]="environment.name" />
+      <input type="text" class="form-control" id="name" [(ngModel)]="environment.name" required pattern=".*\S+.*">
+      <div class="invalid-feedback">
+        Please enter a name
+      </div>
     </div>
-    @if (isEdit() && !isDomain()){
-    <div class="mb-3">
-      <label for="nameAlias" class="form-label">Alias</label>
-      <input type="text" class="form-control" id="nameAlias" [(ngModel)]="environment.nameAlias" />
-    </div>
+    @if (!isDomain()) {
+      <div class="mb-3">
+        <label for="nameAlias" class="form-label">Alias</label>
+        <input type="text" class="form-control" id="nameAlias" [(ngModel)]="environment.nameAlias"/>
+      </div>
     }
   </div>
   <div class="modal-footer">
     <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
-    @if(permissions().canSave){
-    <app-button [variant]="'primary'" (click)="save()">Save</app-button>
+    @if (permissions().canSave) {
+      <app-button [variant]="'primary'"
+                  [disabled]="!isValidForm()"
+                  (click)="save()">Save
+      </app-button>
     }
   </div>
 </div>
