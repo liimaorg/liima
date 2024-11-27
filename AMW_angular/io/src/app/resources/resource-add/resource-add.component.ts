@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { NgbActiveModal, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
@@ -20,6 +20,7 @@ export class ResourceAddComponent {
   @Input() releases: Release[];
   @Input() selectedReleaseName: Release;
   resourceName: string;
+  @Output() saveResource: EventEmitter<any> = new EventEmitter<any>();
 
   getTitle() {
     if (!this.resourceType) return;
@@ -27,6 +28,12 @@ export class ResourceAddComponent {
   }
 
   save() {
+    const resourceToAdd = {
+      name: this.resourceName,
+      type: this.resourceType.name,
+      releaseName: this.selectedReleaseName,
+    };
+    this.saveResource.emit(resourceToAdd);
     this.activeModal.close();
   }
 

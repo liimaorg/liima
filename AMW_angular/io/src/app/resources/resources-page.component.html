@@ -34,7 +34,8 @@
       <div class="col-10">
         <app-resources-list [resourceType]="selectedResourceTypeOrDefault()"
                             [resourceGroupList]="resourceGroupListForType()"
-                            [releases]="releases()"></app-resources-list>
+                            [releases]="releases()"
+                            (resourceToAdd)="addResource($event)"></app-resources-list>
       </div>
     </div>
   </div>
