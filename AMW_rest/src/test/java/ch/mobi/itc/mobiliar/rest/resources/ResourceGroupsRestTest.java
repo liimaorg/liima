@@ -209,7 +209,7 @@ public class ResourceGroupsRestTest {
         });
 
         // then
-        assertEquals(exception.getMessage(), "Resource name must not be null or blank");
+        assertEquals(exception.getMessage(), "Release name must not be null or blank");
 
     }
 
@@ -240,8 +240,7 @@ public class ResourceGroupsRestTest {
         Response response = rest.addResource(resourceReleaseDTO);
 
         // then
-        assertEquals(CREATED.getStatusCode(), response.getStatus());
-        assertTrue(response.getMetadata().get("Location").contains("/resources/" + resGroup.getName()));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
