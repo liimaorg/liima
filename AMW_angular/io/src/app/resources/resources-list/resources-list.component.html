@@ -1,6 +1,11 @@
 <div class="container">
   @if (resourceType()){
     <h1>{{resourceType().name}}</h1>
+    <div class="row my-3">
+      <app-button [variant]="'primary'" (click)="addResource()">
+        <app-icon icon="plus-circle"></app-icon> Add Resource</app-button
+      >
+    </div>
     <table class="table table-sm table-striped">
       <thead>
       <tr>

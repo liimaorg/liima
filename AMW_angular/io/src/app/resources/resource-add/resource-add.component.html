@@ -1,0 +1,17 @@
+<div class="container">
+    <app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
+    <div class="modal-body">
+        <div class="needs-validation mb-3">
+            <label for="resourceName" class="form-label">Resource name</label>
+            <input type="text" class="form-control" id="resourceName"
+                   [(ngModel)]="resourceName"/>
+            <div class="invalid-feedback">
+                Please enter a name
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+        <app-button [variant]="'primary'" (click)="save()">Save</app-button>
+    </div>
+</div>
