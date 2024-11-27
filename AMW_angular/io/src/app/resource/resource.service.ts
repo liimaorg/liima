@@ -19,13 +19,13 @@ interface Named {
 export class ResourceService extends BaseService {
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
 
-  private resourceGroupListForType: Observable<Resource[]> = this.resourceType$.pipe(
+  private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
     switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
     startWith(null),
     shareReplay(1),
   );
 
-  resourceGroupListForTypeSignal = toSignal(this.resourceGroupListForType, { initialValue: [] as Resource[] });
+  resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
 
   constructor(private http: HttpClient) {
     super();
@@ -64,6 +64,7 @@ export class ResourceService extends BaseService {
         catchError(this.handleError),
       );
   }
+
   get(resourceGroupName: string): Observable<Resource> {
     return this.http
       .get(`${this.getBaseUrl()}/resources/${resourceGroupName}`, {

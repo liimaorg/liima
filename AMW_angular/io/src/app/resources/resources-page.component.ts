@@ -22,7 +22,7 @@ export class ResourcesPageComponent {
 
   predefinedResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.predefinedResourceTypes;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
-  resourceGroupListForTypeSignal: Signal<Resource[]> = this.resourceService.resourceGroupListForTypeSignal;
+  resourceGroupListForType: Signal<Resource[]> = this.resourceService.resourceGroupListForType;
   isLoading = signal(false);
   expandedResourceTypeId: number | null = null;
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
