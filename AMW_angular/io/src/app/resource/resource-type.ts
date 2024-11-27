@@ -3,5 +3,5 @@ export interface ResourceType {
   name: string;
   hasChildren: boolean;
   children: ResourceType[];
-  isApplicationResourceType: boolean;
+  resourceTypeIsApplication: boolean;
 }

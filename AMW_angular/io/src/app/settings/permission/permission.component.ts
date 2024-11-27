@@ -64,7 +64,7 @@ export class PermissionComponent implements OnInit {
   };
   resourceGroups: Resource[] = [];
   resourceTypes: ResourceType[] = [
-    { id: null, name: null, hasChildren: false, children: [], isApplicationResourceType: false },
+    { id: null, name: null, hasChildren: false, children: [], resourceTypeIsApplication: false },
   ];
 
   defaultNavItem: string = 'Roles';

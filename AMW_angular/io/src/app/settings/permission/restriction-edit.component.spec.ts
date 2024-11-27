@@ -115,14 +115,14 @@ describe('RestrictionEditComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 2,
           name: 'APPSERVER',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -143,14 +143,14 @@ describe('RestrictionEditComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 2,
           name: 'APPSERVER',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -457,21 +457,21 @@ describe('RestrictionEditComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 2,
           name: 'AS',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 3,
           name: 'FOO',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -519,21 +519,21 @@ describe('RestrictionEditComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 2,
           name: 'AS',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 3,
           name: 'FOO',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -580,21 +580,21 @@ describe('RestrictionEditComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 2,
           name: 'AS',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
         {
           id: 3,
           name: 'FOO',
           hasChildren: false,
           children: [],
-          isApplicationResourceType: false,
+          resourceTypeIsApplication: false,
         },
       ];
       restrictionComponent.restriction = {
