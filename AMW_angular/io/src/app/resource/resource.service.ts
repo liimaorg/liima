@@ -46,6 +46,14 @@ export class ResourceService extends BaseService {
       );
   }
 
+  createResourceForResourceType(resource: any) {
+    return this.http
+      .post<Resource>(`${this.getBaseUrl()}/resources`, resource, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   getResourceName(resourceId: number): Observable<Named> {
     return this.http
       .get<Named>(`${this.getBaseUrl()}/resources/name/${resourceId}`, {
