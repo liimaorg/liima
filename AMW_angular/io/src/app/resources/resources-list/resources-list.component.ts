@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Resource } from '../../resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { ButtonComponent } from '../../shared/button/button.component';
