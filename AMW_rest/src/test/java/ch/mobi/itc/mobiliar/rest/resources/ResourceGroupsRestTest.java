@@ -27,8 +27,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -205,15 +204,17 @@ public class ResourceGroupsRestTest {
         resourceReleaseDTO.setName("Test");
 
         // when
-        Response response = rest.addResource(resourceReleaseDTO);
+        Throwable exception = assertThrows(ValidationException.class, () -> {
+            rest.addResource(resourceReleaseDTO);
+        });
 
         // then
-        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals(exception.getMessage(), "Resource name must not be null or blank");
 
     }
 
     @Test
-    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceCreation() throws ResourceTypeNotFoundException, ResourceNotFoundException, ElementAlreadyExistsException {
+    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceCreation() throws ElementAlreadyExistsException, ValidationException, NotFoundException {
         // given
         ResourceTypeEntity resType = new ResourceTypeEntity();
         resType.setName("APP");
