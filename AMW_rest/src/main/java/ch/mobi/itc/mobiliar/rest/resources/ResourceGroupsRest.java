@@ -138,8 +138,6 @@ public class ResourceGroupsRest {
             resourceGroups = resourceGroupLocator.getResourceGroups();
         }
 
-
-
         return resourceGroups.stream().map(resourceGroupEntity -> {
             List<ReleaseEntity> releases = resourceGroupEntity.getResources().stream().map(ResourceEntity::getRelease).collect(Collectors.toList());
             SortedSet<ReleaseEntity> sortedReleases = releases.stream()
