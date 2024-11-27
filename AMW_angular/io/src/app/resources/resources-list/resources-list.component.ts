@@ -22,6 +22,7 @@ export class ResourcesListComponent {
   resourceGroupList = input.required<Resource[]>();
   releases = input.required<Release[]>();
   resourceToAdd = output<any>();
+
   addResource() {
     const modalRef: NgbModalRef = this.modalService.open(ResourceAddComponent);
     modalRef.componentInstance.resourceType = this.resourceType();

@@ -28,13 +28,18 @@ export class ResourceAddComponent {
   }
 
   save() {
-    const resourceToAdd = {
-      name: this.resourceName,
-      type: this.resourceType.name,
-      releaseName: this.selectedReleaseName,
-    };
-    this.saveResource.emit(resourceToAdd);
-    this.activeModal.close();
+    let forms: NodeListOf<Element> = document.querySelectorAll('.needs-validation');
+    if (this.isValidForm()) {
+      const resourceToAdd = {
+        name: this.resourceName,
+        type: this.resourceType.name,
+        releaseName: this.selectedReleaseName,
+      };
+      this.saveResource.emit(resourceToAdd);
+      this.activeModal.close();
+    } else {
+      forms[0].classList.add('was-validated');
+    }
   }
 
   cancel() {
@@ -43,5 +48,9 @@ export class ResourceAddComponent {
 
   setSelectedRelease($event: any) {
     this.selectedReleaseName = $event;
+  }
+
+  isValidForm() {
+    return this.resourceName ? this.resourceName.trim().length !== 0 : false;
   }
 }
