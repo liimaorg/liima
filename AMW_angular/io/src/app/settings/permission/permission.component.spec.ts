@@ -84,7 +84,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       } as Environment,
     ]);
     expect(component.resourceGroups).toEqual([]);
-    expect(component.resourceTypes).toEqual([{ id: null, name: null, hasChildren: false, children: [] }]);
+    expect(component.resourceTypes).toEqual([
+      { id: null, name: null, hasChildren: false, children: [], isApplicationResourceType: false },
+    ]);
     expect(component.restrictionType).toEqual('role');
   });
 
