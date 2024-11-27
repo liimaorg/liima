@@ -32,8 +32,9 @@
         }
       </div>
       <div class="col-10">
-        <app-resources-list [resourceType]="this.selectedResourceTypeOrDefault()"
-                            [resourceGroupList]="resourceGroupListForType()"></app-resources-list>
+        <app-resources-list [resourceType]="selectedResourceTypeOrDefault()"
+                            [resourceGroupList]="resourceGroupListForType()"
+                            [releases]="releases()"></app-resources-list>
       </div>
     </div>
   </div>

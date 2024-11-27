@@ -9,6 +9,17 @@
                 Please enter a name
             </div>
         </div>
+        <div class="mb-3">
+            <label class="form-label">Release</label>
+            <ng-select id="selectRelease"
+                       [clearable]="false"
+                       [(ngModel)]="selectedReleaseName"
+                       (change)="setSelectedRelease($event)">
+                @for (release of releases; track release.id) {
+                    <ng-option [value]="release.name">{{ release.name }}</ng-option>
+                }
+            </ng-select>
+        </div>
     </div>
     <div class="modal-footer">
         <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>

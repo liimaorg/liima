@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { ResourceType } from '../../resource/resource-type';
+import { Release } from '../../settings/releases/release';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
@@ -16,6 +17,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 export class ResourceAddComponent {
   activeModal = inject(NgbActiveModal);
   @Input() resourceType: ResourceType;
+  @Input() releases: Release[];
+  @Input() selectedReleaseName: Release;
   resourceName: string;
 
   getTitle() {
@@ -29,5 +32,9 @@ export class ResourceAddComponent {
 
   cancel() {
     this.activeModal.close();
+  }
+
+  setSelectedRelease($event: any) {
+    this.selectedReleaseName = $event;
   }
 }
