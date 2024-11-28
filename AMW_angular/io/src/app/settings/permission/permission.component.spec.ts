@@ -16,6 +16,7 @@ import { Restriction } from './restriction';
 import { Tag } from './tag';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceService } from '../../resource/resource.service';
+import { ResourceTypesService } from '../../resources/resource-types.service';
 import { Environment } from 'src/app/deployment/environment';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -27,6 +28,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
   let permissionService: PermissionService;
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
+  let resourceTypesService: ResourceTypesService;
 
   const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
@@ -50,6 +52,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         EnvironmentService,
         PermissionService,
         ResourceService,
+        ResourceTypesService,
         { provide: ActivatedRoute, useValue: mockRoute },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -63,6 +66,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     permissionService = TestBed.inject(PermissionService);
     environmentService = TestBed.inject(EnvironmentService);
     resourceService = TestBed.inject(ResourceService);
+    resourceTypesService = TestBed.inject(ResourceTypesService);
   });
 
   it('should have default data', () => {
@@ -80,7 +84,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       } as Environment,
     ]);
     expect(component.resourceGroups).toEqual([]);
-    expect(component.resourceTypes).toEqual([{ id: null, name: null }]);
+    expect(component.resourceTypes).toEqual([{ id: null, name: null, hasChildren: false, children: [] }]);
     expect(component.restrictionType).toEqual('role');
   });
 
@@ -98,7 +102,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
     spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
-    spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
+    spyOn(resourceTypesService, 'getAllResourceTypes').and.callThrough();
     // when
     component.ngOnInit();
     mockRoute.params.next({ restrictionType: 'role' });
@@ -109,7 +113,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     expect(permissionService.getAllPermissionEnumValues).toHaveBeenCalled();
     expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
     expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
-    expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
+    expect(resourceTypesService.getAllResourceTypes).toHaveBeenCalled();
     expect(component.permissions).toEqual(permissions);
     expect(component.restriction).toBeNull();
     expect(component.groupedEnvironments['All']).toContain({
@@ -402,6 +406,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
   let permissionService: PermissionService;
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
+  let resourceTypesService: ResourceTypesService;
 
   const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
@@ -424,6 +429,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
         EnvironmentService,
         PermissionService,
         ResourceService,
+        ResourceTypesService,
         { provide: ActivatedRoute, useValue: mockRoute },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -436,6 +442,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     permissionService = TestBed.inject(PermissionService);
     environmentService = TestBed.inject(EnvironmentService);
     resourceService = TestBed.inject(ResourceService);
+    resourceTypesService = TestBed.inject(ResourceTypesService);
   });
 
   it('should invoke some services on ngOnInt', () => {
@@ -452,7 +459,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
     spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
-    spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
+    spyOn(resourceTypesService, 'getAllResourceTypes').and.callThrough();
     spyOn(permissionService, 'getAllUserRestrictionNames').and.callThrough();
     // when
     component.ngOnInit();
@@ -463,7 +470,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     expect(permissionService.getAllPermissionEnumValues).toHaveBeenCalled();
     expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
     expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
-    expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
+    expect(resourceTypesService.getAllResourceTypes).toHaveBeenCalled();
     expect(permissionService.getAllUserRestrictionNames).toHaveBeenCalled();
     expect(component.permissions).toEqual(permissions);
     expect(component.restriction).toBeNull();
@@ -502,6 +509,7 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
   let permissionService: PermissionService;
   let environmentService: EnvironmentService;
   let resourceService: ResourceService;
+  let resourceTypesService: ResourceTypesService;
 
   const mockRoute: any = { snapshot: {} };
   mockRoute.params = new Subject<any>();
@@ -524,6 +532,7 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
         EnvironmentService,
         PermissionService,
         ResourceService,
+        ResourceTypesService,
         { provide: ActivatedRoute, useValue: mockRoute },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -536,6 +545,7 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
     permissionService = TestBed.inject(PermissionService);
     environmentService = TestBed.inject(EnvironmentService);
     resourceService = TestBed.inject(ResourceService);
+    resourceTypesService = TestBed.inject(ResourceTypesService);
   });
   it('should invoke some services on ngOnInt', () => {
     // given
@@ -565,7 +575,7 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
     spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(of(restrictions));
     spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
     spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
-    spyOn(resourceService, 'getAllResourceTypes').and.callThrough();
+    spyOn(resourceTypesService, 'getAllResourceTypes').and.callThrough();
     // when
     component.ngOnInit();
     mockRoute.params.next({ actingUser: 'testUser' });
@@ -578,7 +588,7 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
     expect(component.userNames).not.toContain('testUser');
     expect(environmentService.getAllIncludingGroups).toHaveBeenCalled();
     expect(resourceService.getAllResourceGroups).toHaveBeenCalled();
-    expect(resourceService.getAllResourceTypes).toHaveBeenCalled();
+    expect(resourceTypesService.getAllResourceTypes).toHaveBeenCalled();
     expect(permissionService.getOwnUserAndRoleRestrictions).toHaveBeenCalled();
     expect(component.assignableRestrictions).toEqual(restrictions);
     expect(component.assignablePermissions).toEqual(permissions);

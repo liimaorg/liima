@@ -66,7 +66,7 @@ Comparable<ResourceTypeEntity> {
 	ResourceTypeEntity parentResourceType;
 
 	@Setter
-	@OneToMany(mappedBy="parentResourceType", cascade=ALL)
+	@OneToMany(mappedBy = "parentResourceType", cascade = ALL, fetch = FetchType.EAGER)
 	Set<ResourceTypeEntity> childrenResourceTypes;
 
 	public Set<ResourceTypeEntity> getChildrenResourceTypes() {

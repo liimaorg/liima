@@ -21,11 +21,13 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
 @Stateless
@@ -47,4 +49,17 @@ public class ResourceTypeLocator {
         return resourceTypeDomainService.getAllResourceTypesWithoutChildren();
     }
 
+    public List<ResourceTypeEntity> getPredefinedResourceTypes() {
+        return resourceTypeDomainService.getResourceTypes()
+                .stream()
+                .filter(e -> e.getParentResourceType() == null && ResourceType.createByResourceType(e, null).isDefaultResourceType())
+                .collect(Collectors.toList());
+    }
+
+    public List<ResourceTypeEntity> getRootResourceTypes() {
+        return resourceTypeDomainService.getResourceTypes()
+                .stream()
+                .filter(e -> e.getParentResourceType() == null && !ResourceType.createByResourceType(e, null).isDefaultResourceType())
+                .collect(Collectors.toList());
+    }
 }

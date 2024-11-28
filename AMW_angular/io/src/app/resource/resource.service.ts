@@ -3,7 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Resource } from './resource';
-import { ResourceType } from './resource-type';
 import { Release } from './release';
 import { Relation } from './relation';
 import { Property } from './property';
@@ -58,17 +57,6 @@ export class ResourceService extends BaseService {
   getAllResourceGroups(): Observable<Resource[]> {
     return this.http
       .get<Resource[]>(`${this.getBaseUrl()}/resources/resourceGroups`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(
-        map((resources) => resources.map(toResource)),
-        catchError(this.handleError),
-      );
-  }
-
-  getAllResourceTypes(): Observable<ResourceType[]> {
-    return this.http
-      .get<ResourceType[]>(`${this.getBaseUrl()}/resources/resourceTypes`, {
         headers: this.getHeaders(),
       })
       .pipe(

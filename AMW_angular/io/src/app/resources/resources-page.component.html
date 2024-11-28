@@ -1,0 +1,31 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title">Resources</div>
+  <div class="page-content">
+    @if (permissions().canViewResourceTypes) {
+    <nav class="nav flex-column">
+      @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
+      <a>{{ resourceType.name }}</a>
+      }
+    </nav>
+    <nav class="nav flex-column">
+      @for (resourceType of rootResourceTypes(); track resourceType.name) {
+      <a (click)="toggleChildren(resourceType)">
+        {{ resourceType.name }}
+        @if (resourceType.hasChildren) {
+        <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
+        }
+      </a>
+      @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
+      <ul class="subnav">
+        @for (child of resourceType.children; track child.name) {
+        <div class="grid-item">
+          <a>{{ child.name }}</a>
+        </div>
+        }
+      </ul>
+      } }
+    </nav>
+    }
+  </div>
+</app-page>

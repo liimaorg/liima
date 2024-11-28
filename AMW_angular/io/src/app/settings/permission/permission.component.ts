@@ -28,6 +28,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { ResourceTypesService } from '../../resources/resource-types.service';
 
 @Component({
   selector: 'app-permission',
@@ -62,7 +63,7 @@ export class PermissionComponent implements OnInit {
     Global: [],
   };
   resourceGroups: Resource[] = [];
-  resourceTypes: ResourceType[] = [{ id: null, name: null }];
+  resourceTypes: ResourceType[] = [{ id: null, name: null, hasChildren: false, children: [] }];
 
   defaultNavItem: string = 'Roles';
   // role | user
@@ -90,6 +91,7 @@ export class PermissionComponent implements OnInit {
     private permissionService: PermissionService,
     private environmentService: EnvironmentService,
     private resourceService: ResourceService,
+    private resourceTypesService: ResourceTypesService,
     private activatedRoute: ActivatedRoute,
     private location: Location,
   ) {
@@ -392,7 +394,7 @@ export class PermissionComponent implements OnInit {
 
   private getAllResourceTypes() {
     this.isLoading = true;
-    this.resourceService.getAllResourceTypes().subscribe({
+    this.resourceTypesService.getAllResourceTypes().subscribe({
       next: (r) => (this.resourceTypes = this.resourceTypes.concat(r)),
       error: (e) => (this.errorMessage = e),
       complete: () => (this.isLoading = false),

@@ -20,8 +20,8 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -31,8 +31,6 @@ import javax.ws.rs.Path;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -49,13 +47,28 @@ public class ResourceTypesRest {
 
     @Path("/resourceTypes")
     @GET
-    @ApiOperation(value = "Get all available ResourceTypes - used by Angular")
-    public List<ResourceTypeDTO> getAllResourceTypes() throws ValidationException {
-        List<ResourceTypeEntity> resourceTypes = resourceTypeLocator.getAllResourceTypes();
-        List<ResourceTypeDTO> resourceTypeDTOs = new ArrayList<>();
-        for (ResourceTypeEntity resourceType : resourceTypes) {
-            resourceTypeDTOs.add(new ResourceTypeDTO(resourceType));
-        }
-        return resourceTypeDTOs;
+    @ApiOperation(value = "Get all resource types")
+    public List<ResourceTypeDTO> getAllResourceTypes() {
+        return resourceTypeLocator.getAllResourceTypes().stream()
+                .map(ResourceTypeDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Path("/predefinedResourceTypes")
+    @GET
+    @ApiOperation(value = "Get predefined resource types")
+    public List<ResourceTypeDTO> getPredefinedResourceTypes() {
+        return resourceTypeLocator.getPredefinedResourceTypes().stream()
+                .map(ResourceTypeDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Path("/rootResourceTypes")
+    @GET
+    @ApiOperation(value = "Get root resource types")
+    public List<ResourceTypeDTO> getRootResourceTypes() {
+        return resourceTypeLocator.getRootResourceTypes().stream()
+                .map(ResourceTypeDTO::new)
+                .collect(Collectors.toList());
     }
 }
