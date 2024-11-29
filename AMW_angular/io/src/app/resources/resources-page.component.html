@@ -5,30 +5,67 @@
     <div class="row">
       <div class="col">
         @if (permissions().canViewResourceTypes) {
-          <nav class="nav flex-column">
+          <ul class="nav flex-column">
             @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
-              <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">{{ resourceType.name }}</a>
+              <li class="nav-item">
+                <a class="nav-link" style="display: inline-block"
+                   (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">{{ resourceType.name }}</a>
+                <app-button [variant]="'link'"
+                            [additionalClasses]="'float-end'">
+                  <app-icon icon="pencil"></app-icon>
+                </app-button>
+                <app-button [variant]="'link'"
+                            [additionalClasses]="'link-danger float-end'"
+                            (click)="deleteResourceType(resourceType)">
+                  <app-icon icon="trash"></app-icon>
+                </app-button>
+              </li>
             }
-          </nav>
-          <nav class="nav flex-column">
+          </ul>
+          <ul class="nav flex-column">
             @for (resourceType of rootResourceTypes(); track resourceType.name) {
-              <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
-                {{ resourceType.name }}
-                @if (resourceType.hasChildren) {
-                  <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
-                }
-              </a>
-              @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
-                <ul class="subnav">
-                  @for (child of resourceType.children; track child.name) {
-                    <div class="grid-item">
-                      <a (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
-                    </div>
+              <li class="nav-item">
+                <a class="nav-link" style="display: inline-block"
+                   (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
+                  {{ resourceType.name }}
+                  @if (resourceType.hasChildren) {
+                    @if (expandedResourceTypeId === resourceType.id) {
+                      <app-icon icon="dash"></app-icon>
+                    } @else {
+                      <app-icon icon="plus"></app-icon>
+                    }
                   }
-                </ul>
-              }
+                </a>
+                <app-button [variant]="'link'"
+                            [additionalClasses]="'float-end'">
+                  <app-icon icon="pencil"></app-icon>
+                </app-button>
+                <app-button [variant]="'link'"
+                            [additionalClasses]="'link-danger float-end'"
+                            (click)="deleteResourceType(resourceType)">
+                  <app-icon icon="trash"></app-icon>
+                </app-button>
+                @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
+                  <ul class="nav flex-column ps-4">
+                    @for (child of resourceType.children; track child.name) {
+                      <li class="nav-item">
+                        <a class="nav-link" style="display: inline-block" (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
+                        <app-button [variant]="'link'"
+                                    [additionalClasses]="'float-end'">
+                          <app-icon icon="pencil"></app-icon>
+                        </app-button>
+                        <app-button [variant]="'link'"
+                                    [additionalClasses]="'link-danger float-end'"
+                                    (click)="deleteResourceType(child)">
+                          <app-icon icon="trash"></app-icon>
+                        </app-button>
+                      </li>
+                    }
+                  </ul>
+                }
+              </li>
             }
-          </nav>
+          </ul>
         }
       </div>
       <div class="col-10">

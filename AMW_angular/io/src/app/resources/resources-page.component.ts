@@ -12,12 +12,14 @@ import { Release } from '../settings/releases/release';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { IconComponent } from '../shared/icon/icon.component';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-resources-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageComponent, LoadingIndicatorComponent, ResourcesListComponent],
+  imports: [PageComponent, LoadingIndicatorComponent, ResourcesListComponent, IconComponent, ButtonComponent],
   templateUrl: './resources-page.component.html',
 })
 export class ResourcesPageComponent {
@@ -71,5 +73,9 @@ export class ResourcesPageComponent {
         error: (e) => this.error$.next(e),
         complete: () => this.resourceService.setTypeForResourceGroupList(this.selectedResourceTypeOrDefault()), // refresh data of the selected resource type
       });
+  }
+
+  deleteResourceType(resourceType: ResourceType) {
+    console.log(resourceType);
   }
 }
