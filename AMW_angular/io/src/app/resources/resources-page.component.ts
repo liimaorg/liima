@@ -14,6 +14,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { IconComponent } from '../shared/icon/icon.component';
 import { ButtonComponent } from '../shared/button/button.component';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { ResourceTypeDeleteComponent } from './resource-type-delete/resource-type-delete.component';
 
 @Component({
   selector: 'app-resources-page',
@@ -27,6 +29,7 @@ export class ResourcesPageComponent {
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);
   private releaseService = inject(ReleasesService);
+  private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -76,6 +79,14 @@ export class ResourcesPageComponent {
   }
 
   deleteResourceType(resourceType: ResourceType) {
-    console.log(resourceType);
+    const modalRef: NgbModalRef = this.modalService.open(ResourceTypeDeleteComponent);
+    modalRef.componentInstance.resourceType = resourceType;
+    modalRef.componentInstance.resourceTypeToDelete
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((resourceType: ResourceType) => this.delete(resourceType.id));
+  }
+
+  delete(id: number) {
+    console.log(id);
   }
 }
