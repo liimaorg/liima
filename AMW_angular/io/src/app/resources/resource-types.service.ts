@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { BaseService } from '../base/base.service';
 import { ResourceType } from '../resource/resource-type';
 
@@ -39,5 +39,13 @@ export class ResourceTypesService extends BaseService {
 
   refreshData() {
     this.reload$.next([]);
+  }
+
+  delete(id: number): Observable<number> {
+    return this.http
+      .delete<number>(`${this.getBaseUrl()}/resources/${id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 }

@@ -25,14 +25,23 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
 @Path("/resources")
@@ -41,6 +50,9 @@ public class ResourceTypesRest {
 
     @Inject
     private ResourceTypeLocator resourceTypeLocator;
+
+    @Inject
+    private ResourceTypeDomainService resourceTypeDomainService;
 
     @Inject
     PropertyEditor propertyEditor;
@@ -70,5 +82,17 @@ public class ResourceTypesRest {
         return resourceTypeLocator.getRootResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @DELETE
+    @Path("/{id : \\d+}")
+    @ApiOperation(value = "Delete a resource type")
+    public Response deleteResourceType(@PathParam("id") Integer id) throws NotFoundException {
+        try {
+            resourceTypeDomainService.removeResourceType(id);
+        }catch (ResourceNotFoundException | ResourceTypeNotFoundException e){
+            throw new NotFoundException(e.getMessage());
+        }
+        return Response.status(NO_CONTENT).build();
     }
 }

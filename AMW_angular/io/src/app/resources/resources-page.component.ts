@@ -87,6 +87,13 @@ export class ResourcesPageComponent {
   }
 
   delete(id: number) {
-    console.log(id);
+    this.resourceTypesService
+      .delete(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Resource type deleted successfully.'),
+        error: (e) => this.error$.next(e),
+        complete: () => this.resourceTypesService.refreshData(),
+      });
   }
 }
