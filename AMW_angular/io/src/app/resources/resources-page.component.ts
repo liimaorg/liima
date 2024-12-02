@@ -46,9 +46,13 @@ export class ResourcesPageComponent {
     if (this.authService.restrictions().length > 0) {
       return {
         canViewResourceTypes: this.authService.hasPermission('RES_TYPE_LIST_TAB', 'ALL'),
+        canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE'),
       };
     } else {
-      return { canViewResourceTypes: false };
+      return {
+        canViewResourceTypes: false,
+        canDeleteResourceType: false,
+      };
     }
   });
 
