@@ -31,8 +31,9 @@ export class ResourceTypeAddComponent {
   @Input() resourceType: ResourceType;
   @Output() saveResourceType: EventEmitter<ResourceTypeRequest> = new EventEmitter<ResourceTypeRequest>();
   private resourceTypesService = inject(ResourceTypesService);
-  resourceTypeName: string;
+  parentResourceTypeName: string;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
+  parentId: number;
 
   constructor(public activeModal: NgbActiveModal) {}
 
@@ -44,13 +45,14 @@ export class ResourceTypeAddComponent {
   save() {
     const request: ResourceTypeRequest = {
       newResourceTypeName: this.resourceType.name,
-      parentId: undefined,
+      parentId: this.parentId,
     };
     this.saveResourceType.emit(request);
     this.activeModal.close();
   }
 
-  selectResourceType(displayName: string): void {
-    this.resourceTypeName = displayName;
+  selectResourceType(displayName: string, parentId: number): void {
+    this.parentResourceTypeName = displayName;
+    this.parentId = parentId;
   }
 }

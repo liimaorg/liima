@@ -6,15 +6,17 @@
       <input type="text" class="form-control" id="name" [(ngModel)]="resourceType.name" />
     </div>
     <div class="mb-3">
-      <label for="name" class="form-label">Parent Resource Type</label>
+      <label for="name" class="form-label">Parent Resource Type (optional)</label>
       <div ngbDropdown>
         <app-button [variant]="'secondary'" ngbDropdownToggle>
-          {{ resourceTypeName || 'Select Resource Type' }}
+          {{ parentResourceTypeName || 'Select Resource Type' }}
         </app-button>
         <ul ngbDropdownMenu>
           @for (resourceType of rootResourceTypes(); track resourceType.name) {
           <li ngbDropdownItem>
-            <a class="dropdown-item" (click)="selectResourceType(resourceType.name)">{{ resourceType.name }}</a>
+            <a class="dropdown-item" (click)="selectResourceType(resourceType.name, resourceType.id)">{{
+              resourceType.name
+            }}</a>
           </li>
           }
         </ul>
@@ -24,5 +26,5 @@
 </div>
 <div class="modal-footer">
   <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
-  <app-button [variant]="'primary'" (click)="save()">Create</app-button>
+  <app-button [variant]="'primary'" [disabled]="resourceType.name.length === 0" (click)="save()">Create</app-button>
 </div>
