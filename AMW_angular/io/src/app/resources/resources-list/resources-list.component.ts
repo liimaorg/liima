@@ -28,12 +28,12 @@ export class ResourcesListComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canReadResourcesNew: this.authService.hasPermission('RESOURCE', 'READ'),
+        canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
         canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE'),
       };
     } else {
       return {
-        canReadResourcesNew: false,
+        canReadResources: false,
         canCreateResource: false,
       };
     }
