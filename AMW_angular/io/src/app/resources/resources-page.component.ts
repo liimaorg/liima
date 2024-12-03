@@ -59,7 +59,7 @@ export class ResourcesPageComponent implements OnDestroy {
     });
 
     modalRef.componentInstance.resourceType = {
-      newResourceTypeName: '',
+      name: '',
       parentId: null,
     };
 

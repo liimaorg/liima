@@ -1,1 +1,28 @@
-<p>resource-type-add works!</p>
+<app-modal-header [title]="'Create new Resource Type'" (cancel)="cancel()"></app-modal-header>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label">Resource Type name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="resourceType.name" />
+    </div>
+    <div class="mb-3">
+      <label for="name" class="form-label">Parent Resource Type</label>
+      <div ngbDropdown>
+        <app-button [variant]="'secondary'" ngbDropdownToggle>
+          {{ resourceTypeName || 'Select Resource Type' }}
+        </app-button>
+        <ul ngbDropdownMenu>
+          @for (resourceType of rootResourceTypes(); track resourceType.name) {
+          <li ngbDropdownItem>
+            <a class="dropdown-item" (click)="selectResourceType(resourceType.name)">{{ resourceType.name }}</a>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'primary'" (click)="save()">Create</app-button>
+</div>
