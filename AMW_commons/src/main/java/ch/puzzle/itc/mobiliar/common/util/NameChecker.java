@@ -23,8 +23,8 @@ package ch.puzzle.itc.mobiliar.common.util;
 
 public class NameChecker {
 
-	private static final String ERR_MSG_SUFIX = "The name must not contain any other than alphanumerical and \"_\" caracters.";
-	private static final String ERR_MSG_INVALID_NAME_CHARACTERS = "The name must not contain any other than alphanumerical and \"_\" / \"-\" caracters.";
+	private static final String ERR_MSG_SUFIX = "The name must not contain any other than alphanumerical and \"_\" characters.";
+	private static final String ERR_MSG_INVALID_NAME_CHARACTERS = "The name must not contain any other than alphanumerical and \"_\" / \"-\" characters.";
 
 	private static final String REGEXP_NON_EMPTY_STRING = "\\S*";
 	private static final String REGEXP_ALPHANUMERIC_WITH_UNDERSCORE_HYPHEN = "^[a-zA-Z0-9_-]+$";
