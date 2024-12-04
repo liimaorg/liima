@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Signal,
+  signal,
+  OnDestroy,
+  WritableSignal,
+} from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
@@ -12,24 +21,30 @@ import { ResourceTypeAddComponent } from './resource-type-add.component';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { ResourceTypeRequest } from '../resource/resource-type-request';
+import { ResourcesListComponent } from './resources-list/resources-list.component';
+import { ResourceService } from '../resource/resource.service';
+import { Resource } from '../resource/resource';
 
 @Component({
   selector: 'app-resources-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageComponent, LoadingIndicatorComponent, ButtonComponent, IconComponent],
+  imports: [PageComponent, LoadingIndicatorComponent, ButtonComponent, IconComponent, ResourcesListComponent],
   templateUrl: './resources-page.component.html',
 })
 export class ResourcesPageComponent implements OnDestroy {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
+  private resourceService = inject(ResourceService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
 
   predefinedResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.predefinedResourceTypes;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
+  resourceGroupListForTypeSignal: Signal<Resource[]> = this.resourceService.resourceGroupListForTypeSignal;
   isLoading = signal(false);
   expandedResourceTypeId: number | null = null;
+  selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
 
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -48,9 +63,19 @@ export class ResourcesPageComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
   }
+  selectedResourceTypeOrDefault: Signal<ResourceType> = computed(() => {
+    if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
+      this.resourceService.setTypeForResourceGroupList(this.rootResourceTypes()[0]);
+      return this.rootResourceTypes()[0];
+    }
+    return this.selectedResourceType() || null;
+  });
 
-  toggleChildrenResourceTypes(resourceType: ResourceType): void {
-    this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
+  toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType): void {
+    this.resourceService.setTypeForResourceGroupList(resourceType);
+    if (resourceType && resourceType.hasChildren)
+      this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
+    this.selectedResourceType.set(resourceType);
   }
 
   addResourceType() {

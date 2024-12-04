@@ -29,7 +29,7 @@ describe('ResourceService', () => {
       name: 'workflow',
       type: 'applicationserver',
       version: '1.0',
-      release: {
+      defaultRelease: {
         id: 22,
         release: 'release_2020',
         relations: [],
