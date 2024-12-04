@@ -24,9 +24,10 @@ package ch.puzzle.itc.mobiliar.common.util;
 public class NameChecker {
 
 	private static final String ERR_MSG_SUFIX = "The name must not contain any other than alphanumerical and \"_\" caracters.";
+	private static final String ERR_MSG_INVALID_NAME_CHARACTERS = "The name must not contain any other than alphanumerical and \"_\" / \"-\" caracters.";
 
-	private static final String VALID_CHARACTER_REGEXP = "\\S*";
-	
+	private static final String REGEXP_NON_EMPTY_STRING = "\\S*";
+	private static final String REGEXP_ALPHANUMERIC_WITH_UNDERSCORE_HYPHEN = "^[a-zA-Z0-9_-]+$";
 
 	/**
 	 * Ein Resourcename @parm name wird auf seine Gültigkeit geprüft. Der name
@@ -41,12 +42,23 @@ public class NameChecker {
 		boolean isValid = true;
 
 		if (name != null) {
-			isValid = name.matches(VALID_CHARACTER_REGEXP);
+			isValid = name.matches(REGEXP_NON_EMPTY_STRING);
 		}
 
 		return isValid;
 	}
-	
+
+	/**
+	 * Ein Resourcename @parm name wird auf seine Gültigkeit geprüft.
+	 * Der Name darf keine anderen als alphanumerische Zeichen und "_" und "-" enthalten.
+	 * Null ist gültig!
+	 *
+	 * @param name
+	 * @return
+	 */
+	public static boolean isValidAlphanumericWithUnderscoreHyphenName(String name) {
+		return name == null || name.matches(REGEXP_ALPHANUMERIC_WITH_UNDERSCORE_HYPHEN);
+	}
 
 	/**
 	 * Gibt Fehlermeldung abhängig vom resourcetypen der gegebenen resource
@@ -63,8 +75,16 @@ public class NameChecker {
 		return "Invalid " + type + " name \"" + name + "\"! " + ERR_MSG_SUFIX;
 	}
 
+	public static String getErrorTextAlphanumericWithUnderscoreHyphenName(String type, String name) {
+		return "Invalid " + type + " name \"" + name + "\"! " + ERR_MSG_INVALID_NAME_CHARACTERS;
+	}
+
 	public static String getErrorTextForResourceType(String resourceTypeName, String name) {
 		return getErrorText(getResourceTypeScreenName(resourceTypeName), name);
+	}
+
+	public static String getErrorTextForInvalidResourceName(String resourceTypeName, String name) {
+		return getErrorTextAlphanumericWithUnderscoreHyphenName(getResourceTypeScreenName(resourceTypeName), name);
 	}
 	
 	public static String getErrorTextForResourceType(String resourceTypeName) {

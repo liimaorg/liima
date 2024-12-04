@@ -41,6 +41,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -197,6 +198,10 @@ public class ResourceGroupsRest {
 
         if(StringUtils.isEmpty(request.getReleaseName()) || StringUtils.isEmpty(request.getReleaseName().trim()))
             throw new ValidationException("Release name must not be null or blank");
+
+        if(!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getName()))
+            throw new ValidationException(NameChecker.getErrorTextForInvalidResourceName(
+                    (request.getType() != null) ? request.getType() : null, request.getName()));
 
         try {
             resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), request.getName(),
