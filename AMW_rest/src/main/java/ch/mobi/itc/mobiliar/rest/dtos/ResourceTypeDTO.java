@@ -49,15 +49,4 @@ public class ResourceTypeDTO {
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
     }
-
-    public ResourceTypeEntity convertEntity() {
-        ResourceTypeEntity entity = new ResourceTypeEntity();
-        entity.setId(this.id);
-        entity.setName(this.name);
-        entity.setChildrenResourceTypes(this.children.stream()
-                .map(ResourceTypeDTO::convertEntity)
-                .collect(Collectors.toSet()));
-        return entity;
-    }
-
 }

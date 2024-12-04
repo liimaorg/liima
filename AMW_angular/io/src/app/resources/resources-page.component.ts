@@ -90,10 +90,10 @@ export class ResourcesPageComponent implements OnDestroy {
 
     modalRef.componentInstance.saveResourceType
       .pipe(takeUntil(this.destroy$))
-      .subscribe((resourceTypeData: ResourceTypeRequest) => this.save(resourceTypeData));
+      .subscribe((resourceTypeData: ResourceTypeRequest) => this.saveResourceType(resourceTypeData));
   }
 
-  save(resourceTypeData: ResourceTypeRequest): void {
+  saveResourceType(resourceTypeData: ResourceTypeRequest): void {
     this.resourceTypesService
       .addNewResourceType(resourceTypeData)
       .pipe(takeUntil(this.destroy$))
