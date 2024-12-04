@@ -5,9 +5,9 @@
             <label for="resourceName" class="form-label">Resource name</label>
             <input type="text" class="form-control" id="resourceName"
                    [(ngModel)]="resourceName" required
-                   pattern=".*\S+.*"/>
+                   pattern="^[a-zA-Z0-9_\-]+$"/>
             <div class="invalid-feedback">
-                Please enter a name
+              The name must not contain any other than alphanumerical and "_" / "-" characters.
             </div>
         </div>
         <div class="mb-3">

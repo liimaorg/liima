@@ -51,6 +51,7 @@ export class ResourceAddComponent {
   }
 
   isValidForm() {
-    return this.resourceName ? this.resourceName.trim().length !== 0 : false;
+    const REGEXP_ALPHANUMERIC_WITH_UNDERSCORE_HYPHEN = /^[a-zA-Z0-9_-]+$/;
+    return this.resourceName ? REGEXP_ALPHANUMERIC_WITH_UNDERSCORE_HYPHEN.test(this.resourceName) : false;
   }
 }
