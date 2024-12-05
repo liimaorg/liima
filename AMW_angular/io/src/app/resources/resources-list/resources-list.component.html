@@ -17,22 +17,24 @@
         <th>Release</th>
         <th>Actions</th>
       </tr>
-      </thead>
-      <tbody>
-        @for (resource of resourceGroupList(); track resource.id) {
-          <tr>
-            <td>{{ resource.name }}</td>
-            <td>{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
-            <td>
-              <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ resource.id }}">
-                <app-button [variant]="'primary'" [size]="'sm'">
-                  <app-icon icon="pencil"></app-icon
-                  ></app-button>
-              </a>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    </thead>
+    <tbody>
+      @for (resource of resourceGroupList(); track resource.id) {
+      <tr>
+        <td>{{ resource.name }}</td>
+        <td>{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
+        <td>
+          <a
+            href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{
+              resource.defaultResourceId ? resource.defaultResourceId : resource.id
+            }}"
+          >
+            <app-button [variant]="'primary'" [size]="'sm'"> <app-icon icon="pencil"></app-icon></app-button>
+          </a>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
   }
 </div>

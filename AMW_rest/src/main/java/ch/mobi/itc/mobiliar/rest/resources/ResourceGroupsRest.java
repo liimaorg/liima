@@ -138,13 +138,24 @@ public class ResourceGroupsRest {
             resourceGroups = resourceGroupLocator.getResourceGroups();
         }
 
+
+
         return resourceGroups.stream().map(resourceGroupEntity -> {
             List<ReleaseEntity> releases = resourceGroupEntity.getResources().stream().map(ResourceEntity::getRelease).collect(Collectors.toList());
             SortedSet<ReleaseEntity> sortedReleases = releases.stream()
                     .sorted(Comparator.comparing(ReleaseEntity::getInstallationInProductionAt))
                     .collect(Collectors.toCollection(TreeSet::new));
             ReleaseEntity mostRelevantRelease = this.resourceDependencyResolverService.findMostRelevantRelease(sortedReleases, new Date());
-            return new ResourceGroupDTO(resourceGroupEntity, mostRelevantRelease, releases);
+
+            Map<Integer, ResourceEntity> releaseToResourceMap = new HashMap<>();
+            for (ResourceEntity res : resourceGroupEntity.getResources()) {
+                releaseToResourceMap.put(res.getRelease().getId(), res);
+            }
+
+            var defaultResource = releaseToResourceMap.get(mostRelevantRelease.getId());
+
+            return new ResourceGroupDTO(resourceGroupEntity, mostRelevantRelease, releases, defaultResource);
+
         }).collect(Collectors.toList());
     }
 
