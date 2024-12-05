@@ -7,6 +7,11 @@ import { ResourceType } from '../resource/resource-type';
 import { ResourcesListComponent } from './resources-list/resources-list.component';
 import { ResourceService } from '../resource/resource.service';
 import { Resource } from '../resource/resource';
+import { ReleasesService } from '../settings/releases/releases.service';
+import { Release } from '../settings/releases/release';
+import { ToastService } from '../shared/elements/toast/toast.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-resources-page',
@@ -19,10 +24,15 @@ export class ResourcesPageComponent {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);
+  private releaseService = inject(ReleasesService);
+  private toastService = inject(ToastService);
+  private error$ = new BehaviorSubject<string>('');
+  private destroy$ = new Subject<void>();
 
   predefinedResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.predefinedResourceTypes;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
-  resourceGroupListForTypeSignal: Signal<Resource[]> = this.resourceService.resourceGroupListForTypeSignal;
+  resourceGroupListForType: Signal<Resource[]> = this.resourceService.resourceGroupListForType;
+  releases: Signal<Release[]> = this.releaseService.allReleases;
   isLoading = signal(false);
   expandedResourceTypeId: number | null = null;
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
@@ -50,5 +60,16 @@ export class ResourcesPageComponent {
     if (resourceType && resourceType.hasChildren)
       this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
     this.selectedResourceType.set(resourceType);
+  }
+
+  addResource(resource: any) {
+    this.resourceService
+      .createResourceForResourceType(resource)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Resource saved successfully.'),
+        error: (e) => this.error$.next(e),
+        complete: () => this.resourceService.setTypeForResourceGroupList(this.selectedResourceTypeOrDefault()), // refresh data of the selected resource type
+      });
   }
 }

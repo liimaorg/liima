@@ -223,18 +223,21 @@ describe('RestrictionAddComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
         {
           id: 2,
           name: 'AS',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
         {
           id: 3,
           name: 'FOO',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];
@@ -282,18 +285,21 @@ describe('RestrictionAddComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
         {
           id: 2,
           name: 'AS',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
         {
           id: 3,
           name: 'FOO',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];
@@ -341,18 +347,21 @@ describe('RestrictionAddComponent', () => {
           name: 'APP',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
         {
           id: 2,
           name: 'AS',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
         {
           id: 3,
           name: 'FOO',
           hasChildren: false,
           children: [],
+          isApplication: false,
         },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];

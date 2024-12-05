@@ -40,6 +40,7 @@ public class ResourceTypeDTO {
     private String name;
     private boolean hasChildren;
     private List<ResourceTypeDTO> children;
+    private boolean resourceTypeIsApplication;
 
     public ResourceTypeDTO(ResourceTypeEntity resourceType){
         this.id = resourceType.getId();
@@ -48,5 +49,6 @@ public class ResourceTypeDTO {
         this.children = resourceType.getChildrenResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
+        this.resourceTypeIsApplication = resourceType.isApplicationResourceType();
     }
 }

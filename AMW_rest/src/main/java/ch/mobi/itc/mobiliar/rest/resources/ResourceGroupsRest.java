@@ -33,18 +33,15 @@ import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -195,21 +192,26 @@ public class ResourceGroupsRest {
      */
     @POST
     @ApiOperation(value = "Add a Resource")
-    public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) {
-        Resource resource;
-        if (StringUtils.isEmpty(request.getName())) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Resource name must not be empty")).build();
-        }
-        if (StringUtils.isEmpty(request.getReleaseName())) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Release name must not be empty")).build();
-        }
+    public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) throws ValidationException, NotFoundException, ElementAlreadyExistsException {
+        if(StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim()))
+            throw new ValidationException("Resource name must not be null or blank");
+
+        if(StringUtils.isEmpty(request.getReleaseName()) || StringUtils.isEmpty(request.getReleaseName().trim()))
+            throw new ValidationException("Release name must not be null or blank");
+
+        if(!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getName()))
+            throw new ValidationException(NameChecker.getErrorTextForInvalidResourceName(
+                    (request.getType() != null) ? request.getType() : null, request.getName()));
+
         try {
-            resource = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), request.getName(),
+            resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), request.getName(),
                     request.getType(), request.getReleaseName());
-        } catch (AMWException e) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
+        } catch (ResourceTypeNotFoundException e) {
+            throw new NotFoundException("Resource type: " + request.getType() + " not found");
+        } catch (ResourceNotFoundException e) {
+            throw new NotFoundException("Release : " + request.getReleaseName() + " not found");
         }
-        return Response.status(CREATED).header("Location", "/resources/" + resource.getName()).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     /**
