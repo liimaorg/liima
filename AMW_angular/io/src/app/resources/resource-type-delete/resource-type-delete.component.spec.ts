@@ -20,7 +20,7 @@ describe('ResourceTypeDeleteComponent', () => {
       name: 'Keystore',
       hasChildren: false,
       children: [],
-      resourceTypeIsApplication: false,
+      isApplication: false,
     };
 
     fixture.detectChanges();
