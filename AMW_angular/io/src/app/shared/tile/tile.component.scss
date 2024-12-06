@@ -1,0 +1,35 @@
+.tile {
+  border: 1px solid #ddd;
+  padding: 1em;
+  margin: 0.5em;
+
+  .tile-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .tile-title {
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .tile-action-bar, span {
+    padding-left: 0.5em;
+  }
+
+  .tile-body {
+    margin: 1em 0 0.5em;
+
+    .no-content {
+      font-style: italic;
+    }
+  }
+
+}
+
+.list-element {
+  font-weight: bold;
+}
+
+

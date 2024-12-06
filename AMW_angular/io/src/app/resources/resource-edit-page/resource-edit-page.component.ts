@@ -33,4 +33,8 @@ export class ResourceEditPageComponent {
       return false;
     }
   });
+
+  addFunction() {
+    this.modalService.open('This would open a modal to add a function');
+  }
 }
