@@ -95,7 +95,7 @@ public class ResourceBoundary {
         if (resourceTypeEntity == null) {
             String message = "ResourceType '" + resourceTypeName + "' doesn't exist";
             log.info(message);
-            throw new ResourceNotFoundException(message);
+            throw new ResourceTypeNotFoundException(message);
         }
         ReleaseEntity release;
         try {

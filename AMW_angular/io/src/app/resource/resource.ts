@@ -7,4 +7,5 @@ export interface Resource {
   version: string;
   defaultRelease: Release;
   releases: Release[];
+  defaultResourceId?: number;
 }

@@ -20,6 +20,6 @@ describe(ServersPageComponent.name, () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component.isLoading()).toBeFalse();
+    expect(component.isLoading).toBeFalse();
   });
 });

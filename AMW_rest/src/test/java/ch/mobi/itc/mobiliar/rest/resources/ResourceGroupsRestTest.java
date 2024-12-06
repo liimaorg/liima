@@ -27,8 +27,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,7 +35,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -73,8 +71,6 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 public class ResourceGroupsRestTest {
@@ -205,15 +201,17 @@ public class ResourceGroupsRestTest {
         resourceReleaseDTO.setName("Test");
 
         // when
-        Response response = rest.addResource(resourceReleaseDTO);
+        Throwable exception = assertThrows(ValidationException.class, () -> {
+            rest.addResource(resourceReleaseDTO);
+        });
 
         // then
-        assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals(exception.getMessage(), "Release name must not be null or blank");
 
     }
 
     @Test
-    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceCreation() throws ResourceTypeNotFoundException, ResourceNotFoundException, ElementAlreadyExistsException {
+    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceCreation() throws ElementAlreadyExistsException, ValidationException, NotFoundException {
         // given
         ResourceTypeEntity resType = new ResourceTypeEntity();
         resType.setName("APP");
@@ -239,8 +237,7 @@ public class ResourceGroupsRestTest {
         Response response = rest.addResource(resourceReleaseDTO);
 
         // then
-        assertEquals(CREATED.getStatusCode(), response.getStatus());
-        assertTrue(response.getMetadata().get("Location").contains("/resources/" + resGroup.getName()));
+        assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test

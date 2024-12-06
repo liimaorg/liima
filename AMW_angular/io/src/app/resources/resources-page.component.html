@@ -39,7 +39,10 @@
         </div>
       </div>
       <div class="col-10">
-        <app-resources-list [resourceType]="this.selectedResourceTypeOrDefault()" [resourceGroupList]="resourceGroupListForTypeSignal()"></app-resources-list>
+        <app-resources-list [resourceType]="selectedResourceTypeOrDefault()"
+                            [resourceGroupList]="resourceGroupListForType()"
+                            [releases]="releases()"
+                            (resourceToAdd)="addResource($event)"></app-resources-list>
       </div>
     </div>
   </div>

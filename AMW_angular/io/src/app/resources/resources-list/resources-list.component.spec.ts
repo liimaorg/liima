@@ -3,6 +3,8 @@ import { ResourcesListComponent } from './resources-list.component';
 import { ComponentRef } from '@angular/core';
 import { Resource } from '../../resource/resource';
 import { ResourceType } from '../../resource/resource-type';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('ResourcesListComponent', () => {
   let component: ResourcesListComponent;
@@ -13,6 +15,7 @@ describe('ResourcesListComponent', () => {
     name: 'type',
     hasChildren: false,
     children: [],
+    isApplication: false,
   };
 
   const resourceGroupsOfResourceType: Resource[] = [];
@@ -20,7 +23,7 @@ describe('ResourcesListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ResourcesListComponent],
-      providers: [],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResourcesListComponent);

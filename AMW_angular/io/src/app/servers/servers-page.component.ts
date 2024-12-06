@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AuthService } from '../auth/auth.service';
@@ -16,7 +16,7 @@ import { ServerFilter } from './servers-filter/server-filter';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent, ServersFilterComponent],
-  template: ` <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+  template: ` <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
@@ -43,12 +43,15 @@ export class ServersPageComponent {
   private environmentsService = inject(EnvironmentService);
   private configurationService = inject(ConfigurationService);
 
-  isLoading = signal(false);
+  isLoading: boolean = false;
 
   environments = this.environmentsService.envs;
   runtimes = this.serversService.runtimes;
   appServerSuggestions = this.serversService.appServersSuggestions;
-  servers = this.serversService.servers;
+  servers = computed(() => {
+    this.isLoading = false;
+    return this.serversService.servers();
+  });
   configuration: Signal<Config[]> = this.configurationService.configuration;
 
   linkToHostUrl = computed(() => {
@@ -74,6 +77,7 @@ export class ServersPageComponent {
   });
 
   searchFilter($event: ServerFilter) {
+    this.isLoading = true;
     this.serversService.setServerFilter($event);
   }
 }

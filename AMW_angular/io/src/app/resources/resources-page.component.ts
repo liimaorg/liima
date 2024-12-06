@@ -15,15 +15,17 @@ import { ResourceTypesService } from './resource-types.service';
 import { ResourceType } from '../resource/resource-type';
 import { ButtonComponent } from '../shared/button/button.component';
 import { IconComponent } from '../shared/icon/icon.component';
-import { takeUntil } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResourceTypeAddComponent } from './resource-type-add.component';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { ToastService } from '../shared/elements/toast/toast.service';
 import { ResourceTypeRequest } from '../resource/resource-type-request';
 import { ResourcesListComponent } from './resources-list/resources-list.component';
 import { ResourceService } from '../resource/resource.service';
 import { Resource } from '../resource/resource';
+import { ReleasesService } from '../settings/releases/releases.service';
+import { Release } from '../settings/releases/release';
+import { ToastService } from '../shared/elements/toast/toast.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-resources-page',
@@ -36,18 +38,19 @@ export class ResourcesPageComponent implements OnDestroy {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);
-  private modalService = inject(NgbModal);
+  private releaseService = inject(ReleasesService);
   private toastService = inject(ToastService);
+  private error$ = new BehaviorSubject<string>('');
+  private destroy$ = new Subject<void>();
+  private modalService = inject(NgbModal);
 
   predefinedResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.predefinedResourceTypes;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
-  resourceGroupListForTypeSignal: Signal<Resource[]> = this.resourceService.resourceGroupListForTypeSignal;
+  resourceGroupListForType: Signal<Resource[]> = this.resourceService.resourceGroupListForType;
+  releases: Signal<Release[]> = this.releaseService.allReleases;
   isLoading = signal(false);
   expandedResourceTypeId: number | null = null;
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
-
-  private error$ = new BehaviorSubject<string>('');
-  private destroy$ = new Subject<void>();
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -76,6 +79,17 @@ export class ResourcesPageComponent implements OnDestroy {
     if (resourceType && resourceType.hasChildren)
       this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
     this.selectedResourceType.set(resourceType);
+  }
+
+  addResource(resource: any) {
+    this.resourceService
+      .createResourceForResourceType(resource)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Resource saved successfully.'),
+        error: (e) => this.error$.next(e),
+        complete: () => this.resourceService.setTypeForResourceGroupList(this.selectedResourceTypeOrDefault()), // refresh data of the selected resource type
+      });
   }
 
   addResourceType() {
