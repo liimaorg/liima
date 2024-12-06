@@ -6,14 +6,13 @@ import { ActivatedRoute } from '@angular/router';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../../resource/resource.service';
-import { TileComponent } from '../../shared/tile/tile.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Resource } from '../../resource/resource';
 
 @Component({
   selector: 'app-resources-edit',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent],
+  imports: [LoadingIndicatorComponent, PageComponent],
   templateUrl: './resource-edit.component.html',
 })
 export class ResourceEditComponent {
