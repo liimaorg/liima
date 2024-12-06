@@ -1,0 +1,8 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title">Edit {{ this.resource()?.name }}</div>
+
+  <div class="page-content">
+    <div class="container">Loaded resource: {{ this.resource()?.name }}</div>
+  </div>
+</app-page>
