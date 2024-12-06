@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
@@ -26,6 +26,7 @@ export class ResourceService extends BaseService {
   );
 
   resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
+  resource = signal<Resource | null>(null);
 
   constructor(private http: HttpClient) {
     super();
@@ -44,6 +45,18 @@ export class ResourceService extends BaseService {
         map((resources) => resources.map(toResource)),
         catchError(this.handleError),
       );
+  }
+
+  getResource(resourceId: number): void {
+    this.http
+      .get<Resource>(`${this.getBaseUrl()}/resources/resources/${resourceId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((resource) => toResource(resource)),
+        catchError(this.handleError),
+      )
+      .subscribe((result) => this.resource.set(result));
   }
 
   createResourceForResourceType(resource: any) {
