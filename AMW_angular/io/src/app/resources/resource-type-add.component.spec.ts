@@ -21,6 +21,7 @@ describe('ResourceTypeAddComponent', () => {
       name: '',
       hasChildren: false,
       children: [],
+      isApplication: false,
     };
 
     fixture.detectChanges();
