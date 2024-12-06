@@ -34,9 +34,11 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocato
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -84,8 +86,17 @@ public class ResourceTypesRest {
     @POST
     @ApiOperation(value = "Add a new resource type")
     @Consumes("application/json")
-    public Response addNewResourceType(@ApiParam("Resource type details") ResourceTypeRequestDTO request)
-            throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
+    public Response addNewResourceType(ResourceTypeRequestDTO request)
+            throws ResourceTypeNotFoundException, ElementAlreadyExistsException, ValidationException {
+
+        if (StringUtils.isEmpty(request.getNewResourceTypeName()) || StringUtils.isEmpty(request.getNewResourceTypeName().trim())) {
+            throw new ValidationException("Resource type name must not be null or blank");
+        }
+
+        if (!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getNewResourceTypeName())) {
+            throw new ValidationException(NameChecker.getErrorTextForResourceType(request.getNewResourceTypeName()));
+        }
+
         domainService.addResourceType(request.getNewResourceTypeName(), request.getParentId());
         return Response.status(Response.Status.CREATED).build();
     }
