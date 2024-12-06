@@ -5,27 +5,25 @@ import { Resource } from '../../resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
-import { RouterTestingHarness, RouterTestingModule } from '@angular/router/testing';
+import { ResourceEditComponent } from './resource-edit.component';
+import { ActivatedRoute } from '@angular/router';
+import { of, Subject } from 'rxjs';
+import { RouterTestingModule } from '@angular/router/testing';
 
-describe('ResourcesListComponent', () => {
-  let component: ResourcesListComponent;
-  let componentRef: ComponentRef<ResourcesListComponent>;
-  let fixture: ComponentFixture<ResourcesListComponent>;
-  const resourceType: ResourceType = {
-    id: 1,
-    name: 'type',
-    hasChildren: false,
-    children: [],
-    isApplication: false,
-    isDefaultResourceType: false,
-  };
-  const mockRoute: any = { snapshot: {} };
-  const resourceGroupsOfResourceType: Resource[] = [];
+describe('ResourceEditComponent', () => {
+  let component: ResourceEditComponent;
+  let componentRef: ComponentRef<ResourceEditComponent>;
+  let fixture: ComponentFixture<ResourceEditComponent>;
+
+  const mockRoute: any = { paramMap: of() };
+  mockRoute.paramMap = new Subject<any>();
+  mockRoute.paramMap.next({
+    id: 42,
+  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResourcesListComponent],
+      imports: [ResourceEditComponent, RouterTestingModule.withRoutes([])],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -33,11 +31,9 @@ describe('ResourcesListComponent', () => {
       ],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ResourcesListComponent);
+    fixture = TestBed.createComponent(ResourceEditComponent);
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
-    componentRef.setInput('resourceType', resourceType);
-    componentRef.setInput('resourceGroupList', resourceGroupsOfResourceType);
     fixture.detectChanges();
   });
 
