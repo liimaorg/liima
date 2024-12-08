@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute } from '@angular/router';
@@ -6,6 +6,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../../resource/resource.service';
 import { Resource } from '../../resource/resource';
+import { TileListComponent, TileListInputs, TileListEntry } from '../../shared/tile/tile-list/tile-list.component';
 
 @Component({
   selector: 'app-resources-edit',
@@ -34,7 +35,24 @@ export class ResourceEditPageComponent {
     }
   });
 
-  addFunction() {
-    this.modalService.open('This would open a modal to add a function');
+  itemsSignal = signal([
+    {
+      component: TileListComponent,
+      inputs: {
+        title: 'first component',
+        data: [
+          { name: 'Function 1', description: 'Some function', actions: ['Edit', 'Delete'] },
+          { name: 'Function 2', description: 'Some function again', actions: ['Overwrite'] },
+        ] as TileListEntry[],
+      } as TileListInputs,
+    },
+  ]);
+
+  add() {
+    this.modalService.open('This would open a modal to add something');
+  }
+
+  doListAction($event: string) {
+    console.log('whatever ' + $event);
   }
 }

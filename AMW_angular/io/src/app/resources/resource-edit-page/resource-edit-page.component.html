@@ -7,7 +7,9 @@
     <app-tile-component
       [title]="'Functions'"
       [action]="'Add function'"
-      (tileAction)="addFunction()"
+      [data]="itemsSignal()"
+      (tileAction)="add()"
+      (listAction)="doListAction($event)"
     ></app-tile-component>
   </div>
 </app-page>
