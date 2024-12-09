@@ -4,8 +4,8 @@ import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { shareReplay, switchMap } from 'rxjs/operators';
 import { BaseService } from '../base/base.service';
-import { ResourceType } from '../resource/resource-type';
-import { ResourceTypeRequest } from '../resource/resource-type-request';
+import { ResourceType } from './resource-type';
+import { ResourceTypeRequest } from './resource-type-request';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceTypesService extends BaseService {

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @ApiModel(description = "Request to add a new resource type")
 public class ResourceTypeRequestDTO {
     @ApiModelProperty(required = true)
-    private String newResourceTypeName;
+    private String name;
 
     @ApiModelProperty(required = false)
     private Integer parentId;

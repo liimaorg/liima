@@ -87,17 +87,21 @@ public class ResourceTypesRest {
     @ApiOperation(value = "Add a new resource type")
     @Consumes("application/json")
     public Response addNewResourceType(ResourceTypeRequestDTO request)
-            throws ResourceTypeNotFoundException, ElementAlreadyExistsException, ValidationException {
+            throws ElementAlreadyExistsException, ValidationException {
 
-        if (StringUtils.isEmpty(request.getNewResourceTypeName()) || StringUtils.isEmpty(request.getNewResourceTypeName().trim())) {
+        if (StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim())) {
             throw new ValidationException("Resource type name must not be null or blank");
         }
 
-        if (!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getNewResourceTypeName())) {
-            throw new ValidationException(NameChecker.getErrorTextForResourceType(request.getNewResourceTypeName()));
+        if (!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getName())) {
+            throw new ValidationException(NameChecker.getErrorTextForResourceType(request.getName()));
         }
 
-        domainService.addResourceType(request.getNewResourceTypeName(), request.getParentId());
+        try {
+            domainService.addResourceType(request.getName(), request.getParentId());
+        } catch (ResourceTypeNotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
         return Response.status(Response.Status.CREATED).build();
     }
 

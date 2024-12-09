@@ -5,44 +5,45 @@
     <div class="row">
       <div class="col">
         @if (permissions().canViewResourceTypes) {
-          <nav class="nav flex-column">
-            @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
-              <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">{{ resourceType.name }}</a>
-            }
-          </nav>
-          <nav class="nav flex-column">
-            @for (resourceType of rootResourceTypes(); track resourceType.name) {
-              <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
-                {{ resourceType.name }}
-                @if (resourceType.hasChildren) {
-                  <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
-                }
-              </a>
-              @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
-                <ul class="subnav">
-                  @for (child of resourceType.children; track child.name) {
-                    <div class="grid-item">
-                      <a (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
-                    </div>
-                  }
-                </ul>
-              }
-            }
-          </nav>
-        }
+        <nav class="nav flex-column">
+          @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
+          <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">{{ resourceType.name }}</a>
+          }
+        </nav>
         <div>
           @if (permissions().canCreateResourceTypes) {
-            <app-button [variant]="'primary'" (click)="addResourceType()"
+          <app-button [variant]="'primary'" (click)="addResourceType()"
             ><app-icon icon="plus-circle"></app-icon> New Resource Type</app-button
-            >
+          >
           }
         </div>
+        <nav class="nav flex-column">
+          @for (resourceType of rootResourceTypes(); track resourceType.name) {
+          <a (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
+            {{ resourceType.name }}
+            @if (resourceType.hasChildren) {
+            <span>{{ expandedResourceTypeId === resourceType.id ? '-' : '+' }}</span>
+            }
+          </a>
+          @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
+          <ul class="subnav">
+            @for (child of resourceType.children; track child.name) {
+            <div class="grid-item">
+              <a (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
+            </div>
+            }
+          </ul>
+          } }
+        </nav>
+        }
       </div>
       <div class="col-10">
-        <app-resources-list [resourceType]="selectedResourceTypeOrDefault()"
-                            [resourceGroupList]="resourceGroupListForType()"
-                            [releases]="releases()"
-                            (resourceToAdd)="addResource($event)"></app-resources-list>
+        <app-resources-list
+          [resourceType]="selectedResourceTypeOrDefault()"
+          [resourceGroupList]="resourceGroupListForType()"
+          [releases]="releases()"
+          (resourceToAdd)="addResource($event)"
+        ></app-resources-list>
       </div>
     </div>
   </div>

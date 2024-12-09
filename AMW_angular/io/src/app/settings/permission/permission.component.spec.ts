@@ -16,7 +16,7 @@ import { Restriction } from './restriction';
 import { Tag } from './tag';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceService } from '../../resource/resource.service';
-import { ResourceTypesService } from '../../resources/resource-types.service';
+import { ResourceTypesService } from '../../resource/resource-types.service';
 import { Environment } from 'src/app/deployment/environment';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';

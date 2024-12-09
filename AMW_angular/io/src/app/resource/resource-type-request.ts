@@ -1,4 +1,4 @@
 export interface ResourceTypeRequest {
-  newResourceTypeName: string;
+  name: string;
   parentId?: number;
 }
