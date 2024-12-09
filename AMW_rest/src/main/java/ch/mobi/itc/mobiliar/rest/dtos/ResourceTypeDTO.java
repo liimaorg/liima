@@ -43,6 +43,8 @@ public class ResourceTypeDTO {
     private List<ResourceTypeDTO> children;
     @JsonProperty(value="isApplication")
     private boolean isApplication;
+    @JsonProperty(value="isDefaultResourceType")
+    private boolean isDefaultResourceType;
 
     public ResourceTypeDTO(ResourceTypeEntity resourceType){
         this.id = resourceType.getId();
@@ -52,5 +54,6 @@ public class ResourceTypeDTO {
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
         this.isApplication = resourceType.isApplicationResourceType();
+        this.isDefaultResourceType = resourceType.isDefaultResourceType();
     }
 }

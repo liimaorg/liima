@@ -1,80 +1,56 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
-    <div class="page-title">Resources</div>
-    <div class="page-content">
-        <div class="row">
-            <div class="col">
-                @if (permissions().canViewResourceTypes) {
-                    <ul class="nav flex-column">
-                        @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
-                            <li class="nav-item">
-                                <a class="nav-link" style="display: inline-block"
-                                   (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">{{ resourceType.name }}</a>
-                                <app-button [variant]="'link'"
-                                            [additionalClasses]="'float-end'">
-                                    <app-icon icon="pencil"></app-icon>
-                                </app-button>
-                            </li>
-                        }
-                    </ul>
-                    <hr/>
-                    <ul class="nav flex-column">
-                        @for (resourceType of rootResourceTypes(); track resourceType.name) {
-                            <li class="nav-item">
-                                <a class="nav-link" style="display: inline-block"
-                                   (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
-                                    {{ resourceType.name }}
-                                    @if (resourceType.hasChildren) {
-                                        @if (expandedResourceTypeId === resourceType.id) {
-                                            <app-icon icon="dash"></app-icon>
-                                        } @else {
-                                            <app-icon icon="plus"></app-icon>
-                                        }
-                                    }
-                                </a>
-                                @if (permissions().canDeleteResourceType) {
-                                    <app-button [variant]="'link'"
-                                                [additionalClasses]="'link-danger float-end'"
-                                                (click)="deleteResourceType(resourceType)">
-                                        <app-icon icon="trash"></app-icon>
-                                    </app-button>
-                                }
-                                <app-button [variant]="'link'"
-                                            [additionalClasses]="'float-end'">
-                                    <app-icon icon="pencil"></app-icon>
-                                </app-button>
-                                @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
-                                    <ul class="nav flex-column ps-4">
-                                        @for (child of resourceType.children; track child.name) {
-                                            <li class="nav-item">
-                                                <a class="nav-link" style="display: inline-block"
-                                                   (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
-                                                @if (permissions().canDeleteResourceType) {
-                                                    <app-button [variant]="'link'"
-                                                                [additionalClasses]="'link-danger float-end'"
-                                                                (click)="deleteResourceType(child)">
-                                                        <app-icon icon="trash"></app-icon>
-                                                    </app-button>
-                                                }
-                                                <app-button [variant]="'link'"
-                                                            [additionalClasses]="'float-end'">
-                                                    <app-icon icon="pencil"></app-icon>
-                                                </app-button>
-                                            </li>
-                                        }
-                                    </ul>
-                                }
-                            </li>
-                        }
-                    </ul>
+  <div class="page-title">Resources</div>
+  <div class="page-content">
+    <div class="row">
+      <div class="col ps-3">
+        <h5 class="mb-3">Resource types</h5>
+        @if (permissions().canViewResourceTypes) {
+          <ul class="nav flex-column">
+            @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
+              <li class="nav-item">
+                <a class="nav-link ps-0" style="display: inline-block"
+                   (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">{{ resourceType.name }}</a>
+              </li>
+            }
+          </ul>
+          <hr/>
+          <ul class="nav flex-column">
+            @for (resourceType of rootResourceTypes(); track resourceType.name) {
+              <li class="nav-item">
+                <a class="nav-link ps-0" style="display: inline-block"
+                   (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
+                  {{ resourceType.name }}
+                  @if (resourceType.hasChildren) {
+                    @if (expandedResourceTypeId === resourceType.id) {
+                      <app-icon icon="dash"></app-icon>
+                    } @else {
+                      <app-icon icon="plus"></app-icon>
+                    }
+                  }
+                </a>
+                @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
+                  <ul class="nav flex-column ps-4">
+                    @for (child of resourceType.children; track child.name) {
+                      <li class="nav-item">
+                        <a class="nav-link ps-0" style="display: inline-block"
+                           (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
+                      </li>
+                    }
+                  </ul>
                 }
-            </div>
-            <div class="col-10">
-                <app-resources-list [resourceType]="selectedResourceTypeOrDefault()"
-                                    [resourceGroupList]="resourceGroupListForType()"
-                                    [releases]="releases()"
-                                    (resourceToAdd)="addResource($event)"></app-resources-list>
-            </div>
-        </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+      <div class="col-10">
+        <app-resources-list [resourceType]="selectedResourceTypeOrDefault()"
+                            [resourceGroupList]="resourceGroupListForType()"
+                            [releases]="releases()"
+                            (resourceToAdd)="addResource($event)"
+                            (resourceTypeToDelete)="deleteResourceType($event)"></app-resources-list>
+      </div>
     </div>
+  </div>
 </app-page>

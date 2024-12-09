@@ -1,6 +1,20 @@
 <div class="container">
   @if (resourceType() && permissions().canReadResources) {
-    <h1>{{ resourceType().name }}</h1>
+    <h1>
+      {{ resourceType().name }}
+      @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
+        <app-button [variant]="'link'"
+                    [additionalClasses]="'link-danger'"
+                    (click)="deleteResourceType()">
+          <app-icon icon="trash"></app-icon>
+        </app-button>
+      }
+    </h1>
+    <app-button [variant]="'primary'" [additionalClasses]="'mt-1'">
+      <app-icon icon="pencil"></app-icon>
+      Edit Resource type
+    </app-button>
+    <h2 class="mt-5">Resources</h2>
     @if (permissions().canCreateResource && !resourceType().isApplication) {
       <div class="row my-3">
         <app-button [variant]="'primary'" (click)="addResource()">

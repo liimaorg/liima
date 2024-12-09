@@ -14,8 +14,6 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { IconComponent } from '../shared/icon/icon.component';
 import { ButtonComponent } from '../shared/button/button.component';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { ResourceTypeDeleteComponent } from './resource-type-delete/resource-type-delete.component';
 
 @Component({
   selector: 'app-resources-page',
@@ -29,7 +27,6 @@ export class ResourcesPageComponent {
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);
   private releaseService = inject(ReleasesService);
-  private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -46,12 +43,10 @@ export class ResourcesPageComponent {
     if (this.authService.restrictions().length > 0) {
       return {
         canViewResourceTypes: this.authService.hasPermission('RES_TYPE_LIST_TAB', 'ALL'),
-        canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE'),
       };
     } else {
       return {
         canViewResourceTypes: false,
-        canDeleteResourceType: false,
       };
     }
   });
@@ -83,21 +78,16 @@ export class ResourcesPageComponent {
   }
 
   deleteResourceType(resourceType: ResourceType) {
-    const modalRef: NgbModalRef = this.modalService.open(ResourceTypeDeleteComponent);
-    modalRef.componentInstance.resourceType = resourceType;
-    modalRef.componentInstance.resourceTypeToDelete
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((resourceType: ResourceType) => this.delete(resourceType.id));
-  }
-
-  delete(id: number) {
     this.resourceTypesService
-      .delete(id)
+      .delete(resourceType.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Resource type deleted successfully.'),
         error: (e) => this.error$.next(e),
-        complete: () => this.resourceTypesService.refreshData(),
+        complete: () => {
+          this.resourceTypesService.refreshData();
+          //TODO Reload top most resource types resources --> set selected
+        },
       });
   }
 }

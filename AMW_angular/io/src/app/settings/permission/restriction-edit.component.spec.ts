@@ -116,6 +116,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -123,6 +124,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -144,6 +146,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -151,6 +154,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -458,6 +462,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -465,6 +470,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 3,
@@ -472,6 +478,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -520,6 +527,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -527,6 +535,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 3,
@@ -534,6 +543,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.restriction = {
@@ -581,6 +591,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -588,6 +599,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 3,
@@ -595,6 +607,7 @@ describe('RestrictionEditComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.restriction = {
