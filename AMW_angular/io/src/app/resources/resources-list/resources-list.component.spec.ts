@@ -5,8 +5,7 @@ import { Resource } from '../../resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ActivatedRoute, provideRouter } from '@angular/router';
-import { RouterTestingHarness, RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ResourcesListComponent', () => {
   let component: ResourcesListComponent;
