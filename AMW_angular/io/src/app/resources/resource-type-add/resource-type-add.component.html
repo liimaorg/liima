@@ -26,6 +26,9 @@
           {{ parentResourceTypeName || 'Select Resource Type' }}
         </app-button>
         <ul ngbDropdownMenu>
+          <li ngbDropdownItem>
+            <a class="dropdown-item" (click)="parentResourceTypeName = ''">Select Resource Type</a>
+          </li>
           @for (resourceType of rootResourceTypes(); track resourceType.name) {
           <li ngbDropdownItem>
             <a class="dropdown-item" (click)="selectResourceType(resourceType.name, resourceType.id)">{{
