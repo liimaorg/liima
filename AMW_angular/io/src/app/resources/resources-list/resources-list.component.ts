@@ -15,6 +15,7 @@ import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-ty
   selector: 'app-resources-list',
   standalone: true,
   templateUrl: './resources-list.component.html',
+  styleUrl: './resources-list.component.scss',
   imports: [ButtonComponent, IconComponent],
 })
 export class ResourcesListComponent {

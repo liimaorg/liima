@@ -2,6 +2,9 @@
   @if (resourceType() && permissions().canReadResources) {
     <h1>
       {{ resourceType().name }}
+      <app-button [variant]="'link'">
+        <app-icon icon="pencil"></app-icon>
+      </app-button>
       @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
         <app-button [variant]="'link'"
                     [additionalClasses]="'link-danger'"
@@ -10,11 +13,6 @@
         </app-button>
       }
     </h1>
-    <app-button [variant]="'primary'" [additionalClasses]="'mt-1'">
-      <app-icon icon="pencil"></app-icon>
-      Edit Resource type
-    </app-button>
-    <h2 class="mt-5">Resources</h2>
     @if (permissions().canCreateResource && !resourceType().isApplication) {
       <div class="row my-3">
         <app-button [variant]="'primary'" (click)="addResource()">
@@ -27,17 +25,17 @@
     <table class="table table-sm table-striped">
       <thead>
       <tr>
-        <th>Resource name</th>
-        <th>Release</th>
-        <th>Actions</th>
+        <th class="w-80">Resource name</th>
+        <th class="w-10">Release</th>
+        <th class="w-10">Actions</th>
       </tr>
     </thead>
     <tbody>
       @for (resource of resourceGroupList(); track resource.id) {
       <tr>
-        <td>{{ resource.name }}</td>
-        <td>{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
-        <td>
+        <td class="w-80">{{ resource.name }}</td>
+        <td class="w-10">{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
+        <td class="w-10">
           <a
             href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{
               resource.defaultResourceId ? resource.defaultResourceId : resource.id
