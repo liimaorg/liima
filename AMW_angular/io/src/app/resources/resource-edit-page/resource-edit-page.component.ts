@@ -18,17 +18,18 @@ export class ResourceEditPageComponent {
   private route = inject(ActivatedRoute);
 
   resource: Signal<Resource> = this.resourceService.resource;
-  resourceId = toSignal(
-    this.route.paramMap.pipe(
-      map((params) => +params.get('id')),
+  ids = toSignal(
+    this.route.queryParamMap.pipe(
+      map((params) => params),
       distinctUntilChanged(),
     ),
-    -1,
+    [],
   );
 
   isLoading = computed(() => {
-    if (this.resourceId() > -1) {
-      this.resourceService.getResource(this.resourceId());
+    if (this.ids().keys) {
+      // TODO show correct STAGE by context id
+      this.resourceService.getResource(Number(this.ids().get('id')));
       return false;
     }
   });

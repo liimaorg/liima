@@ -42,7 +42,10 @@
           >
             <app-button [variant]="'primary'" [size]="'sm'"> <app-icon icon="pencil"></app-icon></app-button>
           </a>
-          <a [routerLink]="['/resource/edit', resource.defaultResourceId ? resource.defaultResourceId : resource.id]">
+          <a
+            [routerLink]="['/resource/edit']"
+            [queryParams]="{ ctx: 1, id: resource.defaultResourceId ? resource.defaultResourceId : resource.id }"
+          >
             <app-button [variant]="'primary'" [size]="'sm'"> <app-icon icon="rocket-takeoff"></app-icon></app-button>
           </a>
         </td>
