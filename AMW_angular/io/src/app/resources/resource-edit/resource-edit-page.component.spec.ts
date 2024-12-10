@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 
-describe('ResourceEditPageComponent', () => {
+describe('ResourceEditComponent', () => {
   let component: ResourceEditComponent;
   let fixture: ComponentFixture<ResourceEditComponent>;
 
