@@ -12,9 +12,9 @@ describe('ResourceEditComponent', () => {
   let componentRef: ComponentRef<ResourceEditPageComponent>;
   let fixture: ComponentFixture<ResourceEditPageComponent>;
 
-  const mockRoute: any = { paramMap: of() };
-  mockRoute.paramMap = new Subject<any>();
-  mockRoute.paramMap.next({
+  const mockRoute: any = { queryParamMap: of() };
+  mockRoute.queryParamMap = new Subject<Map<string, number>>();
+  mockRoute.queryParamMap.next({
     id: 42,
   });
 

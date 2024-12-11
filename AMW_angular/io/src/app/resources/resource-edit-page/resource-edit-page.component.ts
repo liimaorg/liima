@@ -27,7 +27,7 @@ export class ResourceEditPageComponent {
   );
 
   isLoading = computed(() => {
-    if (this.ids().keys) {
+    if (this.ids()?.keys) {
       // TODO show correct STAGE by context id
       this.resourceService.getResource(Number(this.ids().get('id')));
       return false;
