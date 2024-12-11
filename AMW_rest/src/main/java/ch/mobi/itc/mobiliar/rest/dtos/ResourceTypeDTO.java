@@ -42,7 +42,7 @@ public class ResourceTypeDTO {
     private List<ResourceTypeDTO> children;
     private boolean resourceTypeIsApplication;
 
-    public ResourceTypeDTO(ResourceTypeEntity resourceType){
+    public ResourceTypeDTO(ResourceTypeEntity resourceType) {
         this.id = resourceType.getId();
         this.name = resourceType.getName();
         this.hasChildren = resourceType.hasChildren();

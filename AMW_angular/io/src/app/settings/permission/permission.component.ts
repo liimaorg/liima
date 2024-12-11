@@ -28,7 +28,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { ResourceTypesService } from '../../resources/resource-types.service';
+import { ResourceTypesService } from '../../resource/resource-types.service';
 
 @Component({
   selector: 'app-permission',
