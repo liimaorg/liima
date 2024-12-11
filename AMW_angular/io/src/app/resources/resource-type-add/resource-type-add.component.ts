@@ -1,38 +1,23 @@
 import { Component, EventEmitter, inject, Input, Output, Signal } from '@angular/core';
 import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
-import {
-  NgbActiveModal,
-  NgbDropdown,
-  NgbDropdownItem,
-  NgbDropdownMenu,
-  NgbDropdownToggle,
-} from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { FormsModule } from '@angular/forms';
 import { ResourceTypeRequest } from '../../resource/resource-type-request';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-resource-type-add',
   standalone: true,
-  imports: [
-    ModalHeaderComponent,
-    ButtonComponent,
-    FormsModule,
-    NgbDropdown,
-    NgbDropdownItem,
-    NgbDropdownMenu,
-    NgbDropdownToggle,
-  ],
+  imports: [ModalHeaderComponent, ButtonComponent, FormsModule, NgSelectModule],
   templateUrl: './resource-type-add.component.html',
-  styleUrl: './resource-type-add.component.scss',
 })
 export class ResourceTypeAddComponent {
   @Input() resourceType: ResourceType;
   @Output() saveResourceType: EventEmitter<ResourceTypeRequest> = new EventEmitter<ResourceTypeRequest>();
   private resourceTypesService = inject(ResourceTypesService);
-  parentResourceTypeName: string;
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
   parentId: number;
 
@@ -51,11 +36,6 @@ export class ResourceTypeAddComponent {
       this.saveResourceType.emit(request);
       this.activeModal.close();
     }
-  }
-
-  selectResourceType(displayName: string, parentId: number): void {
-    this.parentResourceTypeName = displayName;
-    this.parentId = parentId;
   }
 
   isValid(): boolean {

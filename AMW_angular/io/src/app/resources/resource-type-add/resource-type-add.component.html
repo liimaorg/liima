@@ -20,24 +20,12 @@
       }
     </div>
     <div class="mb-3">
-      <label for="name" class="form-label">Parent Resource Type (optional)</label>
-      <div ngbDropdown>
-        <app-button [variant]="'secondary'" ngbDropdownToggle [additionalClasses]="'dropdown-toggle'">
-          {{ parentResourceTypeName || 'Select Resource Type' }}
-        </app-button>
-        <ul ngbDropdownMenu>
-          <li ngbDropdownItem>
-            <a class="dropdown-item" (click)="parentResourceTypeName = ''">Select Resource Type</a>
-          </li>
-          @for (resourceType of rootResourceTypes(); track resourceType.name) {
-          <li ngbDropdownItem>
-            <a class="dropdown-item" (click)="selectResourceType(resourceType.name, resourceType.id)">{{
-              resourceType.name
-            }}</a>
-          </li>
-          }
-        </ul>
-      </div>
+      <label for="selectParentType" class="form-label">Parent Resource Type (optional)</label>
+      <ng-select id="selectParentType" [(ngModel)]="parentId" placeholder="Select Resource Type">
+        @for (resourceType of rootResourceTypes(); track resourceType.name) {
+        <ng-option [value]="resourceType.id">{{ resourceType.name }}</ng-option>
+        }
+      </ng-select>
     </div>
   </div>
 </div>
