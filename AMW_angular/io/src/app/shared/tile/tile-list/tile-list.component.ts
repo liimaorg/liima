@@ -5,12 +5,6 @@ import { IconComponent } from '../../icon/icon.component';
 export interface TileListEntry {
   name: string;
   description: string;
-  actions: string[];
-}
-
-export interface TileListInputs {
-  title: string;
-  data: TileListEntry[];
 }
 
 @Component({
@@ -25,19 +19,17 @@ export interface TileListInputs {
           <span class="desc">{{ entry.description }}</span>
         </div>
         <div class="list-entry-actions">
-          @for (action of entry.actions; track action) { @if (action === 'Edit') {
-          <app-button [size]="'sm'" [variant]="'light'" (click)="edit.emit('edit ' + entry.name)">
-            {{ action }}
-          </app-button>
-          } @else if (action === 'Delete') {
+          @if (canEdit()) {
+          <app-button [size]="'sm'" [variant]="'light'" (click)="edit.emit('edit ' + entry.name)">Edit</app-button>
+          } @if (canDelete()) {
           <app-button [size]="'sm'" [variant]="'light'" (click)="delete.emit('delete ' + entry.name)">
-            {{ action }}
+            Delete
           </app-button>
-          } @else if (action === 'Overwrite') {
+          } @if (canOverwrite()) {
           <app-button [size]="'sm'" [variant]="'light'" (click)="overwrite.emit('overwrite ' + entry.name)">
-            {{ action }}
+            Overwrite
           </app-button>
-          } }
+          }
         </div>
       </li>
       }
@@ -50,6 +42,9 @@ export interface TileListInputs {
 export class TileListComponent {
   title = input.required<string>();
   data = input.required<TileListEntry[]>();
+  canEdit = input<boolean>(false);
+  canDelete = input<boolean>(false);
+  canOverwrite = input<boolean>(false);
   edit = output<string>();
   delete = output<string>();
   overwrite = output<string>();

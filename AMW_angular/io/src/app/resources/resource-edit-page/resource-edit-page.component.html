@@ -4,10 +4,19 @@
 
   <div class="page-content">
     <div class="container">Loaded resource: {{ this.resource()?.name }}</div>
+
+    <app-tile-component
+      [title]="'Templates'"
+      [action]="'New Template'"
+      [lists]="templatesData()"
+      (tileAction)="add()"
+      (listAction)="doListAction($event)"
+    ></app-tile-component>
+
     <app-tile-component
       [title]="'Functions'"
-      [action]="'Add function'"
-      [data]="itemsSignal()"
+      [action]="'New function'"
+      [lists]="functionsData()"
       (tileAction)="add()"
       (listAction)="doListAction($event)"
     ></app-tile-component>
