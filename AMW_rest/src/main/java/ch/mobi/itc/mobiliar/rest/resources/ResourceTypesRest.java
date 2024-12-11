@@ -87,7 +87,7 @@ public class ResourceTypesRest {
     @ApiOperation(value = "Add a new resource type")
     @Consumes("application/json")
     public Response addNewResourceType(ResourceTypeRequestDTO request)
-            throws ElementAlreadyExistsException, ValidationException {
+            throws ElementAlreadyExistsException, ValidationException, NotFoundException {
 
         if (StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim())) {
             throw new ValidationException("Resource type name must not be null or blank");
