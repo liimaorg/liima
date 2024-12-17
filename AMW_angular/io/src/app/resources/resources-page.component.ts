@@ -50,6 +50,7 @@ export class ResourcesPageComponent implements OnDestroy {
   releases: Signal<Release[]> = this.releaseService.allReleases;
   isLoading = signal(false);
   expandedResourceTypeId: number | null = null;
+  expandedItems: ResourceType[] = [];
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
 
   permissions = computed(() => {
@@ -76,9 +77,13 @@ export class ResourcesPageComponent implements OnDestroy {
 
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType): void {
     this.resourceService.setTypeForResourceGroupList(resourceType);
-    if (resourceType && resourceType.hasChildren)
-      this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
+    if (resourceType && resourceType.hasChildren) this.getUpdateExpandedItems(resourceType);
+    this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
     this.selectedResourceType.set(resourceType);
+  }
+
+  isExpanded(resourceType: ResourceType) {
+    return this.expandedItems.find((element) => element.id === resourceType.id);
   }
 
   addResource(resource: any) {
@@ -130,5 +135,14 @@ export class ResourcesPageComponent implements OnDestroy {
           this.selectedResourceType.set(null);
         },
       });
+  }
+
+  private getUpdateExpandedItems(resourceType: ResourceType) {
+    const index = this.expandedItems?.findIndex((element: ResourceType) => element.id === resourceType.id);
+    if (index > -1) {
+      this.expandedItems.splice(index, 1);
+    } else {
+      this.expandedItems.push(resourceType);
+    }
   }
 }
