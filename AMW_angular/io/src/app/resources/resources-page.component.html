@@ -13,47 +13,53 @@
               class="nav-link ps-0"
               style="display: inline-block"
               (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
-              >{{ resourceType.name }}</a
-            >
-            >
+              >{{ resourceType.name }}
+            </a>
           </li>
           }
         </ul>
         <hr />
+        @if (permissions().canCreateResourceTypes) {
         <div>
-          @if (permissions().canCreateResourceTypes) {
-          <app-button [variant]="'primary'" (click)="addResourceType()"
-            ><app-icon icon="plus-circle"></app-icon> New Resource Type</app-button
-          >
-          }
+          <app-button [variant]="'primary'" (click)="addResourceType()">
+            <app-icon icon="plus-circle"></app-icon> New Resource Type
+          </app-button>
         </div>
-          <ul class="nav flex-column">
-            @for (resourceType of rootResourceTypes(); track resourceType.name) {
+        } }
+        <ul class="nav flex-column">
+          @for (resourceType of rootResourceTypes(); track resourceType.name) {
+          <li class="nav-item">
+            <a
+              class="nav-link ps-0"
+              style="display: inline-block"
+              (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
+            >
+              {{ resourceType.name }}
+              @if (resourceType.hasChildren) { @if (expandedResourceTypeId === resourceType.id) {
+              <app-icon icon="dash"></app-icon>
+              } @else {
+              <app-icon icon="plus"></app-icon>
+              } }
+            </a>
+            @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
+            <ul class="nav flex-column ps-4">
+              @for (child of resourceType.children; track child.name) {
               <li class="nav-item">
-                <a class="nav-link ps-0" style="display: inline-block"
-                   (click)="toggleChildrenAndOrLoadResourcesList(resourceType)">
-                  {{ resourceType.name }}
-                  @if (resourceType.hasChildren) {
-                    @if (expandedResourceTypeId === resourceType.id) {
-                      <app-icon icon="dash"></app-icon>
-                    } @else {
-                      <app-icon icon="plus"></app-icon>
-                    }
-                  }
+                <a
+                  class="nav-link ps-0"
+                  style="display: inline-block"
+                  (click)="toggleChildrenAndOrLoadResourcesList(child)"
+                >
+                  {{ child.name }}
                 </a>
-                @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
-                  <ul class="nav flex-column ps-4">
-                    @for (child of resourceType.children; track child.name) {
-                      <li class="nav-item">
-                        <a class="nav-link ps-0" style="display: inline-block"
-                           (click)="toggleChildrenAndOrLoadResourcesList(child)">{{ child.name }}</a>
-                      </li>
-                    }
-                  </ul>
-                }
               </li>
+              }
+            </ul>
             }
-          </ul>
+          </li>
+          }
+        </ul>
+      </div>
       <div class="col-10">
         <app-resources-list
           [resourceType]="selectedResourceTypeOrDefault()"
