@@ -48,7 +48,7 @@ export class ResourceTypesService extends BaseService {
 
   delete(id: number): Observable<number> {
     return this.http
-      .delete<number>(`${this.getBaseUrl()}/resources/${id}`, {
+      .delete<number>(`${this.getBaseUrl()}/resources/resourceTypes/${id}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
