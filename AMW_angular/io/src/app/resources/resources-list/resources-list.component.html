@@ -26,7 +26,7 @@
       <tr>
         <th class="w-80">Resource name</th>
         <th class="w-10">Release</th>
-        <th class="w-10">Actions</th>
+        <th class="w-10" style="text-align: center">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -34,7 +34,7 @@
       <tr>
         <td class="w-80 align-middle">{{ resource.name }}</td>
         <td class="w-10 align-middle">{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
-        <td class="w-10 align-middle">
+        <td class="w-10 align-middle" style="text-align: center">
           <a
             href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{
               resource.defaultResourceId ? resource.defaultResourceId : resource.id
