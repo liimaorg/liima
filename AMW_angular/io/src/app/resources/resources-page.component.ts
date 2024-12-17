@@ -86,7 +86,7 @@ export class ResourcesPageComponent {
         error: (e) => this.error$.next(e),
         complete: () => {
           this.resourceTypesService.refreshData();
-          this.selectedResourceType.set(null); //or set undefined?
+          this.selectedResourceType.set(null);
         },
       });
   }
