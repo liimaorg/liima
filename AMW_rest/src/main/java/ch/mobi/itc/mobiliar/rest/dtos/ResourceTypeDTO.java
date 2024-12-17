@@ -46,7 +46,7 @@ public class ResourceTypeDTO {
     @JsonProperty(value="isDefaultResourceType")
     private boolean isDefaultResourceType;
 
-    public ResourceTypeDTO(ResourceTypeEntity resourceType){
+    public ResourceTypeDTO(ResourceTypeEntity resourceType) {
         this.id = resourceType.getId();
         this.name = resourceType.getName();
         this.hasChildren = resourceType.hasChildren();

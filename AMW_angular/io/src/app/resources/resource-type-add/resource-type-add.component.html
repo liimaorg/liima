@@ -1,0 +1,37 @@
+<app-modal-header [title]="'Create new Resource Type'" (cancel)="cancel()"></app-modal-header>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="needs-validation mb-3">
+      <label for="name" class="form-label">Resource Type name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        [(ngModel)]="resourceType.name"
+        [class.is-invalid]="!isValid() && resourceType.name.length > 0"
+        [class.is-valid]="isValid() && resourceType.name.length > 0"
+        required
+        pattern="^[a-zA-Z0-9_\-]+$"
+      />
+      @if (!isValid() && resourceType.name.length > 0) {
+      <div class="invalid-feedback">
+        The name must not contain any other than alphanumerical and "_" / "-" characters.
+      </div>
+      }
+    </div>
+    <div class="mb-3">
+      <label for="selectParentType" class="form-label">Parent Resource Type (optional)</label>
+      <ng-select id="selectParentType" [(ngModel)]="parentId" placeholder="Select Resource Type">
+        @for (resourceType of rootResourceTypes(); track resourceType.name) {
+        <ng-option [value]="resourceType.id">{{ resourceType.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'primary'" [disabled]="resourceType.name.length === 0 || !isValid()" (click)="save()"
+    >Create</app-button
+  >
+</div>

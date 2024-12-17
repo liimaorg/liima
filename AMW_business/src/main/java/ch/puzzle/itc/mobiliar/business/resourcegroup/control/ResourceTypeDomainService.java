@@ -129,11 +129,11 @@ public class ResourceTypeDomainService {
 				}
 			}
 			entityManager.persist(result.getEntity());
-			log.info("ResourceType " + newResourceTypeName + " in DB persistiert");
+			log.info("Resource Type " + newResourceTypeName + " persisted in DB");
 		}
 		else {
-			String message = "Der ResourceType mit dem Namen: " + newResourceTypeName
-					+ " ist bereits vorhanden und kann nicht erstellt werden";
+			String message = "Resource Type " + newResourceTypeName
+					+ " already exists";
 			log.info(message);
 			throw new ElementAlreadyExistsException(message, ResourceType.class, newResourceTypeName);
 		}
