@@ -9,11 +9,13 @@ import { Subject } from 'rxjs';
 import { ResourceAddComponent } from '../resource-add/resource-add.component';
 import { Release } from '../../settings/releases/release';
 import { AuthService } from '../../auth/auth.service';
+import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-type-delete.component';
 
 @Component({
   selector: 'app-resources-list',
   standalone: true,
   templateUrl: './resources-list.component.html',
+  styleUrl: './resources-list.component.scss',
   imports: [ButtonComponent, IconComponent],
 })
 export class ResourcesListComponent {
@@ -24,17 +26,20 @@ export class ResourcesListComponent {
   resourceGroupList = input.required<Resource[]>();
   releases = input.required<Release[]>();
   resourceToAdd = output<any>();
+  resourceTypeToDelete = output<ResourceType>();
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
         canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
         canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE'),
+        canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE'),
       };
     } else {
       return {
         canReadResources: false,
         canCreateResource: false,
+        canDeleteResourceType: false,
       };
     }
   });
@@ -47,5 +52,13 @@ export class ResourcesListComponent {
     modalRef.componentInstance.saveResource
       .pipe(takeUntil(this.destroy$))
       .subscribe((resource: any) => this.resourceToAdd.emit(resource));
+  }
+
+  deleteResourceType() {
+    const modalRef: NgbModalRef = this.modalService.open(ResourceTypeDeleteComponent);
+    modalRef.componentInstance.resourceType = this.resourceType();
+    modalRef.componentInstance.resourceTypeToDelete
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((resourceType: ResourceType) => this.resourceTypeToDelete.emit(resourceType));
   }
 }

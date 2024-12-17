@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -40,7 +41,10 @@ public class ResourceTypeDTO {
     private String name;
     private boolean hasChildren;
     private List<ResourceTypeDTO> children;
-    private boolean resourceTypeIsApplication;
+    @JsonProperty(value="isApplication")
+    private boolean isApplication;
+    @JsonProperty(value="isDefaultResourceType")
+    private boolean isDefaultResourceType;
 
     public ResourceTypeDTO(ResourceTypeEntity resourceType) {
         this.id = resourceType.getId();
@@ -49,6 +53,7 @@ public class ResourceTypeDTO {
         this.children = resourceType.getChildrenResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
-        this.resourceTypeIsApplication = resourceType.isApplicationResourceType();
+        this.isApplication = resourceType.isApplicationResourceType();
+        this.isDefaultResourceType = resourceType.isDefaultResourceType();
     }
 }

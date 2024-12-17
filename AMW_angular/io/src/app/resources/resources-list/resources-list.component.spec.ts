@@ -16,6 +16,7 @@ describe('ResourcesListComponent', () => {
     hasChildren: false,
     children: [],
     isApplication: false,
+    isDefaultResourceType: false,
   };
 
   const resourceGroupsOfResourceType: Resource[] = [];

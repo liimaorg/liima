@@ -224,6 +224,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -231,6 +232,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 3,
@@ -238,6 +240,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];
@@ -286,6 +289,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -293,6 +297,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 3,
@@ -300,6 +305,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];
@@ -348,6 +354,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 2,
@@ -355,6 +362,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
         {
           id: 3,
@@ -362,6 +370,7 @@ describe('RestrictionAddComponent', () => {
           hasChildren: false,
           children: [],
           isApplication: false,
+          isDefaultResourceType: false,
         },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];

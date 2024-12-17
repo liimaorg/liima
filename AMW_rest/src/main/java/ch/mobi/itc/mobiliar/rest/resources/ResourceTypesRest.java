@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeRequestDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
@@ -36,11 +37,16 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
+import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
 @Path("/resources")
@@ -53,7 +59,7 @@ public class ResourceTypesRest {
     private ResourceTypeLocator resourceTypeLocator;
 
     @Inject
-    private ResourceTypeDomainService domainService;
+    private ResourceTypeDomainService resourceTypeDomainService;
 
     @Path("/resourceTypes")
     @GET
@@ -98,11 +104,27 @@ public class ResourceTypesRest {
         }
 
         try {
-            domainService.addResourceType(request.getName(), request.getParentId());
+            resourceTypeDomainService.addResourceType(request.getName(), request.getParentId());
         } catch (ResourceTypeNotFoundException e) {
             throw new NotFoundException(e.getMessage());
         }
         return Response.status(Response.Status.CREATED).build();
     }
 
+
+    @DELETE
+    @Path("/resourceTypes/{id : \\d+}")
+    @ApiOperation(value = "Delete a resource type")
+    public Response deleteResourceType(@PathParam("id") Integer id) throws NotAuthorizedException, NotFoundException {
+        try {
+            if (resourceTypeLocator.getPredefinedResourceTypes().stream()
+                    .anyMatch(resourceType -> resourceType.getId().equals(id))) {
+                throw new NotAuthorizedException("Predefined resource types cannot be deleted.");
+            }
+            resourceTypeDomainService.removeResourceType(id);
+        } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
+            throw new NotFoundException(e.getMessage());
+        }
+        return Response.status(NO_CONTENT).build();
+    }
 }

@@ -117,4 +117,18 @@ export class ResourcesPageComponent implements OnDestroy {
         complete: () => this.resourceTypesService.refreshData(),
       });
   }
+
+  deleteResourceType(resourceType: ResourceType) {
+    this.resourceTypesService
+      .delete(resourceType.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Resource type deleted successfully.'),
+        error: (e) => this.error$.next(e),
+        complete: () => {
+          this.resourceTypesService.refreshData();
+          this.selectedResourceType.set(null);
+        },
+      });
+  }
 }

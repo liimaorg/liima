@@ -4,4 +4,5 @@ export interface ResourceType {
   hasChildren: boolean;
   children: ResourceType[];
   isApplication: boolean;
+  isDefaultResourceType: boolean;
 }
