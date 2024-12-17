@@ -35,6 +35,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
+import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -85,12 +86,16 @@ public class ResourceTypesRest {
     }
 
     @DELETE
-    @Path("/{id : \\d+}")
+    @Path("/resourceTypes/{id : \\d+}")
     @ApiOperation(value = "Delete a resource type")
-    public Response deleteResourceType(@PathParam("id") Integer id) throws NotFoundException {
+    public Response deleteResourceType(@PathParam("id") Integer id) throws NotAuthorizedException, NotFoundException {
         try {
+            if (resourceTypeLocator.getPredefinedResourceTypes().stream()
+                    .anyMatch(resourceType -> resourceType.getId().equals(id))) {
+                throw new NotAuthorizedException("Predefined resource types cannot be deleted.");
+            }
             resourceTypeDomainService.removeResourceType(id);
-        }catch (ResourceNotFoundException | ResourceTypeNotFoundException e){
+        } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
             throw new NotFoundException(e.getMessage());
         }
         return Response.status(NO_CONTENT).build();
