@@ -1,12 +1,9 @@
 package ch.mobi.itc.mobiliar.rest.apps;
 
 import ch.mobi.itc.mobiliar.rest.dtos.AppAppServerDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.AppDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.AppServerDTO;
 import ch.puzzle.itc.mobiliar.business.apps.boundary.*;
-import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import io.swagger.annotations.Api;

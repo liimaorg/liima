@@ -30,12 +30,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @XmlRootElement(name = "release")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class ResourceDTO {
     private Integer id; // Release id
@@ -76,5 +78,11 @@ public class ResourceDTO {
                 this.resourceTags.add(new ResourceTagDTO(resourceTagEntity));
             }
         }
+    }
+
+    public ResourceDTO(ResourceEntity resource) {
+        this.id = resource.getId();
+        this.release = resource.getRelease().getName();
+
     }
 }

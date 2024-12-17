@@ -28,8 +28,11 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
@@ -37,6 +40,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RequestScoped
 @Path("/resources")
@@ -91,5 +95,18 @@ public class ResourcesRest {
         result.setReleaseName(resource.getRelease().getName());
         result.setType(resource.getResourceType().getName());
         return Response.ok(result).build();
+    }
+
+
+    @GET
+    @Path("/{id : \\d+}")
+    @ApiOperation(value = "Get a resource by id")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getById(@ApiParam("Resource ID") @PathParam("id") Integer id) {
+        ResourceEntity resource = resourceLocator.getResourceWithGroupAndRelatedResources(id);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(new ResourceDTO(resource)).build();
     }
 }

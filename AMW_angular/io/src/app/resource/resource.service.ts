@@ -49,7 +49,7 @@ export class ResourceService extends BaseService {
 
   getResource(resourceId: number): void {
     this.http
-      .get<Resource>(`${this.getBaseUrl()}/resources/resources/${resourceId}`, {
+      .get<Resource>(`${this.getBaseUrl()}/resources/${resourceId}`, {
         headers: this.getHeaders(),
       })
       .pipe(

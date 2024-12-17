@@ -32,7 +32,10 @@ export class ResourceEditPageComponent {
 
   isLoading = computed(() => {
     if (this.ids()?.keys) {
+      // permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
       // TODO show correct STAGE by context id
+      // TODO how to work with resourceTypes?
+
       this.resourceService.getResource(Number(this.ids().get('id')));
       return false;
     }
@@ -51,23 +54,6 @@ export class ResourceEditPageComponent {
     {
       title: 'Resource Type Templates',
       entries: [{ name: 'seg', description: 'segmentation', id: 121 }] as TileListEntry[],
-      canOverwrite: false,
-    },
-  ]);
-
-  functionsData = signal([
-    {
-      title: 'Resource Instance Functions',
-      entries: [
-        { name: 'Function1', description: 'bla', id: 42 },
-        { name: 'Function 2', description: 'whatever', id: 69 },
-      ],
-      canEdit: true,
-      canDelete: true,
-    },
-    {
-      title: 'Resource Type Functions',
-      entries: [{ name: 'seg', description: 'segmentation', id: 666 }] as TileListEntry[],
       canOverwrite: false,
     },
   ]);
