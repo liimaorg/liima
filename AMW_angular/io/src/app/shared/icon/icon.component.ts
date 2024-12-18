@@ -2,10 +2,10 @@ import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
   selector: 'app-icon',
-  template: ` <svg class="bi" width="16" height="16" fill="currentColor">
+  template: ` <svg class="icon" width="16" height="16" fill="currentColor">
     <use [attr.xlink:href]="iconPath" />
   </svg>`,
-  styles: [],
+  styleUrl: './icon.component.css',
   standalone: true,
 })
 export class IconComponent implements OnChanges {

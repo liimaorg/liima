@@ -11,10 +11,11 @@
           <li class="nav-item">
             <a
               class="nav-link ps-0"
+              [ngClass]="{ active: selection === resourceType }"
               style="display: inline-block"
               (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
-              >{{ resourceType.name }}
-            </a>
+              >{{ resourceType.name }}</a
+            >
           </li>
           }
         </ul>
@@ -31,27 +32,28 @@
           <li class="nav-item">
             <a
               class="nav-link ps-0"
+              [ngClass]="{ active: selection === resourceType }"
               style="display: inline-block"
               (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
             >
-              {{ resourceType.name }}
-              @if (resourceType.hasChildren) { @if (expandedResourceTypeId === resourceType.id) {
+              @if (resourceType.hasChildren) { @if (isExpanded(resourceType)) {
               <app-icon icon="dash"></app-icon>
               } @else {
               <app-icon icon="plus"></app-icon>
               } }
+              {{ resourceType.name }}
             </a>
-            @if (resourceType.hasChildren && expandedResourceTypeId === resourceType.id) {
+            @if (resourceType.hasChildren && isExpanded(resourceType) ) {
             <ul class="nav flex-column ps-4">
               @for (child of resourceType.children; track child.name) {
               <li class="nav-item">
                 <a
                   class="nav-link ps-0"
+                  [ngClass]="{ active: selection === child }"
                   style="display: inline-block"
                   (click)="toggleChildrenAndOrLoadResourcesList(child)"
+                  >{{ child.name }}</a
                 >
-                  {{ child.name }}
-                </a>
               </li>
               }
             </ul>
