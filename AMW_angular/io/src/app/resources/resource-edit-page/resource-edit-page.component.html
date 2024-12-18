@@ -14,13 +14,6 @@
       (listAction)="doListAction($event)"
     ></app-tile-component>
 
-    <app-tile-component
-      [title]="'Functions'"
-      [actionName]="'New function'"
-      [canAction]="true"
-      [lists]="functionsData()"
-      (tileAction)="add()"
-      (listAction)="doListAction($event)"
-    ></app-tile-component>
+    <app-resources-edit-functions [resourceId]="resource()?.id"></app-resources-edit-functions>
   </div>
 </app-page>
