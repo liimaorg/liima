@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
 import { BehaviorSubject, skip, Subject, take } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AsyncPipe } from '@angular/common';
@@ -22,7 +22,6 @@ import { ResourceService } from '../resource/resource.service';
 import { Resource } from '../resource/resource';
 import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
-import { offset } from '@popperjs/core';
 
 @Component({
   selector: 'app-apps',
@@ -63,7 +62,10 @@ export class AppsComponent implements OnInit, OnDestroy {
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
-  isLoading = false;
+  showLoader = signal(false);
+  isLoading = computed(() => {
+    return this.appServers() === undefined || this.showLoader();
+  });
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -111,7 +113,7 @@ export class AppsComponent implements OnInit, OnDestroy {
   }
 
   saveAppServer(appServer: AppServer) {
-    this.isLoading = true;
+    this.showLoader.set(true);
     this.appsService
       .createAppServer(appServer)
       .pipe(takeUntil(this.destroy$))
@@ -124,13 +126,12 @@ export class AppsComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           this.appsService.refreshData();
-          this.isLoading = false;
         },
       });
   }
 
   saveApp(app: AppCreate) {
-    this.isLoading = true;
+    this.showLoader.set(true);
     this.appsService
       .createApp(app)
       .pipe(takeUntil(this.destroy$))
@@ -139,7 +140,6 @@ export class AppsComponent implements OnInit, OnDestroy {
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
           this.appsService.refreshData();
-          this.isLoading = false;
         },
       });
   }
