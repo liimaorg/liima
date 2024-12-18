@@ -12,11 +12,12 @@ import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
+import { ResourceEditFunctionsComponent } from './resource-edit-functions/resource-edit-functions.component';
 
 @Component({
   selector: 'app-resource-edit-page',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent],
+  imports: [LoadingIndicatorComponent, PageComponent, ResourceEditFunctionsComponent, TileComponent],
   templateUrl: './resource-edit-page.component.html',
 })
 export class ResourceEditPageComponent {
