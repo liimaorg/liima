@@ -8,6 +8,7 @@ import {
   OnDestroy,
   WritableSignal,
 } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
@@ -31,8 +32,9 @@ import { takeUntil } from 'rxjs/operators';
   selector: 'app-resources-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [PageComponent, LoadingIndicatorComponent, ButtonComponent, IconComponent, ResourcesListComponent],
+  imports: [PageComponent, LoadingIndicatorComponent, ButtonComponent, IconComponent, ResourcesListComponent, NgClass],
   templateUrl: './resources-page.component.html',
+  styleUrl: 'resources-page.component.css',
 })
 export class ResourcesPageComponent implements OnDestroy {
   private authService = inject(AuthService);
@@ -52,6 +54,7 @@ export class ResourcesPageComponent implements OnDestroy {
   expandedResourceTypeId: number | null = null;
   expandedItems: ResourceType[] = [];
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
+  selection: any;
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -76,6 +79,7 @@ export class ResourcesPageComponent implements OnDestroy {
   });
 
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType): void {
+    this.selection = resourceType;
     this.resourceService.setTypeForResourceGroupList(resourceType);
     if (resourceType && resourceType.hasChildren) this.getUpdateExpandedItems(resourceType);
     this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;

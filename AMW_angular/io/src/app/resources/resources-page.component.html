@@ -11,6 +11,7 @@
           <li class="nav-item">
             <a
               class="nav-link ps-0"
+              [ngClass]="{ active: selection === resourceType }"
               style="display: inline-block"
               (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
               >{{ resourceType.name }}</a
@@ -31,6 +32,7 @@
           <li class="nav-item">
             <a
               class="nav-link ps-0"
+              [ngClass]="{ active: selection === resourceType }"
               style="display: inline-block"
               (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
             >
@@ -47,6 +49,7 @@
               <li class="nav-item">
                 <a
                   class="nav-link ps-0"
+                  [ngClass]="{ active: selection === child }"
                   style="display: inline-block"
                   (click)="toggleChildrenAndOrLoadResourcesList(child)"
                   >{{ child.name }}</a
