@@ -1,11 +1,14 @@
 package ch.mobi.itc.mobiliar.rest.servers;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceGroupDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.ServerDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.server.boundary.GetServersUseCase;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
+import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -76,6 +79,9 @@ public class ServersRest {
                               @QueryParam("appServer") String appServer,
                                @QueryParam("host") String host,
                               @QueryParam("node") String node) {
-        return Response.status(OK).entity(serverView.getServers(host,appServer,runtime, node, environment,true)).build();
+
+        List<ServerDTO> servers =  serverView.getServers(host,appServer,runtime, node, environment,true).stream().map(ServerDTO::new).collect(Collectors.toList());
+
+        return Response.status(OK).entity(servers).build();
     }
 }

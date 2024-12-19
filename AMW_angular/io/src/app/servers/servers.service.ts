@@ -21,7 +21,10 @@ export class ServersService extends BaseService {
 
   servers: Signal<Server[]> = toSignal(this.reloadedServers, { initialValue: [] as Server[] });
 
-  private runtimes$ = this.http.get<Resource[]>(`${this.serversUrl}/runtimes`).pipe(catchError(this.handleError));
+  private runtimes$ = this.http
+    .get<Resource[]>(`${this.serversUrl}/runtimes`)
+    .pipe(catchError(this.handleError))
+    .pipe(map((data) => data.sort((a, b) => (a.name < b.name ? -1 : 1))));
   runtimes: Signal<Resource[]> = toSignal(this.runtimes$);
 
   private appServersSuggestions$ = this.http
