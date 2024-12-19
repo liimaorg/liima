@@ -10,13 +10,14 @@ import { ResourceAddComponent } from '../resource-add/resource-add.component';
 import { Release } from '../../settings/releases/release';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-type-delete.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-resources-list',
   standalone: true,
   templateUrl: './resources-list.component.html',
   styleUrl: './resources-list.component.scss',
-  imports: [ButtonComponent, IconComponent],
+  imports: [ButtonComponent, IconComponent, RouterLink],
 })
 export class ResourcesListComponent {
   private modalService = inject(NgbModal);
