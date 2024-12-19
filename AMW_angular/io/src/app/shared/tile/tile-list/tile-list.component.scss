@@ -1,0 +1,30 @@
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+ul {
+  padding-left: 0;
+}
+
+.list-entry {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+
+  .list-entry-text {
+    display: flex;
+    flex-direction: column;
+
+    .desc {
+      color: gray;
+    }
+  }
+
+  .list-entry-actions {
+    display: flex;
+    gap: 0.5em
+  }
+}
