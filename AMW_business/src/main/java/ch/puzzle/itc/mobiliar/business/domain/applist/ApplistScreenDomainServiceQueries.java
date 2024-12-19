@@ -91,7 +91,7 @@ public class ApplistScreenDomainServiceQueries {
 
         if (maxResult != null) {
             query.setMaxResults(maxResult);
-    }
+        }
 
         return  new Tuple<>(query.getResultList(), totalCount);
     }

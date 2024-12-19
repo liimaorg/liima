@@ -58,7 +58,11 @@ export class AppsService extends BaseService {
       .pipe(catchError(this.handleError))
       .pipe(
         map((response: HttpResponse<AppServer[]>) => {
-          this.count.set(Number(response.headers.get('x-total-count')));
+          if (response.body.length <= 0) {
+            this.count.set(0);
+          } else {
+            this.count.set(Number(response.headers.get('x-total-count')));
+          }
           return response.body;
         }),
       );
