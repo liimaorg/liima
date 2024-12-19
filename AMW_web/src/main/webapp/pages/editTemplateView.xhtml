@@ -143,32 +143,17 @@
 				<div style="height: 0px; clear: both;"></div>
 
 				<label class="control-label"> <h:outputText
-						value="${editTemplateView.testing ? 'Test ' : ''}Template name:" />
+						value="Template name:" />
 				</label>
 				<div class="controls">
 					<div class="CodeMirror-merge-2pane">
 						<div class="CodeMirror-merge-pane">
-							<h:inputText rendered="${!editTemplateView.testing}"
+							<h:inputText
 								value="#{editTemplateView.template.name}"
 										 disabled="#{!editTemplateView.canModifyTemplates()}"
 								label="Name" styleClass="changeAware">
 							</h:inputText>
-							<h:selectOneMenu
-								value="#{editTemplateView.selectedStpId}"
-								rendered="${editTemplateView.testing}"
-								disabled="#{!editTemplateView.canModifyTemplates()}"
-								required="true" label="STP" styleClass="changeAware">
-								<f:selectItems value="#{editTemplateView.stpList}"
-									var="stp" itemLabel="#{stp.stpName}" itemValue="#{stp.id}" />
-								<a4j:ajax render="infoStpArguments" />
-							</h:selectOneMenu>
-							<a4j:commandLink id="infoStpCommandLink"
-								rendered="#{editTemplateView.testing}" execute="@form"
-								oncomplete="#{rich:component('infoStpArguments')}.show();"
-								render="infoStpArguments" title="Show details about this STP"
-								styleClass="simpleInfo">
-								<i class="icon icon-info inlineBlockMiddle height16" />
-							</a4j:commandLink>
+
 						</div>
 						<h:panelGroup layout="block" styleClass="CodeMirror-merge-gap"
 							rendered="${editTemplateView.compareMode}" />
@@ -180,13 +165,13 @@
 					</div>
 				</div>
 				<label class="control-label"> <h:outputText
-						value="Path/filename:" rendered="${!editTemplateView.testing}"
+						value="Path/filename:"
 						disabled="#{!editTemplateView.canModifyTemplates()}"/>
 				</label>
 				<div class="controls">
 					<div class="CodeMirror-merge-2pane">
 						<div class="CodeMirror-merge-pane">
-							<h:inputText rendered="${!editTemplateView.testing}"
+							<h:inputText
 								value="#{editTemplateView.template.targetPath}"
 								required="false" label="Path_Filename" id="templateFileName"
 										 disabled="#{!editTemplateView.canModifyTemplates()}" styleClass="changeAware">
@@ -250,7 +235,7 @@
 			    	var codeEditor = document.getElementById("codeMirrorReference");
 					var originalValue = codeEditor.value;
 			    	var code = codeEditor.value;
-					var templateName = document.getElementById("templateFileName") == null ? "stp" : document.getElementById("templateFileName").value;
+					var templateName = document.getElementById("templateFileName").value;
 					var mode = "velocity";
 					var file = templateName.split(".");
 					var readonlyEditor = (document.getElementById("codeMirrorReference").disabled == true);
@@ -372,62 +357,6 @@
 			</article>
 		</div>
 		</section>
-
-		<rich:popupPanel id="infoStpArguments" autosized="true"
-			moveable="true" headerClass="testing"
-			rendered="${editTemplateView.testing}">
-			<f:facet name="header">
-				<h2>
-					<h:outputText value="Info Shakedown Test Package" />
-				</h2>
-			</f:facet>
-			<f:facet name="controls">
-				<h:outputLink value="#" class="icon icon-closeGrey icon-replace"
-					onclick="#{rich:component('infoStpArguments')}.hide(); return false;">x	</h:outputLink>
-			</f:facet>
-			<h:panelGroup
-				rendered="#{editTemplateView.selectedStp!=null}">
-				<div class="well textLeft">
-					<div class="control-group">
-						<h:outputText value="Name: " />
-						<h:outputText
-							value="#{editTemplateView.selectedStp.stpName}" />
-					</div>
-					<hr align="center" />
-					<div class="control-group">
-						<h:outputText value="Version: " />
-						<h:outputText
-							value="#{editTemplateView.selectedStp.version}" />
-					</div>
-					<hr align="center" />
-					<div class="control-group">
-						<h:outputText value="Arguments: " />
-						<h:outputText
-							value="#{editTemplateView.selectedStp.comaSeperatedParameters}" />
-					</div>
-				</div>
-			</h:panelGroup>
-			<h:panelGroup
-				rendered="#{editTemplateView.selectedStp==null}">
-				<div class="well textLeft">
-					<div class="control-group">
-						<h2>
-							<h:outputText value="STP has been deleted or not found!" />
-						</h2>
-					</div>
-				</div>
-			</h:panelGroup>
-			<h:panelGroup
-				rendered="#{editTemplateView.selectedStp==null}">
-				<div class="well textCenter">
-					<div class="control-group">
-						<h2>
-							<h:outputText value="Shakedown Test Suite" />
-						</h2>
-					</div>
-				</div>
-			</h:panelGroup>
-		</rich:popupPanel>
 
 	</ui:define>
 </ui:composition>

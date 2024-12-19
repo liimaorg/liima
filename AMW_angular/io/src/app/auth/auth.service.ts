@@ -1,13 +1,15 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Restriction } from '../settings/permission/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DefaultResourceType } from './defaultResourceType';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
+  private http = inject(HttpClient);
   private reload$ = new Subject<Restriction[]>();
   private restrictions$ = this.reload$.pipe(
     startWith(null),
@@ -16,7 +18,7 @@ export class AuthService extends BaseService {
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
 
-  constructor(private http: HttpClient) {
+  constructor() {
     super();
   }
 
@@ -42,6 +44,22 @@ export class AuthService extends BaseService {
     return (
       this.getActionsForPermission(permissionName).find((value) => value === 'ALL' || value === action) !== undefined
     );
+  }
+
+  hasResourcePermission(permissionName: string, action: string, resourceType: string): boolean {
+    return (
+      this.restrictions()
+        .filter((entry) => entry.permission.name === permissionName)
+        .filter((entry) => entry.resourceTypeName === resourceType || this.isDefaultType(entry, resourceType))
+        .map((entry) => entry.action)
+        .find((entry) => entry === 'ALL' || entry === action) !== undefined
+    );
+  }
+
+  private isDefaultType(entry: Restriction, resourceType: string) {
+    if (entry.resourceTypeName === null && entry.resourceTypePermission === 'DEFAULT_ONLY') {
+      return Object.keys(DefaultResourceType).find((key) => key === resourceType);
+    } else return false;
   }
 }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { EnvironmentService } from '../../deployment/environment.service';
 import { DeploymentService } from '../../deployment/deployment.service';
@@ -12,8 +12,6 @@ import { DeploymentService } from '../../deployment/deployment.service';
 
   imports: [RouterOutlet],
 })
-export class DeploymentContainerComponent implements OnInit {
+export class DeploymentContainerComponent {
   constructor() {}
-
-  ngOnInit(): void {}
 }

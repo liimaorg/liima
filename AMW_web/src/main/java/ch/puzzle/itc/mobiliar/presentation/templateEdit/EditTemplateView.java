@@ -24,8 +24,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.shakedown.control.ShakedownStpService;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
@@ -35,15 +33,11 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.*;
@@ -66,9 +60,6 @@ public class EditTemplateView implements Serializable {
     PermissionBoundary permissionBoundary;
 
     @Inject
-    ShakedownStpService stpService;
-
-    @Inject
     @Getter
     private SessionContext sessionContext;
 
@@ -83,12 +74,6 @@ public class EditTemplateView implements Serializable {
 
     @Getter
     RevisionInformation compareRevision;
-
-    @Getter
-    List<ShakedownStpEntity> stpList;
-
-    @Getter
-    ShakedownStpEntity selectedStp;
 
     @Getter
     @Setter
@@ -114,62 +99,6 @@ public class EditTemplateView implements Serializable {
         sessionContext.setContextId(contextIdViewParam);
     }
 
-    @Inject
-    @TestingMode
-    private Boolean testing;
-
-    @TestingMode
-    public void onChangedTestingMode(@Observes Boolean isTesting) {
-        this.testing = isTesting;
-    }
-
-    /**
-     * @return true if testing is true and initialized, otherwise false
-     */
-    public boolean isTesting() {
-        return testing != null && testing;
-    }
-
-    @PostConstruct
-    public void init() {
-        if (settings.isTestingMode()) {
-            loadStpList();
-        }
-    }
-
-    private void loadStpList() {
-        if (stpList == null) {
-            stpList = stpService.getSTPs();
-        }
-        findSelectedStp();
-    }
-
-    private void findSelectedStp() {
-        if (stpList != null && !StringUtils.isBlank(template.getName())) {
-            for (ShakedownStpEntity stp : stpList) {
-                if (stp.getStpName().equals(template.getName())) {
-                    selectedStp = stp;
-                    break;
-                }
-            }
-        }
-    }
-
-    public Integer getSelectedStpId() {
-        return selectedStp != null ? selectedStp.getId() : null;
-    }
-
-    public void setSelectedStpId(Integer selectedStpId) {
-        if (stpList != null) {
-            for (ShakedownStpEntity entity : stpList) {
-                if (entity.getId().equals(selectedStpId)) {
-                    selectedStp = entity;
-                    return;
-                }
-            }
-        }
-        selectedStp = null;
-    }
 
     public Integer getTemplateId() {
         return template != null ? template.getId() : null;
@@ -204,7 +133,6 @@ public class EditTemplateView implements Serializable {
     public void setTemplateId(Integer templateId) {
         template = templateEditor.getTemplateById(templateId);
         revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(templateId));
-        findSelectedStp();
     }
 
     public boolean isNewTemplate() {
@@ -257,7 +185,6 @@ public class EditTemplateView implements Serializable {
         boolean success = true;
         String errorMessage = "Was not able to save the template: ";
         try {
-            setTemplateName();
             saveTemplate();
         } catch (ResourceNotFoundException | ResourceTypeNotFoundException e) {
             success = fail(errorMessage + e.getMessage());
@@ -269,31 +196,20 @@ public class EditTemplateView implements Serializable {
         }
     }
 
-    private void setTemplateName() throws AMWException {
-        template.setTesting(settings.isTestingMode());
-        if (template.isTesting()) {
-            if (selectedStp != null) {
-                template.setName(selectedStp.getStpName());
-            } else {
-                throwError("No STP-name selected!");
-            }
-        }
-    }
-
     private void saveTemplate() throws AMWException {
         if (relationIdForTemplate != null) {
             templateEditor.saveTemplateForRelation(template, relationIdForTemplate, resourceId != null);
             return;
         }
         if (resourceId == null) {
-            templateEditor.saveTemplateForResourceType(template, resourceTypeId, settings.isTestingMode());
+            templateEditor.saveTemplateForResourceType(template, resourceTypeId);
             return;
         }
-        templateEditor.saveTemplateForResource(template, resourceId, settings.isTestingMode());
+        templateEditor.saveTemplateForResource(template, resourceId);
     }
 
     public boolean canModifyTemplates() {
-        return permissionBoundary.canModifyTemplateOfResourceOrResourceType(resourceId, resourceTypeId, Action.UPDATE, settings.isTestingMode());
+        return permissionBoundary.canModifyTemplateOfResourceOrResourceType(resourceId, resourceTypeId, Action.UPDATE);
     }
 
     public boolean isRelation() {

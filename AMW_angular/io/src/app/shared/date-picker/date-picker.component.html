@@ -1,7 +1,7 @@
 @if (errorMessage) {
 <div class="alert alert-warning alert-dismissible" role="alert">
   <span [innerHTML]="errorMessage"></span>
-  <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+  <app-button [variant]="'close'" (click)="cancel()"></app-button>
 </div>
 }
 <div class="input-group me-2">
@@ -17,6 +17,7 @@
   />
 
   <div class="input-group-append">
+    <!-- TODO: convert this button-->
     <button class="btn btn-secondary" [ngbPopover]="calendarContent" [disabled]="disabled" type="button">
       <app-icon icon="calendar3"></app-icon>
     </button>
@@ -27,9 +28,13 @@
   <div>
     <div class="d-grid">
       <ngb-datepicker name="datepicker" [ngModel]="date" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
-      <button class="btn btn-secondary m-0" [disabled]="!date?.day" type="button" (click)="toggleDateTimeState($event)">
-        OK
-      </button>
+      <app-button
+        [variant]="'secondary'"
+        [additionalClasses]="'m-0 w-100'"
+        [disabled]="!date?.day"
+        (click)="toggleDateTimeState($event)"
+        >OK</app-button
+      >
     </div>
   </div>
 </ng-template>

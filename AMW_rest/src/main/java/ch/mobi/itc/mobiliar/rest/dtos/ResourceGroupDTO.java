@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,13 +42,31 @@ public class ResourceGroupDTO {
     private String name;
     private String type;
     private List<ReleaseEntity> releases;
+    private ReleaseDTO defaultRelease;
+    private Integer defaultResourceId;
 
-    public ResourceGroupDTO(ResourceGroupEntity resourceGroup, List<ReleaseEntity> releases){
+    public ResourceGroupDTO(ResourceGroupEntity resourceGroup, List<ReleaseEntity> releases) {
         this.id = resourceGroup.getId();
         this.name = resourceGroup.getName();
-        this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName(): null;
-        if(releases!=null && !releases.isEmpty()){
+        this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName() : null;
+        if (releases != null && !releases.isEmpty()) {
             this.releases = releases;
+        }
+    }
+
+    public ResourceGroupDTO(ResourceGroupEntity resourceGroup,
+                            ReleaseEntity defaultRelease,
+                            List<ReleaseEntity> releases,
+                            ResourceEntity defaultResource) {
+        this.id = resourceGroup.getId();
+        this.name = resourceGroup.getName();
+        this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName() : null;
+        this.defaultRelease = new ReleaseDTO(defaultRelease.getId(), defaultRelease.getName());
+        if (releases != null && !releases.isEmpty()) {
+            this.releases = releases;
+        }
+        if (defaultResource != null) {
+            this.defaultResourceId = defaultResource.getId();
         }
     }
 }

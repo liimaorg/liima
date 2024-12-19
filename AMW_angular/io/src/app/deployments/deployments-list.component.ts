@@ -12,9 +12,11 @@ import { IconComponent } from '../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { SortableIconComponent } from '../shared/sortable-icon/sortable-icon.component';
 import { DatePipe } from '@angular/common';
+import { ModalHeaderComponent } from '../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
-  selector: 'amw-deployments-list',
+  selector: 'app-deployments-list',
   templateUrl: './deployments-list.component.html',
   standalone: true,
   imports: [
@@ -24,6 +26,8 @@ import { DatePipe } from '@angular/common';
     RouterLink,
     DateTimePickerComponent,
     DatePipe,
+    ModalHeaderComponent,
+    ButtonComponent,
   ],
 })
 export class DeploymentsListComponent {
@@ -40,7 +44,6 @@ export class DeploymentsListComponent {
 
   deployment: Deployment;
   deploymentDate: DateTimeModel = new DateTimeModel();
-  hasPermissionShakedownTest: boolean = null;
   allSelected: boolean = false;
   // TODO: show this error somewhere?
   errorMessage = '';
@@ -71,12 +74,12 @@ export class DeploymentsListComponent {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate);
     this.modalService.open(content).result.then(
-      (result) => {
+      () => {
         this.deployment.deploymentDate = this.deploymentDate.toEpoch();
         this.editDeploymentDate.emit(this.deployment);
         delete this.deploymentDate;
       },
-      (reason) => {
+      () => {
         delete this.deploymentDate;
       },
     );
@@ -84,36 +87,32 @@ export class DeploymentsListComponent {
 
   showConfirm(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    this.resourceService.canCreateShakedownTest(this.deployment.appServerId).subscribe({
-      next: (r) => (this.hasPermissionShakedownTest = r),
-      error: (e) => (this.errorMessage = e),
-      complete: () =>
-        this.modalService.open(content).result.then(
-          (result) => {
-            this.doConfirmDeployment.emit(this.deployment);
-          },
-          (reason) => {},
-        ),
-    });
+
+    this.modalService.open(content).result.then(
+      () => {
+        this.doConfirmDeployment.emit(this.deployment);
+      },
+      () => {},
+    );
   }
 
   showReject(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.modalService.open(content).result.then(
-      (result) => {
+      () => {
         this.doRejectDeployment.emit(this.deployment);
       },
-      (reason) => {},
+      () => {},
     );
   }
 
   showCancel(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);
     this.modalService.open(content).result.then(
-      (result) => {
+      () => {
         this.doCancelDeployment.emit(this.deployment);
       },
-      (reason) => {},
+      () => {},
     );
   }
 

@@ -1,13 +1,4 @@
-<div class="modal-header">
-  <h6 class="modal-title">Edit deployments</h6>
-  <button
-    type="button"
-    class="btn-close"
-    data-dismiss="modal"
-    aria-hidden="true"
-    (click)="activeModal.dismiss('Cross click')"
-  ></button>
-</div>
+<app-modal-header [title]="'Edit deployments'" (cancel)="activeModal.dismiss('Cross click')"></app-modal-header>
 <div class="modal-body">
   <span class="form-horizontal">
     <label for="selectEditAction" class="col-sm-2 form-label">Action</label>
@@ -57,29 +48,9 @@
       <label for="simulate">simulate before deployment</label>
     </div>
 
-    @if (hasPermissionShakedownTest) {
-    <div class="form-check">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        id="shakedownTestsWhenDeployed"
-        [(ngModel)]="confirmationAttributes.shakedownTestsWhenDeployed"
-      />
-      <label for="shakedownTestsWhenDeployed">execute shakedown tests when deployed</label>
-    </div>
-    } @if (confirmationAttributes.shakedownTestsWhenDeployed) {
-    <div class="form-check">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        id="neighbourhoodTest"
-        [(ngModel)]="confirmationAttributes.neighbourhoodTest"
-      />
-      <label for="neighbourhoodTest">test neighbourhood</label>
-    </div>
-    } }
+    }
   </span>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-primary" (click)="doEdit()">Edit</button>
+  <app-button [variant]="'primary'" (click)="doEdit()">Edit</app-button>
 </div>

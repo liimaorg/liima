@@ -130,23 +130,26 @@
             <img class="liimaLogo" src="../resources/images/misc/Liima.svg" alt="Liima" />
             <nav>
             <ul>
-                <li>
-                    <label class="inlineBlock myfavorites">
-                        <h:selectBooleanCheckbox value="#{userSettings.myAMWMode}" onclick="if(window.confirmLeave){return confirmLeave(event)};">
-                            <a4j:ajax render="fullBody"
-                                      oncomplete="window.location.reload();"
-                                      onbegin="showLoaderImmediate();" onerror="hideLoader();" />
-                        </h:selectBooleanCheckbox> Favorites only
-                    </label>
+                <ui:fragment>
+                <li class="#{screen eq 'newApplist' ? 'current' : ''}">
+                    <h:outputLink value="/AMW_angular/#/apps"
+                                  onclick="showLoader();confirmLeave(event);">
+                        <h:outputText value="Apps" />
+                    </h:outputLink>
                 </li>
-                <li class="#{screen eq 'newApplist' ? 'current' : ''}"><h:link
-                        outcome="applist" value="Apps" onclick="showLoader();" /></li>
-                <li class="#{screen eq 'server' ? 'current' : ''}"><h:link
-						outcome="serverListView" value="Servers" onclick="showLoader();" /></li>
-                <li
-                    class="#{screen eq 'newResourceList' or screen eq 'newEditRes' or screen eq 'newEditApp' or screen eq 'newEditNode' or screen eq 'newEditResType' ? 'current' : ''}"><h:link
-                        outcome="resourceList" value="Resources" onclick="showLoader();" /></li>
-
+                </ui:fragment>
+                <li class="#{screen eq 'server' ? 'current' : ''}">
+                    <h:outputLink value="/AMW_angular/#/servers"
+                                  onclick="showLoader();confirmLeave(event);">
+                        <h:outputText value="Servers" />
+                    </h:outputLink>
+                </li>
+                <li class="#{screen eq 'newResourceList' or screen eq 'newEditResType' or screen eq 'newEditNode' or screen eq 'newEditResType' ? 'current' : ''}">
+                    <h:outputLink value="/AMW_angular/#/resources"
+                                  onclick="showLoader();confirmLeave(event);">
+                        <h:outputText value="Resources" />
+                    </h:outputLink>
+                </li>
                 <ui:fragment rendered="#{securityDataProvider.hasPermissionOnAllContext('DEPLOYMENT', 'READ')}">
                 <li class="#{screen eq 'newDeploy' ? 'current' : ''}">
                         <h:outputLink value="/AMW_angular/#/deployments"
@@ -156,14 +159,12 @@
                 </li>
                 </ui:fragment>
 
-
-                <li class="#{screen eq 'shakedownTest' ? 'current' : ''}"><h:link
-                        outcome="shakedownTest" value="Shakedown Test"
-                        onclick="showLoader();"
-                        rendered="#{securityDataProvider.hasPermission('SHAKEDOWN_TEST_PAGE')}" /></li>
-
-                <li class="#{screen eq 'newSettings' ? ' current' : ''}"><h:link
-                        outcome="settings" onclick="showLoader();">Settings</h:link></li>
+                <li class="#{screen eq 'newSettings' ? ' current' : ''}">
+                    <h:outputLink value="/AMW_angular/#/settings"
+                                  onclick="showLoader();confirmLeave(event);">
+                        <h:outputText value="Settings" />
+                    </h:outputLink>
+                </li>
                 <li>
                 <h:commandLink action="#{securityDataProvider.logout()}"
                     value="Logout #{securityDataProvider.userName}" /></li>

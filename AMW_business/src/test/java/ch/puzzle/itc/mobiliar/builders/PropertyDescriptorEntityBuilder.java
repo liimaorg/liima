@@ -44,7 +44,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 	private boolean encrypt;
 	private String propertyName;
 	private boolean nullable;
-	private boolean testing;
 	private String validationLogic;
 	private String propertyComment;
 	private Integer cardinalityProperty;
@@ -72,7 +71,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
      * @param encrypted
      * @param nullable
      * @param readOnly
-     * @param testing
      * @param propType
      * @param defaultValue
      * @param exampleValue
@@ -82,7 +80,7 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 	 * @return
 	 */
 	public PropertyDescriptorEntity mockPropertyDescriptorEntity(Set<PropertyEntity> properties, String name, String comment, boolean encrypted, boolean nullable,
-			boolean readOnly, boolean testing, PropertyTypeEntity propType, String defaultValue, String exampleValue, String machineInterpretationKey, boolean optional, String displayName) {
+			boolean readOnly, PropertyTypeEntity propType, String defaultValue, String exampleValue, String machineInterpretationKey, boolean optional, String displayName) {
 		PropertyDescriptorEntity mock = Mockito.mock(PropertyDescriptorEntity.class);
 		when(mock.getId()).thenReturn(1);
 		when(mock.getProperties()).thenReturn(properties != null ? properties : new HashSet<PropertyEntity>());
@@ -92,7 +90,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 		when(mock.getPropertyComment()).thenReturn(!StringUtils.isEmpty(comment) ? comment : COMMENT);
 		when(mock.isEncrypt()).thenReturn(encrypted);
 		when(mock.isNullable()).thenReturn(nullable);
-		when(mock.isTesting()).thenReturn(testing);
 		when(mock.getValidationLogic()).thenReturn(VALIDATION_LOGIC);
 		when(mock.getPropertyTypeEntity()).thenReturn(propType);
         when(mock.getDefaultValue()).thenReturn(defaultValue);
@@ -116,7 +113,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 	 * @param encrypted
 	 * @param nullable
 	 * @param readOnly
-	 * @param testing
      * @param propType
      * @param defaultValue
      * @param exampleValue
@@ -126,7 +122,7 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 	 * @return
 	 */
 	public PropertyDescriptorEntity buildPropertyDescriptorEntity(Set<PropertyEntity> properties, String name, String comment, boolean encrypted, boolean nullable,
-			boolean readOnly, boolean testing, PropertyTypeEntity propType, String defaultValue, String exampleValue, String machineInterpretationKey, boolean optional, String displayName) {
+			boolean readOnly, PropertyTypeEntity propType, String defaultValue, String exampleValue, String machineInterpretationKey, boolean optional, String displayName) {
 		PropertyDescriptorEntity propertyDescriptorEntity = new PropertyDescriptorEntity();
 		propertyDescriptorEntity.setProperties(properties);
 		int nextId = getNextId();
@@ -135,7 +131,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 		propertyDescriptorEntity.setPropertyComment(!StringUtils.isEmpty(comment) ? comment : COMMENT);
 		propertyDescriptorEntity.setEncrypt(encrypted);
 		propertyDescriptorEntity.setNullable(nullable);
-		propertyDescriptorEntity.setTesting(testing);
 		propertyDescriptorEntity.setValidationLogic(VALIDATION_LOGIC);
 		propertyDescriptorEntity.setPropertyTypeEntity(propType);
         propertyDescriptorEntity.setDefaultValue(defaultValue);
@@ -155,7 +150,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 		entity.setPropertyComment(!StringUtils.isEmpty(this.propertyComment) ? propertyComment : COMMENT);
 		entity.setEncrypt(this.encrypt);
 		entity.setNullable(this.nullable);
-		entity.setTesting(this.testing);
 		entity.setValidationLogic(!StringUtils.isEmpty(this.validationLogic) ? this.validationLogic : VALIDATION_LOGIC);
 		entity.setPropertyTypeEntity(this.propertyTypeEntity);
 		entity.setDefaultValue(this.defaultValue);
@@ -265,11 +259,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 
     public PropertyDescriptorEntityBuilder isNullable(boolean nullable){
         this.nullable = nullable;
-        return this;
-    }
-
-    public PropertyDescriptorEntityBuilder isTesting(boolean testing){
-        this.testing = testing;
         return this;
     }
 

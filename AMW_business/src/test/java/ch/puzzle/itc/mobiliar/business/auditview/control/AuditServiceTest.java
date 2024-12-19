@@ -33,7 +33,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.envers.RevisionType;
@@ -69,19 +68,6 @@ public class AuditServiceTest {
         MockitoAnnotations.openMocks(this);
         auditService.entityManager = entityManager;
         ThreadLocalUtil.destroy();
-    }
-
-    @Test
-    public void shouldReturnNullIfEntityIsNotAudited() {
-        // given
-        ShakedownTestEntity shakedownTest = new ShakedownTestEntity();
-        Integer id = 1;
-
-        // when
-        Object deletedEntity = auditService.getDeletedEntity(shakedownTest, id);
-
-        // then
-        assertNull(deletedEntity);
     }
 
     @Test

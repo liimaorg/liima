@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -42,8 +41,6 @@ import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -122,14 +119,8 @@ public class ResourceGroupRepositoryTest {
         userEntity.setUserName("tester");
         entityManager.persist(userEntity);
 
-        FavoriteResourceEntity fav = new FavoriteResourceEntity();
-        fav.setResourceGroup(resource1.getResourceGroup());
-        fav.setUser(userEntity);
-        entityManager.persist(fav);
-
         // when
-        List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), null, true);
-        List<ResourceGroupEntity> resultFavorites = repository.getGroupsForType(type1.getId(), Collections.singletonList(resource1.getId()), true);
+        List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), true);
 
         // then
         assertNotNull(result);
@@ -139,28 +130,5 @@ public class ResourceGroupRepositoryTest {
                 assertEquals(type1.getId(), r.getResourceType().getId());
             }
         }
-
-        assertNotNull(resultFavorites);
-        assertEquals(1, resultFavorites.size());
-    }
-
-    @Test
-    public void test_loadGroupsForType_myAmw() throws ElementAlreadyExistsException, ResourceNotFoundException,
-            ResourceTypeNotFoundException {
-        // given
-        init();
-
-        List<Integer> myAmw = new ArrayList<Integer>();
-        myAmw.add(resource1.getResourceGroup().getId());
-        myAmw.add(resource4.getResourceGroup().getId());
-
-        // when
-        List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), myAmw, true);
-
-        // then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertTrue(result.contains(resource1.getResourceGroup()));
-        assertTrue(result.contains(resource4.getResourceGroup()));
     }
 }

@@ -1,0 +1,36 @@
+<div class="container">
+  <app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
+  <div class="modal-body">
+    <div class="needs-validation mb-3">
+      <label for="resourceName" class="form-label">Resource name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="resourceName"
+        [(ngModel)]="resourceName"
+        required
+        pattern="^[a-zA-Z0-9_\-]+$"
+      />
+      <div class="invalid-feedback">
+        The name must not contain any other than alphanumerical and "_" / "-" characters.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Release</label>
+      <ng-select
+        id="selectRelease"
+        [clearable]="false"
+        [(ngModel)]="selectedReleaseName"
+        (change)="setSelectedRelease($event)"
+      >
+        @for (release of releases; track release.id) {
+        <ng-option [value]="release.name">{{ release.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+    <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="save()">Save </app-button>
+  </div>
+</div>

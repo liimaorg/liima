@@ -9,9 +9,9 @@ describe('DeploymentParameterComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [DeploymentParameterComponent],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+      imports: [DeploymentParameterComponent],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DeploymentParameterComponent);
     component = fixture.componentInstance;

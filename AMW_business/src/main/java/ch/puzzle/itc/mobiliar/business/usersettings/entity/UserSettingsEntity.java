@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name="TAMW_userSettings")
@@ -43,16 +42,6 @@ public class UserSettingsEntity {
 	@Setter
 	@Column(unique = true)
 	private String userName;
-	
-	@Getter
-	@Setter
-	@Column(nullable = false)
-	private boolean myAmwEnabled;
-	
-	@Getter
-	@Setter
-	@OneToMany(mappedBy = "user")
-	private Set<FavoriteResourceEntity> favoriteResources;
 
 	@Getter
 	@Version

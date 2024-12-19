@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PermissionService } from './permission.service';
 import { Restriction } from './restriction';
@@ -27,9 +27,11 @@ import {
   NgbNavOutlet,
 } from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
+import { ButtonComponent } from '../../shared/button/button.component';
+import { ResourceTypesService } from '../../resource/resource-types.service';
 
 @Component({
-  selector: 'amw-permission',
+  selector: 'app-permission',
   templateUrl: './permission.component.html',
   standalone: true,
   imports: [
@@ -47,20 +49,23 @@ import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicat
     RestrictionEditComponent,
     RestrictionAddComponent,
     RestrictionListComponent,
+    ButtonComponent,
   ],
 })
-export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
+export class PermissionComponent implements OnInit {
   // loaded only once
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [{ id: null, name: null, parent: 'All', selected: false } as Environment];
+  environments: Environment[] = [{ id: null, name: null, parentName: 'All', selected: false } as Environment];
   groupedEnvironments: { [key: string]: Environment[] } = {
     All: [],
     Global: [],
   };
   resourceGroups: Resource[] = [];
-  resourceTypes: ResourceType[] = [{ id: null, name: null }];
+  resourceTypes: ResourceType[] = [
+    { id: null, name: null, hasChildren: false, children: [], isApplication: false, isDefaultResourceType: false },
+  ];
 
   defaultNavItem: string = 'Roles';
   // role | user
@@ -88,6 +93,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     private permissionService: PermissionService,
     private environmentService: EnvironmentService,
     private resourceService: ResourceService,
+    private resourceTypesService: ResourceTypesService,
     private activatedRoute: ActivatedRoute,
     private location: Location,
   ) {
@@ -113,10 +119,6 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.getAllResourceTypes();
   }
 
-  ngAfterViewInit(): void {}
-
-  ngOnDestroy() {}
-
   onChangeRole() {
     this.selectedRoleName = this.selectedRoleName.trim();
     if (this.isExistingRole(this.selectedRoleName)) {
@@ -141,7 +143,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.clearMessages();
     if (id) {
       this.permissionService.removeRestriction(id).subscribe({
-        next: (r) => '',
+        next: () => '',
         error: (e) => (this.errorMessage = e),
         complete: () => _.remove(this.assignedRestrictions, { id }),
       });
@@ -172,7 +174,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isLoading = true;
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe({
-        next: (r) => '',
+        next: () => '',
         error: (e) => (this.errorMessage = e),
         complete: () => {
           this.updatePermissions(this.restriction);
@@ -202,7 +204,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.clearMessages();
     this.isLoading = true;
     this.permissionService.createRestrictions(restrictionsCreation, this.delegationMode).subscribe({
-      next: (r) => '',
+      next: () => '',
       error: (e) => (this.errorMessage = e),
       complete: () => {
         this.create = false;
@@ -394,7 +396,7 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private getAllResourceTypes() {
     this.isLoading = true;
-    this.resourceService.getAllResourceTypes().subscribe({
+    this.resourceTypesService.getAllResourceTypes().subscribe({
       next: (r) => (this.resourceTypes = this.resourceTypes.concat(r)),
       error: (e) => (this.errorMessage = e),
       complete: () => (this.isLoading = false),
@@ -447,10 +449,10 @@ export class PermissionComponent implements OnInit, OnDestroy, AfterViewInit {
   private extractEnvironmentGroups() {
     this.environments.forEach((environment) => {
       environment.selected = false;
-      if (!this.groupedEnvironments[environment['parent']]) {
-        this.groupedEnvironments[environment['parent']] = [];
+      if (!this.groupedEnvironments[environment['parentName']]) {
+        this.groupedEnvironments[environment['parentName']] = [];
       }
-      this.groupedEnvironments[environment['parent']].push(environment);
+      this.groupedEnvironments[environment['parentName']].push(environment);
     });
     this.isLoading = false;
   }

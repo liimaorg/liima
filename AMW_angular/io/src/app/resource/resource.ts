@@ -5,6 +5,7 @@ export interface Resource {
   name: string;
   type: string;
   version: string;
-  release: Release;
+  defaultRelease: Release;
   releases: Release[];
+  defaultResourceId?: number;
 }

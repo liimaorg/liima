@@ -74,8 +74,6 @@ public class DeploymentDTO {
 	private boolean executed;
 	private boolean sendEmailWhenDeployed;
 	private boolean simulateBeforeDeployment;
-	private boolean shakedownTestsWhenDeployed;
-	private boolean neighbourhoodTest;
 
 	public DeploymentDTO(DeploymentEntity entity) {
 		setPreservedValues(entity, new PreservedProperties());
@@ -122,8 +120,6 @@ public class DeploymentDTO {
 		this.setExecuted(entity.isExecuted());
 		this.setSendEmailWhenDeployed(entity.isSendEmail());
 		this.setSimulateBeforeDeployment(entity.isSimulating());
-		this.setShakedownTestsWhenDeployed(entity.isCreateTestAfterDeployment());
-		this.setNeighbourhoodTest(entity.isCreateTestForNeighborhoodAfterDeployment());
 	}
 
 	@Data

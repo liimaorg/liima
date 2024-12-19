@@ -95,12 +95,12 @@ public class ResourceBoundary {
         if (resourceTypeEntity == null) {
             String message = "ResourceType '" + resourceTypeName + "' doesn't exist";
             log.info(message);
-            throw new ResourceNotFoundException(message);
+            throw new ResourceTypeNotFoundException(message);
         }
         ReleaseEntity release;
         try {
             release = releaseLocator.getReleaseByName(releaseName);
-        } catch (Exception e)  {
+        } catch (Exception e) {
             String message = "Release '" + releaseName + "' doesn't exist";
             log.info(message);
             throw new ResourceNotFoundException(message);
@@ -120,7 +120,7 @@ public class ResourceBoundary {
     private Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName,
                                              ResourceTypeEntity resourceTypeEntity, Integer releaseId, boolean canCreateReleaseOfExisting)
             throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
-        if (!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)){
+        if (!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)) {
             throw new NotAuthorizedException("Permission Denied");
         }
         ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, newResourceName,
@@ -162,11 +162,11 @@ public class ResourceBoundary {
                 resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
                 log.info("Created new Resource " + newResourceName + " and group in Release " + release.getName());
             } else {
-                String message = "A " + anotherGroup.getResourceType().getName()+" with the same name: " + newResourceName + " already exists.";
+                String message = "A " + anotherGroup.getResourceType().getName() + " with the same name: " + newResourceName + " already exists.";
                 log.info(message);
                 throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
             }
-        } else if (canCreateReleaseOfExisting)  {
+        } else if (canCreateReleaseOfExisting) {
             // check if group contains resource for release
             for (ResourceEntity r : group.getResources()) {
                 if (r.getRelease().getId().equals(releaseId)) {
@@ -180,7 +180,7 @@ public class ResourceBoundary {
                 log.info("Created new Resource " + newResourceName + " for existing group in Release " + release.getName());
             } else {
                 // if resource with given name, type and release already exists throw an exeption
-                String message = "The "+type.getName()+" with name: " + newResourceName + " already exists in release "+release.getName();
+                String message = "The " + type.getName() + " with name: " + newResourceName + " already exists in release " + release.getName();
                 log.info(message);
                 throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
             }
@@ -202,7 +202,7 @@ public class ResourceBoundary {
      * @throws ResourceTypeNotFoundException
      * @throws ElementAlreadyExistsException
      */
-    private Application createUniqueApplicationByName(ForeignableOwner creatingOwner,String applicationName, int releaseId, boolean canCreateReleaseOfExisting)
+    private Application createUniqueApplicationByName(ForeignableOwner creatingOwner, String applicationName, int releaseId, boolean canCreateReleaseOfExisting)
             throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
         ResourceTypeEntity resourceTypeEntity = resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATION);
         ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, applicationName,
@@ -225,7 +225,7 @@ public class ResourceBoundary {
 
         ResourceEntity asResource = commonService.getResourceEntityByGroupAndRelease(asGroupId, asReleaseId);
 
-        if(!permissionBoundary.canCreateAppAndAddToAppServer(asResource)){
+        if (!permissionBoundary.canCreateAppAndAddToAppServer(asResource)) {
             throw new NotAuthorizedException("Missing Permission");
         }
 
@@ -309,7 +309,7 @@ public class ResourceBoundary {
 
         foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
 
-        if ( !permissionBoundary.hasPermission(Permission.RESOURCE, contextDomainService.getGlobalResourceContextEntity(),
+        if (!permissionBoundary.hasPermission(Permission.RESOURCE, contextDomainService.getGlobalResourceContextEntity(),
                 Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
             throw new NotAuthorizedException();
         }
@@ -345,7 +345,7 @@ public class ResourceBoundary {
         }
     }
 
-    private long countNumberOfConsumedSlaveRelations(ResourceEntity res){
+    private long countNumberOfConsumedSlaveRelations(ResourceEntity res) {
         return entityManager.createQuery("select count(a.id) from ResourceEntity r left join r.consumedSlaveRelations a where r=:res", Long.class).setParameter("res", res).getSingleResult();
     }
 
@@ -381,8 +381,7 @@ public class ResourceBoundary {
             // if group does not exists a new resource with a new group can be created
             resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
             log.info("Create new Resource " + newResourceName + "  and group in Release " + release.getName());
-        }
-        else {
+        } else {
             // check if group contains resource for this release
             for (ResourceEntity r : group.getResources()) {
                 if (r.getRelease().getId().equals(releaseId)) {

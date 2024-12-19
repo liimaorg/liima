@@ -218,9 +218,30 @@ describe('RestrictionAddComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'AS' },
-        { id: 3, name: 'FOO' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
+        {
+          id: 2,
+          name: 'AS',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
+        {
+          id: 3,
+          name: 'FOO',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];
       restrictionComponent.selectedContextNames = ['T', 'S'];
@@ -262,9 +283,30 @@ describe('RestrictionAddComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'AS' },
-        { id: 3, name: 'FOO' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
+        {
+          id: 2,
+          name: 'AS',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
+        {
+          id: 3,
+          name: 'FOO',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];
       restrictionComponent.selectedContextNames = ['T'];
@@ -306,9 +348,30 @@ describe('RestrictionAddComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.resourceTypes = [
-        { id: 1, name: 'APP' },
-        { id: 2, name: 'AS' },
-        { id: 3, name: 'FOO' },
+        {
+          id: 1,
+          name: 'APP',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
+        {
+          id: 2,
+          name: 'AS',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
+        {
+          id: 3,
+          name: 'FOO',
+          hasChildren: false,
+          children: [],
+          isApplication: false,
+          isDefaultResourceType: false,
+        },
       ];
       restrictionComponent.selectedPermissionNames = ['NEO'];
       restrictionComponent.selectedContextNames = ['T'];
@@ -488,11 +551,11 @@ describe('RestrictionAddComponent', () => {
     (restrictionComponent: RestrictionAddComponent) => {
       // given
       const emptyEnvironment: Environment[] = [
-        { id: null, name: null, nameAlias: null, parent: 'All', selected: false, disabled: false },
+        { id: null, name: null, nameAlias: null, parentName: 'All', parentId: null, selected: false, disabled: false },
       ];
       const devEnvironments: Environment[] = [
-        { id: 1, name: 'B', nameAlias: 'Test', parent: 'Dev', selected: false, disabled: false },
-        { id: 2, name: 'C', nameAlias: null, parent: 'Dev', selected: false, disabled: false },
+        { id: 1, name: 'B', nameAlias: 'Test', parentName: 'Dev', parentId: 2, selected: false, disabled: false },
+        { id: 2, name: 'C', nameAlias: null, parentName: 'Dev', parentId: 2, selected: false, disabled: false },
       ];
       restrictionComponent.groupedEnvironments = { All: emptyEnvironment, Dev: devEnvironments };
       restrictionComponent.delegationMode = true;

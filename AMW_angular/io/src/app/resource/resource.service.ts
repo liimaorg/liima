@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { Observable, startWith, Subject } from 'rxjs';
+import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Resource } from './resource';
-import { ResourceType } from './resource-type';
 import { Release } from './release';
 import { Relation } from './relation';
 import { Property } from './property';
 import { AppWithVersion } from '../deployment/app-with-version';
 import { BaseService } from '../base/base.service';
+import { ResourceType } from './resource-type';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 interface Named {
   name: string;
@@ -16,8 +17,22 @@ interface Named {
 
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
+  private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
+
+  private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
+    switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
+    startWith(null),
+    shareReplay(1),
+  );
+
+  resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
+
   constructor(private http: HttpClient) {
     super();
+  }
+
+  setTypeForResourceGroupList(resourcesType: ResourceType) {
+    this.resourceType$.next(resourcesType);
   }
 
   getAll(): Observable<Resource[]> {
@@ -31,12 +46,31 @@ export class ResourceService extends BaseService {
       );
   }
 
+  createResourceForResourceType(resource: any) {
+    return this.http
+      .post<Resource>(`${this.getBaseUrl()}/resources`, resource, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   getResourceName(resourceId: number): Observable<Named> {
     return this.http
       .get<Named>(`${this.getBaseUrl()}/resources/name/${resourceId}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
+  }
+
+  getGroupsForType(resourceType: ResourceType): Observable<Resource[]> {
+    return this.http
+      .get<Resource[]>(`${this.getBaseUrl()}/resources?typeId=${resourceType.id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((resources) => resources.map(toResource)),
+        catchError(this.handleError),
+      );
   }
 
   get(resourceGroupName: string): Observable<Resource> {
@@ -58,17 +92,6 @@ export class ResourceService extends BaseService {
   getAllResourceGroups(): Observable<Resource[]> {
     return this.http
       .get<Resource[]>(`${this.getBaseUrl()}/resources/resourceGroups`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(
-        map((resources) => resources.map(toResource)),
-        catchError(this.handleError),
-      );
-  }
-
-  getAllResourceTypes(): Observable<ResourceType[]> {
-    return this.http
-      .get<ResourceType[]>(`${this.getBaseUrl()}/resources/resourceTypes`, {
         headers: this.getHeaders(),
       })
       .pipe(
@@ -151,14 +174,6 @@ export class ResourceService extends BaseService {
         catchError(this.handleError),
       );
   }
-
-  canCreateShakedownTest(resourceGroupId: number): Observable<boolean> {
-    return this.http
-      .get<boolean>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceGroupId}/canCreateShakedownTest`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
 }
 
 function toAppWithVersion(r: any): AppWithVersion {
@@ -167,12 +182,11 @@ function toAppWithVersion(r: any): AppWithVersion {
 }
 
 function toResource(r: Resource): Resource {
-  r.release = r.release && toRelease(r.release);
+  r.defaultRelease = r.defaultRelease && toRelease(r.defaultRelease);
   r.releases = (r.releases || []).map(toRelease);
   return r;
 }
 
 function toRelease(r: any): Release {
-  delete r.templates;
-  return r;
+  return { properties: [], relations: [], resourceTags: [], id: r.id, release: r.name };
 }

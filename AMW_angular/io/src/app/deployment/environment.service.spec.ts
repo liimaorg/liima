@@ -1,11 +1,10 @@
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 
-describe('DeploymentService', () => {
-  let httpClient: HttpClient;
+describe('EnvironmentService', () => {
   let httpTestingController: HttpTestingController;
   let service: EnvironmentService;
 
@@ -13,28 +12,30 @@ describe('DeploymentService', () => {
     id: 1,
     name: 'env',
     nameAlias: 'env-alias',
-    parent: 'parens',
+    parentName: 'parent',
+    parentId: null,
     selected: true,
     disabled: false,
   };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [EnvironmentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [EnvironmentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    });
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
     service = TestBed.inject(EnvironmentService);
   });
 
   afterEach(() => {
+    httpTestingController.expectOne('/AMW_rest/resources/environments/contexts');
     httpTestingController.verify();
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+    httpTestingController.expectOne('/AMW_rest/resources/environments');
   });
 
   it('should invoke the correct endpoint on getAll()', () => {
@@ -42,11 +43,16 @@ describe('DeploymentService', () => {
       expect(environments).toEqual([environment]);
     });
 
-    const req = httpTestingController.expectOne('/AMW_rest/resources/environments');
+    const requests = httpTestingController.match('/AMW_rest/resources/environments');
+    expect(requests.length).toBe(2);
     httpTestingController.expectNone('/AMW_rest/resources/environments?includingGroups=true');
 
-    expect(req.request.method).toEqual('GET');
-    req.flush([environment]);
+    requests.forEach((req) => {
+      expect(req.request.method).toEqual('GET');
+    });
+
+    requests[0].flush([environment]);
+    requests[1].flush([environment]);
   });
 
   it('should invoke the correct endpoint on getAllIncludingGroups ', () => {
@@ -54,7 +60,7 @@ describe('DeploymentService', () => {
       expect(environmentIncludingGroups).toEqual([environment]);
     });
 
-    httpTestingController.expectNone('/AMW_rest/resources/environments');
+    httpTestingController.expectOne('/AMW_rest/resources/environments');
     const req = httpTestingController.expectOne('/AMW_rest/resources/environments?includingGroups=true');
 
     expect(req.request.method).toEqual('GET');

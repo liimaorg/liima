@@ -44,13 +44,13 @@
 								</ejbModule>
 								<webModule>
 									<groupId>ch.puzzle.itc.mobiliar</groupId>
-									<artifactId>AMW_web</artifactId>
-									<bundleFileName>AMW_web.war</bundleFileName>
+									<artifactId>AMW_angular</artifactId>
+									<bundleFileName>AMW_angular.war</bundleFileName>
 								</webModule>
 								<webModule>
 									<groupId>ch.puzzle.itc.mobiliar</groupId>
-									<artifactId>AMW_angular</artifactId>
-									<bundleFileName>AMW_angular.war</bundleFileName>
+									<artifactId>AMW_web</artifactId>
+									<bundleFileName>AMW_web.war</bundleFileName>
 								</webModule>
 								<webModule>
 									<groupId>ch.puzzle.itc.mobiliar</groupId>
@@ -76,12 +76,12 @@
 				</dependency>
 				<dependency>
 					<groupId>ch.puzzle.itc.mobiliar</groupId>
-					<artifactId>AMW_web</artifactId>
+					<artifactId>AMW_angular</artifactId>
 					<type>war</type>
 				</dependency>
 				<dependency>
 					<groupId>ch.puzzle.itc.mobiliar</groupId>
-					<artifactId>AMW_angular</artifactId>
+					<artifactId>AMW_web</artifactId>
 					<type>war</type>
 				</dependency>
 				<dependency>

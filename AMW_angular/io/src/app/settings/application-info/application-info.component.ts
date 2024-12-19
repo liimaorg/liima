@@ -1,27 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { HttpClient } from '@angular/common/http';
 import { AsyncPipe } from '@angular/common';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-type Config = { key: { value: string; env: string }; value: string; defaultValue: string };
-type Version = { key: string; value: string };
+import { SettingService } from '../../setting/setting.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AppInformation } from '../../setting/app-information';
+import { AppConfiguration } from '../../setting/app-configuration';
 
 @Component({
-  selector: 'amw-application-info',
+  selector: 'app-application-info',
   standalone: true,
   imports: [LoadingIndicatorComponent, AsyncPipe],
   templateUrl: './application-info.component.html',
 })
 export class ApplicationInfoComponent {
-  appVersions$: Observable<Version[]>;
-  appConfigs$: Observable<Config[]>;
-  isLoading$: Observable<boolean> = new BehaviorSubject<boolean>(true);
-
-  constructor(private http: HttpClient) {
-    this.appVersions$ = http.get<Version[]>('/AMW_rest/resources/settings/appInfo');
-    this.appConfigs$ = http.get<Config[]>('/AMW_rest/resources/settings');
-    this.isLoading$ = forkJoin([this.appVersions$, this.appConfigs$]).pipe(map(() => false));
-  }
+  private settingService = inject(SettingService);
+  appVersions = toSignal(this.settingService.getAppInformation(), { initialValue: [] as AppInformation[] });
+  appConfigs = toSignal(this.settingService.getAllAppSettings(), { initialValue: [] as AppConfiguration[] });
+  isLoading = computed(() => !this.appVersions().length || !this.appConfigs().length);
 }

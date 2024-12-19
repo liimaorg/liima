@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.applist;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -28,6 +27,7 @@ import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 /**
  * The ScreenDomainService for Applist Screens
@@ -38,27 +38,24 @@ public class ApplistScreenDomainService {
     @Inject
     private ApplistScreenDomainServiceQueries queries;
 
-    List<ResourceEntity> getApplicationServerResources(String filter, Integer maxResults, List<Integer> myAMW) {
-        if (myAMW != null && myAMW.isEmpty()) {
-            //there is a myAMW-filter, but it doesn't contain any values - so we don't have to ask the db - we know that there is an empty result
-            return Collections.emptyList();
-        }
-        return queries.doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(filter, myAMW, maxResults);
+    Tuple<List<ResourceEntity>, Long> getApplicationServerResources(Integer startIndex, Integer maxResults, String filter) {
+        return queries.getAppServersWithApps(startIndex, maxResults, filter);
     }
 
 
-    public List<ResourceEntity> getAppServerResourcesWithApplications(String filter, Integer maxResults,
-                                                                      List<Integer> myAmw, boolean withAppServerContainer) {
-        List<ResourceEntity> appServerList = getApplicationServerResources(filter, maxResults, myAmw);
+    public Tuple<List<ResourceEntity>, Long> getAppServerResourcesWithApplications(Integer startIndex, Integer maxResults, String filter, boolean withAppServerContainer) {
+        Tuple<List<ResourceEntity>, Long>  result = getApplicationServerResources(startIndex, maxResults, filter);
+        List<ResourceEntity> appServerList = result.getA();
         for (ResourceEntity as : appServerList) {
             if (as.getName().equals(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName())) {
-                if (!withAppServerContainer || as.getConsumedMasterRelations().size() == 0) {
+                if (!withAppServerContainer || as.getConsumedMasterRelations().isEmpty()) {
                     appServerList.remove(as);
                     break;
                 }
+                ;
             }
         }
-        return appServerList;
+        return new Tuple<List<ResourceEntity>, Long>(appServerList, result.getB());
     }
 
 }

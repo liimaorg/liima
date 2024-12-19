@@ -5,18 +5,16 @@ import { Deployment } from './deployment';
 import { DeploymentService } from './deployment.service';
 
 describe('DeploymentService', () => {
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: DeploymentService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [],
-    providers: [DeploymentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-});
+      imports: [],
+      providers: [DeploymentService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    });
 
     httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
     service = TestBed.inject(DeploymentService);
   });
 
@@ -87,7 +85,5 @@ describe('DeploymentService', () => {
     stateToDeploy: 1,
     sendEmailWhenDeployed: true,
     simulateBeforeDeployment: true,
-    shakedownTestsWhenDeployed: true,
-    neighbourhoodTest: false,
   };
 });

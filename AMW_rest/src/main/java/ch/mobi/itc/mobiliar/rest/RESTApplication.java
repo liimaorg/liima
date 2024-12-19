@@ -21,16 +21,20 @@
 package ch.mobi.itc.mobiliar.rest;
 
 import ch.mobi.itc.mobiliar.rest.Analyze.TestGenerationRest;
+import ch.mobi.itc.mobiliar.rest.apps.AppsRest;
 import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentDtoCsvBodyWriter;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsLogRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsRest;
 import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
 import ch.mobi.itc.mobiliar.rest.exceptions.*;
+import ch.mobi.itc.mobiliar.rest.functions.FunctionsRest;
 import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
+import ch.mobi.itc.mobiliar.rest.properties.PropertyTypesRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
+import ch.mobi.itc.mobiliar.rest.servers.ServersRest;
 import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
 import ch.mobi.itc.mobiliar.rest.tags.boundary.TagsRest;
 
@@ -52,6 +56,7 @@ public class RESTApplication extends Application {
     private void addRestResourceClasses(Set<Class<?>> resources) {
 
         // Endpoints
+        resources.add(AppsRest.class);
         resources.add(BatchJobRest.class);
         resources.add(ResourcesRest.class);
         resources.add(ResourceGroupsRest.class);
@@ -71,6 +76,9 @@ public class RESTApplication extends Application {
         resources.add(SettingsRest.class);
         resources.add(TestGenerationRest.class);
         resources.add(TagsRest.class);
+        resources.add(PropertyTypesRest.class);
+        resources.add(FunctionsRest.class);
+        resources.add(ServersRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
@@ -92,6 +100,7 @@ public class RESTApplication extends Application {
         resources.add(UncaughtExceptionMapper.class);
         resources.add(ConstraintViolationExceptionMapper.class);
         resources.add(ConcurrentModificationExceptionMapper.class);
+        resources.add(ElementAlreadyExistsExceptionMapper.class);
 
         // health
         resources.add(HealthCheck.class);

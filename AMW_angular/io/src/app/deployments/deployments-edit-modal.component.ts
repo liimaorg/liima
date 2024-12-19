@@ -4,16 +4,18 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
 import { FormsModule } from '@angular/forms';
+import { ModalHeaderComponent } from '../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../shared/button/button.component';
+import { IconComponent } from '../shared/icon/icon.component';
 
 @Component({
-  selector: 'amw-deployments-edit-modal',
+  selector: 'app-deployments-edit-modal',
   templateUrl: './deployments-edit-modal.component.html',
   standalone: true,
-  imports: [FormsModule, DateTimePickerComponent],
+  imports: [FormsModule, DateTimePickerComponent, ModalHeaderComponent, ButtonComponent, IconComponent],
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];
-  @Input() hasPermissionShakedownTest: boolean;
 
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
   @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
@@ -68,8 +70,6 @@ export class DeploymentsEditModalComponent {
     for (const deployment of this.deployments) {
       deployment.sendEmailWhenDeployed = this.confirmationAttributes.sendEmailWhenDeployed;
       deployment.simulateBeforeDeployment = this.confirmationAttributes.simulateBeforeDeployment;
-      deployment.shakedownTestsWhenDeployed = this.confirmationAttributes.shakedownTestsWhenDeployed;
-      deployment.neighbourhoodTest = this.confirmationAttributes.neighbourhoodTest;
       this.doConfirmDeployment.emit(deployment);
     }
   }

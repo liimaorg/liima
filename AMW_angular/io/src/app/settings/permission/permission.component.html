@@ -4,6 +4,7 @@
   <h1>Roles and Permissions</h1>
   <ul ngbNav #nav="ngbNav" [(activeId)]="restrictionType" class="nav-tabs mt-2 pt-4">
     <li [ngbNavItem]="'role'">
+      <!-- TODO: convert this button-->
       <button ngbNavLink (click)="changeType('role')">Role</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
@@ -27,6 +28,7 @@
       </ng-template>
     </li>
     <li [ngbNavItem]="'user'">
+      <!-- TODO: convert this button-->
       <button ngbNavLink (click)="changeType('user')">User</button>
       <ng-template ngbNavContent>
         <div class="form-group row">
@@ -54,14 +56,13 @@
     <div class="col">
       @if (selectedRoleName || selectedUserNames.length > 0) { @if (!restriction && !create) {
 
-      <button type="button" class="btn btn-primary offset-1" (click)="addRestriction()">
-        <app-icon icon="plus-circle"></app-icon>
-        Add permission
-      </button>
+      <app-button [variant]="'primary'" [additionalClasses]="'offset-1'" (click)="addRestriction()"
+        ><app-icon icon="plus-circle"></app-icon> Add permission
+      </app-button>
 
       } @if (restriction) {
 
-      <amw-restriction-edit
+      <app-restriction-edit
         class="bg-light"
         [restriction]="restriction"
         [groupedEnvironments]="groupedEnvironments"
@@ -72,11 +73,11 @@
         [delegationMode]="delegationMode"
         (cancelEdit)="cancel()"
         (saveRestriction)="persistRestriction()"
-      ></amw-restriction-edit>
+      ></app-restriction-edit>
 
       } @if (create) {
 
-      <amw-restriction-add
+      <app-restriction-add
         [roleName]="selectedRoleName"
         [userNames]="selectedUserNames"
         [groupedEnvironments]="groupedEnvironments"
@@ -87,7 +88,7 @@
         [delegationMode]="delegationMode"
         (cancelEdit)="cancel()"
         (saveRestrictions)="createRestrictions($event)"
-      ></amw-restriction-add>
+      ></app-restriction-add>
 
       } }
     </div>
@@ -97,13 +98,13 @@
   <div class="form-group">
     <label class="col-sm-1"></label>
     <div class="col">
-      <amw-restriction-list
+      <app-restriction-list
         [restrictions]="assignedRestrictions"
         [resourceGroups]="resourceGroups"
         [delegationMode]="delegationMode"
         (deleteRestriction)="removeRestriction($event)"
         (editRestriction)="modifyRestriction($event)"
-      ></amw-restriction-list>
+      ></app-restriction-list>
     </div>
   </div>
   }

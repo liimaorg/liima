@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
@@ -13,6 +13,7 @@ import { AuthService, isAllowed } from '../../auth/auth.service';
 import { map, takeUntil } from 'rxjs/operators';
 import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
   selector: 'app-releases',
@@ -25,10 +26,11 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
     PaginationComponent,
     ReleaseEditComponent,
     ReleaseDeleteComponent,
+    ButtonComponent,
   ],
   templateUrl: './releases.component.html',
 })
-export class ReleasesComponent implements OnInit {
+export class ReleasesComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private releasesService = inject(ReleasesService);
@@ -130,12 +132,9 @@ export class ReleasesComponent implements OnInit {
       .save(release)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => r,
+        next: () => this.toastService.success('Release saved successfully.'),
         error: (e) => this.error$.next(e),
-        complete: () => {
-          this.toastService.success('Release saved successfully.');
-          this.getReleases();
-        },
+        complete: () => this.getReleases(),
       });
     this.isLoading = false;
   }
@@ -160,12 +159,9 @@ export class ReleasesComponent implements OnInit {
       .delete(release.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => r,
+        next: () => this.toastService.success('Release deleted.'),
         error: (e) => this.error$.next(e),
-        complete: () => {
-          this.toastService.success('Release deleted.');
-          this.getReleases();
-        },
+        complete: () => this.getReleases(),
       });
     this.isLoading = false;
   }

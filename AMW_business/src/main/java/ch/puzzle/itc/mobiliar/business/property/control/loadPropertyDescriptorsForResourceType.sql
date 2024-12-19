@@ -18,9 +18,7 @@ descr.OPTIONAL optional,
 -- if the property is encrypted
 descr.ENCRYPT encrypt,
 -- the cardinality of the property 
-descr.CARDINALITYPROPERTY cardinality, 
--- if the property is for testing purposes only (shakedown testing)
-descr.TESTING testing,
+descr.CARDINALITYPROPERTY cardinality,
 -- the validation logic a property has to fulfill (if any)
 descr.VALIDATIONLOGIC validationLogic,
 -- the key which will be used to compute the property's value

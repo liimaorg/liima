@@ -76,11 +76,6 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
 	// TODO: Rename to valueOptional
 	private boolean nullable;
 
-	@Getter
-	@Setter
-	@Column(nullable = false)
-	private boolean testing;
-
 	@Setter
 	private String validationLogic;
 
@@ -383,7 +378,6 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
 		target.setEncrypt(isEncrypt());
 		target.setPropertyName(getPropertyName());
 		target.setNullable(isNullable());
-		target.setTesting(isTesting());
 		target.setValidationLogic(getValidationLogic());
 		target.setPropertyComment(getPropertyComment());
 		target.setCardinalityProperty(getCardinalityProperty());
@@ -415,7 +409,6 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
         eb.append(this.encrypt);
         eb.append(this.propertyName);
         eb.append(this.nullable);
-        eb.append(this.testing);
         eb.append(this.validationLogic);
         eb.append(this.propertyComment);
         eb.append(this.cardinalityProperty);

@@ -161,8 +161,6 @@ public class DeploymentBoundaryTest
         Integer deploymentId = 1;
         boolean sendEmailWhenDeployed = true;
         boolean simulateBeforeDeployment = true;
-        boolean shakedownTestsWhenDeployed = true;
-        boolean neighbourhoodTest = true;;
 
         Integer trackingId = 2;
         Date releaseDate = new Date();
@@ -176,8 +174,6 @@ public class DeploymentBoundaryTest
         deployment.setDeploymentDate(new Date());
         deployment.setDeploymentState(DeploymentState.requested);
         deployment.setSendEmailConfirmation(false);
-        deployment.setCreateTestAfterDeployment(false);
-        deployment.setCreateTestForNeighborhoodAfterDeployment(false);
         deployment.setSimulating(false);
 
         Mockito.doReturn(DeploymentBoundary.DeploymentOperationValidation.SUCCESS).when(deploymentBoundary).isConfirmPossible(deployment);
@@ -187,7 +183,7 @@ public class DeploymentBoundaryTest
 
 		Date deploymentDate = Date.from(LocalDate.now().plusDays(2).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         // when
-        DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, shakedownTestsWhenDeployed, neighbourhoodTest, simulateBeforeDeployment, deploymentDate);
+        DeploymentEntity deploymentEntity = deploymentBoundary.confirmDeployment(deploymentId, sendEmailWhenDeployed, simulateBeforeDeployment, deploymentDate);
 
         // then
         assertThat(deploymentEntity.getDeploymentState(), is(DeploymentState.scheduled));
@@ -196,8 +192,6 @@ public class DeploymentBoundaryTest
 
         assertThat(deploymentEntity.isSendEmailConfirmation(), is(sendEmailWhenDeployed));
         assertThat(deploymentEntity.isSimulating(), is(simulateBeforeDeployment));
-        assertThat(deploymentEntity.isCreateTestAfterDeployment(), is(shakedownTestsWhenDeployed));
-        assertThat(deploymentEntity.isCreateTestForNeighborhoodAfterDeployment(), is(neighbourhoodTest));
         assertThat(deploymentEntity.getDeploymentDate(), is(deploymentDate));
     }
 
@@ -267,10 +261,10 @@ public class DeploymentBoundaryTest
 		// given
 		Query query = mock(Query.class);
 		when(commonFilterService.addFilterAndCreateQuery(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(query);
-		when(commonFilterService.setParameterToQuery(any(), any(), any(), any())).thenReturn(query);
+		when(commonFilterService.setParameterToQuery(any(), any(), any())).thenReturn(query);
 
 		// when
-		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "d.trackingId", DESC, emptyList() );
+		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "d.trackingId", DESC);
 
 		// then
 		ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
@@ -283,10 +277,10 @@ public class DeploymentBoundaryTest
 		// given
 		Query query = mock(Query.class);
 		when(commonFilterService.addFilterAndCreateQuery(any(), any(), any(), anyBoolean(), anyBoolean())).thenReturn(query);
-		when(commonFilterService.setParameterToQuery(any(), any(), any(), any())).thenReturn(query);
+		when(commonFilterService.setParameterToQuery(any(), any(), any())).thenReturn(query);
 
 		// when
-		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), null, DESC, emptyList() );
+		deploymentBoundary.getFilteredDeployments(0, null, emptyList(), null, DESC);
 
 		// then
 		ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
@@ -301,7 +295,7 @@ public class DeploymentBoundaryTest
 	public void shouldThrowIfSortColumnUnknown() {
 		try {
 			// when
-			deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "unknown.column", DESC, emptyList());
+			deploymentBoundary.getFilteredDeployments(0, null, emptyList(), "unknown.column", DESC);
 			fail("IllegalArgumentException should have been thrown");
 		} catch (IllegalArgumentException ex) {
 			// then

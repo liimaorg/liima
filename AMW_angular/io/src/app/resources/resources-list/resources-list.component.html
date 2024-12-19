@@ -1,0 +1,51 @@
+<div class="container">
+  @if (resourceType() && permissions().canReadResources) {
+  <h1>
+    {{ resourceType().name }}
+    <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&resTypId={{ resourceType().id }}">
+      <app-button [variant]="'link'">
+        <app-icon icon="pencil"></app-icon>
+      </app-button>
+    </a>
+    @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
+    <app-button [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
+      <app-icon icon="trash"></app-icon>
+    </app-button>
+    }
+  </h1>
+  @if (permissions().canCreateResource && !resourceType().isApplication) {
+  <div class="row my-3">
+    <app-button [variant]="'primary'" (click)="addResource()">
+      <app-icon icon="plus-circle"></app-icon>
+      New Resource
+    </app-button>
+  </div>
+  }
+  <table class="table table-sm table-striped">
+    <thead>
+      <tr>
+        <th class="w-80">Resource name</th>
+        <th class="w-10">Release</th>
+        <th class="w-10" style="text-align: center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (resource of resourceGroupList(); track resource.id) {
+      <tr>
+        <td class="w-80 align-middle">{{ resource.name }}</td>
+        <td class="w-10 align-middle">{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
+        <td class="w-10 align-middle" style="text-align: center">
+          <a
+            href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{
+              resource.defaultResourceId ? resource.defaultResourceId : resource.id
+            }}"
+          >
+            <app-button [variant]="'primary'" [size]="'sm'"> <app-icon icon="pencil"></app-icon></app-button>
+          </a>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+  }
+</div>

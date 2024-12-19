@@ -4,9 +4,7 @@
    "deploymentDate":1384804324074,
    "stateToDeploy": 1384804324074, 
    "requestOnly": true, 
-   "simulate": false, 
-   "executeShakedownTest": false, 
-   "neighbourhoodTest": false, 
+   "simulate": false,
    "sendEmail": false, 
    "appsWithVersion":[
       {

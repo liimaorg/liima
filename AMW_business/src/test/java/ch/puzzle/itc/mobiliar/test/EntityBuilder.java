@@ -359,7 +359,6 @@ public class EntityBuilder {
 		TemplateDescriptorEntity template = new TemplateDescriptorEntity();
 		template.setFileContent(content);
 		template.setName(name);
-		template.setTesting(false);
 		template.setTargetPlatforms(new LinkedHashSet<ResourceGroupEntity>(Arrays.asList(platform
 				.getResourceGroup())));
 		template.setTargetPath(path);

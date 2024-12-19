@@ -1,4 +1,4 @@
-// szenario:
+// scenario:
 // create a deployment
 // click on tracking id
 // deployment must be visible in list of deployments
@@ -12,7 +12,7 @@ describe("create a deployment", () => {
       },
     });
     cy.get(".page-title").should("have.text", "Deployments");
-    cy.get('[data-cy="create-button "]').click({ force: true });
+    cy.get('[data-cy="create-button"]').click({ force: true });
     cy.contains("Create new deployment");
     cy.get("#selectApplicationserver").click();
     cy.contains("testapplicationserver").should("be.visible").click();

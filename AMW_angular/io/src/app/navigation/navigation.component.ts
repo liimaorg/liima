@@ -30,35 +30,21 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
         >
           <ul class="navbar-nav p-3 p-lg-0">
             <li class="nav-item">
-              <form>
-                <div class="d-flex form-check ps-0">
-                  <input class="m-0 form-check-inline" type="checkbox" id="favoritesOnly" />
-                  <label class="ps-1 form-check-label nav-link font-weight-light" for="favoritesOnly">
-                    Favorites only
-                  </label>
-                </div>
-              </form>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/applist.xhtml">Apps</a>
+              <a class="nav-link" href="#/apps/">Apps</a>
             </li>
             <li class="nav-item"></li>
             <li>
-              <a class="nav-link" href="/AMW_web/pages/serverListView.xhtml">Servers</a>
+              <a class="nav-link" href="#/servers">Servers</a>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/resourceList.xhtml">Resources</a>
+              <a class="nav-link" href="#/resources">Resources</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#/deployments/">Deploy</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/shakedownTest.xhtml">Shakedown Test</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/AMW_web/pages/settings.xhtml">Settings</a>
+              <a class="nav-link" href="#/settings">Settings</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ logoutUrl }}">Logout</a>

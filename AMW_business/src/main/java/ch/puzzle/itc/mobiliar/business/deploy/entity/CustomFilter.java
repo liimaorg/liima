@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestFilterTypes;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -96,14 +95,6 @@ public class CustomFilter {
                 .deploymentTableColumnName(deploymentFilterTypes.getFilterTabColumnName())
                 .joiningTableQuery(deploymentFilterTypes.getFilterTableJoining())
                 .comparatorSelection(defaultComparator);
-    }
-
-    public static CustomFilterBuilder builder(ShakedownTestFilterTypes shakedownTestFilterTypes) {
-        ComparatorFilterOption defaultComperator = ComparatorFilterOption.eq;
-        return new Builder().filterType(shakedownTestFilterTypes.getFilterType())
-                .filterDisplayName(shakedownTestFilterTypes.getFilterDisplayName())
-                .deploymentTableColumnName(shakedownTestFilterTypes.getFilterTabColumnName())
-                .comparatorSelection(defaultComperator);
     }
 
     public static class Builder extends CustomFilterBuilder {

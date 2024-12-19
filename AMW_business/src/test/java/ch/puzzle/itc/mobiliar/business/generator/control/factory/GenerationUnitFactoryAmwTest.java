@@ -31,8 +31,8 @@ import static ch.puzzle.itc.mobiliar.test.EntityBuilderUtils.resourceByName;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -157,8 +157,8 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testTemplateLoading() {
-		verify(utils, times(13)).getTemplates(any(ResourceEntity.class), any(ContextEntity.class), any(Set.class), eq(builder.platform.getId()), eq(false));
-		verify(utils, times(12)).getTemplates(any(ContextEntity.class), any(AbstractResourceRelationEntity.class), any(Set.class), eq(builder.platform.getId()), eq(false));
+		verify(utils, times(13)).getTemplates(any(ResourceEntity.class), any(ContextEntity.class), any(Set.class), eq(builder.platform.getId()));
+		verify(utils, times(12)).getTemplates(any(ContextEntity.class), any(AbstractResourceRelationEntity.class), any(Set.class), eq(builder.platform.getId()));
 	}
 
 }

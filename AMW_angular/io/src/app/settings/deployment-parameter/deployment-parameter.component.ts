@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -6,28 +6,27 @@ import { IconComponent } from '../../shared/icon/icon.component';
 import { AuthService, isAllowed } from '../../auth/auth.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 type Key = { id: number; name: string };
 
 @Component({
   selector: 'app-deployment-parameter',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent],
   templateUrl: './deployment-parameter.component.html',
   styleUrl: './deployment-parameter.component.scss',
 })
 export class DeploymentParameterComponent implements OnInit, OnDestroy {
+  authService = inject(AuthService);
+  http = inject(HttpClient);
+  toastService = inject(ToastService);
+
   keyName = '';
   paramKeys: Key[] = [];
   canCreate = signal<boolean>(false);
   canDelete = signal<boolean>(false);
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService,
-    private toastService: ToastService,
-  ) {}
 
   ngOnInit(): void {
     this.getUserPermissions();

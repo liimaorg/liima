@@ -33,6 +33,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 public class ApplistScreenDomainServiceQueries {
 
@@ -42,14 +43,20 @@ public class ApplistScreenDomainServiceQueries {
     @Inject
     private DatabaseUtil dbUtil;
 
-    List<ResourceEntity> doFetchApplicationServersWithApplicationsOrderedByAppServerNameCaseInsensitive(String nameFilter, List<Integer> myAmwIds, Integer maxResult) {
+
+    Tuple<List<ResourceEntity>, Long> getAppServersWithApps(Integer startIndex, Integer maxResult, String nameFilter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
 
+
+
+        // Count all values before filtering
+        Long totalCount = getTotalCount(cb);
+
+        // Filter and retrieve results
         CriteriaQuery<ResourceEntity> q = cb.createQuery(ResourceEntity.class);
         Root<ResourceEntity> appServer = q.from(ResourceEntity.class);
-
         Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
         SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
         Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
@@ -64,13 +71,6 @@ public class ApplistScreenDomainServiceQueries {
                             cb.like(cb.lower(appServer.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER),
                             cb.like(cb.lower(app.<String>get("name")), nameFilterLower, JpaWildcardConverter.ESCAPE_CHARACTER)));
         }
-        if (myAmwIds != null) {
-            p = cb.and(p,
-                    cb.or(
-                            appServer.get("resourceGroup").get("id").in(myAmwIds),
-                            app.get("resourceGroup").get("id").in(myAmwIds)));
-        }
-
         q.where(p);
 
         q.distinct(true);
@@ -82,12 +82,30 @@ public class ApplistScreenDomainServiceQueries {
         }
 
         q.orderBy(cb.asc(appServer.get("deletable")), cb.asc(name));
+
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
+
+        if (startIndex != null) {
+            query.setFirstResult(startIndex);
+        }
+
         if (maxResult != null) {
             query.setMaxResults(maxResult);
         }
 
-        return query.getResultList();
+        return  new Tuple<>(query.getResultList(), totalCount);
+    }
+
+    private Long getTotalCount(CriteriaBuilder cb) {
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<ResourceEntity> appServer = countQuery.from(ResourceEntity.class);
+        Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
+        SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
+        Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
+        countQuery.select(cb.countDistinct(appServer.get("id")));
+        countQuery.where(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
+        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
+        return totalCount;
     }
 
 }

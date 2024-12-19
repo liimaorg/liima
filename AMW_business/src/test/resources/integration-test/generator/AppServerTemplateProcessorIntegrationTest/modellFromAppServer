@@ -118,9 +118,6 @@ recursion v2.0:
             logoutUrl: http://mobiwiki.mobicorp.ch/wiki/index.php/AMW_Tool
             logsPath: /home/jboss/amw/logs
             name: ch_puzzle_itc_mobi_amw
-            stmpath: /home/jboss/amw/shakedown/stm.jar
-            stmrepo: /home/jboss/amw/shakedown/stps
-            testResultPath: /home/jboss/amw/shakedown/results
             # <== app
             # ==> appServer:
             additionalJavaOpts: 
@@ -474,12 +471,6 @@ recursion v2.0:
 	       /home/jboss/amw/build
            logsPath: 
 	       /home/jboss/amw/logs
-           stmpath: 
-	       /home/jboss/amw/shakedown/stm.jar
-           stmrepo: 
-	       /home/jboss/amw/shakedown/stps
-           testResultPath: 
-	       /home/jboss/amw/shakedown/results
             # <== Path
             # ==> Port:
            port: 
@@ -493,9 +484,6 @@ recursion v2.0:
             # <== propertyTypes
             # ==> providedResTypes:
             # <== providedResTypes
-            stmpath: /home/jboss/amw/shakedown/stm.jar
-            stmrepo: /home/jboss/amw/shakedown/stps
-            testResultPath: /home/jboss/amw/shakedown/results
             # <== ch_puzzle_itc_mobi_amw
             # <== applications
             serverLogLevel: INFO

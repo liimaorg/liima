@@ -1,0 +1,17 @@
+<div class="container">
+  <app-modal-header [title]="'Delete resource type'" (cancel)="cancel()"></app-modal-header>
+  <div class="modal-body">
+    <div class="form-horizontal mx-2">
+      <div class="mb-3">
+        <div class="text-body">
+          Do you really want to delete {{ resourceType.name }}? <br />
+          (This will also remove all resource instances as well as sub resource types)
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+    <app-button [variant]="'primary'" (click)="delete()">Delete</app-button>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<app-modal-header [title]="'Create application server'" (cancel)="cancel()"></app-modal-header>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label">Applicationserver</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="appServer.name" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Release</label>
+      <ng-select id="selectRelease" [(ngModel)]="appServer.release" placeholder="Select release">
+        @for (release of releases(); track release.id) {
+        <ng-option [value]="release">{{ release.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'primary'" [disabled]="hasInvalidFields()" (click)="save()">Save</app-button>
+</div>

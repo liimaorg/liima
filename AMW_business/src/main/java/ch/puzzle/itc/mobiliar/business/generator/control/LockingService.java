@@ -23,8 +23,6 @@ package ch.puzzle.itc.mobiliar.business.generator.control;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity.shakedownTest_state;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -85,36 +83,5 @@ public class LockingService
 		entityManager.persist(d);
 		
 		return true;
-	}
-	
-
-	/**
-	 * Locks a shakedown test on the database (therefore it runs in its own transaction) to make sure,
-	 * that the test is only executed once
-	 * 
-	 * @param id
-	 * @return true if the test has successfully been locked and can be executed, false otherwise
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public boolean markShakedownTestAsRunning(Integer id){
-		ShakedownTestEntity s;
-		log.fine("Locking ShakedownTest " + id);
-		try{
-			s = entityManager.find(ShakedownTestEntity.class, id, LockModeType.PESSIMISTIC_FORCE_INCREMENT);
-		}
-		catch (LockTimeoutException e) {
-			log.warning("Locking of ShakedownTest " + id + " not possible!");
-			return false;
-		}
-
-		if (s.isExecuted()) {
-			log.info("Test " + s.getId() + " was already executed.");
-			return false;
-		}
-		
-		s.setExecuted(true);
-		s.setShakedownTestStateDisplayName(shakedownTest_state.inprogress);
-		entityManager.persist(s);
-		return true;	
 	}
 }

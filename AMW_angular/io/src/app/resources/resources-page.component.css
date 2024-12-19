@@ -1,0 +1,9 @@
+.nav-item,
+.nav-link {
+  cursor: pointer;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  font-weight: bold;
+}

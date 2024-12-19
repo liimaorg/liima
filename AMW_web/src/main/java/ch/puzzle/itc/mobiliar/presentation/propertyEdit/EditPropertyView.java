@@ -34,13 +34,11 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.PropertyDescriptorNotDeletableException;
 import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.TestingMode;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -96,17 +94,8 @@ public class EditPropertyView implements Serializable {
 	@Setter
 	private String propertyTagsString;
 
-	@Inject
-	@TestingMode
-	private Boolean testing;
-
 	@Getter
 	private boolean showForce;
-
-	@TestingMode
-	public void onChangedTestingMode(@Observes Boolean isTesting) {
-		this.testing = isTesting;
-	}
 
 	@PostConstruct
 	public void init() {
@@ -122,8 +111,7 @@ public class EditPropertyView implements Serializable {
 		this.resourceTypeIdFromParam = resourceTypeIdFromParam;
 		this.resourceIdFromParam = null;
 		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
-		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam,
-				isTesting());
+		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResourceType(resourceTypeIdFromParam);
 		canDecryptProperties = permissionBoundary.canToggleDecryptionOfResourceType(resourceTypeIdFromParam);
 
 	}
@@ -132,8 +120,7 @@ public class EditPropertyView implements Serializable {
 		this.resourceIdFromParam = resourceIdFromParam;
 		this.resourceTypeIdFromParam = null;
 		// no context - check already done by PropertyEditDataProvider (onContext/ResourceChanged) => editableProperties
-		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam,
-				isTesting());
+		canEditProperties = permissionBoundary.hasPermissionToEditPropertiesByResource(resourceIdFromParam);
 		canDecryptProperties = permissionBoundary.canToggleDecryptionOfResource(resourceIdFromParam);
 	}
 
@@ -173,8 +160,6 @@ public class EditPropertyView implements Serializable {
 		if (propertyDescriptor == null) {
 			// create a new one
 			propertyDescriptor = new PropertyDescriptorEntity();
-			// set if testing property or not
-			propertyDescriptor.setTesting(isTesting());
 
             propertyDescriptorHashBeforeModification = propertyDescriptor.foreignableFieldHashCode();
 		}
@@ -248,11 +233,7 @@ public class EditPropertyView implements Serializable {
 	public void save() {
 		try {
 
-            if (isTesting()){
-                saveTestingPropertyDescriptor();
-            } else {
-                savePropertyDescriptor();
-            }
+			savePropertyDescriptor();
 
 			propertyDescriptorId = propertyDescriptor.getId();
 
@@ -264,16 +245,6 @@ public class EditPropertyView implements Serializable {
 			GlobalMessageAppender.addErrorMessage(e.getMessage());
 		} catch (ForeignableOwnerViolationException e) {
 			GlobalMessageAppender.addErrorMessage(buildErrorMessage(e, "edit", propertyDescriptor.getPropertyDescriptorDisplayName()));
-		}
-	}
-
-	private void saveTestingPropertyDescriptor() throws AMWException, ForeignableOwnerViolationException {
-		if (isEditResource()) {
-			propertyDescriptor = propertyEditor.saveTestingPropertyDescriptorForResource(
-					resourceIdFromParam, propertyDescriptor, propertyDescriptorHashBeforeModification, propertyTagsString);
-		} else {
-			propertyDescriptor = propertyEditor.saveTestingPropertyDescriptorForResourceType(
-					resourceTypeIdFromParam, propertyDescriptor, propertyDescriptorHashBeforeModification, propertyTagsString);
 		}
 	}
     
@@ -343,13 +314,6 @@ public class EditPropertyView implements Serializable {
 			propertyDescriptor = propertyEditor.getPropertyDescriptor(propertyDescriptorId);
             propertyDescriptorHashBeforeModification = propertyDescriptor.foreignableFieldHashCode();
 		}
-	}
-
-	/**
-	 * @return true if testing is tue and initialized, otherwise false
-	 */
-	public boolean isTesting() {
-		return testing != null && testing;
 	}
 
 	public boolean isSameEncrypted(){

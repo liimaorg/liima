@@ -4,10 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import { Release } from './release';
 import { Observable } from 'rxjs';
-import { ResourceEntity } from './resourceEntity';
+import { ResourceEntity } from './resource-entity';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class ReleasesService extends BaseService {
+  private allReleases$ = this.getAllReleases();
+  allReleases = toSignal(this.allReleases$, { initialValue: [] as Release[] });
+
   constructor(private http: HttpClient) {
     super();
   }
@@ -20,17 +24,25 @@ export class ReleasesService extends BaseService {
     return this.http.get<Release>(`${this.getBaseUrl()}/releases/default`).pipe(catchError(this.handleError));
   }
 
+  getUpcomingRelease(): Observable<Release> {
+    return this.http.get<Release>(`${this.getBaseUrl()}/releases/upcomingRelease`).pipe(catchError(this.handleError));
+  }
+
   getReleases(offset: number, limit: number): Observable<Release[]> {
     return this.http
       .get<Release[]>(`${this.getBaseUrl()}/releases?start=${offset}&limit=${limit}`)
       .pipe(catchError(this.handleError));
   }
 
+  getAllReleases(): Observable<Release[]> {
+    return this.http.get<Release[]>(`${this.getBaseUrl()}/releases`).pipe(catchError(this.handleError));
+  }
+
   getReleaseResources(id: number): Observable<Map<string, ResourceEntity[]>> {
     return this.http.get(`${this.getBaseUrl()}/releases/${id}/resources`).pipe(
       map((jsonObject) => {
-        let resourceMap = new Map<string, ResourceEntity[]>();
-        for (var value in jsonObject) {
+        const resourceMap = new Map<string, ResourceEntity[]>();
+        for (const value in jsonObject) {
           resourceMap.set(value, jsonObject[value]);
         }
         return resourceMap;

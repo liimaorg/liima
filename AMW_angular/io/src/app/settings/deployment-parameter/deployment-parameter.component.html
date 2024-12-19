@@ -3,12 +3,11 @@
   <div class="row mt-2 py-4">
     <div class="col-6 ms-auto">
       <div class="input-group">
-        @if (canCreate) {
+        @if (canCreate()) {
         <input id="keyName" type="text" class="form-control" [(ngModel)]="keyName" (keyup.enter)="addKey()" />
-        <button class="btn btn-primary" (click)="addKey()" [attr.data-cy]="'button-add'">
-          <app-icon icon="plus-circle"></app-icon>
-          Add key
-        </button>
+        <app-button [variant]="'primary'" (click)="addKey()"
+          ><app-icon icon="plus-circle"></app-icon> Add key</app-button
+        >
         }
       </div>
     </div>
@@ -26,14 +25,10 @@
       <tr>
         <td class="align-middle">{{ paramKey.name }}</td>
         <td>
-          @if (canDelete) {
-          <button
-            class="btn btn-sm btn-danger me-0"
-            (click)="deleteKey(paramKey.id)"
-            [attr.data-cy]="'delete-' + paramKey.id"
-          >
-            <app-icon icon="trash"></app-icon>
-          </button>
+          @if (canDelete()) {
+          <app-button [variant]="'danger'" [size]="'sm'" [additionalClasses]="'me-0'" (click)="deleteKey(paramKey.id)"
+            ><app-icon icon="trash"></app-icon
+          ></app-button>
           }
         </td>
       </tr>

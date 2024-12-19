@@ -44,7 +44,7 @@
                 <version>1.13.3</version>
                 <configuration>
                     <nodeVersion>v20.11.1</nodeVersion>
-                    <npmVersion>10.4.0</npmVersion>
+                    <npmVersion>10.8.2</npmVersion>
                     <workingDirectory>io</workingDirectory>
                     <installDirectory>${user.home}/.node</installDirectory>
                 </configuration>
@@ -63,17 +63,17 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci</arguments>
+                            <arguments>install</arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm run-script mavenbuild</id>
+                        <id>npm run mavenbuild</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run-script mavenbuild</arguments>
+                            <arguments>run mavenbuild</arguments>
                         </configuration>
                     </execution>
                 </executions>

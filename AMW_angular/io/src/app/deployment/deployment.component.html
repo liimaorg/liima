@@ -144,9 +144,7 @@
           </div>
           <div class="col-sm-2">
             @if (transDeploymentParameter.key && transDeploymentParameter.value) {
-            <button type="button" class="btn btn-secondary" (click)="onAddParam()">
-              <app-icon icon="plus"></app-icon>
-            </button>
+            <app-button [variant]="'secondary'" (click)="onAddParam()"><app-icon icon="plus"></app-icon></app-button>
             }
           </div>
         </div>
@@ -162,9 +160,9 @@
             <input class="form-control" disabled type="text" value="{{ transDepParam.value }}" />
           </div>
           <div class="col-sm-2">
-            <button type="button" class="btn btn-secondary" (click)="onRemoveParam(transDepParam)">
-              <app-icon icon="trash"></app-icon>
-            </button>
+            <app-button [variant]="'secondary'" (click)="onRemoveParam(transDepParam)"
+              ><app-icon icon="trash"></app-icon
+            ></app-button>
           </div>
         </div>
         } }
@@ -180,50 +178,27 @@
               <input class="form-check-input" id="email" type="checkbox" [(ngModel)]="doSendEmail" />
               <label for="email">send an email when deployed</label>
             </div>
-            @if (hasPermissionShakedownTest) {
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                id="doExecuteShakedownTest"
-                type="checkbox"
-                [(ngModel)]="doExecuteShakedownTest"
-              />
-              <label for="doExecuteShakedownTest">execute shakedown tests when deployed</label>
-            </div>
-            } @if (doExecuteShakedownTest) {
-            <div class="form-check">
-              <input
-                class="form-check-input"
-                id="doNeighbourhoodTest"
-                type="checkbox"
-                [(ngModel)]="doNeighbourhoodTest"
-              />
-              <label for="doNeighbourhoodTest">test neighbourhood</label>
-            </div>
-            }
           </div>
         </div>
 
         <div class="form-group row" [attr.disabled]="isReadyForDeployment() ? null : ''">
           <div class="offset-2 col">
-            <button
-              type="submit"
-              class="btn btn-secondary btn-main"
-              [attr.data-cy]="'btn-request-deployment'"
-              [attr.disabled]="hasPermissionToRequestDeployment ? null : ''"
+            <app-button
+              [variant]="'secondary'"
+              [additionalClasses]="'mb-2 me-2'"
+              [disabled]="!hasPermissionToRequestDeployment"
               (click)="requestDeployment()"
             >
               Request deployment
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary btn-main"
-              [attr.data-cy]="'btn-deploy'"
-              [attr.disabled]="hasPermissionToDeploy ? null : ''"
+            </app-button>
+            <app-button
+              [variant]="'primary'"
+              [additionalClasses]="'mb-2 me-2'"
+              [disabled]="!hasPermissionToDeploy"
+              [dataCy]="'btn-deploy'"
               (click)="createDeployment()"
+              >Deploy</app-button
             >
-              Deploy
-            </button>
           </div>
         </div>
       </span>

@@ -17,7 +17,6 @@
                <class>ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity</class>
-               <class>ch.puzzle.itc.mobiliar.business.usersettings.entity.FavoriteResourceEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.property.entity.MikEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity</class>
@@ -33,8 +32,6 @@
                <class>ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity</class>
-               <class>ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownStpEntity</class>
-               <class>ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity</class>

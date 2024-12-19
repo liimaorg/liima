@@ -8,12 +8,13 @@ import { ResourceType } from '../../resource/resource-type';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'amw-restriction-edit',
+  selector: 'app-restriction-edit',
   templateUrl: './restriction-edit.component.html',
   standalone: true,
-  imports: [FormsModule, NgClass, IconComponent],
+  imports: [FormsModule, NgClass, IconComponent, ButtonComponent],
 })
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   actions: string[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];
@@ -171,12 +172,12 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
 
   checkUnique(env: Environment) {
     if (this.delegationMode) {
-      const index: number = this.groupedEnvironments[env.parent].indexOf(env);
-      const isSelected: boolean = this.groupedEnvironments[env.parent][index].selected;
+      const index: number = this.groupedEnvironments[env.parentName].indexOf(env);
+      const isSelected: boolean = this.groupedEnvironments[env.parentName][index].selected;
       this.deSelectAllEnvironments();
-      this.groupedEnvironments[env.parent][index].selected = isSelected;
+      this.groupedEnvironments[env.parentName][index].selected = isSelected;
       if (isSelected) {
-        this.restriction.contextName = this.groupedEnvironments[env.parent][index].name;
+        this.restriction.contextName = this.groupedEnvironments[env.parentName][index].name;
       }
     }
   }

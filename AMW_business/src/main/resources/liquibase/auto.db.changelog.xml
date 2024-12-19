@@ -110,4 +110,9 @@
     <!--1.17.31-->
     <include file="changesets/data/config_admin_add_template_restriction.xml" relativeToChangelogFile="true"/>
 
+    <!--1.17.37-->
+    <include file="changesets/model/removeFavorites/removeFavorites.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/data/removeShakedownAndTesting.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/removeTesting/removeShakedownAndTesting.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

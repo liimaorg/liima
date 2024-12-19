@@ -43,8 +43,6 @@ public class DeploymentRequestDTO {
 	private List<AppWithVersionDTO> appsWithVersion; // optional
 	private Boolean requestOnly = false; // optional
 	private Boolean simulate = false; // optional
-	private Boolean executeShakedownTest = false; // optional
-	private Boolean neighbourhoodTest = false; // optional
 	private Boolean sendEmail = false; // optional
 	private String releaseName; // optional
 	private List<DeploymentParameterDTO> deploymentParameters; // optional
@@ -67,8 +65,6 @@ public class DeploymentRequestDTO {
 		}
 		requestOnly = deploymentRequestDto.getRequestOnly();
 		simulate = deploymentRequestDto.getSimulate();
-		executeShakedownTest = deploymentRequestDto.getExecuteShakedownTest();
-		neighbourhoodTest = deploymentRequestDto.getNeighbourhoodTest();
 		sendEmail = deploymentRequestDto.getSendEmail();
 		releaseName = deploymentRequestDto.getReleaseName();
 

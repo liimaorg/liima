@@ -83,24 +83,23 @@ public class ResourceGroupRepository {
 	
     /**
      * @param resourceTypeName
-     * @param myAmw
      * @param fetchResources determines if resources fetched
      * @return a list of Groups
      */    
-	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, List<Integer> myAmw, boolean fetchResources, boolean sorted) {
-		return getGroupsForType("name", resourceTypeName, myAmw, fetchResources, sorted);
+	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, boolean fetchResources, boolean sorted) {
+		return getGroupsForType("name", resourceTypeName, fetchResources, sorted);
 	}
 	
-	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, List<Integer> myAmw, boolean fetchResources) {
-		return getGroupsForType("name", resourceTypeName, myAmw, fetchResources, false);
+	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, boolean fetchResources) {
+		return getGroupsForType("name", resourceTypeName, fetchResources, false);
 	}
 	
-	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, List<Integer> myAmw, boolean fetchResources, boolean sorted) {
-		return getGroupsForType("id", resourceTypeId, myAmw, fetchResources, sorted);
+	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, boolean fetchResources, boolean sorted) {
+		return getGroupsForType("id", resourceTypeId, fetchResources, sorted);
 	}
 	
-	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, List<Integer> myAmw, boolean fetchResources) {
-		return getGroupsForType("id", resourceTypeId, myAmw, fetchResources, false);
+	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, boolean fetchResources) {
+		return getGroupsForType("id", resourceTypeId, fetchResources, false);
 	}
 
     /**
@@ -132,9 +131,7 @@ public class ResourceGroupRepository {
         return result;
     }
 
-
-	
-	private List<ResourceGroupEntity> getGroupsForType(String typeParam, Object typeParamValue, List<Integer> myAmw, boolean fetchResources, boolean sorted) {
+	private List<ResourceGroupEntity> getGroupsForType(String typeParam, Object typeParamValue, boolean fetchResources, boolean sorted) {
         StringBuilder qString = new StringBuilder();
         String fetchString = StringUtils.EMPTY;
         List<ResourceGroupEntity> result;
@@ -146,17 +143,11 @@ public class ResourceGroupRepository {
         qString.append("SELECT DISTINCT g FROM ResourceGroupEntity g left join " + fetchString + "g.resources r");
         qString.append(" WHERE r.resourceType."+typeParam+"=:typePram");
         qString.append(" AND r.name IS NOT :asContainer");
-        if (myAmw != null && myAmw.size() != 0) {
-            qString.append(" AND g.id in (:myAmw)");
-        }
 
         TypedQuery<ResourceGroupEntity> q = entityManager.createQuery(qString.toString(),
                 ResourceGroupEntity.class);
         q.setParameter("typePram", typeParamValue);
         q.setParameter("asContainer", ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
-        if (myAmw != null && myAmw.size() != 0) {
-            q.setParameter("myAmw", myAmw);
-        }
         
         result = q.getResultList();
         

@@ -38,7 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.shakedown.entity.ShakedownTestEntity;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -132,11 +131,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@Getter
 	@Setter
 	private Set<DeploymentEntity> deployments;
-
-	@OneToMany(cascade = ALL, mappedBy = "applicationServer")
-	@NotAudited
-	@Getter
-	private Set<ShakedownTestEntity> shakedownTests;
 
 	@ManyToOne(optional = false, cascade = PERSIST)
 	@Getter
