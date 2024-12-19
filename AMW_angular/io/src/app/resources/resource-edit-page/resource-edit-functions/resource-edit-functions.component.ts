@@ -5,6 +5,7 @@ import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indi
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { ResourceFunction } from './resource-function';
 import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-resources-edit-functions',
@@ -13,36 +14,65 @@ import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list
   templateUrl: './resource-edit-functions.component.html',
 })
 export class ResourceEditFunctionsComponent {
+  private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(ResourceFunctionsService);
 
   resourceId = input.required<number>();
+  contextId = input.required<number>();
   functions = this.functionsService.functions;
 
   isLoading = computed(() => {
     if (this.resourceId() != null) {
-      this.functionsService.getResourceFunctions(this.resourceId());
+      this.functionsService.setIdForFunctionList(this.resourceId());
       return false;
     }
   });
 
+  // TODO extend AuthService for ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary.canCreateFunctionOfResourceOrResourceType
+  permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canShowInstanceFunctions: this.authService.hasPermission('RESOURCE_AMWFUNCTION', 'READ'),
+        canShowSuperTypeFunctions: this.authService.hasPermission('RESOURCETYPE_AMWFUNCTION', 'READ'),
+        canAdd: (this.contextId() === 1 || this.contextId === null) && true,
+        canEdit: (this.contextId() === 1 || this.contextId === null) && true,
+        canDelete: (this.contextId() === 1 || this.contextId === null) && true,
+      };
+    } else {
+      return {
+        canShowInstanceFunctions: false,
+        canShowSuperTypeFunctions: false,
+        canAdd: false,
+        canEdit: false,
+        canDelete: false,
+      };
+    }
+  });
+
+  // then for editmodal it's read or edit
+
   functionsData = computed(() => {
-    if (this.functions().length > 0) {
+    if (this.functions()?.length > 0) {
       const [instance, resource] = this.splitFunctions(this.functions());
-      return [
-        {
+      const result = [];
+      if (this.permissions().canShowInstanceFunctions) {
+        result.push({
           title: 'Resource Instance Functions',
           entries: instance,
-          canEdit: true,
-          canDelete: true,
-        },
-        {
+          canEdit: this.permissions().canEdit,
+          canDelete: this.permissions().canDelete,
+        });
+      }
+      if (this.permissions().canShowSuperTypeFunctions) {
+        result.push({
           title: 'Resource Type Functions',
           entries: resource,
-          canOverwrite: false,
-        },
-      ];
-    }
+          canOverwrite: this.permissions().canEdit,
+        });
+      }
+      return result;
+    } else return null;
   });
 
   add() {
