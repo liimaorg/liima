@@ -23,6 +23,8 @@ export class ResourceEditPageComponent {
   private route = inject(ActivatedRoute);
 
   resource: Signal<Resource> = this.resourceService.resource;
+  contextId = signal<number | null>(1); // TODO
+
   ids = toSignal(
     this.route.queryParamMap.pipe(
       map((params) => params),
@@ -36,8 +38,7 @@ export class ResourceEditPageComponent {
       // permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
       // TODO show correct STAGE by context id
       // TODO how to work with resourceTypes?
-
-      this.resourceService.getResource(Number(this.ids().get('id')));
+      this.resourceService.setIdForResource(Number(this.ids().get('id')));
       return false;
     }
   });

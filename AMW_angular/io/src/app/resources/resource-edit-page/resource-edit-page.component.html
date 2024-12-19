@@ -14,6 +14,9 @@
       (listAction)="doListAction($event)"
     ></app-tile-component>
 
-    <app-resources-edit-functions [resourceId]="resource()?.id"></app-resources-edit-functions>
+    <app-resources-edit-functions
+      [resourceId]="resource()?.id"
+      [contextId]="contextId()"
+    ></app-resources-edit-functions>
   </div>
 </app-page>
