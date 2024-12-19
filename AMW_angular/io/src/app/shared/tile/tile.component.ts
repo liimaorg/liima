@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgbDatepicker, NgbPopover, NgbTimepicker } from '@ng-bootstrap/ng-bootstrap';
 import { IconComponent } from '../icon/icon.component';
 import { ButtonComponent } from '../button/button.component';
-import { TileListComponent, TileListEntry } from './tile-list/tile-list.component';
+import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-list/tile-list.component';
 
 @Component({
   selector: 'app-tile-component',
@@ -12,18 +12,24 @@ import { TileListComponent, TileListEntry } from './tile-list/tile-list.componen
     <div class="tile">
       <div class="tile-header">
         <div class="tile-title">{{ title() }}</div>
+        @if (canAction()) {
         <div class="tile-action-bar">
           <app-button [variant]="'primary'" [size]="'sm'" (click)="tileAction.emit()">
             <app-icon icon="plus-circle" />
-            <span>{{ action() }}</span></app-button
+            <span>{{ actionName() }}</span></app-button
           >
         </div>
+        }
       </div>
 
       <div class="tile-body">
         @if (!lists()) {
         <div class="no-content">
           <span>No {{ title() }} for this resource</span>
+        </div>
+        } @else if (lists().length <= 0) {
+        <div class="no-content">
+          <span>You are not allowed to view {{ title() }} for this resource</span>
         </div>
         }
         <ng-container #container></ng-container>
@@ -59,7 +65,8 @@ import { TileListComponent, TileListEntry } from './tile-list/tile-list.componen
 })
 export class TileComponent {
   title = input.required<string>();
-  action = input.required<string>();
+  actionName = input.required<string>();
+  canAction = input<boolean>(false);
   lists = input.required<
     {
       title: string;
@@ -70,5 +77,5 @@ export class TileComponent {
     }[]
   >();
   tileAction = output<void>();
-  listAction = output<string>();
+  listAction = output<TileListEntryOutput>();
 }

@@ -6,13 +6,14 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../../resource/resource.service';
 import { Resource } from '../../resource/resource';
-import { TileListEntry } from '../../shared/tile/tile-list/tile-list.component';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/tile/tile-list/tile-list.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TileComponent } from '../../shared/tile/tile.component';
 
 @Component({
-  selector: 'app-resources-edit',
+  selector: 'app-resources-edit-page',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent],
+  imports: [LoadingIndicatorComponent, PageComponent, TileComponent],
   templateUrl: './resource-edit-page.component.html',
 })
 export class ResourceEditPageComponent {
@@ -41,15 +42,15 @@ export class ResourceEditPageComponent {
     {
       title: 'Instance Templates',
       entries: [
-        { name: 'startJob_0.sh', description: 'startJob_0.sh' },
-        { name: 'startJob_1.sh', description: 'job 2 again' },
+        { name: 'startJob_0.sh', description: 'startJob_0.sh', id: 0 },
+        { name: 'startJob_1.sh', description: 'job 2 again', id: 1 },
       ] as TileListEntry[],
       canEdit: true,
       canDelete: true,
     },
     {
       title: 'Resource Type Templates',
-      entries: [{ name: 'seg', description: 'segmentation' }] as TileListEntry[],
+      entries: [{ name: 'seg', description: 'segmentation', id: 121 }] as TileListEntry[],
       canOverwrite: false,
     },
   ]);
@@ -58,15 +59,15 @@ export class ResourceEditPageComponent {
     {
       title: 'Resource Instance Functions',
       entries: [
-        { name: 'Function1', description: 'bla' },
-        { name: 'Function 2', description: 'whatever' },
+        { name: 'Function1', description: 'bla', id: 42 },
+        { name: 'Function 2', description: 'whatever', id: 69 },
       ],
       canEdit: true,
       canDelete: true,
     },
     {
       title: 'Resource Type Functions',
-      entries: [{ name: 'seg', description: 'segmentation' }] as TileListEntry[],
+      entries: [{ name: 'seg', description: 'segmentation', id: 666 }] as TileListEntry[],
       canOverwrite: false,
     },
   ]);
@@ -75,7 +76,29 @@ export class ResourceEditPageComponent {
     this.modalService.open('This would open a modal to add something');
   }
 
-  doListAction($event: string) {
-    console.log('whatever ' + $event);
+  doListAction($event: TileListEntryOutput) {
+    switch ($event.action) {
+      case EntryAction.edit:
+        this.editFunction($event.id);
+        return;
+      case EntryAction.delete:
+        this.deleteFunction($event.id);
+        return;
+      case EntryAction.overwrite:
+        this.overwriteFunction($event.id);
+        return;
+    }
+  }
+
+  private editFunction(id: number) {
+    this.modalService.open('This would open a modal to edit function with id:' + id);
+  }
+
+  private deleteFunction(id: number) {
+    this.modalService.open('This would open a modal to delete function with id:' + id);
+  }
+
+  private overwriteFunction(id: number) {
+    this.modalService.open('This would open a modal to overwrite function with id:' + id);
   }
 }

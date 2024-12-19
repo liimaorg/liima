@@ -7,7 +7,8 @@
 
     <app-tile-component
       [title]="'Templates'"
-      [action]="'New Template'"
+      [actionName]="'New Template'"
+      [canAction]="true"
       [lists]="templatesData()"
       (tileAction)="add()"
       (listAction)="doListAction($event)"
@@ -15,7 +16,8 @@
 
     <app-tile-component
       [title]="'Functions'"
-      [action]="'New function'"
+      [actionName]="'New function'"
+      [canAction]="true"
       [lists]="functionsData()"
       (tileAction)="add()"
       (listAction)="doListAction($event)"
