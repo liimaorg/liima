@@ -1,12 +1,20 @@
 .tile {
   border: 1px solid #ddd;
   padding: 1em;
-  margin: 0.5em;
+  margin: 0.5em 0.5em 1.5em;
 
   .tile-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    line-height: 18px;
+  }
+
+  .opened {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5em;
   }
 
   .tile-title {

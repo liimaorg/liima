@@ -10,7 +10,7 @@ import { ResourceTypeRequest } from './resource-type-request';
 @Injectable({ providedIn: 'root' })
 export class ResourceTypesService extends BaseService {
   private reload$ = new Subject<ResourceType[]>();
-
+  private resourceTypeId$: Subject<Number> = new Subject<Number>();
   private predefinedResourceTypes$ = this.getPredefinedResourceTypes();
 
   private rootResourceTypes$ = this.reload$.pipe(
@@ -19,11 +19,29 @@ export class ResourceTypesService extends BaseService {
     shareReplay(1),
   );
 
+  private resourceTypeById$: Observable<ResourceType> = this.resourceTypeId$.pipe(
+    switchMap((id: number) => this.getResourceType(id)),
+    shareReplay(1),
+  );
+
   predefinedResourceTypes = toSignal(this.predefinedResourceTypes$, { initialValue: [] as ResourceType[] });
   rootResourceTypes = toSignal(this.rootResourceTypes$, { initialValue: [] as ResourceType[] });
+  resourceType = toSignal(this.resourceTypeById$, { initialValue: null });
 
   constructor(private http: HttpClient) {
     super();
+  }
+
+  setIdForResourceType(id: number) {
+    this.resourceTypeId$.next(id);
+  }
+
+  getResourceType(id: number): Observable<ResourceType> {
+    return this.http
+      .get<ResourceType>(`${this.getBaseUrl()}/resources/resourceTypes/${id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   getAllResourceTypes(): Observable<ResourceType[]> {
