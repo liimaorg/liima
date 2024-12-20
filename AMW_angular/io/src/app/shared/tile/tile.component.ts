@@ -10,8 +10,14 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
   selector: 'app-tile-component',
   template: `
     <div class="tile">
-      <div class="tile-header">
-        <div class="tile-title">{{ title() }}</div>
+      <div class="tile-header" (click)="toggleBody()" [ngClass]="showBody() ? 'opened' : 'closed'">
+        <div class="tile-title">
+          @if (showBody()) {
+          <app-icon icon="caret-down"></app-icon>} @else {
+          <app-icon icon="caret-right"></app-icon>
+          }
+          {{ title() }}
+        </div>
         @if (canAction()) {
         <div class="tile-action-bar">
           <app-button [variant]="'primary'" [size]="'sm'" (click)="tileAction.emit()">
@@ -21,7 +27,7 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
         </div>
         }
       </div>
-
+      @if (showBody()) {
       <div class="tile-body">
         @if (!lists()) {
         <div class="no-content">
@@ -46,6 +52,7 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
         ></app-tile-list>
         }
       </div>
+      }
     </div>
   `,
   styleUrls: ['./tile.component.scss'],
@@ -67,6 +74,7 @@ export class TileComponent {
   title = input.required<string>();
   actionName = input.required<string>();
   canAction = input<boolean>(false);
+  isVisible = input<boolean>(false);
   lists = input.required<
     {
       title: string;
@@ -78,4 +86,9 @@ export class TileComponent {
   >();
   tileAction = output<void>();
   listAction = output<TileListEntryOutput>();
+
+  showBody = signal(this.isVisible());
+  toggleBody() {
+    this.showBody.set(!this.showBody());
+  }
 }
