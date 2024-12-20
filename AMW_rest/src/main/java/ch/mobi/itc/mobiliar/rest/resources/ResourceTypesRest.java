@@ -53,7 +53,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
 @Path("/resources")
-@Api(value = "/resources", description = "ResourceTypes")
+@Api(value = "/resources")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ResourceTypesRest {
