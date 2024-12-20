@@ -17,20 +17,22 @@
       Loaded resource:
       {{ this.resource()?.name || this.resourceType()?.name }}
     </div>
+    <div id="accordion-view">
+      <app-tile-component
+        [title]="'Templates'"
+        [actionName]="'New Template'"
+        [canAction]="true"
+        [isVisible]="false"
+        [lists]="templatesData()"
+        (tileAction)="add()"
+        (listAction)="doListAction($event)"
+      ></app-tile-component>
 
-    <app-tile-component
-      [title]="'Templates'"
-      [actionName]="'New Template'"
-      [canAction]="true"
-      [lists]="templatesData()"
-      (tileAction)="add()"
-      (listAction)="doListAction($event)"
-    ></app-tile-component>
-
-    <app-resources-edit-functions
-      [resourceId]="resource()?.id"
-      [contextId]="contextId()"
-    ></app-resources-edit-functions>
+      <app-resources-edit-functions
+        [resourceId]="resource()?.id"
+        [contextId]="contextId()"
+      ></app-resources-edit-functions>
+    </div>
     }
   </div>
 </app-page>
