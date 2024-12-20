@@ -9,7 +9,6 @@ import { Resource } from '../../resource/resource';
 import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/tile/tile-list/tile-list.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
-import { ResourceEditFunctionsComponent } from './resource-edit-functions/resource-edit-functions.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
@@ -17,7 +16,7 @@ import { ResourceTypesService } from '../../resource/resource-types.service';
 @Component({
   selector: 'app-resources-edit-page',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, ResourceEditFunctionsComponent, TileComponent],
+  imports: [LoadingIndicatorComponent, PageComponent, TileComponent],
   templateUrl: './resource-edit-page.component.html',
 })
 export class ResourceEditPageComponent {

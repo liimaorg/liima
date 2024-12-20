@@ -17,7 +17,7 @@
       Loaded resource:
       {{ this.resource()?.name || this.resourceType()?.name }}
     </div>
-    <div id="accordion-view">
+    <div>
       <app-tile-component
         [title]="'Templates'"
         [actionName]="'New Template'"
@@ -27,11 +27,6 @@
         (tileAction)="add()"
         (listAction)="doListAction($event)"
       ></app-tile-component>
-
-      <app-resources-edit-functions
-        [resourceId]="resource()?.id"
-        [contextId]="contextId()"
-      ></app-resources-edit-functions>
     </div>
     }
   </div>
