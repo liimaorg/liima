@@ -18,15 +18,20 @@ interface Named {
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
+  private resource$: Subject<Number> = new Subject<Number>();
 
   private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
     switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
-    startWith(null),
+    shareReplay(1),
+  );
+
+  private resourceById$: Observable<Resource> = this.resource$.pipe(
+    switchMap((id: number) => this.getResource(id)),
     shareReplay(1),
   );
 
   resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
-  resource = signal<Resource | null>(null);
+  resource = toSignal(this.resourceById$, { initialValue: null });
 
   constructor(private http: HttpClient) {
     super();
@@ -34,6 +39,10 @@ export class ResourceService extends BaseService {
 
   setTypeForResourceGroupList(resourcesType: ResourceType) {
     this.resourceType$.next(resourcesType);
+  }
+
+  setIdForResource(id: number) {
+    this.resource$.next(id);
   }
 
   getAll(): Observable<Resource[]> {
@@ -47,16 +56,15 @@ export class ResourceService extends BaseService {
       );
   }
 
-  getResource(resourceId: number): void {
-    this.http
-      .get<Resource>(`${this.getBaseUrl()}/resources/resources/${resourceId}`, {
+  getResource(resourceId: number): Observable<Resource> {
+    return this.http
+      .get<Resource>(`${this.getBaseUrl()}/resources/${resourceId}`, {
         headers: this.getHeaders(),
       })
       .pipe(
         map((resource) => toResource(resource)),
         catchError(this.handleError),
-      )
-      .subscribe((result) => this.resource.set(result));
+      );
   }
 
   createResourceForResourceType(resource: any) {
