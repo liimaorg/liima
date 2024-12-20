@@ -28,15 +28,20 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @RequestScoped
 @Path("/resources")
@@ -48,9 +53,6 @@ public class ResourcesRest {
 
     @Inject
     private ResourceLocator resourceLocator;
-
-    @Inject
-    PropertyEditor propertyEditor;
 
 
     // TODO: better GET /{resourceId}/properties/name?
@@ -91,5 +93,14 @@ public class ResourcesRest {
         result.setReleaseName(resource.getRelease().getName());
         result.setType(resource.getResourceType().getName());
         return Response.ok(result).build();
+    }
+
+
+    @GET
+    @Path("/{id : \\d+}")
+    @ApiOperation(value = "Get a resource by id")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getById(@ApiParam("Resource ID") @PathParam("id") Integer id) throws NotFoundException {
+        return Response.ok(new ResourceDTO(resourceBoundary.getResource(id))).build();
     }
 }

@@ -1,9 +1,22 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
-  <div class="page-title">Edit {{ this.resource()?.name }}</div>
+  <div class="page-title">Edit {{ this.resource()?.name || this.resourceType()?.name }}</div>
 
   <div class="page-content">
-    <div class="container">Loaded resource: {{ this.resource()?.name }}</div>
+    @if ((this.resource()?.name && !permissions().canEditResource) || this.resourceType()?.name &&
+    !permissions().canEditResourceType) {
+    <div class="container">
+      <span class="text-warning-2">Not Authorized! You are not allowed to Edit-Resources.</span>
+    </div>
+    } @else if (id() === 0 && typeId() === 0) {
+    <div class="container">
+      <span>Please provide a resource-id to edit a resource.</span>
+    </div>
+    } @else {
+    <div class="container">
+      Loaded resource:
+      {{ this.resource()?.name || this.resourceType()?.name }}
+    </div>
 
     <app-tile-component
       [title]="'Templates'"
@@ -14,13 +27,10 @@
       (listAction)="doListAction($event)"
     ></app-tile-component>
 
-    <app-tile-component
-      [title]="'Functions'"
-      [actionName]="'New function'"
-      [canAction]="true"
-      [lists]="functionsData()"
-      (tileAction)="add()"
-      (listAction)="doListAction($event)"
-    ></app-tile-component>
+    <app-resources-edit-functions
+      [resourceId]="resource()?.id"
+      [contextId]="contextId()"
+    ></app-resources-edit-functions>
+    }
   </div>
 </app-page>

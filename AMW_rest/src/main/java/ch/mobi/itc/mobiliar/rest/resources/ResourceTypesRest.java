@@ -26,11 +26,13 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeRequestDTO;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -42,6 +44,7 @@ import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -56,6 +59,9 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 public class ResourceTypesRest {
 
     @Inject
+    private ResourceBoundary resourceBoundary;
+
+    @Inject
     private ResourceTypeLocator resourceTypeLocator;
 
     @Inject
@@ -68,6 +74,14 @@ public class ResourceTypesRest {
         return resourceTypeLocator.getAllResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @GET
+    @Path("/resourceTypes/{id : \\d+}")
+    @ApiOperation(value = "Get a resourceType by id")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getById(@ApiParam("ResourceType ID") @PathParam("id") Integer id) throws NotFoundException {
+        return Response.ok(new ResourceTypeDTO(resourceBoundary.getResourceType(id))).build();
     }
 
     @Path("/predefinedResourceTypes")
