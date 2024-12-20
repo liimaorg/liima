@@ -2,7 +2,7 @@ import { Component, computed, inject, Signal, signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute } from '@angular/router';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../../resource/resource.service';
 import { Resource } from '../../resource/resource';
@@ -10,6 +10,9 @@ import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/ti
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { ResourceEditFunctionsComponent } from './resource-edit-functions/resource-edit-functions.component';
+import { AuthService } from '../../auth/auth.service';
+import { ResourceType } from '../../resource/resource-type';
+import { ResourceTypesService } from '../../resource/resource-types.service';
 
 @Component({
   selector: 'app-resources-edit-page',
@@ -18,28 +21,38 @@ import { ResourceEditFunctionsComponent } from './resource-edit-functions/resour
   templateUrl: './resource-edit-page.component.html',
 })
 export class ResourceEditPageComponent {
+  private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private resourceService = inject(ResourceService);
+  private resourceTypeService = inject(ResourceTypesService);
   private route = inject(ActivatedRoute);
 
+  id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
+  typeId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('resTypeId')))), {
+    initialValue: 0,
+  });
+  contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
   resource: Signal<Resource> = this.resourceService.resource;
-  contextId = signal<number | null>(1); // TODO
-
-  ids = toSignal(
-    this.route.queryParamMap.pipe(
-      map((params) => params),
-      distinctUntilChanged(),
-    ),
-    [],
-  );
+  resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   isLoading = computed(() => {
-    if (this.ids()?.keys) {
-      // permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE, Action.READ, "edit resources");
-      // TODO show correct STAGE by context id
-      // TODO how to work with resourceTypes?
-      this.resourceService.setIdForResource(Number(this.ids().get('id')));
+    if (this.id()) {
+      this.resourceService.setIdForResource(this.id());
       return false;
+    } else if (this.typeId()) {
+      this.resourceTypeService.setIdForResourceType(this.typeId());
+      return false;
+    } else return false;
+  });
+
+  permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
+        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', 'READ'),
+      };
+    } else {
+      return { canEditResource: false, canEditResourceType: false };
     }
   });
 

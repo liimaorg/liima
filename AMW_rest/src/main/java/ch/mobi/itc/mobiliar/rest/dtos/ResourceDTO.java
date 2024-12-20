@@ -41,7 +41,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResourceDTO {
     private Integer id; // Release id
+    private String name;
     private String release;
+
     private List<ResourceRelationDTO> relations;
     private List<PropertyDTO> properties;
     private List<ResourceTagDTO> resourceTags;
@@ -82,6 +84,7 @@ public class ResourceDTO {
 
     public ResourceDTO(ResourceEntity resource) {
         this.id = resource.getId();
+        this.name = resource.getName();
         this.release = resource.getRelease().getName();
 
     }

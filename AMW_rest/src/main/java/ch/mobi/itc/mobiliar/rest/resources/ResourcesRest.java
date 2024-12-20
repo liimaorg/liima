@@ -38,6 +38,7 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -52,9 +53,6 @@ public class ResourcesRest {
 
     @Inject
     private ResourceLocator resourceLocator;
-
-    @Inject
-    PropertyEditor propertyEditor;
 
 
     // TODO: better GET /{resourceId}/properties/name?
@@ -102,11 +100,7 @@ public class ResourcesRest {
     @Path("/{id : \\d+}")
     @ApiOperation(value = "Get a resource by id")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@ApiParam("Resource ID") @PathParam("id") Integer id) {
-        ResourceEntity resource = resourceLocator.getResourceWithGroupAndRelatedResources(id);
-        if (resource == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(new ResourceDTO(resource)).build();
+    public Response getById(@ApiParam("Resource ID") @PathParam("id") Integer id) throws NotFoundException {
+        return Response.ok(new ResourceDTO(resourceBoundary.getResource(id))).build();
     }
 }
