@@ -34,7 +34,6 @@ import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -45,7 +44,7 @@ import io.swagger.annotations.ApiParam;
 
 @RequestScoped
 @Path("/resources")
-@Api(value = "/resources", description = "Resources")
+@Api(value = "/resources")
 public class ResourcesRest {
 
     @Inject
