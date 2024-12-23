@@ -26,10 +26,7 @@
         (tileAction)="add()"
         (listAction)="doListAction($event)"
       ></app-tile-component>
-      <app-resources-edit-functions
-        [resourceId]="resource()?.id"
-        [contextId]="contextId()"
-      ></app-resources-edit-functions>
+      <app-resources-edit-functions [resource]="resource()" [contextId]="contextId()"></app-resources-edit-functions>
     </div>
     }
   </div>

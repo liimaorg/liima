@@ -6,31 +6,31 @@ import { TileComponent } from '../../../shared/tile/tile.component';
 
 import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
 import { Action, AuthService } from '../../../auth/auth.service';
-import { Resource } from '../../../resource/resource';
 import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunction } from '../../resource-function';
+import { ResourceType } from '../../../resource/resource-type';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
 @Component({
-  selector: 'app-resources-edit-functions',
+  selector: 'app-resource-type-edit-functions',
   standalone: true,
   imports: [LoadingIndicatorComponent, TileComponent],
-  templateUrl: './resource-edit-functions.component.html',
+  templateUrl: './resource-type-edit-functions.component.html',
 })
-export class ResourceEditFunctionsComponent {
+export class ResourceTypeEditFunctionsComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(ResourceFunctionsService);
 
-  resource = input.required<Resource>();
+  resourceType = input.required<ResourceType>();
   contextId = input.required<number>();
   functions = this.functionsService.functions;
 
   isLoading = computed(() => {
-    if (this.resource() != null) {
-      this.functionsService.setIdForResourceFunctionList(this.resource().id);
+    if (this.resourceType() != null) {
+      this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
       return false;
     }
   });
@@ -42,13 +42,13 @@ export class ResourceEditFunctionsComponent {
         canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.CREATE, this.resource().resourceGroupId),
+          this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.CREATE, this.resourceType().name),
         canEdit:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.UPDATE, this.resource().resourceGroupId),
+          this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.UPDATE, this.resourceType().name),
         canDelete:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.DELETE, this.resource().resourceGroupId),
+          this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.DELETE, this.resourceType().name),
       };
     } else {
       return {
@@ -61,29 +61,16 @@ export class ResourceEditFunctionsComponent {
     }
   });
 
-  // then for editmodal it's read or edit
-
   functionsData = computed(() => {
     if (this.functions()?.length > 0) {
-      const [instance, resource] = this.splitFunctions(this.functions());
-      const result = [];
-      if (this.permissions().canShowInstanceFunctions) {
-        result.push({
-          title: 'Resource Instance Functions',
-          entries: instance,
-          canEdit: this.permissions().canEdit,
-          canDelete: this.permissions().canDelete,
-        });
-      }
       if (this.permissions().canShowSuperTypeFunctions) {
-        result.push({
-          title: 'Resource Type Functions',
-          entries: resource,
+        return {
+          title: 'Type Functions',
+          entries: this.mapListEntries(this.functions()),
           canOverwrite: this.permissions().canEdit,
-        });
-      }
-      return result;
-    } else return null;
+        };
+      } else return null;
+    }
   });
 
   add() {
@@ -106,12 +93,6 @@ export class ResourceEditFunctionsComponent {
 
   mapListEntries(functions: ResourceFunction[]) {
     return functions.map((element) => ({ name: element.name, description: element.miks.join(', '), id: element.id }));
-  }
-
-  splitFunctions(resourceFunctions: ResourceFunction[]) {
-    const [instance, resource] = [[], []];
-    resourceFunctions.forEach((element) => (element.definedOnResourceType ? resource : instance).push(element));
-    return [this.mapListEntries(instance), this.mapListEntries(resource)];
   }
 
   private editFunction(id: number) {

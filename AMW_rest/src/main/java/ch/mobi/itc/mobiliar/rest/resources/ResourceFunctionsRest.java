@@ -42,17 +42,19 @@ public class ResourceFunctionsRest {
 
 
     @GET
+    @Path("/resource/{id : \\d+}")
     @ApiOperation(value = "Get all functions for a specific resource")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getResourceFunctions(@ApiParam("Resource ID") @QueryParam("resourceId") Integer resourceId) throws NotFoundException {
+    public Response getResourceFunctions(@ApiParam("Resource ID") @PathParam("id") Integer resourceId) throws NotFoundException {
         List<AmwFunctionEntity> entity = listFunctionsUseCase.functionsForResource(resourceId);
         return Response.status(OK).entity(functionsToResponse(entity)).build();
     }
 
     @GET
+    @Path("/resourceType/{id : \\d+}")
     @ApiOperation(value = "Get all functions for a specific resourceType")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getResourceTypeFunctions(@ApiParam("ResourceType ID") @QueryParam("resourceTypeId") Integer resourceTypeId) throws NotFoundException {
+    public Response getResourceTypeFunctions(@ApiParam("ResourceType ID") @PathParam("id") Integer resourceTypeId) throws NotFoundException {
         List<AmwFunctionEntity> entity = listFunctionsUseCase.functionsForResourceType(resourceTypeId);
         return Response.status(OK).entity(functionsToResponse(entity)).build();
     }
