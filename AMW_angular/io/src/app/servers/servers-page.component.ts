@@ -65,7 +65,7 @@ export class ServersPageComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canReadAppServer: this.authService.hasResourcePermission('RESOURCE', 'CREATE', 'APPLICATION'),
+        canReadAppServer: this.authService.hasResourceTypePermission('RESOURCE', 'CREATE', 'APPLICATION'),
         canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
       };
     } else {

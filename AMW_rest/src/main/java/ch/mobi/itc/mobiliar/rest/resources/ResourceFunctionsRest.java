@@ -11,10 +11,7 @@ import io.swagger.annotations.ApiParam;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -45,19 +42,17 @@ public class ResourceFunctionsRest {
 
 
     @GET
-    @Path("/{resourceId : \\d+}")
     @ApiOperation(value = "Get all functions for a specific resource")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getResourceFunctions(@ApiParam("Resource ID") @PathParam("resourceId") Integer resourceId) throws NotFoundException {
+    public Response getResourceFunctions(@ApiParam("Resource ID") @QueryParam("resourceId") Integer resourceId) throws NotFoundException {
         List<AmwFunctionEntity> entity = listFunctionsUseCase.functionsForResource(resourceId);
         return Response.status(OK).entity(functionsToResponse(entity)).build();
     }
 
     @GET
-    @Path("/{resourceTypeId : \\d+}")
     @ApiOperation(value = "Get all functions for a specific resourceType")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getResourceTypeFunctions(@ApiParam("ResourceType ID") @PathParam("resourceTypeId") Integer resourceTypeId) throws NotFoundException {
+    public Response getResourceTypeFunctions(@ApiParam("ResourceType ID") @QueryParam("resourceTypeId") Integer resourceTypeId) throws NotFoundException {
         List<AmwFunctionEntity> entity = listFunctionsUseCase.functionsForResourceType(resourceTypeId);
         return Response.status(OK).entity(functionsToResponse(entity)).build();
     }

@@ -20,23 +20,36 @@
 
 package ch.puzzle.itc.mobiliar.business.function.control;
 
+import ch.puzzle.itc.mobiliar.business.function.boundary.GetFunctionUseCase;
+import ch.puzzle.itc.mobiliar.business.function.boundary.ListFunctionsUseCase;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class FunctionService {
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
+
+public class FunctionService implements GetFunctionUseCase, ListFunctionsUseCase {
 
 	@Inject
 	FunctionRepository functionRepository;
 
 	@Inject
 	ResourceRepository resourceRepository;
+
+    @Inject
+    ResourceTypeRepository resourceTypeRepository;
 
     /**
      * Returns all (overwritable) functions, which are defined on all parent resource types of the given resource instance - except the functions which are already defined on the given resource instance.
@@ -342,4 +355,36 @@ public class FunctionService {
 
 		functionRepository.remove(functionToDelete);
 	}
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
+    public AmwFunctionEntity get(Integer id) throws NotFoundException {
+        AmwFunctionEntity entity = functionRepository.getFunctionByIdWithMiksAndParentChildFunctions(id);
+        if (entity != null) {
+            return entity;
+        } else {
+            throw new NotFoundException("Function not found.");
+        }
+    }
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
+    public List<AmwFunctionEntity> functionsForResource(Integer id) {
+        ResourceEntity resourceEntity = resourceRepository.loadWithFunctionsAndMiksForId(id);
+        List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceEntity.getFunctions());
+        List<AmwFunctionEntity> superFuncs = getAllOverwritableSupertypeFunctions(resourceEntity);
+
+
+        return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
+    public List<AmwFunctionEntity> functionsForResourceType(Integer id) {
+        ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(id);
+        List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceTypeEntity.getFunctions());
+        List<AmwFunctionEntity> superFuncs = getAllOverwritableSupertypeFunctions(resourceTypeEntity);
+
+        return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
+    }
 }

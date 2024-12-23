@@ -21,8 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.function.boundary;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -39,7 +37,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -49,10 +46,8 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
-
 @Stateless
-public class FunctionsBoundary implements GetFunctionUseCase, ListFunctionsUseCase {
+public class FunctionsBoundary {
 
     @Inject
     EntityManager entityManager;
@@ -81,41 +76,6 @@ public class FunctionsBoundary implements GetFunctionUseCase, ListFunctionsUseCa
         }
         return null;
     }
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public AmwFunctionEntity get(Integer id) throws NotFoundException {
-        AmwFunctionEntity entity = functionRepository.getFunctionByIdWithMiksAndParentChildFunctions(id);
-        if (entity != null) {
-            return entity;
-        } else {
-            throw new NotFoundException("Function not found.");
-        }
-    }
-
-
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public List<AmwFunctionEntity> functionsForResource(Integer id) {
-        ResourceEntity resourceEntity = resourceRepository.loadWithFunctionsAndMiksForId(id);
-        List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceEntity.getFunctions());
-        List<AmwFunctionEntity> superFuncs = functionService.getAllOverwritableSupertypeFunctions(resourceEntity);
-
-
-        return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public List<AmwFunctionEntity> functionsForResourceType(Integer id) {
-        ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(id);
-        List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceTypeEntity.getFunctions());
-        List<AmwFunctionEntity> superFuncs = functionService.getAllOverwritableSupertypeFunctions(resourceTypeEntity);
-
-        return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
 
     /**
      * Get all functions which are defined on the given resource
@@ -292,5 +252,4 @@ public class FunctionsBoundary implements GetFunctionUseCase, ListFunctionsUseCa
         freemarkerValidator.validateFreemarkerSyntax(overwritingFunction.getDecoratedImplementation());
         return overwritingFunction;
     }
-
 }
