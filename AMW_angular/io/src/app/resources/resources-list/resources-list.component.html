@@ -7,6 +7,11 @@
         <app-icon icon="pencil"></app-icon>
       </app-button>
     </a>
+    <a [routerLink]="['/resourceType/edit']" [queryParams]="{ ctx: 1, id: resourceType().id }">
+      <app-button [variant]="'link'">
+        <app-icon icon="rocket-takeoff"></app-icon>
+      </app-button>
+    </a>
     @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
     <app-button [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
       <app-icon icon="trash"></app-icon>

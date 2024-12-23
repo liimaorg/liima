@@ -1,20 +1,20 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
-  <div class="page-title">Edit {{ this.resource()?.name }}</div>
+  <div class="page-title">Edit {{ this.resourceType()?.name }}</div>
 
   <div class="page-content">
-    @if ((this.resource()?.name && !permissions().canEditResource)) {
+    @if (this.resourceType()?.name && !permissions().canEditResourceType) {
     <div class="container">
-      <span class="text-warning-2">Not Authorized! You are not allowed to Edit-Resources.</span>
+      <span class="text-warning-2">Not Authorized! You are not allowed to Edit-ResourceTypes.</span>
     </div>
-    } @else if (id() === 0) {
+    } @else if (id() === 0 ) {
     <div class="container">
-      <span>Please provide a resource-id to edit a resource.</span>
+      <span>Please provide a resourceType-id to edit a resource.</span>
     </div>
     } @else {
     <div class="container">
-      Loaded resource:
-      {{ this.resource()?.name }}
+      Loaded resourceType:
+      {{ this.resourceType()?.name }}
     </div>
     <div>
       <app-tile-component

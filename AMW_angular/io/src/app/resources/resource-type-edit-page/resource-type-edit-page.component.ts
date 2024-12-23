@@ -14,24 +14,24 @@ import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
 
 @Component({
-  selector: 'app-resource-edit-page',
+  selector: 'app-resource-type-edit-page',
   standalone: true,
   imports: [LoadingIndicatorComponent, PageComponent, TileComponent],
-  templateUrl: './resource-edit-page.component.html',
+  templateUrl: './resource-type-edit-page.component.html',
 })
-export class ResourceEditPageComponent {
+export class ResourceTypeEditPageComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
-  private resourceService = inject(ResourceService);
+  private resourceTypeService = inject(ResourceTypesService);
   private route = inject(ActivatedRoute);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
-  resource: Signal<Resource> = this.resourceService.resource;
+  resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   isLoading = computed(() => {
     if (this.id()) {
-      this.resourceService.setIdForResource(this.id());
+      this.resourceTypeService.setIdForResourceType(this.id());
       return false;
     } else return false;
   });
@@ -39,10 +39,10 @@ export class ResourceEditPageComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
+        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', 'READ'),
       };
     } else {
-      return { canEditResource: false };
+      return { canEditResourceType: false };
     }
   });
 
