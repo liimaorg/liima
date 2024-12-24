@@ -32,15 +32,17 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import org.hibernate.Hibernate;
 
 import javax.inject.Inject;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
 
-public class FunctionService implements GetFunctionUseCase, ListFunctionsUseCase {
+public class FunctionService implements Serializable, GetFunctionUseCase, ListFunctionsUseCase {
 
     @Inject
     FunctionRepository functionRepository;
@@ -89,6 +91,10 @@ public class FunctionService implements GetFunctionUseCase, ListFunctionsUseCase
     private Map<String, AmwFunctionEntity> getAllTypeAndSuperTypeFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> superTypeFunctions = new LinkedHashMap<>();
         if (resourceTypeEntity != null) {
+            if (!Hibernate.isInitialized(resourceTypeEntity.getFunctions())) {
+               resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(resourceTypeEntity.getId());
+            }
+
             for (AmwFunctionEntity function : resourceTypeEntity.getFunctions()) {
                 AmwFunctionEntity functionWithMik = functionRepository.getFunctionByIdWithMiksAndParentChildFunctions(function.getId());
                 superTypeFunctions.put(function.getName(), functionWithMik);

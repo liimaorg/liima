@@ -59,7 +59,7 @@ export class AuthService extends BaseService {
     return (
       this.restrictions()
         .filter((entry) => entry.permission.name === permissionName)
-        .filter((entry) => entry.resourceGroupId === resourceGroupId)
+        .filter((entry) => entry.resourceGroupId === resourceGroupId || entry.resourceGroupId === null)
         .map((entry) => entry.action)
         .find((entry) => entry === Action.ALL || entry === action) !== undefined
     );

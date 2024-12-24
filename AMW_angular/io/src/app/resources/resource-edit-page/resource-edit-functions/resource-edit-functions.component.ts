@@ -36,7 +36,7 @@ export class ResourceEditFunctionsComponent {
   });
 
   permissions = computed(() => {
-    if (this.authService.restrictions().length > 0) {
+    if (this.authService.restrictions().length > 0 && this.resource()) {
       return {
         canShowInstanceFunctions: this.authService.hasPermission(RESOURCE_PERM, Action.READ),
         canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
