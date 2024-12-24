@@ -13,12 +13,12 @@ import { ResourceType } from '../../../resource/resource-type';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
 @Component({
-  selector: 'app-resource-type-edit-functions',
+  selector: 'app-resource-type-list-functions',
   standalone: true,
   imports: [LoadingIndicatorComponent, TileComponent],
-  templateUrl: './resource-type-edit-functions.component.html',
+  templateUrl: './resource-type-list-functions.component.html',
 })
-export class ResourceTypeEditFunctionsComponent {
+export class ResourceTypeListFunctionsComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(ResourceFunctionsService);

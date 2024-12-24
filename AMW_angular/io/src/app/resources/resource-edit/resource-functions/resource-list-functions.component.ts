@@ -9,17 +9,18 @@ import { Action, AuthService } from '../../../auth/auth.service';
 import { Resource } from '../../../resource/resource';
 import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunction } from '../../resource-function';
+import { FunctionEditComponent } from '../../../settings/functions/function-edit.component';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
 @Component({
-  selector: 'app-resources-edit-functions',
+  selector: 'app-resource-list-functions',
   standalone: true,
   imports: [LoadingIndicatorComponent, TileComponent],
-  templateUrl: './resource-edit-functions.component.html',
+  templateUrl: './resource-list-functions.component.html',
 })
-export class ResourceEditFunctionsComponent {
+export class ResourceListFunctionsComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(ResourceFunctionsService);

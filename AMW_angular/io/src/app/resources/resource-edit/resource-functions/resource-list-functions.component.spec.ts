@@ -2,23 +2,22 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InputSignal, signal } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ResourceTypeEditFunctionsComponent } from './resource-type-edit-functions.component';
+import { ResourceListFunctionsComponent } from './resource-list-functions.component';
 import { Resource } from '../../../resource/resource';
-import { ResourceType } from '../../../resource/resource-type';
 
 describe('ResourceFunctionsComponent', () => {
-  let component: ResourceTypeEditFunctionsComponent;
-  let fixture: ComponentFixture<ResourceTypeEditFunctionsComponent>;
+  let component: ResourceListFunctionsComponent;
+  let fixture: ComponentFixture<ResourceListFunctionsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResourceTypeEditFunctionsComponent],
+      imports: [ResourceListFunctionsComponent],
       providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ResourceTypeEditFunctionsComponent);
+    fixture = TestBed.createComponent(ResourceListFunctionsComponent);
     component = fixture.componentInstance;
-    component.resourceType = signal<ResourceType>(null) as unknown as InputSignal<ResourceType>;
+    component.resource = signal<Resource>(null) as unknown as InputSignal<Resource>;
     fixture.detectChanges();
   });
 
