@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
@@ -10,20 +10,23 @@ import { Resource } from '../../../resource/resource';
 import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunction } from '../../resource-function';
 import { FunctionEditComponent } from '../../../settings/functions/function-edit.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
 @Component({
-  selector: 'app-resource-list-functions',
+  selector: 'app-resource-functions-list',
   standalone: true,
   imports: [LoadingIndicatorComponent, TileComponent],
-  templateUrl: './resource-list-functions.component.html',
+  templateUrl: './resource-functions-list.component.html',
 })
-export class ResourceListFunctionsComponent {
+export class ResourceFunctionsListComponent implements OnDestroy {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(ResourceFunctionsService);
+  private destroy$ = new Subject<void>();
 
   resource = input.required<Resource>();
   contextId = input.required<number>();
@@ -85,8 +88,23 @@ export class ResourceListFunctionsComponent {
     } else return null;
   });
 
+  ngOnDestroy(): void {
+    this.destroy$.next(undefined);
+  }
+
   add() {
-    this.modalService.open('This would open a modal to add something');
+    const modalRef = this.modalService.open(FunctionEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.function = {
+      id: null,
+      name: '',
+      content: '',
+    };
+    modalRef.componentInstance.canManage = this.permissions().canEdit;
+    modalRef.componentInstance.saveFunction
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionData: ResourceFunction) => console.log(functionData));
   }
 
   doListAction($event: TileListEntryOutput) {

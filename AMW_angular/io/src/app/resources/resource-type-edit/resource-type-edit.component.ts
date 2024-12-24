@@ -10,12 +10,12 @@ import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
-import { ResourceTypeListFunctionsComponent } from './resource-type-functions/resource-type-list-functions.component';
+import { ResourceTypeFunctionsListComponent } from './resource-type-functions/resource-type-functions-list.component';
 
 @Component({
   selector: 'app-resource-type-edit',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceTypeListFunctionsComponent],
+  imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceTypeFunctionsListComponent],
   templateUrl: './resource-type-edit.component.html',
 })
 export class ResourceTypeEditComponent {

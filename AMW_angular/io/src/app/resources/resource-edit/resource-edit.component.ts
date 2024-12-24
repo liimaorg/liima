@@ -10,12 +10,12 @@ import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/ti
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
-import { ResourceListFunctionsComponent } from './resource-functions/resource-list-functions.component';
+import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
 
 @Component({
   selector: 'app-resource-edit',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceListFunctionsComponent],
+  imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceFunctionsListComponent],
   templateUrl: './resource-edit.component.html',
 })
 export class ResourceEditComponent {
