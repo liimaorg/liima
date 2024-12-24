@@ -20,7 +20,7 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
         </div>
         @if (canAction()) {
         <div class="tile-action-bar">
-          <app-button [variant]="'primary'" [size]="'sm'" (click)="tileAction.emit()">
+          <app-button [variant]="'primary'" [size]="'sm'" (click)="doTileAction($event)">
             <app-icon icon="plus-circle" />
             <span>{{ actionName() }}</span></app-button
           >
@@ -90,5 +90,11 @@ export class TileComponent {
   showBody = signal(this.isVisible());
   toggleBody() {
     this.showBody.set(!this.showBody());
+  }
+
+  doTileAction(event: any) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.tileAction.emit();
   }
 }
