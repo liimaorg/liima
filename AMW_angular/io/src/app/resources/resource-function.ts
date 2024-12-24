@@ -4,4 +4,7 @@ export interface ResourceFunction {
   miks: string[];
   definedOnResource: boolean;
   definedOnResourceType: boolean;
+  isOverwritingFunction: boolean;
+  overwrittenParentName?: string;
+  functionOriginResourceName?: string;
 }

@@ -24,6 +24,11 @@ public class FunctionDTO {
     Set<String> miks;
     Boolean definedOnResource;
     Boolean definedOnResourceType;
+    Boolean isOverwritingFunction;
+    String overwrittenParentName;
+    String functionOriginResourceName;
+
+
 
     public FunctionDTO(AmwFunctionEntity entity) {
         this.id = entity.getId();
@@ -32,5 +37,8 @@ public class FunctionDTO {
         this.definedOnResource = entity.isDefinedOnResource();
         this.definedOnResourceType = entity.isDefinedOnResourceType();
         this.miks = entity.getMikNames();
+        this.isOverwritingFunction = entity.isOverwritingResourceTypeFunction();
+        this.overwrittenParentName = entity.getOverwrittenFunctionResourceTypeName();
+        this.functionOriginResourceName = entity.getResourceType() != null ? entity.getResourceType().getName() : "";
     }
 }

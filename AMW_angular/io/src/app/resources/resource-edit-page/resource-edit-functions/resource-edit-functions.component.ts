@@ -103,11 +103,22 @@ export class ResourceEditFunctionsComponent {
   }
 
   mapListEntries(functions: ResourceFunction[]) {
-    return functions.map((element) => ({ name: element.name, description: element.miks.join(', '), id: element.id }));
+    return functions.map((element) => ({
+      name:
+        element.name +
+        (element.definedOnResourceType
+          ? ` (Defined on ${element.functionOriginResourceName})`
+          : element.isOverwritingFunction
+          ? ` (Overwrite function from ${element.overwrittenParentName})`
+          : ''),
+      description: element.miks.join(', '),
+      id: element.id,
+    }));
   }
 
   splitFunctions(resourceFunctions: ResourceFunction[]) {
     const [instance, resource] = [[], []];
+    resourceFunctions.sort((a, b) => (a.name < b.name ? -1 : 1));
     resourceFunctions.forEach((element) => (element.definedOnResourceType ? resource : instance).push(element));
     return [this.mapListEntries(instance), this.mapListEntries(resource)];
   }
