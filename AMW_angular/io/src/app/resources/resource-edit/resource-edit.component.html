@@ -1,0 +1,31 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title">Edit {{ this.resource()?.name }}</div>
+
+  <div class="page-content">
+    @if ((this.resource()?.name && !permissions().canEditResource)) {
+    <div class="container">
+      <span class="text-warning-2">Not Authorized! You are not allowed to Edit-Resources.</span>
+    </div>
+    } @else if (id() === 0) {
+    <div class="container">
+      <span>Please provide a resource-id to edit a resource.</span>
+    </div>
+    } @else {
+    <app-tile-component
+      [title]="'Templates'"
+      [actionName]="'New Template'"
+      [canAction]="true"
+      [isVisible]="false"
+      [lists]="templatesData()"
+      (tileAction)="add()"
+      (listAction)="doListAction($event)"
+    ></app-tile-component>
+<<<<<<< HEAD:AMW_angular/io/src/app/resources/resource-edit/resource-edit-page.component.html
+    <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
+=======
+    <app-resource-list-functions [resource]="resource()" [contextId]="contextId()"></app-resource-list-functions>
+>>>>>>> b2910898... refactor: clean up component naming:AMW_angular/io/src/app/resources/resource-edit/resource-edit.component.html
+    }
+  </div>
+</app-page>
