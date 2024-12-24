@@ -10,7 +10,6 @@ import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunction } from '../../resource-function';
 import { ResourceType } from '../../../resource/resource-type';
 
-const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
 @Component({
@@ -26,7 +25,7 @@ export class ResourceTypeEditFunctionsComponent {
 
   resourceType = input.required<ResourceType>();
   contextId = input.required<number>();
-  functions = this.functionsService.functions;
+  functions = this.functionsService.functionsForType;
 
   isLoading = computed(() => {
     if (this.resourceType() != null) {
@@ -36,10 +35,9 @@ export class ResourceTypeEditFunctionsComponent {
   });
 
   permissions = computed(() => {
-    if (this.authService.restrictions().length > 0) {
+    if (this.authService.restrictions().length > 0 && this.resourceType()) {
       return {
-        canShowInstanceFunctions: this.authService.hasPermission(RESOURCE_PERM, Action.READ),
-        canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
+        canShowInstanceFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
           this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.CREATE, this.resourceType().name),
@@ -53,7 +51,6 @@ export class ResourceTypeEditFunctionsComponent {
     } else {
       return {
         canShowInstanceFunctions: false,
-        canShowSuperTypeFunctions: false,
         canAdd: false,
         canEdit: false,
         canDelete: false,
@@ -63,12 +60,16 @@ export class ResourceTypeEditFunctionsComponent {
 
   functionsData = computed(() => {
     if (this.functions()?.length > 0) {
-      if (this.permissions().canShowSuperTypeFunctions) {
-        return {
-          title: 'Type Functions',
-          entries: this.mapListEntries(this.functions()),
-          canOverwrite: this.permissions().canEdit,
-        };
+      if (this.permissions().canShowInstanceFunctions) {
+        const entries = this.mapListEntries(this.functions());
+        return [
+          {
+            title: 'Type Functions',
+            entries: entries,
+            canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions, // fixme old gui used the `Edit`-link also for only viewing a function
+            canDelete: this.permissions().canDelete,
+          },
+        ];
       } else return null;
     }
   });

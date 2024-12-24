@@ -18,12 +18,13 @@ export class ResourceFunctionsService extends BaseService {
     shareReplay(1),
   );
 
-  private functionByTypeId$: Observable<ResourceFunction[]> = this.functions$.pipe(
+  private functionByTypeId$: Observable<ResourceFunction[]> = this.functionsForType$.pipe(
     switchMap((id: number) => this.getResourceTypeFunctions(id)),
     shareReplay(1),
   );
 
   functions = toSignal(this.functionById$, { initialValue: [] });
+  functionsForType = toSignal(this.functionByTypeId$, { initialValue: [] });
 
   constructor(private http: HttpClient) {
     super();

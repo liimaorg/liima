@@ -4,19 +4,25 @@ import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ResourceService } from '../../resource/resource.service';
-import { Resource } from '../../resource/resource';
 import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/tile/tile-list/tile-list.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
+import { ResourceEditFunctionsComponent } from '../resource-edit-page/resource-edit-functions/resource-edit-functions.component';
+import { ResourceTypeEditFunctionsComponent } from './resource-type-edit-functions/resource-type-edit-functions.component';
 
 @Component({
   selector: 'app-resource-type-edit-page',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent],
+  imports: [
+    LoadingIndicatorComponent,
+    PageComponent,
+    TileComponent,
+    ResourceEditFunctionsComponent,
+    ResourceTypeEditFunctionsComponent,
+  ],
   templateUrl: './resource-type-edit-page.component.html',
 })
 export class ResourceTypeEditPageComponent {

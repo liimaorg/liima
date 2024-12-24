@@ -16,18 +16,16 @@
       Loaded resource:
       {{ this.resource()?.name }}
     </div>
-    <div>
-      <app-tile-component
-        [title]="'Templates'"
-        [actionName]="'New Template'"
-        [canAction]="true"
-        [isVisible]="false"
-        [lists]="templatesData()"
-        (tileAction)="add()"
-        (listAction)="doListAction($event)"
-      ></app-tile-component>
-      <app-resources-edit-functions [resource]="resource()" [contextId]="contextId()"></app-resources-edit-functions>
-    </div>
+    <app-tile-component
+      [title]="'Templates'"
+      [actionName]="'New Template'"
+      [canAction]="true"
+      [isVisible]="false"
+      [lists]="templatesData()"
+      (tileAction)="add()"
+      (listAction)="doListAction($event)"
+    ></app-tile-component>
+    <app-resources-edit-functions [resource]="resource()" [contextId]="contextId()"></app-resources-edit-functions>
     }
   </div>
 </app-page>

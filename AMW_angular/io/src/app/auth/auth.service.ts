@@ -65,11 +65,16 @@ export class AuthService extends BaseService {
     );
   }
 
-  hasResourceTypePermission(permissionName: string, action: string, resourceType: string): boolean {
+  hasResourceTypePermission(permissionName: string, action: string, resourceTypeName: string): boolean {
     return (
       this.restrictions()
         .filter((entry) => entry.permission.name === permissionName)
-        .filter((entry) => entry.resourceTypeName === resourceType || this.isDefaultType(entry, resourceType))
+        .filter(
+          (entry) =>
+            entry.resourceTypeName === resourceTypeName ||
+            this.isDefaultType(entry, resourceTypeName) ||
+            entry.resourceTypeName === null,
+        )
         .map((entry) => entry.action)
         .find((entry) => entry === Action.ALL || entry === action) !== undefined
     );

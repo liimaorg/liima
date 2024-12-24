@@ -61,8 +61,6 @@ export class ResourceEditFunctionsComponent {
     }
   });
 
-  // then for editmodal it's read or edit
-
   functionsData = computed(() => {
     if (this.functions()?.length > 0) {
       const [instance, resource] = this.splitFunctions(this.functions());
@@ -71,7 +69,7 @@ export class ResourceEditFunctionsComponent {
         result.push({
           title: 'Resource Instance Functions',
           entries: instance,
-          canEdit: this.permissions().canEdit,
+          canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions, // fixme old gui used the `Edit`-link also for only viewing a function
           canDelete: this.permissions().canDelete,
         });
       }
@@ -79,7 +77,7 @@ export class ResourceEditFunctionsComponent {
         result.push({
           title: 'Resource Type Functions',
           entries: resource,
-          canOverwrite: this.permissions().canEdit,
+          canOverwrite: this.permissions().canEdit || this.permissions().canShowInstanceFunctions, // fixme old gui used the `Edit`-link also for only viewing a function
         });
       }
       return result;
