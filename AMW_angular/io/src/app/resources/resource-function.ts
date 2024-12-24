@@ -2,6 +2,7 @@ export interface ResourceFunction {
   id: number;
   name: string;
   miks: string[];
+  content: string;
   definedOnResource: boolean;
   definedOnResourceType: boolean;
   isOverwritingFunction: boolean;

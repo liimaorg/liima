@@ -9,9 +9,9 @@ import { Action, AuthService } from '../../../auth/auth.service';
 import { Resource } from '../../../resource/resource';
 import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunction } from '../../resource-function';
-import { FunctionEditComponent } from '../../../settings/functions/function-edit.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ResourceFunctionEditComponent } from './resource-function-edit.component';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
@@ -93,15 +93,16 @@ export class ResourceFunctionsListComponent implements OnDestroy {
   }
 
   add() {
-    const modalRef = this.modalService.open(FunctionEditComponent, {
+    const modalRef = this.modalService.open(ResourceFunctionEditComponent, {
       size: 'xl',
     });
     modalRef.componentInstance.function = {
       id: null,
       name: '',
+      miks: [],
       content: '',
     };
-    modalRef.componentInstance.canManage = this.permissions().canEdit;
+    modalRef.componentInstance.canEdit = this.permissions().canEdit;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
       .subscribe((functionData: ResourceFunction) => console.log(functionData));
@@ -110,13 +111,13 @@ export class ResourceFunctionsListComponent implements OnDestroy {
   doListAction($event: TileListEntryOutput) {
     switch ($event.action) {
       case EntryAction.edit:
-        this.editFunction($event.id);
+        this.editFunction($event.id, false);
         return;
       case EntryAction.delete:
         this.deleteFunction($event.id);
         return;
       case EntryAction.overwrite:
-        this.overwriteFunction($event.id);
+        this.editFunction($event.id, true);
         return;
     }
   }
@@ -142,15 +143,19 @@ export class ResourceFunctionsListComponent implements OnDestroy {
     return [this.mapListEntries(instance), this.mapListEntries(resource)];
   }
 
-  private editFunction(id: number) {
-    this.modalService.open('This would open a modal to edit function with id:' + id);
+  private editFunction(id: number, isOverwrite?: boolean) {
+    const modalRef = this.modalService.open(ResourceFunctionEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.function = this.functions().find((item) => item.id === id);
+    modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.isOverwrite = isOverwrite;
+    modalRef.componentInstance.saveFunction
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionData: ResourceFunction) => console.log(functionData));
   }
 
   private deleteFunction(id: number) {
     this.modalService.open('This would open a modal to delete function with id:' + id);
-  }
-
-  private overwriteFunction(id: number) {
-    this.modalService.open('This would open a modal to overwrite function with id:' + id);
   }
 }

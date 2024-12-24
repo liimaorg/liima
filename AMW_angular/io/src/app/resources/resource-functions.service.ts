@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BaseService } from '../base/base.service';
+import { RevisionInformation } from '../shared/model/revisionInformation';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceFunctionsService extends BaseService {
@@ -52,5 +53,13 @@ export class ResourceFunctionsService extends BaseService {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
+  }
+
+  getFunctionRevisions(id: number): Observable<RevisionInformation[]> {
+    return this.http.get<RevisionInformation[]>(`${this.path}/${id}/revisions`);
+  }
+
+  getFunctionByIdAndRevision(id: number, revisionId: number): Observable<ResourceFunction> {
+    return this.http.get<ResourceFunction>(`${this.path}/${id}/revisions/${revisionId}`);
   }
 }

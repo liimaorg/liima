@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.function.control;
 
-import ch.puzzle.itc.mobiliar.business.function.boundary.GetFunctionUseCase;
-import ch.puzzle.itc.mobiliar.business.function.boundary.ListFunctionsUseCase;
+import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
+import ch.puzzle.itc.mobiliar.business.function.boundary.*;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
@@ -30,19 +30,24 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import org.hibernate.Hibernate;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
 
-public class FunctionService implements Serializable, GetFunctionUseCase, ListFunctionsUseCase {
+public class FunctionService implements Serializable, AddFunctionUseCase, GetFunctionUseCase, ListFunctionsUseCase, GetFunctionRevisionUseCase, ListFunctionRevisionsUseCase {
 
     @Inject
     FunctionRepository functionRepository;
@@ -52,6 +57,9 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
 
     @Inject
     ResourceTypeRepository resourceTypeRepository;
+
+    @Inject
+    EntityManager entityManager;
 
     /**
      * Returns all (overwritable) functions, which are defined on all parent resource types of the given resource instance - except the functions which are already defined on the given resource instance.
@@ -92,7 +100,7 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
         Map<String, AmwFunctionEntity> superTypeFunctions = new LinkedHashMap<>();
         if (resourceTypeEntity != null) {
             if (!Hibernate.isInitialized(resourceTypeEntity.getFunctions())) {
-               resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(resourceTypeEntity.getId());
+                resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(resourceTypeEntity.getId());
             }
 
             for (AmwFunctionEntity function : resourceTypeEntity.getFunctions()) {
@@ -401,5 +409,41 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
         } else {
             throw new NotFoundException("Resource not found.");
         }
+    }
+
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
+    public AmwFunctionEntity getFunctionRevision(int functionId, int revisionId) throws NotFoundException {
+        AmwFunctionEntity function = AuditReaderFactory.get(entityManager).find(
+                AmwFunctionEntity.class, functionId, revisionId);
+        if (function == null) {
+            throw new NotFoundException("No function with id " + functionId + " and revision id " + revisionId + " found");
+        }
+        return function;
+    }
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
+    public List<RevisionInformation> getRevisions(Integer functionId) {
+        List<RevisionInformation> result = new ArrayList<>();
+        if (functionId != null) {
+            AuditReader reader = AuditReaderFactory.get(entityManager);
+            List<Number> list = reader.getRevisions(AmwFunctionEntity.class, functionId);
+            for (Number rev : list) {
+                Date date = reader.getRevisionDate(rev);
+                MyRevisionEntity myRev = entityManager.find(MyRevisionEntity.class, rev);
+                result.add(new RevisionInformation(rev, date, myRev.getUsername()));
+            }
+            Collections.sort(result);
+        }
+        return result;
+    }
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = CREATE)
+    public Integer add(AddFunctionCommand addFunctionCommand) {
+        // TODO implement (see createNewResourceFunction)
+        return 0;
     }
 }
