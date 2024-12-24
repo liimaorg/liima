@@ -10,20 +10,12 @@ import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/ti
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
-<<<<<<< HEAD:AMW_angular/io/src/app/resources/resource-edit/resource-edit-page.component.ts
 import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
-=======
-import { ResourceListFunctionsComponent } from './resource-functions/resource-list-functions.component';
->>>>>>> b2910898... refactor: clean up component naming:AMW_angular/io/src/app/resources/resource-edit/resource-edit.component.ts
 
 @Component({
   selector: 'app-resource-edit',
   standalone: true,
-<<<<<<< HEAD:AMW_angular/io/src/app/resources/resource-edit/resource-edit-page.component.ts
   imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceFunctionsListComponent],
-=======
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceListFunctionsComponent],
->>>>>>> b2910898... refactor: clean up component naming:AMW_angular/io/src/app/resources/resource-edit/resource-edit.component.ts
   templateUrl: './resource-edit.component.html',
 })
 export class ResourceEditComponent {
