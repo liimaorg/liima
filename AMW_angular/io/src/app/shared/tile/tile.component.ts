@@ -9,7 +9,7 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
 @Component({
   selector: 'app-tile-component',
   template: `
-    <div class="tile">
+    <div class="tile rounded">
       <div class="tile-header" (click)="toggleBody()" [ngClass]="showBody() ? 'opened' : 'closed'">
         <div class="tile-title">
           @if (showBody()) {

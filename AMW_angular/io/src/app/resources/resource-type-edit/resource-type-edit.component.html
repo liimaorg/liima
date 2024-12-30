@@ -12,21 +12,19 @@
       <span>Please provide a resourceType-id to edit a resource.</span>
     </div>
     } @else {
-    <div class="container">
-      Loaded resourceType:
-      {{ this.resourceType()?.name }}
-    </div>
-    <div>
-      <app-tile-component
-        [title]="'Templates'"
-        [actionName]="'New Template'"
-        [canAction]="true"
-        [isVisible]="false"
-        [lists]="templatesData()"
-        (tileAction)="add()"
-        (listAction)="doListAction($event)"
-      ></app-tile-component>
-    </div>
+    <app-tile-component
+      [title]="'Templates'"
+      [actionName]="'New Template'"
+      [canAction]="true"
+      [isVisible]="false"
+      [lists]="templatesData()"
+      (tileAction)="add()"
+      (listAction)="doListAction($event)"
+    ></app-tile-component>
+    <app-resource-type-functions-list
+      [resourceType]="resourceType()"
+      [contextId]="contextId()"
+    ></app-resource-type-functions-list>
     }
   </div>
 </app-page>

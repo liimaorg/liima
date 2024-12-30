@@ -4,34 +4,33 @@ import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ResourceService } from '../../resource/resource.service';
-import { Resource } from '../../resource/resource';
 import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/tile/tile-list/tile-list.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
+import { ResourceTypeFunctionsListComponent } from './resource-type-functions/resource-type-functions-list.component';
 
 @Component({
-  selector: 'app-resource-edit-page',
+  selector: 'app-resource-type-edit',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent],
-  templateUrl: './resource-edit-page.component.html',
+  imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceTypeFunctionsListComponent],
+  templateUrl: './resource-type-edit.component.html',
 })
-export class ResourceEditPageComponent {
+export class ResourceTypeEditComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
-  private resourceService = inject(ResourceService);
+  private resourceTypeService = inject(ResourceTypesService);
   private route = inject(ActivatedRoute);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
-  resource: Signal<Resource> = this.resourceService.resource;
+  resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   isLoading = computed(() => {
     if (this.id()) {
-      this.resourceService.setIdForResource(this.id());
+      this.resourceTypeService.setIdForResourceType(this.id());
       return false;
     } else return false;
   });
@@ -39,10 +38,10 @@ export class ResourceEditPageComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
+        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', 'READ'),
       };
     } else {
-      return { canEditResource: false };
+      return { canEditResourceType: false };
     }
   });
 

@@ -1,9 +1,9 @@
+import { ResourceEditComponent } from './resource-edit/resource-edit.component';
 import { ResourcesPageComponent } from './resources-page.component';
-import { ResourceEditPageComponent } from './resource-edit-page/resource-edit-page.component';
-import { ResourceTypeEditPageComponent } from './resource-type-edit-page/resource-type-edit-page.component';
+import { ResourceTypeEditComponent } from './resource-type-edit/resource-type-edit.component';
 
 export const resourcesRoute = [
   { path: 'resources', component: ResourcesPageComponent },
-  { path: 'resource/edit', component: ResourceEditPageComponent },
-  { path: 'resourceType/edit', component: ResourceTypeEditPageComponent },
+  { path: 'resource/edit', component: ResourceEditComponent },
+  { path: 'resourceType/edit', component: ResourceTypeEditComponent },
 ];

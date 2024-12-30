@@ -1,7 +1,5 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
