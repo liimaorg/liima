@@ -100,13 +100,13 @@ export class ResourceTypeFunctionsListComponent {
   doListAction($event: TileListEntryOutput) {
     switch ($event.action) {
       case EntryAction.edit:
-        this.editFunction($event.id);
+        this.editFunction($event.id, false);
         return;
       case EntryAction.delete:
         this.deleteFunction($event.id);
         return;
       case EntryAction.overwrite:
-        this.overwriteFunction($event.id);
+        this.editFunction($event.id, true);
         return;
     }
   }
@@ -119,16 +119,22 @@ export class ResourceTypeFunctionsListComponent {
     }));
   }
 
-  private editFunction(id: number) {
-    this.modalService.open('This would open a modal to edit function with id:' + id);
+  private editFunction(id: number, isOverwrite?: boolean) {
+    const modalRef = this.modalService.open(ResourceFunctionEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.function = this.functions().find((item) => item.id === id);
+    modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.isOverwrite = isOverwrite;
+    modalRef.componentInstance.saveFunction
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionData: ResourceFunction) =>
+        isOverwrite ? this.overwriteFunction(functionData) : this.updateFunction(functionData),
+      );
   }
 
   private deleteFunction(id: number) {
     this.modalService.open('This would open a modal to delete function with id:' + id);
-  }
-
-  private overwriteFunction(id: number) {
-    this.modalService.open('This would open a modal to overwrite function with id:' + id);
   }
 
   private createFunction(functionData: ResourceFunction) {
@@ -139,7 +145,33 @@ export class ResourceTypeFunctionsListComponent {
         next: () => this.toastService.success('Function saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.functionsService.setIdForResourceFunctionList(this.resourceType().id);
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
+        },
+      });
+  }
+
+  private overwriteFunction(functionData: ResourceFunction) {
+    this.functionsService
+      .overwriteFunctionForResourceType(this.resourceType().id, functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
+        },
+      });
+  }
+
+  private updateFunction(functionData: ResourceFunction) {
+    this.functionsService
+      .updateFunction(functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
         },
       });
   }

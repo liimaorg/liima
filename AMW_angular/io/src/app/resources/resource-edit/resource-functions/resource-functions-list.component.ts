@@ -161,7 +161,9 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
     modalRef.componentInstance.isOverwrite = isOverwrite;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: ResourceFunction) => console.log(functionData));
+      .subscribe((functionData: ResourceFunction) =>
+        isOverwrite ? this.overwriteFunction(functionData) : this.updateFunction(functionData),
+      );
   }
 
   private deleteFunction(id: number) {
@@ -171,6 +173,32 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
   private createFunction(functionData: ResourceFunction) {
     this.functionsService
       .createFunctionForResource(this.resource().id, functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceFunctionList(this.resource().id);
+        },
+      });
+  }
+
+  private overwriteFunction(functionData: ResourceFunction) {
+    this.functionsService
+      .overwriteFunctionForResource(this.resource().id, functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceFunctionList(this.resource().id);
+        },
+      });
+  }
+
+  private updateFunction(functionData: ResourceFunction) {
+    this.functionsService
+      .updateFunction(functionData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),

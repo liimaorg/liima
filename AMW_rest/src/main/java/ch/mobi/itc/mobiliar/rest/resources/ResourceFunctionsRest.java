@@ -22,7 +22,7 @@ import java.util.List;
 import static javax.ws.rs.core.Response.Status.OK;
 
 @RequestScoped
-@Path("/resources/functions")
+@Path("/resources")
 @Api(value = "/resources/functions/")
 public class ResourceFunctionsRest {
 
@@ -41,8 +41,11 @@ public class ResourceFunctionsRest {
     @Inject
     private GetFunctionRevisionUseCase getFunctionRevision;
 
+    @Inject
+    private UpdateFunctionUseCase updateFunctionUseCase;
+
     @GET
-    @Path("/{id : \\d+}")
+    @Path("/functions/{id : \\d+}")
     @ApiOperation(value = "Get a resource function by id")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFunction(@ApiParam("Function ID") @PathParam("id") Integer id) throws NotFoundException {
@@ -52,7 +55,7 @@ public class ResourceFunctionsRest {
 
 
     @GET
-    @Path("/resource/{id : \\d+}")
+    @Path("/resource/{id : \\d+}/functions")
     @ApiOperation(value = "Get all functions for a specific resource")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResourceFunctions(@ApiParam("Resource ID") @PathParam("id") Integer resourceId) throws NotFoundException {
@@ -61,7 +64,7 @@ public class ResourceFunctionsRest {
     }
 
     @GET
-    @Path("/resourceType/{id : \\d+}")
+    @Path("/resourceType/{id : \\d+}/functions")
     @ApiOperation(value = "Get all functions for a specific resourceType")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResourceTypeFunctions(@ApiParam("ResourceType ID") @PathParam("id") Integer resourceTypeId) throws NotFoundException {
@@ -71,7 +74,7 @@ public class ResourceFunctionsRest {
 
 
     @GET
-    @Path("/{id}/revisions")
+    @Path("functions/{id}/revisions")
     @ApiOperation(value = "Get all revisions of a specific resource function")
     public Response getFunctionRevisions(@PathParam("id") int id) throws NotFoundException {
         List<RevisionInformation> revisions = listRevisions.getRevisions(id);
@@ -82,7 +85,7 @@ public class ResourceFunctionsRest {
     }
 
     @GET
-    @Path("/{id}/revisions/{revisionId}")
+    @Path("functions/{id}/revisions/{revisionId}")
     @ApiOperation(value = "Get a specific revision of a resource function")
     public Response getFunctionByIdAndRevision(@PathParam("id") int id, @PathParam("revisionId") int revisionId)
             throws NotFoundException {
@@ -91,9 +94,9 @@ public class ResourceFunctionsRest {
     }
 
     @POST
-    @Path("/resource/{id : \\d+}")
+    @Path("/resource/{id : \\d+}/functions")
     @ApiOperation(value = "Add new resource function")
-    public Response addNewFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
+    public Response addNewResourceFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws ValidationException, NotFoundException {
         AddFunctionCommand functionCommand =
                 new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
@@ -102,21 +105,44 @@ public class ResourceFunctionsRest {
     }
 
     @POST
-    @Path("/resourceType/{id : \\d+}")
+    @Path("/resourceType/{id : \\d+}/functions")
     @ApiOperation(value = "Add new resourceType function")
-    public Response addNewFunctionForType(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
+    public Response addNewResourceTypeFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws ValidationException, NotFoundException {
         AddFunctionCommand functionCommand =
                 new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
         return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResourceType(functionCommand)).build();
-
     }
 
     @PUT
-    @ApiOperation(value = "Modify existing resource function")
-    public Response modifyFunction(FunctionDTO request) {
-        // TODO implement
+    @Path("functions/{id : \\d+}")
+    @ApiOperation(value = "Modify existing function")
+    public Response modifyFunction(@ApiParam("Function ID") @PathParam("id") Integer id, String content) throws ValidationException, NotFoundException {
+        UpdateFunctionCommand functionCommand =
+                new UpdateFunctionCommand(id, content);
+        updateFunctionUseCase.update(functionCommand);
         return Response.status(OK).build();
+    }
+
+    @POST
+    @Path("/resource/{id : \\d+}/functions/overwrite")
+    @ApiOperation(value = "Overwrite resource function")
+    public Response overwriteResourceFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
+            throws ValidationException, NotFoundException {
+        AddFunctionCommand functionCommand =
+                new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
+        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResource(functionCommand)).build();
+
+    }
+
+    @POST
+    @Path("/resourceType/{id : \\d+}/functions/overwrite")
+    @ApiOperation(value = "Overwrite resourceType function")
+    public Response overwriteResourceTypeFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
+            throws ValidationException, NotFoundException {
+        AddFunctionCommand functionCommand =
+                new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
+        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResourceType(functionCommand)).build();
     }
 
 

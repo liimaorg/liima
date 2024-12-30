@@ -43,14 +43,21 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 
-public class FunctionService implements AddFunctionUseCase, GetFunctionUseCase, ListFunctionsUseCase, GetFunctionRevisionUseCase, ListFunctionRevisionsUseCase {
+public class FunctionService implements
+        Serializable,
+        AddFunctionUseCase,
+        GetFunctionUseCase,
+        ListFunctionsUseCase,
+        GetFunctionRevisionUseCase,
+        ListFunctionRevisionsUseCase,
+        UpdateFunctionUseCase {
 
     @Inject
     FunctionRepository functionRepository;
@@ -495,5 +502,19 @@ public class FunctionService implements AddFunctionUseCase, GetFunctionUseCase, 
             throw new ValidationException(e.getMessage());
         }
         return amwFunctionEntity.getId();
+    }
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCETYPE_AMWFUNCTION, action = UPDATE)
+    public void update(UpdateFunctionCommand updateFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
+
+        AmwFunctionEntity amwFunctionEntity = get(updateFunctionCommand.getId());
+        try {
+            amwFunctionEntity.setImplementation(updateFunctionCommand.getContent());
+            freemarkerValidator.validateFreemarkerSyntax(updateFunctionCommand.getContent());
+            functionRepository.persistOrMergeFunction(amwFunctionEntity);
+        } catch (Exception e) {
+            throw new ValidationException(e.getMessage());
+        }
     }
 }
