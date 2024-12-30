@@ -8,7 +8,5 @@ public class ValidFunctionContentValidator implements ConstraintValidator<ValidF
     @Override
     public boolean isValid(String function, ConstraintValidatorContext constraintValidatorContext) {
         return function != null && !function.isEmpty();
-
-        // TODO what is a valid function?!
     }
 }

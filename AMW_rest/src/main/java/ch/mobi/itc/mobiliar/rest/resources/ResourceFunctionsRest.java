@@ -5,6 +5,7 @@ import ch.puzzle.itc.mobiliar.business.function.boundary.*;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -83,17 +84,19 @@ public class ResourceFunctionsRest {
     @GET
     @Path("/{id}/revisions/{revisionId}")
     @ApiOperation(value = "Get a specific revision of a resource function")
-    public Response getFunctionByIdAndRevision(@PathParam("id") int id, @PathParam("revisionId") int revisionId) throws NotFoundException {
+    public Response getFunctionByIdAndRevision(@PathParam("id") int id, @PathParam("revisionId") int revisionId)
+            throws NotFoundException {
         AmwFunctionEntity function = getFunctionRevision.getFunctionRevision(id, revisionId);
         return Response.ok(new FunctionDTO(function)).build();
     }
 
     @POST
+    @Path("/resource/{id : \\d+}")
     @ApiOperation(value = "Add new resource function")
-    public Response addNewFunction(FunctionDTO request) {
-        // TODO use set instead of array
+    public Response addNewFunction(@ApiParam("Resource ID") @PathParam("id") Integer resourceId, FunctionDTO request)
+            throws ValidationException, NotFoundException {
         AddFunctionCommand functionCommand =
-                new AddFunctionCommand(request.getName(), request.getMiks().toArray(new String[0]), request.getContent());
+                new AddFunctionCommand(resourceId, request.getName(), request.getMiks(), request.getContent());
         return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.add(functionCommand)).build();
 
     }

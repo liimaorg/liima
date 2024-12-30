@@ -1,7 +1,7 @@
 export interface ResourceFunction {
   id: number;
   name: string;
-  miks: string[];
+  miks: Set<string>;
   content: string;
   definedOnResource: boolean;
   definedOnResourceType: boolean;

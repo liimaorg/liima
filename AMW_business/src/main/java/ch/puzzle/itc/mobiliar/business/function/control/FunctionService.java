@@ -30,16 +30,19 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.hibernate.Hibernate;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,7 +50,7 @@ import java.util.stream.Stream;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.CREATE;
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
 
-public class FunctionService implements Serializable, AddFunctionUseCase, GetFunctionUseCase, ListFunctionsUseCase, GetFunctionRevisionUseCase, ListFunctionRevisionsUseCase {
+public class FunctionService implements AddFunctionUseCase, GetFunctionUseCase, ListFunctionsUseCase, GetFunctionRevisionUseCase, ListFunctionRevisionsUseCase {
 
     @Inject
     FunctionRepository functionRepository;
@@ -60,6 +63,9 @@ public class FunctionService implements Serializable, AddFunctionUseCase, GetFun
 
     @Inject
     EntityManager entityManager;
+
+    @Inject
+    FreemarkerSyntaxValidator freemarkerValidator;
 
     /**
      * Returns all (overwritable) functions, which are defined on all parent resource types of the given resource instance - except the functions which are already defined on the given resource instance.
@@ -157,6 +163,7 @@ public class FunctionService implements Serializable, AddFunctionUseCase, GetFun
         return null;
     }
 
+    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public void saveFunctionWithMiks(AmwFunctionEntity amwFunction, Set<String> functionMikNames) {
         if (amwFunction != null) {
             Set<MikEntity> miks = new HashSet<>();
@@ -442,8 +449,23 @@ public class FunctionService implements Serializable, AddFunctionUseCase, GetFun
 
     @Override
     @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = CREATE)
-    public Integer add(AddFunctionCommand addFunctionCommand) {
-        // TODO implement (see createNewResourceFunction)
-        return 0;
+    public Integer add(AddFunctionCommand addFunctionCommand) throws NotFoundException, ValidationException {
+        ResourceEntity resource = resourceRepository.find((addFunctionCommand.getResourceId()));
+        if (resource == null) throw new NotFoundException("Resource not found.");
+
+        if (!findFunctionsByNameInNamespace(resource, addFunctionCommand.getName()).isEmpty()) {
+            throw new NotFoundException("Function with name " + addFunctionCommand.getName() + " already exists.");
+        }
+        AmwFunctionEntity amwFunctionEntity = new AmwFunctionEntity();
+        try {
+            amwFunctionEntity.setName(addFunctionCommand.getName());
+            amwFunctionEntity.setResource(resource);
+            amwFunctionEntity.setImplementation(addFunctionCommand.getContent());
+            freemarkerValidator.validateFreemarkerSyntax(addFunctionCommand.getContent());
+            saveFunctionWithMiks(amwFunctionEntity, addFunctionCommand.getMiks());
+        } catch (Exception e) {
+            throw new ValidationException(e.getMessage());
+        }
+        return amwFunctionEntity.getId();
     }
 }

@@ -62,4 +62,21 @@ export class ResourceFunctionsService extends BaseService {
   getFunctionByIdAndRevision(id: number, revisionId: number): Observable<ResourceFunction> {
     return this.http.get<ResourceFunction>(`${this.path}/${id}/revisions/${revisionId}`);
   }
+
+  createFunctionForResource(id: number, func: ResourceFunction) {
+    const jsonSet = new SerializableSet();
+    func.miks.forEach((value) => jsonSet.add(value));
+    func.miks = jsonSet;
+
+    return this.http
+      .post<ResourceFunction>(`${this.path}/resource/${id}`, func, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+}
+export class SerializableSet extends Set {
+  toJSON() {
+    return Array.from(this);
+  }
 }

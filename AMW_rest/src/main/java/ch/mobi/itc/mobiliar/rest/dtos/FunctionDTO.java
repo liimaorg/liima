@@ -28,8 +28,6 @@ public class FunctionDTO {
     String overwrittenParentName;
     String functionOriginResourceName;
 
-
-
     public FunctionDTO(AmwFunctionEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();

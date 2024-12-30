@@ -93,7 +93,11 @@ export class ResourceTypeFunctionsListComponent {
   }
 
   mapListEntries(functions: ResourceFunction[]) {
-    return functions.map((element) => ({ name: element.name, description: element.miks.join(', '), id: element.id }));
+    return functions.map((element) => ({
+      name: element.name,
+      description: [...element.miks].join(', '),
+      id: element.id,
+    }));
   }
 
   private editFunction(id: number) {

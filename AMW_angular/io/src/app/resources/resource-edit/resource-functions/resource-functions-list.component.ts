@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
@@ -9,9 +9,10 @@ import { Action, AuthService } from '../../../auth/auth.service';
 import { Resource } from '../../../resource/resource';
 import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunction } from '../../resource-function';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ResourceFunctionEditComponent } from './resource-function-edit.component';
+import { ToastService } from '../../../shared/elements/toast/toast.service';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
@@ -22,16 +23,19 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
   imports: [LoadingIndicatorComponent, TileComponent],
   templateUrl: './resource-functions-list.component.html',
 })
-export class ResourceFunctionsListComponent implements OnDestroy {
+export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(ResourceFunctionsService);
+  private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
+  private error$ = new BehaviorSubject<string>('');
 
   resource = input.required<Resource>();
   contextId = input.required<number>();
   functions = this.functionsService.functions;
 
+  showLoader = signal(false);
   isLoading = computed(() => {
     if (this.resource() != null) {
       this.functionsService.setIdForResourceFunctionList(this.resource().id);
@@ -88,6 +92,12 @@ export class ResourceFunctionsListComponent implements OnDestroy {
     } else return null;
   });
 
+  ngOnInit(): void {
+    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
+      msg !== '' ? this.toastService.error(msg) : null;
+    });
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
   }
@@ -99,13 +109,13 @@ export class ResourceFunctionsListComponent implements OnDestroy {
     modalRef.componentInstance.function = {
       id: null,
       name: '',
-      miks: [],
+      miks: new Set<string>(),
       content: '',
     };
     modalRef.componentInstance.canEdit = this.permissions().canEdit;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
-      .subscribe((functionData: ResourceFunction) => console.log(functionData));
+      .subscribe((functionData: ResourceFunction) => this.createFunction(functionData));
   }
 
   doListAction($event: TileListEntryOutput) {
@@ -131,7 +141,7 @@ export class ResourceFunctionsListComponent implements OnDestroy {
           : element.isOverwritingFunction
           ? ` (Overwrite function from ${element.overwrittenParentName})`
           : ''),
-      description: element.miks.join(', '),
+      description: [...element.miks].join(', '),
       id: element.id,
     }));
   }
@@ -157,5 +167,19 @@ export class ResourceFunctionsListComponent implements OnDestroy {
 
   private deleteFunction(id: number) {
     this.modalService.open('This would open a modal to delete function with id:' + id);
+  }
+
+  private createFunction(functionData: ResourceFunction) {
+    this.showLoader.set(true);
+    this.functionsService
+      .createFunctionForResource(this.resource().id, functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceFunctionList(this.resource().id);
+        },
+      });
   }
 }

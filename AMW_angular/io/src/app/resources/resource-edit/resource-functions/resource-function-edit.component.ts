@@ -68,7 +68,7 @@ export class ResourceFunctionEditComponent implements OnInit {
   save() {
     if (this.revision) this.function.content = this.diffValue.original;
     if (this.newMik !== '') this.addMik();
-    this.saveFunction.emit(this.function); // need for overwrite info?
+    this.saveFunction.emit(this.function); // todo need for overwrite info?
     this.activeModal.close();
   }
 
@@ -95,16 +95,12 @@ export class ResourceFunctionEditComponent implements OnInit {
   addMik() {
     const mik = this.newMik.trim();
     if (mik !== '') {
-      if (this.function.miks === undefined) {
-        this.function.miks = [mik];
-      } else {
-        this.function.miks.push(mik);
-      }
+      this.function.miks.add(mik);
     }
     this.newMik = '';
   }
 
   deleteMik(item: string) {
-    this.function.miks = this.function.miks.filter((mik) => item !== mik);
+    this.function.miks.delete(item);
   }
 }

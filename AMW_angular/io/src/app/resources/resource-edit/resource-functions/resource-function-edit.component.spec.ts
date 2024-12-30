@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResourceFunctionEditComponent } from './resource-function-edit.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -6,7 +6,7 @@ import { ResourceFunctionsService } from '../../resource-functions.service';
 
 describe('FunctionEditComponent', () => {
   let component: ResourceFunctionEditComponent;
-  let fixture;
+  let fixture: ComponentFixture<ResourceFunctionEditComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -23,7 +23,7 @@ describe('FunctionEditComponent', () => {
       isOverwritingFunction: false,
       id: null,
       name: '',
-      miks: [],
+      miks: new Set<string>(),
       content: '',
     };
 

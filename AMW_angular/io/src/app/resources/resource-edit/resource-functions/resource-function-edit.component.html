@@ -14,7 +14,12 @@
           <div>
             <span class="badge bg-light text-dark rounded-pill">
               {{ item }}
-              <app-icon icon="x-circle" class="cursor-pointer" (click)="deleteMik(item)"></app-icon>
+              <app-icon
+                [hidden]="function.id !== null"
+                icon="x-circle"
+                class="cursor-pointer"
+                (click)="deleteMik(item)"
+              ></app-icon>
             </span>
           </div>
           }
