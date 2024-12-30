@@ -93,11 +93,22 @@ public class ResourceFunctionsRest {
     @POST
     @Path("/resource/{id : \\d+}")
     @ApiOperation(value = "Add new resource function")
-    public Response addNewFunction(@ApiParam("Resource ID") @PathParam("id") Integer resourceId, FunctionDTO request)
+    public Response addNewFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws ValidationException, NotFoundException {
         AddFunctionCommand functionCommand =
-                new AddFunctionCommand(resourceId, request.getName(), request.getMiks(), request.getContent());
-        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.add(functionCommand)).build();
+                new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
+        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResource(functionCommand)).build();
+
+    }
+
+    @POST
+    @Path("/resourceType/{id : \\d+}")
+    @ApiOperation(value = "Add new resourceType function")
+    public Response addNewFunctionForType(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
+            throws ValidationException, NotFoundException {
+        AddFunctionCommand functionCommand =
+                new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
+        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResourceType(functionCommand)).build();
 
     }
 

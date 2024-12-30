@@ -74,6 +74,18 @@ export class ResourceFunctionsService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  createFunctionForResourceType(id: number, func: ResourceFunction) {
+    const jsonSet = new SerializableSet();
+    func.miks.forEach((value) => jsonSet.add(value));
+    func.miks = jsonSet;
+
+    return this.http
+      .post<ResourceFunction>(`${this.path}/resourceType/${id}`, func, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
 export class SerializableSet extends Set {
   toJSON() {

@@ -64,4 +64,12 @@ public class ResourceTypeRepository extends BaseRepository<ResourceTypeEntity> {
         return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
     }
 
+    public ResourceTypeEntity loadWithResources(Integer id) {
+        List<ResourceTypeEntity> entity = entityManager
+                .createQuery("select r from ResourceTypeEntity r " +
+                        "left join fetch r.resources f " +
+                        "where r.id=:resTypeId", ResourceTypeEntity.class)
+                .setParameter("resTypeId", id).setMaxResults(1).getResultList();
+        return entity.isEmpty() ? null : entity.get(0);
+    }
 }

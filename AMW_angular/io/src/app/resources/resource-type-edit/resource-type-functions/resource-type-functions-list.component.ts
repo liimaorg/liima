@@ -9,6 +9,10 @@ import { Action, AuthService } from '../../../auth/auth.service';
 import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunction } from '../../resource-function';
 import { ResourceType } from '../../../resource/resource-type';
+import { ResourceFunctionEditComponent } from '../../resource-edit/resource-functions/resource-function-edit.component';
+import { takeUntil } from 'rxjs/operators';
+import { ToastService } from '../../../shared/elements/toast/toast.service';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
@@ -22,6 +26,9 @@ export class ResourceTypeFunctionsListComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private functionsService = inject(ResourceFunctionsService);
+  private toastService = inject(ToastService);
+  private destroy$ = new Subject<void>();
+  private error$ = new BehaviorSubject<string>('');
 
   resourceType = input.required<ResourceType>();
   contextId = input.required<number>();
@@ -75,7 +82,19 @@ export class ResourceTypeFunctionsListComponent {
   });
 
   add() {
-    this.modalService.open('This would open a modal to add something');
+    const modalRef = this.modalService.open(ResourceFunctionEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.function = {
+      id: null,
+      name: '',
+      miks: new Set<string>(),
+      content: '',
+    };
+    modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.saveFunction
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionData: ResourceFunction) => this.createFunction(functionData));
   }
 
   doListAction($event: TileListEntryOutput) {
@@ -110,5 +129,18 @@ export class ResourceTypeFunctionsListComponent {
 
   private overwriteFunction(id: number) {
     this.modalService.open('This would open a modal to overwrite function with id:' + id);
+  }
+
+  private createFunction(functionData: ResourceFunction) {
+    this.functionsService
+      .createFunctionForResourceType(this.resourceType().id, functionData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceFunctionList(this.resourceType().id);
+        },
+      });
   }
 }

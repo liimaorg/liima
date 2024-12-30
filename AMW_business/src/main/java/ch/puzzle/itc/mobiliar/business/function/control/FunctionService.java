@@ -244,14 +244,19 @@ public class FunctionService implements AddFunctionUseCase, GetFunctionUseCase, 
     private Map<String, AmwFunctionEntity> getAllSubTypeAndResourceFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> subTypeFunctions = new LinkedHashMap<>();
 
+        if (!Hibernate.isInitialized(resourceTypeEntity.getResources())) {
+            resourceTypeEntity = resourceTypeRepository.loadWithResources(resourceTypeEntity.getId());
+        }
 
         for (ResourceEntity resource : resourceTypeEntity.getResources()) {
+            resource = resourceRepository.loadWithFunctionsAndMiksForId(resource.getId());
             for (AmwFunctionEntity function : resource.getFunctions()) {
                 subTypeFunctions.put(function.getName(), function);
             }
         }
 
         for (ResourceTypeEntity subResourceType : resourceTypeEntity.getChildrenResourceTypes()) {
+            subResourceType = resourceTypeRepository.loadWithFunctionsAndMiksForId(subResourceType.getId());
             for (AmwFunctionEntity function : subResourceType.getFunctions()) {
                 subTypeFunctions.put(function.getName(), function);
             }
@@ -449,7 +454,7 @@ public class FunctionService implements AddFunctionUseCase, GetFunctionUseCase, 
 
     @Override
     @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = CREATE)
-    public Integer add(AddFunctionCommand addFunctionCommand) throws NotFoundException, ValidationException {
+    public Integer addForResource(AddFunctionCommand addFunctionCommand) throws NotFoundException, ValidationException {
         ResourceEntity resource = resourceRepository.find((addFunctionCommand.getResourceId()));
         if (resource == null) throw new NotFoundException("Resource not found.");
 
@@ -460,6 +465,29 @@ public class FunctionService implements AddFunctionUseCase, GetFunctionUseCase, 
         try {
             amwFunctionEntity.setName(addFunctionCommand.getName());
             amwFunctionEntity.setResource(resource);
+            amwFunctionEntity.setImplementation(addFunctionCommand.getContent());
+            freemarkerValidator.validateFreemarkerSyntax(addFunctionCommand.getContent());
+            saveFunctionWithMiks(amwFunctionEntity, addFunctionCommand.getMiks());
+        } catch (Exception e) {
+            throw new ValidationException(e.getMessage());
+        }
+        return amwFunctionEntity.getId();
+    }
+
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCETYPE_AMWFUNCTION, action = CREATE)
+    public Integer addForResourceType(AddFunctionCommand addFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
+        ResourceTypeEntity resourceType = resourceTypeRepository.loadWithFunctionsAndMiksForId(addFunctionCommand.getResourceId());
+        if (resourceType == null) throw new NotFoundException("ResourceType not found.");
+
+        if (!findFunctionsByNameInNamespace(resourceType, addFunctionCommand.getName()).isEmpty()) {
+            throw new NotFoundException("Function with name " + addFunctionCommand.getName() + " already exists.");
+        }
+        AmwFunctionEntity amwFunctionEntity = new AmwFunctionEntity();
+        try {
+            amwFunctionEntity.setName(addFunctionCommand.getName());
+            amwFunctionEntity.setResourceType(resourceType);
             amwFunctionEntity.setImplementation(addFunctionCommand.getContent());
             freemarkerValidator.validateFreemarkerSyntax(addFunctionCommand.getContent());
             saveFunctionWithMiks(amwFunctionEntity, addFunctionCommand.getMiks());

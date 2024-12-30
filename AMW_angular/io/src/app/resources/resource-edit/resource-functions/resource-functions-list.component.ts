@@ -35,7 +35,6 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
   contextId = input.required<number>();
   functions = this.functionsService.functions;
 
-  showLoader = signal(false);
   isLoading = computed(() => {
     if (this.resource() != null) {
       this.functionsService.setIdForResourceFunctionList(this.resource().id);
@@ -170,7 +169,6 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
   }
 
   private createFunction(functionData: ResourceFunction) {
-    this.showLoader.set(true);
     this.functionsService
       .createFunctionForResource(this.resource().id, functionData)
       .pipe(takeUntil(this.destroy$))
