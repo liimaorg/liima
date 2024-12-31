@@ -5,5 +5,5 @@ import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
 public interface GetFunctionUseCase {
 
-    AmwFunctionEntity get(Integer id) throws NotFoundException;
+    AmwFunctionEntity getFunction(Integer id) throws NotFoundException;
 }

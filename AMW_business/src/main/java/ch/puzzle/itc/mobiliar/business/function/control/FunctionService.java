@@ -21,43 +21,24 @@
 package ch.puzzle.itc.mobiliar.business.function.control;
 
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
-import ch.puzzle.itc.mobiliar.business.function.boundary.*;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.hibernate.Hibernate;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
-
-public class FunctionService implements
-        Serializable,
-        AddFunctionUseCase,
-        GetFunctionUseCase,
-        ListFunctionsUseCase,
-        GetFunctionRevisionUseCase,
-        ListFunctionRevisionsUseCase,
-        UpdateFunctionUseCase {
+public class FunctionService {
 
     @Inject
     FunctionRepository functionRepository;
@@ -70,9 +51,6 @@ public class FunctionService implements
 
     @Inject
     EntityManager entityManager;
-
-    @Inject
-    FreemarkerSyntaxValidator freemarkerValidator;
 
     /**
      * Returns all (overwritable) functions, which are defined on all parent resource types of the given resource instance - except the functions which are already defined on the given resource instance.
@@ -170,7 +148,6 @@ public class FunctionService implements
         return null;
     }
 
-    @TransactionAttribute(TransactionAttributeType.SUPPORTS)
     public void saveFunctionWithMiks(AmwFunctionEntity amwFunction, Set<String> functionMikNames) {
         if (amwFunction != null) {
             Set<MikEntity> miks = new HashSet<>();
@@ -391,49 +368,8 @@ public class FunctionService implements
         functionRepository.remove(functionToDelete);
     }
 
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public AmwFunctionEntity get(Integer id) throws NotFoundException {
-        AmwFunctionEntity entity = functionRepository.getFunctionByIdWithMiksAndParentChildFunctions(id);
-        if (entity != null) {
-            return entity;
-        } else {
-            throw new NotFoundException("Function not found.");
-        }
-    }
 
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public List<AmwFunctionEntity> functionsForResource(Integer id) throws NotFoundException {
-
-        ResourceEntity resourceEntity = resourceRepository.loadWithFunctionsAndMiksForId(id);
-        if (resourceEntity != null) {
-            List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceEntity.getFunctions());
-            List<AmwFunctionEntity> superFuncs = getAllOverwritableSupertypeFunctions(resourceEntity);
-            return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
-        } else {
-            throw new NotFoundException("Resource not found.");
-        }
-    }
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public List<AmwFunctionEntity> functionsForResourceType(Integer id) throws NotFoundException {
-        ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(id);
-        if (resourceTypeEntity != null) {
-            List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceTypeEntity.getFunctions());
-            List<AmwFunctionEntity> superFuncs = getAllOverwritableSupertypeFunctions(resourceTypeEntity);
-
-            return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
-        } else {
-            throw new NotFoundException("Resource not found.");
-        }
-    }
-
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public AmwFunctionEntity getFunctionRevision(int functionId, int revisionId) throws NotFoundException {
+    public AmwFunctionEntity getFunctionRevision(int functionId, Number revisionId) throws NotFoundException {
         AmwFunctionEntity function = AuditReaderFactory.get(entityManager).find(
                 AmwFunctionEntity.class, functionId, revisionId);
         if (function == null) {
@@ -442,8 +378,6 @@ public class FunctionService implements
         return function;
     }
 
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
     public List<RevisionInformation> getRevisions(Integer functionId) {
         List<RevisionInformation> result = new ArrayList<>();
         if (functionId != null) {
@@ -457,64 +391,5 @@ public class FunctionService implements
             Collections.sort(result);
         }
         return result;
-    }
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = CREATE)
-    public Integer addForResource(AddFunctionCommand addFunctionCommand) throws NotFoundException, ValidationException {
-        ResourceEntity resource = resourceRepository.find((addFunctionCommand.getResourceId()));
-        if (resource == null) throw new NotFoundException("Resource not found.");
-
-        if (!findFunctionsByNameInNamespace(resource, addFunctionCommand.getName()).isEmpty()) {
-            throw new NotFoundException("Function with name " + addFunctionCommand.getName() + " already exists.");
-        }
-        AmwFunctionEntity amwFunctionEntity = new AmwFunctionEntity();
-        try {
-            amwFunctionEntity.setName(addFunctionCommand.getName());
-            amwFunctionEntity.setResource(resource);
-            amwFunctionEntity.setImplementation(addFunctionCommand.getContent());
-            freemarkerValidator.validateFreemarkerSyntax(addFunctionCommand.getContent());
-            saveFunctionWithMiks(amwFunctionEntity, addFunctionCommand.getMiks());
-        } catch (Exception e) {
-            throw new ValidationException(e.getMessage());
-        }
-        return amwFunctionEntity.getId();
-    }
-
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCETYPE_AMWFUNCTION, action = CREATE)
-    public Integer addForResourceType(AddFunctionCommand addFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
-        ResourceTypeEntity resourceType = resourceTypeRepository.loadWithFunctionsAndMiksForId(addFunctionCommand.getResourceId());
-        if (resourceType == null) throw new NotFoundException("ResourceType not found.");
-
-        if (!findFunctionsByNameInNamespace(resourceType, addFunctionCommand.getName()).isEmpty()) {
-            throw new NotFoundException("Function with name " + addFunctionCommand.getName() + " already exists.");
-        }
-        AmwFunctionEntity amwFunctionEntity = new AmwFunctionEntity();
-        try {
-            amwFunctionEntity.setName(addFunctionCommand.getName());
-            amwFunctionEntity.setResourceType(resourceType);
-            amwFunctionEntity.setImplementation(addFunctionCommand.getContent());
-            freemarkerValidator.validateFreemarkerSyntax(addFunctionCommand.getContent());
-            saveFunctionWithMiks(amwFunctionEntity, addFunctionCommand.getMiks());
-        } catch (Exception e) {
-            throw new ValidationException(e.getMessage());
-        }
-        return amwFunctionEntity.getId();
-    }
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCETYPE_AMWFUNCTION, action = UPDATE)
-    public void update(UpdateFunctionCommand updateFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
-
-        AmwFunctionEntity amwFunctionEntity = get(updateFunctionCommand.getId());
-        try {
-            amwFunctionEntity.setImplementation(updateFunctionCommand.getContent());
-            freemarkerValidator.validateFreemarkerSyntax(updateFunctionCommand.getContent());
-            functionRepository.persistOrMergeFunction(amwFunctionEntity);
-        } catch (Exception e) {
-            throw new ValidationException(e.getMessage());
-        }
     }
 }

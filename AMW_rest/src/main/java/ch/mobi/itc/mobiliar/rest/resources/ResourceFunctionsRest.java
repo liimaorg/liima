@@ -44,12 +44,15 @@ public class ResourceFunctionsRest {
     @Inject
     private UpdateFunctionUseCase updateFunctionUseCase;
 
+    @Inject
+    private OverwriteFunctionUseCase overwriteFunctionUseCase;
+
     @GET
     @Path("/functions/{id : \\d+}")
     @ApiOperation(value = "Get a resource function by id")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFunction(@ApiParam("Function ID") @PathParam("id") Integer id) throws NotFoundException {
-        AmwFunctionEntity entity = getFunctionUseCase.get(id);
+        AmwFunctionEntity entity = getFunctionUseCase.getFunction(id);
         return Response.status(OK).entity(new FunctionDTO(entity)).build();
     }
 
