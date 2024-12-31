@@ -4,6 +4,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.FunctionDTO;
 import ch.puzzle.itc.mobiliar.business.function.boundary.*;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
@@ -16,10 +17,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.*;
 
 @RequestScoped
 @Path("/resources")
@@ -53,7 +55,7 @@ public class ResourceFunctionsRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getFunction(@ApiParam("Function ID") @PathParam("id") Integer id) throws NotFoundException {
         AmwFunctionEntity entity = getFunctionUseCase.getFunction(id);
-        return Response.status(OK).entity(new FunctionDTO(entity)).build();
+        return Response.ok(new FunctionDTO(entity)).build();
     }
 
 
@@ -63,7 +65,7 @@ public class ResourceFunctionsRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResourceFunctions(@ApiParam("Resource ID") @PathParam("id") Integer resourceId) throws NotFoundException {
         List<AmwFunctionEntity> entity = listFunctionsUseCase.functionsForResource(resourceId);
-        return Response.status(OK).entity(functionsToResponse(entity)).build();
+        return Response.ok(functionsToResponse(entity)).build();
     }
 
     @GET
@@ -72,7 +74,7 @@ public class ResourceFunctionsRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getResourceTypeFunctions(@ApiParam("ResourceType ID") @PathParam("id") Integer resourceTypeId) throws NotFoundException {
         List<AmwFunctionEntity> entity = listFunctionsUseCase.functionsForResourceType(resourceTypeId);
-        return Response.status(OK).entity(functionsToResponse(entity)).build();
+        return Response.ok(functionsToResponse(entity)).build();
     }
 
 
@@ -103,8 +105,7 @@ public class ResourceFunctionsRest {
             throws ValidationException, NotFoundException {
         AddFunctionCommand functionCommand =
                 new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
-        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResource(functionCommand)).build();
-
+        return Response.status(CREATED).entity(addFunctionUseCase.addForResource(functionCommand)).build();
     }
 
     @POST
@@ -114,7 +115,8 @@ public class ResourceFunctionsRest {
             throws ValidationException, NotFoundException {
         AddFunctionCommand functionCommand =
                 new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
-        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResourceType(functionCommand)).build();
+        return Response.status(CREATED).entity(addFunctionUseCase.addForResourceType(functionCommand)).build();
+
     }
 
     @PUT
@@ -123,29 +125,31 @@ public class ResourceFunctionsRest {
     public Response modifyFunction(@ApiParam("Function ID") @PathParam("id") Integer id, String content) throws ValidationException, NotFoundException {
         UpdateFunctionCommand functionCommand =
                 new UpdateFunctionCommand(id, content);
-        updateFunctionUseCase.update(functionCommand);
-        return Response.status(OK).build();
+        int functionId = updateFunctionUseCase.update(functionCommand);
+        return Response.created(URI.create("resources/functions/" + functionId)).build();
     }
 
-    @POST
+    @PUT
     @Path("/resource/{id : \\d+}/functions/overwrite")
     @ApiOperation(value = "Overwrite resource function")
     public Response overwriteResourceFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
-            throws ValidationException, NotFoundException {
-        AddFunctionCommand functionCommand =
-                new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
-        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResource(functionCommand)).build();
+            throws AMWException {
+        OverwriteFunctionCommand overwriteCommand =
+                new OverwriteFunctionCommand(id, request.getId(), request.getContent());
+        int functionId = overwriteFunctionUseCase.overwriteForResource(overwriteCommand);
+        return Response.created(URI.create("/resources/functions/" + functionId)).build();
 
     }
 
-    @POST
+    @PUT
     @Path("/resourceType/{id : \\d+}/functions/overwrite")
     @ApiOperation(value = "Overwrite resourceType function")
     public Response overwriteResourceTypeFunction(@ApiParam("Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws ValidationException, NotFoundException {
-        AddFunctionCommand functionCommand =
-                new AddFunctionCommand(id, request.getName(), request.getMiks(), request.getContent());
-        return Response.status(Response.Status.CREATED).entity(addFunctionUseCase.addForResourceType(functionCommand)).build();
+        OverwriteFunctionCommand overwriteCommand =
+                new OverwriteFunctionCommand(id, request.getId(), request.getContent());
+        int functionId = overwriteFunctionUseCase.overwriteForResourceType(overwriteCommand);
+        return Response.created(URI.create("/resources/functions/" + functionId)).build();
     }
 
 

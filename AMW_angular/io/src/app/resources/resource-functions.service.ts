@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ResourceFunction } from './resource-function';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BaseService } from '../base/base.service';
@@ -96,13 +96,19 @@ export class ResourceFunctionsService extends BaseService {
   }
 
   overwriteFunctionForResource(id: number, func: ResourceFunction) {
-    // todo implement
-    return of();
+    return this.http
+      .put<ResourceFunction>(`${this.path}/resource/${id}/functions/overwrite`, func, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   overwriteFunctionForResourceType(id: number, func: ResourceFunction) {
-    // todo implement
-    return of();
+    return this.http
+      .put<ResourceFunction>(`${this.path}/resourceType/${id}/functions/overwrite`, func, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 }
 export class SerializableSet extends Set {

@@ -134,23 +134,50 @@ public class FunctionsUseCaseService implements
     }
 
     @Override
-    public Integer overwriteForResource(OverwriteFunctionCommand overwriteFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
-        return 0;
-    }
-
-    @Override
-    public Integer overwriteForResourceType(OverwriteFunctionCommand overwriteFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
-        return 0;
+    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = UPDATE)
+    public int overwriteForResource(OverwriteFunctionCommand overwriteFunctionCommand) throws NotFoundException, ValidationException {
+        AmwFunctionEntity functionToOverwrite = functionRepository.getFunctionByIdWithChildFunctions(overwriteFunctionCommand.getId());
+        ResourceEntity resource = resourceRepository.find(overwriteFunctionCommand.getResourceId());
+        if (functionToOverwrite == null || resource == null) {
+            throw new NotFoundException("Function or Resource not found");
+        }
+        try {
+            freemarkerValidator.validateFreemarkerSyntax(overwriteFunctionCommand.getContent());
+            AmwFunctionEntity overwritingFunction = functionService.overwriteResourceFunction(
+                    overwriteFunctionCommand.getContent(), functionToOverwrite, resource);
+            return overwritingFunction.getId();
+        } catch (Exception e) {
+            throw new ValidationException(e.getMessage());
+        }
     }
 
     @Override
     @HasPermission(permission = Permission.RESOURCETYPE_AMWFUNCTION, action = UPDATE)
-    public void update(UpdateFunctionCommand updateFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
+    public int overwriteForResourceType(OverwriteFunctionCommand overwriteFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
+        AmwFunctionEntity functionToOverwrite = functionRepository.getFunctionByIdWithChildFunctions(overwriteFunctionCommand.getId());
+        ResourceTypeEntity resourceType = resourceTypeRepository.find(overwriteFunctionCommand.getResourceId());
+        if (functionToOverwrite == null || resourceType == null) {
+            throw new NotFoundException("Function or ResourceType not found");
+        }
+        try {
+            freemarkerValidator.validateFreemarkerSyntax(overwriteFunctionCommand.getContent());
+            AmwFunctionEntity overwritingFunction = functionService.overwriteResourceTypeFunction(
+                    overwriteFunctionCommand.getContent(), functionToOverwrite, resourceType);
+            return overwritingFunction.getId();
+        } catch (Exception e) {
+            throw new ValidationException(e.getMessage());
+        }
+    }
+
+    @Override
+    @HasPermission(permission = Permission.RESOURCETYPE_AMWFUNCTION, action = UPDATE)
+    public int update(UpdateFunctionCommand updateFunctionCommand) throws IllegalStateException, NotFoundException, ValidationException {
         AmwFunctionEntity amwFunctionEntity = getFunction(updateFunctionCommand.getId());
         try {
             amwFunctionEntity.setImplementation(updateFunctionCommand.getContent());
             freemarkerValidator.validateFreemarkerSyntax(updateFunctionCommand.getContent());
             functionRepository.persistOrMergeFunction(amwFunctionEntity);
+            return amwFunctionEntity.getId();
         } catch (Exception e) {
             throw new ValidationException(e.getMessage());
         }
