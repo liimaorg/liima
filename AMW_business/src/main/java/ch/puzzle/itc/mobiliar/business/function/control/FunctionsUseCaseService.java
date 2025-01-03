@@ -5,7 +5,10 @@ import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
@@ -28,7 +31,8 @@ public class FunctionsUseCaseService implements
         ListFunctionRevisionsUseCase,
         ListFunctionsUseCase,
         OverwriteFunctionUseCase,
-        UpdateFunctionUseCase {
+        UpdateFunctionUseCase,
+        DeleteFunctionUseCase {
 
     @Inject
     FunctionService functionService;
@@ -44,6 +48,9 @@ public class FunctionsUseCaseService implements
 
     @Inject
     FreemarkerSyntaxValidator freemarkerValidator;
+
+    @Inject
+    PermissionBoundary permissionBoundary;
 
     @Override
     @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = CREATE)
@@ -186,4 +193,30 @@ public class FunctionsUseCaseService implements
             throw new ValidationException(e.getMessage());
         }
     }
+
+    @Override
+    public void deleteFunction(Integer id) throws ValidationException, NotFoundException {
+        AmwFunctionEntity functionToDelete = functionRepository.find(id);
+        if (functionToDelete == null) {
+            throw new NotFoundException("No function entity found for id " + id);
+        }
+
+        if (functionToDelete.getResource() == null && functionToDelete.getResourceType() != null) {
+            permissionBoundary.checkPermissionAndFireException(Permission.RESOURCETYPE_AMWFUNCTION, null, Action.DELETE,
+                    null, functionToDelete.getResourceType(), "missing Permission to delete ResourceType functions");
+        } else {
+            ResourceGroupEntity group = functionToDelete.getResource() != null ? functionToDelete.getResource().getResourceGroup() : null;
+            permissionBoundary.checkPermissionAndFireException(Permission.RESOURCE_AMWFUNCTION, null, Action.DELETE,
+                    group, null,
+                    "missing Permission to delete Resource functions");
+        }
+
+        if (!functionToDelete.isOverwrittenBySubTypeOrResourceFunction()) {
+            functionService.deleteFunction(functionToDelete);
+        } else {
+            throw new ValidationException("Can not delete function because it is overwritten by at least one sub resource type or resource function", functionToDelete.getOverwritingChildFunction().iterator().next());
+        }
+    }
+
+
 }

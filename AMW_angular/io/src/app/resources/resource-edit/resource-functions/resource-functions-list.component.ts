@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { TileComponent } from '../../../shared/tile/tile.component';
@@ -13,6 +13,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ResourceFunctionEditComponent } from './resource-function-edit.component';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
+import { ResourceFunctionDeleteComponent } from './resource-function-delete.component';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
@@ -169,7 +170,11 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
   }
 
   private deleteFunction(id: number) {
-    this.modalService.open('This would open a modal to delete function with id:' + id);
+    const modalRef: NgbModalRef = this.modalService.open(ResourceFunctionDeleteComponent);
+    modalRef.componentInstance.functionId = id;
+    modalRef.componentInstance.deleteFunctionId
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id: number) => this.removeFunction(id));
   }
 
   private createFunction(functionData: ResourceFunction) {
@@ -204,6 +209,19 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceFunctionList(this.resource().id);
+        },
+      });
+  }
+
+  private removeFunction(id: number) {
+    this.functionsService
+      .deleteFunction(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function deleted successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);

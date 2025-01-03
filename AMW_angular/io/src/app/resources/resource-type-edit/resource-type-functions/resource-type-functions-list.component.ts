@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { TileComponent } from '../../../shared/tile/tile.component';
@@ -13,6 +13,7 @@ import { ResourceFunctionEditComponent } from '../../resource-edit/resource-func
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { ResourceFunctionDeleteComponent } from '../../resource-edit/resource-functions/resource-function-delete.component';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
@@ -156,7 +157,11 @@ export class ResourceTypeFunctionsListComponent {
   }
 
   private deleteFunction(id: number) {
-    this.modalService.open('This would open a modal to delete function with id:' + id);
+    const modalRef: NgbModalRef = this.modalService.open(ResourceFunctionDeleteComponent);
+    modalRef.componentInstance.functionId = id;
+    modalRef.componentInstance.deleteFunctionId
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id: number) => this.removeFunction(id));
   }
 
   private createFunction(functionData: ResourceFunction) {
@@ -191,6 +196,19 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
+        },
+      });
+  }
+
+  private removeFunction(id: number) {
+    this.functionsService
+      .deleteFunction(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Function deleted successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
