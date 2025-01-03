@@ -45,6 +45,7 @@ export class ResourceTypeFunctionsListComponent {
     if (this.authService.restrictions().length > 0 && this.resourceType()) {
       return {
         canShowInstanceFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
+        canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
           this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.CREATE, this.resourceType().name),
@@ -58,6 +59,7 @@ export class ResourceTypeFunctionsListComponent {
     } else {
       return {
         canShowInstanceFunctions: false,
+        canShowSuperTypeFunctions: false,
         canAdd: false,
         canEdit: false,
         canDelete: false,
@@ -67,18 +69,25 @@ export class ResourceTypeFunctionsListComponent {
 
   functionsData = computed(() => {
     if (this.functions()?.length > 0) {
+      const [instance, resource] = this.splitFunctions(this.functions());
+      const result = [];
       if (this.permissions().canShowInstanceFunctions) {
-        const entries = this.mapListEntries(this.functions());
-        return [
-          {
-            title: 'Type Functions',
-            entries: entries,
-            canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions, // fixme old gui used the `Edit`-link also for only viewing a function
-            canDelete: this.permissions().canDelete,
-          },
-        ];
-      } else return null;
-    }
+        result.push({
+          title: 'Type Functions',
+          entries: instance,
+          canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions,
+          canDelete: this.permissions().canDelete,
+        });
+      }
+      if (this.permissions().canShowSuperTypeFunctions) {
+        result.push({
+          title: 'Supertype Functions',
+          entries: resource,
+          canOverwrite: this.permissions().canEdit || this.permissions().canShowSuperTypeFunctions,
+        });
+      }
+      return result;
+    } else return null;
   });
 
   add() {
@@ -112,12 +121,26 @@ export class ResourceTypeFunctionsListComponent {
   }
 
   mapListEntries(functions: ResourceFunction[]) {
-    functions.sort((a, b) => (a.name < b.name ? -1 : 1));
     return functions.map((element) => ({
-      name: element.name,
+      name:
+        element.name +
+        (!element.isOverwritingFunction && element.functionOriginResourceName !== this.resourceType().name
+          ? ` (Defined on ${element.functionOriginResourceName})`
+          : element.isOverwritingFunction && element.functionOriginResourceName !== element.overwrittenParentName
+          ? ` (Overwrite function from ${element.overwrittenParentName})`
+          : ''),
       description: [...element.miks].join(', '),
       id: element.id,
     }));
+  }
+
+  splitFunctions(resourceFunctions: ResourceFunction[]) {
+    const [instance, resource] = [[], []];
+    resourceFunctions.sort((a, b) => (a.name < b.name ? -1 : 1));
+    resourceFunctions.forEach((element) =>
+      (element.functionOriginResourceName !== this.resourceType().name ? resource : instance).push(element),
+    );
+    return [this.mapListEntries(instance), this.mapListEntries(resource)];
   }
 
   private editFunction(id: number, isOverwrite?: boolean) {

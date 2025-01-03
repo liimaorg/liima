@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
@@ -76,7 +76,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
         result.push({
           title: 'Resource Instance Functions',
           entries: instance,
-          canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions, // fixme old gui used the `Edit`-link also for only viewing a function
+          canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions,
           canDelete: this.permissions().canDelete,
         });
       }
@@ -84,7 +84,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
         result.push({
           title: 'Resource Type Functions',
           entries: resource,
-          canOverwrite: this.permissions().canEdit || this.permissions().canShowInstanceFunctions, // fixme old gui used the `Edit`-link also for only viewing a function
+          canOverwrite: this.permissions().canEdit || this.permissions().canShowSuperTypeFunctions,
         });
       }
       return result;
