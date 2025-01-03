@@ -47,13 +47,11 @@ export class ResourceTypeFunctionsListComponent {
         canShowInstanceFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canAdd:
-          (this.contextId() === 1 || this.contextId === null) &&
+          this.contextId() === 1 &&
           this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.CREATE, this.resourceType().name),
-        canEdit:
-          (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.UPDATE, this.resourceType().name),
+        canEdit: this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.UPDATE, this.resourceType().name),
         canDelete:
-          (this.contextId() === 1 || this.contextId === null) &&
+          this.contextId() === 1 &&
           this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.DELETE, this.resourceType().name),
       };
     } else {
@@ -83,7 +81,7 @@ export class ResourceTypeFunctionsListComponent {
         result.push({
           title: 'Supertype Functions',
           entries: resource,
-          canOverwrite: this.permissions().canEdit || this.permissions().canShowSuperTypeFunctions,
+          canOverwrite: this.permissions().canEdit && this.contextId() === 1,
         });
       }
       return result;
