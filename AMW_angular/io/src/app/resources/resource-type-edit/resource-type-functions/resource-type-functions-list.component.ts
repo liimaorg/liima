@@ -112,6 +112,7 @@ export class ResourceTypeFunctionsListComponent {
   }
 
   mapListEntries(functions: ResourceFunction[]) {
+    functions.sort((a, b) => (a.name < b.name ? -1 : 1));
     return functions.map((element) => ({
       name: element.name,
       description: [...element.miks].join(', '),

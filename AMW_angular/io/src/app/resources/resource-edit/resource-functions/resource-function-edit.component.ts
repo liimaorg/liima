@@ -68,7 +68,7 @@ export class ResourceFunctionEditComponent implements OnInit {
   save() {
     if (this.revision) this.function.content = this.diffValue.original;
     if (this.newMik !== '') this.addMik();
-    this.saveFunction.emit(this.function); // todo need for overwrite info?
+    this.saveFunction.emit(this.function);
     this.activeModal.close();
   }
 

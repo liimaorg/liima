@@ -6,11 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 
-<<<<<<< HEAD:AMW_angular/io/src/app/resources/resource-edit/resource-edit-page.component.spec.ts
 describe('ResourceEditComponent', () => {
-=======
-describe('ResourceEditPageComponent', () => {
->>>>>>> b2910898... refactor: clean up component naming:AMW_angular/io/src/app/resources/resource-edit/resource-edit.component.spec.ts
   let component: ResourceEditComponent;
   let fixture: ComponentFixture<ResourceEditComponent>;
 

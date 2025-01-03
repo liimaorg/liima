@@ -69,26 +69,26 @@ export class ResourceTypeEditComponent {
   doListAction($event: TileListEntryOutput) {
     switch ($event.action) {
       case EntryAction.edit:
-        this.editFunction($event.id);
+        this.edit($event.id);
         return;
       case EntryAction.delete:
-        this.deleteFunction($event.id);
+        this.delete($event.id);
         return;
       case EntryAction.overwrite:
-        this.overwriteFunction($event.id);
+        this.overwrite($event.id);
         return;
     }
   }
 
-  private editFunction(id: number) {
-    this.modalService.open('This would open a modal to edit function with id:' + id);
+  private edit(id: number) {
+    this.modalService.open('This would open a modal to edit with id:' + id);
   }
 
-  private deleteFunction(id: number) {
-    this.modalService.open('This would open a modal to delete function with id:' + id);
+  private delete(id: number) {
+    this.modalService.open('This would open a modal to delete with id:' + id);
   }
 
-  private overwriteFunction(id: number) {
-    this.modalService.open('This would open a modal to overwrite function with id:' + id);
+  private overwrite(id: number) {
+    this.modalService.open('This would open a modal to overwrite with id:' + id);
   }
 }
