@@ -24,13 +24,11 @@ import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import org.hibernate.Hibernate;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 
@@ -47,11 +45,7 @@ public class FunctionService {
     ResourceRepository resourceRepository;
 
     @Inject
-    ResourceTypeRepository resourceTypeRepository;
-
-    @Inject
     EntityManager entityManager;
-
     /**
      * Returns all (overwritable) functions, which are defined on all parent resource types of the given resource instance - except the functions which are already defined on the given resource instance.
      */
@@ -90,10 +84,6 @@ public class FunctionService {
     private Map<String, AmwFunctionEntity> getAllTypeAndSuperTypeFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> superTypeFunctions = new LinkedHashMap<>();
         if (resourceTypeEntity != null) {
-            if (!Hibernate.isInitialized(resourceTypeEntity.getFunctions())) {
-                resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(resourceTypeEntity.getId());
-            }
-
             for (AmwFunctionEntity function : resourceTypeEntity.getFunctions()) {
                 AmwFunctionEntity functionWithMik = functionRepository.getFunctionByIdWithMiksAndParentChildFunctions(function.getId());
                 superTypeFunctions.put(function.getName(), functionWithMik);
@@ -116,7 +106,6 @@ public class FunctionService {
      * <li>All functions of the resource</li>
      * <li>Functions of the parent resourceTypes if not overwritten by the resource itself</li>
      * </ul>
-     *
      * @param resource
      * @return a list of AmwFunctions
      */
@@ -132,7 +121,6 @@ public class FunctionService {
 
     /**
      * Find the function for the given mik
-     *
      * @param functions
      * @param mik
      * @return AmwFunctionEntity
@@ -228,19 +216,13 @@ public class FunctionService {
     private Map<String, AmwFunctionEntity> getAllSubTypeAndResourceFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> subTypeFunctions = new LinkedHashMap<>();
 
-        if (!Hibernate.isInitialized(resourceTypeEntity.getResources())) {
-            resourceTypeEntity = resourceTypeRepository.loadWithResources(resourceTypeEntity.getId());
-        }
-
         for (ResourceEntity resource : resourceTypeEntity.getResources()) {
-            resource = resourceRepository.loadWithFunctionsAndMiksForId(resource.getId());
             for (AmwFunctionEntity function : resource.getFunctions()) {
                 subTypeFunctions.put(function.getName(), function);
             }
         }
 
         for (ResourceTypeEntity subResourceType : resourceTypeEntity.getChildrenResourceTypes()) {
-            subResourceType = resourceTypeRepository.loadWithFunctionsAndMiksForId(subResourceType.getId());
             for (AmwFunctionEntity function : subResourceType.getFunctions()) {
                 subTypeFunctions.put(function.getName(), function);
             }
