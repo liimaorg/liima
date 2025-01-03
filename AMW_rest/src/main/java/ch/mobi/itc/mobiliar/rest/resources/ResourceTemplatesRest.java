@@ -26,12 +26,7 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
@@ -50,12 +45,16 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javax.persistence.EntityManager;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 /**
  * Rest boundary for Resource and Resource Type Templates
  */
 @RequestScoped
 @Path("/resources/templates")
 @Api(value = "/resources/templates")
+@Consumes(APPLICATION_JSON)
+@Produces(APPLICATION_JSON)
 public class ResourceTemplatesRest {
 
     @Inject
@@ -88,7 +87,7 @@ public class ResourceTemplatesRest {
     @GET
     @Path("/{resourceId}")
     @ApiOperation(value = "Get all templates for a resource")
-    public List<TemplateDTO> getResourceTemplatesByResourceId(@PathParam("resourceId") Integer resourceId) throws NotFoundException {
+    public List<TemplateDTO> getResourceTemplatesById(@PathParam("resourceId") Integer resourceId) throws NotFoundException {
         ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
         if (resource == null) {
             throw new NotFoundException("Resource not found");
