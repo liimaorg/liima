@@ -15,6 +15,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
@@ -127,7 +128,10 @@ public class FunctionsUseCaseService implements
     public List<AmwFunctionEntity> functionsForResourceType(Integer id) throws NotFoundException {
         ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(id);
         if (resourceTypeEntity != null) {
-            return functionService.getAllOverwritableSupertypeFunctions(resourceTypeEntity);
+            List<AmwFunctionEntity> allFunctions = new ArrayList<>();
+            allFunctions.addAll(resourceTypeEntity.getFunctions());
+            allFunctions.addAll(functionService.getAllOverwritableSupertypeFunctions(resourceTypeEntity));
+            return allFunctions;
         } else {
             throw new NotFoundException("Resource not found.");
         }
