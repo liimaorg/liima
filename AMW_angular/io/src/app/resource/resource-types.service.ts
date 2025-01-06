@@ -10,7 +10,7 @@ import { ResourceTypeRequest } from './resource-type-request';
 @Injectable({ providedIn: 'root' })
 export class ResourceTypesService extends BaseService {
   private reload$ = new Subject<ResourceType[]>();
-  private resourceTypeId$: Subject<Number> = new Subject<Number>();
+  private resourceTypeId$: Subject<number> = new Subject<number>();
   private predefinedResourceTypes$ = this.getPredefinedResourceTypes();
 
   private rootResourceTypes$ = this.reload$.pipe(

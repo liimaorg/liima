@@ -10,8 +10,8 @@ import { BaseService } from '../base/base.service';
 @Injectable({ providedIn: 'root' })
 export class ResourceFunctionsService extends BaseService {
   private path = `${this.getBaseUrl()}/resources/functions`;
-  private functions$: Subject<Number> = new Subject<Number>();
-  private functionsForType$: Subject<Number> = new Subject<Number>();
+  private functions$: Subject<number> = new Subject<number>();
+  private functionsForType$: Subject<number> = new Subject<number>();
 
   private functionById$: Observable<ResourceFunction[]> = this.functions$.pipe(
     switchMap((id: number) => this.getResourceFunctions(id)),
