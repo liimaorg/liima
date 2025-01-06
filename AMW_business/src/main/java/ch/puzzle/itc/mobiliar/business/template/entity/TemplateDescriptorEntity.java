@@ -79,6 +79,16 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 	@Transient
 	private boolean relationTemplate;
 
+	public enum TemplateSourceType {
+		RESOURCE,
+		RESOURCE_TYPE
+	}
+
+	@Transient
+	@Getter
+	@Setter
+	private TemplateSourceType sourceType;
+
 	@Version
 	private long v;
 

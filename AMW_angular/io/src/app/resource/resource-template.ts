@@ -5,4 +5,5 @@ export interface ResourceTemplate {
   targetPath: string;
   targetPlatforms: string[];
   fileContent: string;
+  sourceType?: 'RESOURCE' | 'RESOURCE_TYPE';
 }
