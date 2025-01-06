@@ -95,7 +95,9 @@ public class ResourceTemplatesRest {
             throw new NotFoundException("Resource not found");
         }
         List<TemplateDescriptorEntity> resourceTemplates = templateService.getGlobalTemplateDescriptorsForResource(resource);
+        resourceTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE));
         List<TemplateDescriptorEntity> resourceTypeTemplates = templateService.getGlobalTemplateDescriptorsForResourceType(resource.getResourceType());
+        resourceTypeTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE_TYPE));
         List<TemplateDescriptorEntity> combinedTemplates = Stream.concat(resourceTemplates.stream(), resourceTypeTemplates.stream())
                 .collect(Collectors.toList());
         return combinedTemplates.stream()
