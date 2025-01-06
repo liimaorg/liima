@@ -5,22 +5,14 @@
   <div class="page-content">
     @if ((this.resource()?.name && !permissions().canEditResource)) {
     <div class="container">
-      <span class="text-warning-2">Not Authorized! You are not allowed to Edit-Resources.</span>
+      <span class="text-warning-2">Not Authorized! You are not allowed to edit resources.</span>
     </div>
     } @else if (id() === 0) {
     <div class="container">
-      <span>Please provide a resource-id to edit a resource.</span>
+      <span>Please provide the resource id to edit a resource.</span>
     </div>
     } @else {
-    <app-tile-component
-      [title]="'Templates'"
-      [actionName]="'New Template'"
-      [canAction]="true"
-      [isVisible]="false"
-      [lists]="templatesData()"
-      (tileAction)="add()"
-      (listAction)="doListAction($event)"
-    ></app-tile-component>
+    <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
     <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
     }
   </div>

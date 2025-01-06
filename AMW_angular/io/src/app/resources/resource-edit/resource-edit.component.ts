@@ -11,11 +11,18 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
+import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list.component';
 
 @Component({
   selector: 'app-resource-edit',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, TileComponent, ResourceFunctionsListComponent],
+  imports: [
+    LoadingIndicatorComponent,
+    PageComponent,
+    TileComponent,
+    ResourceFunctionsListComponent,
+    ResourceTemplatesListComponent,
+  ],
   templateUrl: './resource-edit.component.html',
 })
 export class ResourceEditComponent {
