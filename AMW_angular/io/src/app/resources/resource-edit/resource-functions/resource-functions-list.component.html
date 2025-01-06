@@ -1,7 +1,7 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-tile-component
   [title]="'Functions'"
-  [actionName]="'New function'"
+  [actionName]="'New Function'"
   [canAction]="permissions().canAdd"
   [lists]="functionsData()"
   (tileAction)="add()"
