@@ -23,6 +23,8 @@ package ch.mobi.itc.mobiliar.rest.resources;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -86,18 +88,19 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/{resourceId}")
-    @ApiOperation(value = "Get all templates for a resource")
+    @ApiOperation(value = "Get all templates for a resource, including inherited resource type templates")
     public List<TemplateDTO> getResourceTemplatesById(@PathParam("resourceId") Integer resourceId) throws NotFoundException {
         ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
         if (resource == null) {
             throw new NotFoundException("Resource not found");
         }
-        List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resource);
-        List<TemplateDTO> templateDTOs = new ArrayList<>();
-        for (TemplateDescriptorEntity template : templates) {
-            templateDTOs.add(new TemplateDTO(template));
-        }
-        return templateDTOs;
+        List<TemplateDescriptorEntity> resourceTemplates = templateService.getGlobalTemplateDescriptorsForResource(resource);
+        List<TemplateDescriptorEntity> resourceTypeTemplates = templateService.getGlobalTemplateDescriptorsForResourceType(resource.getResourceType());
+        List<TemplateDescriptorEntity> combinedTemplates = Stream.concat(resourceTemplates.stream(), resourceTypeTemplates.stream())
+                .collect(Collectors.toList());
+        return combinedTemplates.stream()
+                .map(TemplateDTO::new)
+                .collect(Collectors.toList());
     }
 
     @GET
