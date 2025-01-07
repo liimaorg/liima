@@ -20,7 +20,7 @@ public class FunctionDTO {
 
     Integer id;
     String name;
-    String implementation;
+    String content;
     Set<String> miks;
     Boolean definedOnResource;
     Boolean definedOnResourceType;
@@ -28,12 +28,10 @@ public class FunctionDTO {
     String overwrittenParentName;
     String functionOriginResourceName;
 
-
-
     public FunctionDTO(AmwFunctionEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
-        this.implementation = entity.getImplementation();
+        this.content = entity.getImplementation();
         this.definedOnResource = entity.isDefinedOnResource();
         this.definedOnResourceType = entity.isDefinedOnResourceType();
         this.miks = entity.getMikNames();

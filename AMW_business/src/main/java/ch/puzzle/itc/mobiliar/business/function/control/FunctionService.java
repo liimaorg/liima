@@ -20,29 +20,23 @@
 
 package ch.puzzle.itc.mobiliar.business.function.control;
 
-import ch.puzzle.itc.mobiliar.business.function.boundary.GetFunctionUseCase;
-import ch.puzzle.itc.mobiliar.business.function.boundary.ListFunctionsUseCase;
+import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
+import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import org.hibernate.Hibernate;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 
 import javax.inject.Inject;
-import java.io.Serializable;
+import javax.persistence.EntityManager;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
-
-public class FunctionService implements Serializable, GetFunctionUseCase, ListFunctionsUseCase {
+public class FunctionService {
 
     @Inject
     FunctionRepository functionRepository;
@@ -51,8 +45,7 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
     ResourceRepository resourceRepository;
 
     @Inject
-    ResourceTypeRepository resourceTypeRepository;
-
+    EntityManager entityManager;
     /**
      * Returns all (overwritable) functions, which are defined on all parent resource types of the given resource instance - except the functions which are already defined on the given resource instance.
      */
@@ -91,10 +84,6 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
     private Map<String, AmwFunctionEntity> getAllTypeAndSuperTypeFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> superTypeFunctions = new LinkedHashMap<>();
         if (resourceTypeEntity != null) {
-            if (!Hibernate.isInitialized(resourceTypeEntity.getFunctions())) {
-               resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(resourceTypeEntity.getId());
-            }
-
             for (AmwFunctionEntity function : resourceTypeEntity.getFunctions()) {
                 AmwFunctionEntity functionWithMik = functionRepository.getFunctionByIdWithMiksAndParentChildFunctions(function.getId());
                 superTypeFunctions.put(function.getName(), functionWithMik);
@@ -117,7 +106,6 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
      * <li>All functions of the resource</li>
      * <li>Functions of the parent resourceTypes if not overwritten by the resource itself</li>
      * </ul>
-     *
      * @param resource
      * @return a list of AmwFunctions
      */
@@ -133,7 +121,6 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
 
     /**
      * Find the function for the given mik
-     *
      * @param functions
      * @param mik
      * @return AmwFunctionEntity
@@ -228,7 +215,6 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
 
     private Map<String, AmwFunctionEntity> getAllSubTypeAndResourceFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> subTypeFunctions = new LinkedHashMap<>();
-
 
         for (ResourceEntity resource : resourceTypeEntity.getResources()) {
             for (AmwFunctionEntity function : resource.getFunctions()) {
@@ -364,42 +350,28 @@ public class FunctionService implements Serializable, GetFunctionUseCase, ListFu
         functionRepository.remove(functionToDelete);
     }
 
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public AmwFunctionEntity get(Integer id) throws NotFoundException {
-        AmwFunctionEntity entity = functionRepository.getFunctionByIdWithMiksAndParentChildFunctions(id);
-        if (entity != null) {
-            return entity;
-        } else {
-            throw new NotFoundException("Function not found.");
+
+    public AmwFunctionEntity getFunctionRevision(int functionId, Number revisionId) throws NotFoundException {
+        AmwFunctionEntity function = AuditReaderFactory.get(entityManager).find(
+                AmwFunctionEntity.class, functionId, revisionId);
+        if (function == null) {
+            throw new NotFoundException("No function with id " + functionId + " and revision id " + revisionId + " found");
         }
+        return function;
     }
 
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public List<AmwFunctionEntity> functionsForResource(Integer id) throws NotFoundException {
-
-        ResourceEntity resourceEntity = resourceRepository.loadWithFunctionsAndMiksForId(id);
-        if (resourceEntity != null) {
-            List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceEntity.getFunctions());
-            List<AmwFunctionEntity> superFuncs = getAllOverwritableSupertypeFunctions(resourceEntity);
-            return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
-        } else {
-            throw new NotFoundException("Resource not found.");
+    public List<RevisionInformation> getRevisions(Integer functionId) {
+        List<RevisionInformation> result = new ArrayList<>();
+        if (functionId != null) {
+            AuditReader reader = AuditReaderFactory.get(entityManager);
+            List<Number> list = reader.getRevisions(AmwFunctionEntity.class, functionId);
+            for (Number rev : list) {
+                Date date = reader.getRevisionDate(rev);
+                MyRevisionEntity myRev = entityManager.find(MyRevisionEntity.class, rev);
+                result.add(new RevisionInformation(rev, date, myRev.getUsername()));
+            }
+            Collections.sort(result);
         }
-    }
-
-    @Override
-    @HasPermission(permission = Permission.RESOURCE_AMWFUNCTION, action = READ)
-    public List<AmwFunctionEntity> functionsForResourceType(Integer id) throws NotFoundException {
-        ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.loadWithFunctionsAndMiksForId(id);
-        if (resourceTypeEntity != null) {
-            List<AmwFunctionEntity> instanceFuncs = new ArrayList<>(resourceTypeEntity.getFunctions());
-            List<AmwFunctionEntity> superFuncs = getAllOverwritableSupertypeFunctions(resourceTypeEntity);
-
-            return Stream.of(instanceFuncs, superFuncs).flatMap(Collection::stream).collect(Collectors.toList());
-        } else {
-            throw new NotFoundException("Resource not found.");
-        }
+        return result;
     }
 }
