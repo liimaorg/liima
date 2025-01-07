@@ -85,7 +85,7 @@ export class ResourceService extends BaseService {
 
   getGroupsForType(resourceType: ResourceType): Observable<Resource[]> {
     return this.http
-      .get<Resource[]>(`${this.getBaseUrl()}/resources?typeId=${resourceType.id}`, {
+      .get<Resource[]>(`${this.getBaseUrl()}/resources/resourceGroupsByResourceTypeId?typeId=${resourceType.id}`, {
         headers: this.getHeaders(),
       })
       .pipe(

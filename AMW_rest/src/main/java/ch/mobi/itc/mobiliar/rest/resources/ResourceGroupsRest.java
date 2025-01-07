@@ -128,6 +128,7 @@ public class ResourceGroupsRest {
     }
 
     @GET
+    @Path("/resourceGroupsByResourceTypeId")
     @ApiOperation(value = "Get resource groups by resource type id")
     public List<ResourceGroupDTO> getResourceGroupsByResourceTypeId(
             @ApiParam(value = "a resource type id, the list should be filtered by") @QueryParam("typeId") Integer typeId) {
