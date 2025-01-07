@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, of } from 'rxjs';
-import { ResourceService } from '../resource/resource.service';
+import { ResourceService } from '../resources/services/resource.service';
 import { DeploymentsComponent } from './deployments.component';
 import { DeploymentService } from '../deployment/deployment.service';
 import { DeploymentsListComponent } from './deployments-list.component';

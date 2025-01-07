@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
-import { BaseService } from '../base/base.service';
-import { ResourceType } from './resource-type';
-import { ResourceTypeRequest } from './resource-type-request';
+import { BaseService } from '../../base/base.service';
+import { ResourceType } from '../models/resource-type';
+import { ResourceTypeRequest } from '../models/resource-type-request';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceTypesService extends BaseService {

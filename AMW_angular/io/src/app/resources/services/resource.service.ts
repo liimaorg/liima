@@ -2,13 +2,13 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
-import { Resource } from './resource';
-import { Release } from './release';
-import { Relation } from './relation';
-import { Property } from './property';
-import { AppWithVersion } from '../deployment/app-with-version';
-import { BaseService } from '../base/base.service';
-import { ResourceType } from './resource-type';
+import { Resource } from '../models/resource';
+import { Release } from '../models/release';
+import { Relation } from '../models/relation';
+import { Property } from '../models/property';
+import { AppWithVersion } from '../../deployment/app-with-version';
+import { BaseService } from '../../base/base.service';
+import { ResourceType } from '../models/resource-type';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 interface Named {

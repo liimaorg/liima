@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Restriction } from './restriction';
 import * as _ from 'lodash';
-import { Resource } from '../../resource/resource';
+import { Resource } from '../../resources/models/resource';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 

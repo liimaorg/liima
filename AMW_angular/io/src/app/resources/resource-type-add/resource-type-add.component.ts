@@ -1,11 +1,11 @@
 import { Component, EventEmitter, inject, Input, Output, Signal } from '@angular/core';
-import { ResourceType } from '../../resource/resource-type';
-import { ResourceTypesService } from '../../resource/resource-types.service';
+import { ResourceType } from '../models/resource-type';
+import { ResourceTypesService } from '../services/resource-types.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { FormsModule } from '@angular/forms';
-import { ResourceTypeRequest } from '../../resource/resource-type-request';
+import { ResourceTypeRequest } from '../models/resource-type-request';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({

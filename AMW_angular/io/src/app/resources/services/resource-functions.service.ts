@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ResourceFunction } from './resource-function';
+import { ResourceFunction } from '../models/resource-function';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 
 import { toSignal } from '@angular/core/rxjs-interop';
-import { BaseService } from '../base/base.service';
-import { RevisionInformation } from '../shared/model/revisionInformation';
+import { BaseService } from '../../base/base.service';
+import { RevisionInformation } from '../../shared/model/revisionInformation';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceFunctionsService extends BaseService {

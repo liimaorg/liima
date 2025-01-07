@@ -1,11 +1,11 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { ResourceService } from '../resource/resource.service';
-import { ResourceTag } from '../resource/resource-tag';
-import { Resource } from '../resource/resource';
-import { Release } from '../resource/release';
-import { Relation } from '../resource/relation';
+import { ResourceService } from '../resources/services/resource.service';
+import { ResourceTag } from '../resources/models/resource-tag';
+import { Resource } from '../resources/models/resource';
+import { Release } from '../resources/models/release';
+import { Relation } from '../resources/models/relation';
 import { Deployment } from './deployment';
 import { DeploymentParameter } from './deployment-parameter';
 import { DeploymentService } from './deployment.service';

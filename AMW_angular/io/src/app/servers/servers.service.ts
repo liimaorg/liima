@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Server } from './server';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, startWith, Subject } from 'rxjs';
-import { Resource } from '../resource/resource';
+import { Resource } from '../resources/models/resource';
 import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filter';
 
 @Injectable({ providedIn: 'root' })
