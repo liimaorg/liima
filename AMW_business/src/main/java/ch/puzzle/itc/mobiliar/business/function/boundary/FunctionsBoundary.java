@@ -26,7 +26,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionRepository;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
@@ -42,9 +41,6 @@ import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
 
 @Stateless
 public class FunctionsBoundary {
@@ -155,7 +151,6 @@ public class FunctionsBoundary {
         }
 
     }
-
     /**
      * Creates a new Function for a Resource with miks
      */

@@ -56,11 +56,19 @@ export class ResourceFunctionsService extends BaseService {
   }
 
   getFunctionRevisions(id: number): Observable<RevisionInformation[]> {
-    return this.http.get<RevisionInformation[]>(`${this.path}/functions/${id}/revisions`);
+    return this.http
+      .get<RevisionInformation[]>(`${this.path}/functions/${id}/revisions`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   getFunctionByIdAndRevision(id: number, revisionId: number): Observable<ResourceFunction> {
-    return this.http.get<ResourceFunction>(`${this.path}/functions/${id}/revisions/${revisionId}`);
+    return this.http
+      .get<ResourceFunction>(`${this.path}/functions/${id}/revisions/${revisionId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
   }
 
   createFunctionForResource(id: number, func: ResourceFunction) {
@@ -110,7 +118,16 @@ export class ResourceFunctionsService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  deleteFunction(id: number) {
+    return this.http
+      .delete(`${this.path}/functions/${id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
+
 export class SerializableSet extends Set {
   toJSON() {
     return Array.from(this);

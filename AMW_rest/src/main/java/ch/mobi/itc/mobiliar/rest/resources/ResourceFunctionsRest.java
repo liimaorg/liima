@@ -49,6 +49,9 @@ public class ResourceFunctionsRest {
     @Inject
     private OverwriteFunctionUseCase overwriteFunctionUseCase;
 
+    @Inject
+    private DeleteFunctionUseCase deleteFunctionUseCase;
+
     @GET
     @Path("/functions/{id : \\d+}")
     @ApiOperation(value = "Get a resource function by id")
@@ -150,6 +153,14 @@ public class ResourceFunctionsRest {
                 new OverwriteFunctionCommand(id, request.getId(), request.getContent());
         int functionId = overwriteFunctionUseCase.overwriteForResourceType(overwriteCommand);
         return Response.created(URI.create("/resources/functions/" + functionId)).build();
+    }
+
+    @DELETE
+    @Path("functions/{id : \\d+}")
+    @ApiOperation(value = "Remove a function")
+    public Response deleteFunction(@PathParam("id") Integer id) throws AMWException {
+        deleteFunctionUseCase.deleteFunction(id);
+        return Response.status(NO_CONTENT).build();
     }
 
 
