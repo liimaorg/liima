@@ -20,7 +20,7 @@
                 [additionalClasses]="'dropdown-toggle'"
                 [variant]="'secondary'"
                 ngbDropdownToggle
-                [dataCy]="'button-dropdown'"
+                [dataTestId]="'button-dropdown'"
               >
                 {{ selectedRevisionName || 'Select Revision' }}
               </app-button>
@@ -68,7 +68,7 @@
   </div>
 </div>
 <div class="modal-footer">
-  <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
+  <app-button [variant]="'light'" (click)="cancel()" [dataTestId]="'button-cancel'">Cancel</app-button>
   @if (canManage) {
   <span
     class="d-inline-block"
@@ -79,7 +79,7 @@
     <app-button
       [variant]="'primary'"
       [disabled]="function.name.length === 0 || function.content.length === 0"
-      [dataCy]="'button-save'"
+      [dataTestId]="'button-save'"
       (click)="save()"
       >Save changes
     </app-button>

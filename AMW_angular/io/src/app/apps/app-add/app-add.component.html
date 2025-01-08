@@ -37,8 +37,8 @@
   </div>
 </div>
 <div class="modal-footer">
-  <app-button [variant]="'light'" [dataCy]="'button-cancel'" (click)="cancel()">Cancel</app-button>
-  <app-button [variant]="'primary'" [disabled]="hasInvalidFields()" [dataCy]="'button-save'" (click)="save()"
+  <app-button [variant]="'light'" [dataTestId]="'button-cancel'" (click)="cancel()">Cancel</app-button>
+  <app-button [variant]="'primary'" [disabled]="hasInvalidFields()" [dataTestId]="'button-save'" (click)="save()"
     >Save</app-button
   >
 </div>

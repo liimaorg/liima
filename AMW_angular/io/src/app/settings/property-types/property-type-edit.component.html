@@ -61,7 +61,7 @@
     data-toggle="tooltip"
     [title]="!isValidForm() ? 'Please provide a name and validation' : 'Save'"
   >
-    <app-button [variant]="'primary'" [disabled]="!isValidForm()" [dataCy]="'button-save'" (click)="save()"
+    <app-button [variant]="'primary'" [disabled]="!isValidForm()" [dataTestId]="'button-save'" (click)="save()"
       >Save changes</app-button
     >
   </span>
