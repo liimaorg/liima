@@ -1,0 +1,14 @@
+<app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
+<div class="modal-body">
+</div>
+<div class="modal-footer">
+  <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
+  @if (canEdit) {
+    <app-button
+      [variant]="'primary'"
+      [dataCy]="'button-save'"
+      (click)="save()"
+    >Save changes
+    </app-button>
+  }
+</div>
