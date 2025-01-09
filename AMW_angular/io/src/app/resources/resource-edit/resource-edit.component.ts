@@ -54,15 +54,15 @@ export class ResourceEditComponent {
   add() {
     this.modalService.open('This would open a modal to add something');
   }
-  private editFunction(id: number) {
-    this.modalService.open('This would open a modal to edit function with id:' + id);
+  private edit(id: number) {
+    this.modalService.open('This would open a modal to edit with id:' + id);
   }
 
-  private deleteFunction(id: number) {
-    this.modalService.open('This would open a modal to delete function with id:' + id);
+  private delete(id: number) {
+    this.modalService.open('This would open a modal to delete with id:' + id);
   }
 
-  private overwriteFunction(id: number) {
-    this.modalService.open('This would open a modal to overwrite function with id:' + id);
+  private overwrite(id: number) {
+    this.modalService.open('This would open a modal to overwrite with id:' + id);
   }
 }

@@ -63,5 +63,4 @@ public class ResourceTypeRepository extends BaseRepository<ResourceTypeEntity> {
     public ResourceTypeEntity getResourceType(Integer resourceTypeId) {
         return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
     }
-
 }

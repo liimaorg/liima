@@ -18,7 +18,7 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
           }
           {{ title() }}
         </div>
-        @if (canAction()) {
+        @if (canAction() && showBody()) {
         <div class="tile-action-bar">
           <app-button [variant]="'primary'" [size]="'sm'" (click)="doTileAction($event)">
             <app-icon icon="plus-circle" />
