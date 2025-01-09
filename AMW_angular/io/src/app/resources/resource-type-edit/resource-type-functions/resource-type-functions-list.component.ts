@@ -64,7 +64,7 @@ export class ResourceTypeFunctionsListComponent {
         const entries = this.mapListEntries(this.functions());
         return [
           {
-            title: 'Type Functions',
+            title: 'Resource Type Functions',
             entries: entries,
             canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions, // fixme old gui used the `Edit`-link also for only viewing a function
             canDelete: this.permissions().canDelete,

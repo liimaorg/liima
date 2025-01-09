@@ -33,6 +33,10 @@ export class ResourceTemplatesService extends BaseService {
     this.templates$.next(id);
   }
 
+  setIdForResourceTypeTemplateList(id: number) {
+    this.templatesForType$.next(id);
+  }
+
   getResourceTemplates(id: number): Observable<ResourceTemplate[]> {
     return this.http
       .get<ResourceTemplate[]>(`${this.getBaseUrl()}/resources/templates/${id}`, {
