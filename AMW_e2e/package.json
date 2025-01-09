@@ -18,7 +18,6 @@
   "devDependencies": {
     "@playwright/test": "^1.49.1",
     "@types/node": "^22.10.5",
-    "cypress": "^13.15.0",
     "wait-on": "^7.2.0"
   }
 }
