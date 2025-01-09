@@ -92,7 +92,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
   mapListEntries(templates: ResourceTemplate[]) {
     return templates.map((template) => ({
       name: template.name,
-      description: template.fileContent,
+      description: template.targetPath,
       id: template.id,
     }));
   }
