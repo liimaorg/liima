@@ -9,13 +9,21 @@ import { toSignal } from '@angular/core/rxjs-interop';
 @Injectable({ providedIn: 'root' })
 export class ResourceTemplatesService extends BaseService {
   private templates$: Subject<number> = new Subject<number>();
+  private templatesForType$: Subject<number> = new Subject<number>();
 
   private templateById$: Observable<ResourceTemplate[]> = this.templates$.pipe(
     switchMap((id: number) => this.getResourceTemplates(id)),
     shareReplay(1),
   );
 
+  private templateByTypeId$: Observable<ResourceTemplate[]> = this.templatesForType$.pipe(
+    switchMap((id: number) => this.getResourceTypeTemplates(id)),
+    shareReplay(1),
+  );
+
   resourceTemplates = toSignal(this.templateById$, { initialValue: [] });
+
+  resourceTypeTemplates = toSignal(this.templateByTypeId$, { initialValue: [] });
 
   constructor(private http: HttpClient) {
     super();
