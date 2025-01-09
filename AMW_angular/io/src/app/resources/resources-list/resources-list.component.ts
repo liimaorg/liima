@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, output } from '@angular/core';
-import { Resource } from '../../resource/resource';
-import { ResourceType } from '../../resource/resource-type';
+import { Resource } from '../models/resource';
+import { ResourceType } from '../models/resource-type';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';

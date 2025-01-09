@@ -8,8 +8,8 @@ import { EntryAction, TileListEntry, TileListEntryOutput } from '../../shared/ti
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
-import { ResourceType } from '../../resource/resource-type';
-import { ResourceTypesService } from '../../resource/resource-types.service';
+import { ResourceType } from '../models/resource-type';
+import { ResourceTypesService } from '../services/resource-types.service';
 import { ResourceTypeFunctionsListComponent } from './resource-type-functions/resource-type-functions-list.component';
 
 @Component({

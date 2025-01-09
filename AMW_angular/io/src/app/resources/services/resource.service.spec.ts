@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { ResourceService } from './resource.service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { Resource } from './resource';
-import { Release } from './release';
+import { Resource } from '../models/resource';
+import { Release } from '../models/release';
 
 describe('ResourceService', () => {
   let httpTestingController: HttpTestingController;

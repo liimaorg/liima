@@ -18,8 +18,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
-import { ResourceService } from '../resource/resource.service';
-import { Resource } from '../resource/resource';
+import { ResourceService } from '../resources/services/resource.service';
+import { Resource } from '../resources/models/resource';
 import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
 
