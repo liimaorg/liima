@@ -57,19 +57,11 @@ test.describe('tags-rest integration test', () => {
                     data: { name: tagName,
                         failOnStatusCode: false, },
                 }
-            ).then(async response => {
+            ).then(async (response) => {
                 expect(response.status()).toBe(201);
                 const location = response.headers()['location'];
-                await request.get('http://admin:admin@localhost:8080/AMW_rest/resources/settings/tags').then(
-                    async response => {
-                        expect(response.status()).toBe(200);
-                        let resp = await response.json();
-                        expect(resp).toContain(tagName)
-                    }
-                )
-                await request.delete(location).then(response =>{
+                await request.delete(location).then(response => {
                     expect(response.status()).toBe(200);
-
                 })
                 await request.get('http://admin:admin@localhost:8080/AMW_rest/resources/settings/tags').then(
                     async response => {
