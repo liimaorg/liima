@@ -72,7 +72,7 @@ export class ResourceTypeFunctionsListComponent {
       const result = [];
       if (this.permissions().canShowInstanceFunctions) {
         result.push({
-          title: 'Type Functions',
+          title: 'Resource Type Functions',
           entries: instance,
           canEdit: this.permissions().canEdit || this.permissions().canShowInstanceFunctions,
           canDelete: this.permissions().canDelete,
