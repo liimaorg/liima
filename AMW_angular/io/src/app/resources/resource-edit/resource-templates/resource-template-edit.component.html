@@ -1,5 +1,65 @@
 <app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
 <div class="modal-body">
+  <div class="form-horizontal mx-2">
+    <div class="mb-3">
+      <label for="name" class="form-label align-self-center">Template name</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="template.name"/>
+    </div>
+    <div class="mb-3">
+      <label for="targetPath" class="form-label align-self-center">Path/filename</label>
+      <input type="text" class="form-control" id="targetPath" [(ngModel)]="template.name"/></div>
+    <div class="mb-3">
+    <div class="d-flex justify-content-between align-content-center mb-1">
+      <div class="d-flex">
+        <div class="d-flex me-1">
+          <label class="align-self-center me-1">Compare with history</label>
+          <div ngbDropdown>
+            <app-button
+              [additionalClasses]="'dropdown-toggle'"
+              [variant]="'secondary'"
+              ngbDropdownToggle
+              [dataCy]="'button-dropdown'"
+            >
+              Select Revision
+            </app-button>
+            <ul ngbDropdownMenu>
+              <li ngbDropdownItem>
+                <a
+                  class="dropdown-item"
+                > revision display name</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-1">
+          <app-button [variant]="'light'" (click)="toggleFullscreen()">
+            <app-icon [icon]="toggleFullscreenIcon"></app-icon>
+          </app-button>
+        </div>
+      </div>
+    </div>
+    <div class="editor border border-primary-subtle rounded">
+      <app-code-editor
+        [theme]="'light'"
+        [placeholder]="'Enter your code...'"
+        [(ngModel)]="template.fileContent"
+      ></app-code-editor>
+    </div>
+  </div>
+    <div class="mb-3">
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="targetPlatforms"
+          [(ngModel)]="template.targetPlatforms"
+        />
+        <label for="targetPlatforms">Valid for</label>
+      </div>
+    </div>
+  </div>
+
 </div>
 <div class="modal-footer">
   <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>

@@ -35,6 +35,9 @@ export class ResourceTemplateEditComponent {
 
   @Output() saveTemplate: EventEmitter<ResourceTemplate> = new EventEmitter<ResourceTemplate>();
 
+  public isFullscreen = false;
+  public toggleFullscreenIcon = 'arrows-fullscreen';
+
   constructor(public activeModal: NgbActiveModal) {}
 
   getTitle(): string {
@@ -48,5 +51,11 @@ export class ResourceTemplateEditComponent {
   save() {
     this.saveTemplate.emit(this.template);
     this.activeModal.close();
+  }
+
+  toggleFullscreen() {
+    this.isFullscreen = !this.isFullscreen;
+    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
+    this.activeModal.update({ fullscreen: this.isFullscreen });
   }
 }
