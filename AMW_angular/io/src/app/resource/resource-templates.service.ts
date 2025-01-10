@@ -60,4 +60,12 @@ export class ResourceTemplatesService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  updateTemplate(template: ResourceTemplate, resourceId: number) {
+    return this.http
+      .put<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/updateForResource/${resourceId}`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }

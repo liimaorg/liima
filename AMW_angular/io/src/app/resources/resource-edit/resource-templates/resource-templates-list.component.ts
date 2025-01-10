@@ -144,7 +144,27 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   }
 
   private editTemplate(id: number) {
-    this.modalService.open('This would open a modal to edit template with id: ' + id);
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = this.templates()?.find((item) => item.id === id);
+    modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => this.updateTemplate(templateData));
+  }
+
+  private updateTemplate(templateData: ResourceTemplate) {
+    this.templatesService
+      .updateTemplate(templateData, this.resource().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.templatesService.setIdForResourceTemplateList(this.resource().id);
+        },
+      });
   }
 
   private deleteTemplate(id: number) {
