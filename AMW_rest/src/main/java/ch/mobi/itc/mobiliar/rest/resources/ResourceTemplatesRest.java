@@ -20,6 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,8 @@ import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
 import javax.persistence.EntityManager;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -120,6 +123,15 @@ public class ResourceTemplatesRest {
             templateDTOs.add(new TemplateDTO(template));
         }
         return Response.status(Response.Status.OK).entity(templateDTOs).build();
+    }
+
+    @PUT
+    @Path("updateForResource/{id : \\d+}")
+    @ApiOperation(value = "Modify existing template for resource")
+    public Response modifyTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForResource(template, id);
+        return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
     }
 
     @GET
