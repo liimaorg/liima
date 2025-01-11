@@ -1,13 +1,16 @@
 import { Component, computed, inject, input, OnDestroy } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
 import { Action, AuthService } from '../../../auth/auth.service';
 import { Resource } from '../../../resource/resource';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
 import { ResourceTemplate } from '../../../resource/resource-template';
+import { ResourceTemplateDeleteComponent } from './resource-template-delete.component';
+import { takeUntil } from 'rxjs/operators';
+import { ToastService } from '../../../shared/elements/toast/toast.service';
 
 const RESOURCE_PERM = 'RESOURCE_TEMPLATE';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
@@ -22,7 +25,9 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private templatesService = inject(ResourceTemplatesService);
+  private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
+  private error$ = new BehaviorSubject<string>('');
 
   resource = input.required<Resource>();
   contextId = input.required<number>();
@@ -123,6 +128,23 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   }
 
   private deleteTemplate(id: number) {
-    this.modalService.open('This would open a modal to delete template with id: ' + id);
+    const modalRef: NgbModalRef = this.modalService.open(ResourceTemplateDeleteComponent);
+    modalRef.componentInstance.templateId = id;
+    modalRef.componentInstance.deleteTemplateId
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id: number) => this.removeTemplate(id));
+  }
+
+  private removeTemplate(id: number) {
+    this.templatesService
+      .deleteTemplate(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template deleted successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.templatesService.setIdForResourceTemplateList(this.resource().id);
+        },
+      });
   }
 }
