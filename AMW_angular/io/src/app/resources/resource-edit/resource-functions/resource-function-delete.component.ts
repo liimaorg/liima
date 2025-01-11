@@ -7,14 +7,7 @@ import { ButtonComponent } from '../../../shared/button/button.component';
   selector: 'app-resource-function-delete',
   standalone: true,
   templateUrl: './resource-function-delete.component.html',
-  imports: [
-    ModalHeaderComponent,
-    ButtonComponent,
-    ModalHeaderComponent,
-    ButtonComponent,
-    ModalHeaderComponent,
-    ButtonComponent,
-  ],
+  imports: [ModalHeaderComponent, ButtonComponent],
 })
 export class ResourceFunctionDeleteComponent {
   activeModal = inject(NgbActiveModal);
