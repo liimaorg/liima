@@ -52,4 +52,12 @@ export class ResourceTemplatesService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  deleteTemplate(id: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resources/templates/${id}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
