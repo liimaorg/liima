@@ -19,7 +19,6 @@ export class TagsComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
 
-  pageTitle = 'Tags';
   tagName = signal('');
   tags = this.tagsService.tags;
   canCreate = signal<boolean>(false);

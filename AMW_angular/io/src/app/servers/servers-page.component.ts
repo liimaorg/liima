@@ -16,23 +16,29 @@ import { ServerFilter } from './servers-filter/server-filter';
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent, ServersFilterComponent],
-  template: ` <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+  template: `<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
         <div class="container">
-          <app-servers-filter
-            [environments]="environments()"
-            [runtimes]="runtimes()"
-            [appServerSuggestions]="appServerSuggestions()"
-            (searchFilter)="searchFilter($event)"
-          />
-          <app-servers-list
-            [servers]="servers()"
-            [canReadAppServer]="permissions().canReadAppServer"
-            [canReadResources]="permissions().canReadResources"
-            [linkToHostUrl]="linkToHostUrl()"
-          />
+          <div class="card row mt-1 mb-1">
+            <div class="card-header">
+              <app-servers-filter
+                [environments]="environments()"
+                [runtimes]="runtimes()"
+                [appServerSuggestions]="appServerSuggestions()"
+                (searchFilter)="searchFilter($event)"
+              />
+            </div>
+            <div class="card-body">
+              <app-servers-list
+                [servers]="servers()"
+                [canReadAppServer]="permissions().canReadAppServer"
+                [canReadResources]="permissions().canReadResources"
+                [linkToHostUrl]="linkToHostUrl()"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </app-page>`,
@@ -59,7 +65,7 @@ export class ServersPageComponent {
     const config = this.configuration();
     const vmDetailUrl = pluck(ENVIRONMENT.AMW_VM_DETAILS_URL, config);
     const vmUrlParam = pluck(ENVIRONMENT.AMW_VM_URL_PARAM, config);
-    return `${vmDetailUrl}?${vmUrlParam}=`;
+    return `${vmDetailUrl}?${vmUrlParam}`;
   });
 
   permissions = computed(() => {

@@ -1,38 +1,49 @@
 <div class="container">
-  <h1>Deployment Parameter Keys</h1>
-  <div class="row mt-2 py-4">
-    <div class="col-6 ms-auto">
-      <div class="input-group">
+  <div class="card row mt-2 mb-3">
+    <div class="card-header">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-sm"></div>
         @if (canCreate()) {
-        <input id="keyName" type="text" class="form-control" [(ngModel)]="keyName" (keyup.enter)="addKey()" />
-        <app-button [variant]="'primary'" (click)="addKey()"
-          ><app-icon icon="plus-circle"></app-icon> Add key</app-button
-        >
+        <div class="col-sm-3">
+            <input id="keyName" type="text" class="form-control" [(ngModel)]="keyName" (keyup.enter)="addKey()" />
+        </div>
+        <div class="col-md-auto">
+          <app-button [variant]="'primary'" (click)="addKey()"
+              ><app-icon icon="plus-circle"></app-icon> Add key</app-button
+            >
+        </div>
         }
       </div>
     </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-sm table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (paramKey of paramKeys; track paramKey) {
+            <tr>
+              <td class="align-middle">{{ paramKey.name }}</td>
+              <td class="text-end">
+                @if (canDelete()) {
+                <app-button [variant]="'link'" [size]="'sm'" [additionalClasses]="'me-0 link-danger'" (click)="deleteKey(paramKey.id)"
+                  ><app-icon icon="trash"></app-icon
+                ></app-button>
+                }
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="2" class="text-center">No deployment parameters defined</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-
-  <table class="table table-sm table-striped table-bordered">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (paramKey of paramKeys; track paramKey) {
-      <tr>
-        <td class="align-middle">{{ paramKey.name }}</td>
-        <td>
-          @if (canDelete()) {
-          <app-button [variant]="'danger'" [size]="'sm'" [additionalClasses]="'me-0'" (click)="deleteKey(paramKey.id)"
-            ><app-icon icon="trash"></app-icon
-          ></app-button>
-          }
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
 </div>

@@ -1,9 +1,12 @@
 <app-modal-header [title]="'Create application server'" (cancel)="cancel()"></app-modal-header>
 <div class="modal-body">
   <div class="form-horizontal mx-2">
-    <div class="mb-3">
+    <div class="needs-validation mb-3">
       <label for="name" class="form-label">Applicationserver</label>
-      <input type="text" class="form-control" id="name" [(ngModel)]="appServer.name" />
+      <input type="text" class="form-control" id="name" [(ngModel)]="appServer.name" required/>
+      <div class="invalid-feedback">
+        Please enter a name
+      </div>
     </div>
     <div class="mb-3">
       <label class="form-label">Release</label>

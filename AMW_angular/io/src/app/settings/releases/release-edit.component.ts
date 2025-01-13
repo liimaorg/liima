@@ -44,6 +44,9 @@ export class ReleaseEditComponent implements OnInit {
   }
 
   save() {
+    if (this.hasInvalidDate()) {
+      return
+    }
     if (this.installationDate.toEpoch() != null) {
       const release: Release = {
         name: this.release.name,

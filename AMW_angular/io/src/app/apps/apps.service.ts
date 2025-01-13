@@ -15,7 +15,7 @@ export class AppsService extends BaseService {
   private reload$ = new Subject<AppServer[]>();
 
   offset = signal(0);
-  limit = signal(20);
+  limit = signal(10);
   filter = signal<string>(null);
   releaseId: WritableSignal<number | undefined> = signal(undefined);
   private apps$: Observable<AppServer[]> = this.reload$.pipe(

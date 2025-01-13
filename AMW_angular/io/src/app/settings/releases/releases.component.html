@@ -1,6 +1,5 @@
 <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
 <div class="container">
-  <h1>Releases</h1>
   <div class="card row mt-2 mb-3">
     <div class="card-header">
       <div class="row justify-content-between align-items-center">
@@ -20,26 +19,24 @@
         <table class="table table-sm table-striped">
           <thead>
             <tr>
-              <th>Release Name</th>
-              <th>Main Release</th>
-              <th>Description</th>
-              <th>Date</th>
-              <th class="text-center">Edit</th>
-              <th class="text-center">Delete</th>
+              <th class="w-25">Release Name</th>
+              <th class="w-25">Main Release</th>
+              <th class="w-25">Description</th>
+              <th class="w-25">Date</th>
+              <th class="text-center">Actions</th>
             </tr>
           </thead>
-
           <tbody>
             @for (item of results$ | async; track item) {
             <tr>
-              <td class="align-middle">{{ item.name }}</td>
-              <td class="align-middle">{{ item.mainRelease }}</td>
-              <td class="align-middle">{{ item.description }}</td>
-              <td class="align-middle">{{ item.installationInProductionAt | date: dateFormat }}</td>
-              <td class="text-center">
+              <td>{{ item.name }}</td>
+              <td>{{ item.mainRelease }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.installationInProductionAt | date: dateFormat }}</td>
+              <td class="text-nowrap align-items-center">
                 @if (item.default !== true && canEdit()) {
                 <app-button
-                  [variant]="'primary'"
+                  [variant]="'link'"
                   [size]="'sm'"
                   [additionalClasses]="'me-0'"
                   (click)="editRelease(item)"
@@ -47,19 +44,21 @@
                   <app-icon icon="pencil"></app-icon
                 ></app-button>
                 }
-              </td>
-              <td class="text-center">
                 @if (item.default !== true && canDelete()) {
                 <app-button
-                  [variant]="'danger'"
+                  [variant]="'link'"
                   [size]="'sm'"
-                  [additionalClasses]="'me-0'"
+                  [additionalClasses]="'me-0 link-danger'"
                   (click)="deleteRelease(item)"
                 >
                   <app-icon icon="trash"></app-icon
                 ></app-button>
                 }
               </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="5" class="text-center">No releases defined</td>
             </tr>
             }
           </tbody>

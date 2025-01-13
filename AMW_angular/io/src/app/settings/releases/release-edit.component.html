@@ -34,5 +34,5 @@
 </div>
 <div class="modal-footer">
   <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
-  <app-button [variant]="'primary'" [disabled]="hasInvalidDate()" (click)="save()">Save changes</app-button>
+  <app-button [variant]="'primary'" [disabled]="hasInvalidDate()" (click)="save()">{{ getTitle() }}</app-button>
 </div>

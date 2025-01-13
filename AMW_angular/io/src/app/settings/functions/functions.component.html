@@ -1,40 +1,33 @@
 <div class="container">
-  <h1>Functions</h1>
-  <div class="card row mt-2 mb-3">
+  <div class="card">
     <div class="card-header">
-      <div class="row justify-content-between align-items-center">
-        <div class="col-sm"></div>
-        <div class="col-sm">
-          @if (permissions().canManage) {
-          <app-button
-            [variant]="'primary'"
-            [additionalClasses]="'float-end'"
-            [dataCy]="'button-add'"
-            (click)="addFunction()"
-            ><app-icon icon="plus-circle"></app-icon> Add function</app-button
-          >
-          }
-        </div>
-      </div>
+      @if (permissions().canManage) {
+      <app-button
+        [variant]="'primary'"
+        [additionalClasses]="'float-end'"
+        [dataCy]="'button-add'"
+        (click)="addFunction()"
+        ><app-icon icon="plus-circle"></app-icon> Add function</app-button
+      >
+      }
     </div>
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-sm table-striped">
           <thead>
             <tr>
-              <th>Function Name</th>
-              <th class="text-center">Edit</th>
-              <th class="text-center">Delete</th>
+              <th scope="col" class="w-100">Function Name</th>
+              <th scope="col" class="text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             @for (function of functions(); track function; let idx = $index) {
             <tr>
               <td class="align-middle">{{ function.name }}</td>
-              <td class="text-center">
+              <td class="text-nowrap text-center">
                 @if (permissions().canView) {
                 <app-button
-                  [variant]="'primary'"
+                  [variant]="'link'"
                   [size]="'sm'"
                   [dataCy]="'button-edit'"
                   [additionalClasses]="'me-0'"
@@ -43,19 +36,21 @@
                   <app-icon icon="pencil"></app-icon
                 ></app-button>
                 }
-              </td>
-              <td class="text-center">
                 @if (permissions().canManage) {
                 <app-button
-                  [variant]="'danger'"
+                  [variant]="'link'"
                   [size]="'sm'"
-                  [additionalClasses]="'me-0'"
+                  [additionalClasses]="'me-0 link-danger'"
                   [dataCy]="'icon-delete'"
                   (click)="deleteFunction(function)"
                   ><app-icon icon="trash"></app-icon
                 ></app-button>
                 }
               </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="2" class="text-center">No functions defined</td>
             </tr>
             }
           </tbody>
