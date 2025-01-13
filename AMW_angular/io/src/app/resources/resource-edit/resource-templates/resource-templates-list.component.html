@@ -1,9 +1,9 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-tile-component
-  [title]="'Functions'"
-  [actionName]="'New Function'"
+  [title]="'Templates'"
+  [actionName]="'New Template'"
   [canAction]="permissions().canAdd"
-  [lists]="functionsData()"
-  (tileAction)="add()"
+  [lists]="templatesData()"
+  (tileAction)="addTemplate()"
   (listAction)="doListAction($event)"
 ></app-tile-component>

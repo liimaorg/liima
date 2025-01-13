@@ -12,15 +12,10 @@
       <span>Please provide a resourceType-id to edit a resource.</span>
     </div>
     } @else {
-    <app-tile-component
-      [title]="'Templates'"
-      [actionName]="'New Template'"
-      [canAction]="true"
-      [isVisible]="false"
-      [lists]="templatesData()"
-      (tileAction)="add()"
-      (listAction)="doListAction($event)"
-    ></app-tile-component>
+    <app-resource-type-templates-list
+      [resourceType]="resourceType()"
+      [contextId]="contextId()"
+    ></app-resource-type-templates-list>
     <app-resource-type-functions-list
       [resourceType]="resourceType()"
       [contextId]="contextId()"
