@@ -39,7 +39,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
     if (this.authService.restrictions().length > 0 && this.resource()) {
       return {
         canShowInstanceTemplates: this.authService.hasPermission(RESOURCE_PERM, Action.READ),
-        canShowSuperTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
+        canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
           this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.CREATE, this.resource().resourceGroupId),
@@ -53,7 +53,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
     } else {
       return {
         canShowInstanceTemplates: false,
-        canShowSuperTypeTemplates: false,
+        canShowTypeTemplates: false,
         canAdd: false,
         canEdit: false,
         canDelete: false,
@@ -79,7 +79,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
           canDelete: this.permissions().canDelete,
         });
       }
-      if (this.permissions().canShowSuperTypeTemplates) {
+      if (this.permissions().canShowTypeTemplates) {
         result.push({
           title: 'Resource Type Templates',
           entries: typeTemplates,

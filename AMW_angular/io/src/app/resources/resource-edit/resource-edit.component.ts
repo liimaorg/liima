@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../../resource/resource.service';
 import { Resource } from '../../resource/resource';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
@@ -26,7 +25,6 @@ import { ResourceTemplatesListComponent } from './resource-templates/resource-te
 })
 export class ResourceEditComponent {
   private authService = inject(AuthService);
-  private modalService = inject(NgbModal);
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
 
@@ -50,19 +48,4 @@ export class ResourceEditComponent {
       return { canEditResource: false };
     }
   });
-
-  add() {
-    this.modalService.open('This would open a modal to add something');
-  }
-  private edit(id: number) {
-    this.modalService.open('This would open a modal to edit with id:' + id);
-  }
-
-  private delete(id: number) {
-    this.modalService.open('This would open a modal to delete with id:' + id);
-  }
-
-  private overwrite(id: number) {
-    this.modalService.open('This would open a modal to overwrite with id:' + id);
-  }
 }
