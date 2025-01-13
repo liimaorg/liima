@@ -52,8 +52,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
-@Path("/resources")
-@Api(value = "/resources")
+@Path("/resourceTypes")
+@Api(value = "/resourceTypes")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ResourceTypesRest {
@@ -67,7 +67,7 @@ public class ResourceTypesRest {
     @Inject
     private ResourceTypeDomainService resourceTypeDomainService;
 
-    @Path("/resourceTypes")
+    @Path("/")
     @GET
     @ApiOperation(value = "Get all resource types")
     public List<ResourceTypeDTO> getAllResourceTypes() {
@@ -77,7 +77,7 @@ public class ResourceTypesRest {
     }
 
     @GET
-    @Path("/resourceTypes/{id : \\d+}")
+    @Path("/{id : \\d+}")
     @ApiOperation(value = "Get a resourceType by id")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@ApiParam("ResourceType ID") @PathParam("id") Integer id) throws NotFoundException {
@@ -102,7 +102,7 @@ public class ResourceTypesRest {
                 .collect(Collectors.toList());
     }
 
-    @Path("/resourceTypes")
+    @Path("/")
     @POST
     @ApiOperation(value = "Add a new resource type")
     @Consumes("application/json")
@@ -127,7 +127,7 @@ public class ResourceTypesRest {
 
 
     @DELETE
-    @Path("/resourceTypes/{id : \\d+}")
+    @Path("/{id : \\d+}")
     @ApiOperation(value = "Delete a resource type")
     public Response deleteResourceType(@PathParam("id") Integer id) throws NotAuthorizedException, NotFoundException {
         try {
