@@ -87,7 +87,7 @@ public class ResourceTemplatesRest {
     }
 
     @GET
-    @Path("/{resourceId}")
+    @Path("/{resourceId: \\d+}")
     @ApiOperation(value = "Get all templates for a resource, including inherited resource type templates")
     public List<TemplateDTO> getResourceTemplatesById(@PathParam("resourceId") Integer resourceId) throws NotFoundException {
         ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
@@ -106,7 +106,7 @@ public class ResourceTemplatesRest {
     }
 
     @GET
-    @Path("/resourceType/{resourceTypeId}")
+    @Path("/resourceType/{resourceTypeId: \\d+}")
     @ApiOperation(value = "Get all templates for a resource type")
     public Response getResourceTypeTemplatesById(@PathParam("resourceTypeId") Integer resourceTypeId) throws NotFoundException {
 

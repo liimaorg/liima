@@ -4,7 +4,6 @@ import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceType } from '../../resource/resource-type';
@@ -26,7 +25,6 @@ import { ResourceTypeTemplatesListComponent } from './resource-type-templates/re
 })
 export class ResourceTypeEditComponent {
   private authService = inject(AuthService);
-  private modalService = inject(NgbModal);
   private resourceTypeService = inject(ResourceTypesService);
   private route = inject(ActivatedRoute);
 
@@ -50,19 +48,4 @@ export class ResourceTypeEditComponent {
       return { canEditResourceType: false };
     }
   });
-
-  add() {
-    this.modalService.open('This would open a modal to add something');
-  }
-  private edit(id: number) {
-    this.modalService.open('This would open a modal to edit with id:' + id);
-  }
-
-  private delete(id: number) {
-    this.modalService.open('This would open a modal to delete with id:' + id);
-  }
-
-  private overwrite(id: number) {
-    this.modalService.open('This would open a modal to overwrite with id:' + id);
-  }
 }

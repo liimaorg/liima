@@ -38,26 +38,26 @@ export class ResourceTypesService extends BaseService {
 
   getResourceType(id: number): Observable<ResourceType> {
     return this.http
-      .get<ResourceType>(`${this.getBaseUrl()}/resources/resourceTypes/${id}`, {
+      .get<ResourceType>(`${this.getBaseUrl()}/resourceTypes/${id}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
   }
 
   getAllResourceTypes(): Observable<ResourceType[]> {
-    return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resources/resourceTypes`);
+    return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resourceTypes`);
   }
 
   getPredefinedResourceTypes(): Observable<ResourceType[]> {
-    return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resources/predefinedResourceTypes`);
+    return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resourceTypes/predefinedResourceTypes`);
   }
 
   getRootResourceTypes(): Observable<ResourceType[]> {
-    return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resources/rootResourceTypes`);
+    return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resourceTypes/rootResourceTypes`);
   }
 
   addNewResourceType(resourceTypeRequest: ResourceTypeRequest): Observable<void> {
-    return this.http.post<void>(`${this.getBaseUrl()}/resources/resourceTypes`, resourceTypeRequest);
+    return this.http.post<void>(`${this.getBaseUrl()}/resourceTypes`, resourceTypeRequest);
   }
 
   refreshData() {
@@ -66,7 +66,7 @@ export class ResourceTypesService extends BaseService {
 
   delete(id: number): Observable<number> {
     return this.http
-      .delete<number>(`${this.getBaseUrl()}/resources/resourceTypes/${id}`, {
+      .delete<number>(`${this.getBaseUrl()}/resourceTypes/${id}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
