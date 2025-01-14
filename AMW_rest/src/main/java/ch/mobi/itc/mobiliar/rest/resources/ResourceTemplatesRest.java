@@ -149,6 +149,14 @@ public class ResourceTemplatesRest {
         return Response.status(Response.Status.OK).build();
     }
 
+    @DELETE
+    @Path("/{id : \\d+}")
+    @ApiOperation(value = "Remove a template")
+    public Response deleteTemplate(@PathParam("id") Integer id) throws TemplateNotDeletableException {
+        templateEditor.removeTemplate(id);
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
     @POST
     @Path("/{resourceGroupName}/{releaseName}")
     @ApiOperation(value = "Create a template for a resource in a specific release")

@@ -4,22 +4,22 @@ import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.
 import { ButtonComponent } from '../../../shared/button/button.component';
 
 @Component({
-  selector: 'app-resource-function-delete',
+  selector: 'app-resource-template-delete',
   standalone: true,
-  templateUrl: './resource-function-delete.component.html',
+  templateUrl: './resource-template-delete.component.html',
   imports: [ModalHeaderComponent, ButtonComponent],
 })
-export class ResourceFunctionDeleteComponent {
+export class ResourceTemplateDeleteComponent {
   activeModal = inject(NgbActiveModal);
-  @Input() functionId: number;
-  @Output() deleteFunctionId: EventEmitter<number> = new EventEmitter<number>();
+  @Input() templateId: number;
+  @Output() deleteTemplateId: EventEmitter<number> = new EventEmitter<number>();
 
   cancel() {
     this.activeModal.close();
   }
 
   delete() {
-    this.deleteFunctionId.emit(this.functionId);
+    this.deleteTemplateId.emit(this.templateId);
     this.activeModal.close();
   }
 }
