@@ -24,6 +24,7 @@ describe('ResourceTemplateEditComponent', () => {
       targetPlatforms: [''],
       fileContent: '',
       sourceType: 'RESOURCE',
+      version: 1,
     };
 
     fixture.detectChanges();

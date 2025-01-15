@@ -226,6 +226,7 @@ public class ResourceTemplatesRest {
             }
         }
         template.setTargetPlatforms(targetPlatforms);
+        template.setV(templateDTO.getVersion());
 
         return template;
     }

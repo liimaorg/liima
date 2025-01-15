@@ -89,7 +89,8 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
 	@Setter
 	private TemplateSourceType sourceType;
 
-	@Version
+	@Setter
+    @Version
 	private long v;
 
 	private static final long serialVersionUID = 1L;
