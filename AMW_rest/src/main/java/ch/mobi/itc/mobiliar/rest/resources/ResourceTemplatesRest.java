@@ -34,6 +34,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
+import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -74,6 +75,9 @@ public class ResourceTemplatesRest {
 
     @Inject
     private EntityManager entityManager;
+
+    @Inject
+    private CommonDomainService commonService;
 
     @GET
     @Path("/{resourceGroupName}/{releaseName}")
@@ -133,6 +137,17 @@ public class ResourceTemplatesRest {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResource(template, id);
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
+    }
+
+    @GET
+    @Path("/targetPlatforms/{contextId: \\d+}")
+    @ApiOperation(value = "Get all targetPlatforms for a context id")
+    public Response getTargetPlatformsForContextId(@PathParam("contextId") Integer contextId) {
+        List<String> targetPlatformNames = commonService.getRuntimeResourceGroups().stream()
+                .map(ResourceGroupEntity::getName)
+                .collect(Collectors.toUnmodifiableList());
+
+        return Response.ok(targetPlatformNames).build();
     }
 
     @GET

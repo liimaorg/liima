@@ -10,6 +10,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class ResourceTemplatesService extends BaseService {
   private templates$: Subject<number> = new Subject<number>();
   private templatesForType$: Subject<number> = new Subject<number>();
+  private contextIdForAllTargetPlatforms$: Subject<number> = new Subject<number>();
 
   private templateById$: Observable<ResourceTemplate[]> = this.templates$.pipe(
     switchMap((id: number) => this.getResourceTemplates(id)),
@@ -21,9 +22,16 @@ export class ResourceTemplatesService extends BaseService {
     shareReplay(1),
   );
 
+  private allTargetPlatformsByContextId$: Observable<string[]> = this.contextIdForAllTargetPlatforms$.pipe(
+    switchMap((id: number) => this.getTargetPlatformsForContextId(id)),
+    shareReplay(1),
+  );
+
   resourceTemplates = toSignal(this.templateById$, { initialValue: [] });
 
   resourceTypeTemplates = toSignal(this.templateByTypeId$, { initialValue: [] });
+
+  allTargetPlatformsByContextId = toSignal(this.allTargetPlatformsByContextId$, { initialValue: [] });
 
   constructor(private http: HttpClient) {
     super();
@@ -35,6 +43,10 @@ export class ResourceTemplatesService extends BaseService {
 
   setIdForResourceTypeTemplateList(id: number) {
     this.templatesForType$.next(id);
+  }
+
+  setContexIdForAllTargetPlatforms(id: number) {
+    this.contextIdForAllTargetPlatforms$.next(id);
   }
 
   getResourceTemplates(id: number): Observable<ResourceTemplate[]> {
@@ -64,6 +76,14 @@ export class ResourceTemplatesService extends BaseService {
   updateTemplate(template: ResourceTemplate, resourceId: number) {
     return this.http
       .put<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/updateForResource/${resourceId}`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getTargetPlatformsForContextId(contextId: number) {
+    return this.http
+      .get<string[]>(`${this.getBaseUrl()}/resources/templates/targetPlatforms/${contextId}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));

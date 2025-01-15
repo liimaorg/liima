@@ -134,6 +134,8 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       sourceType: 'RESOURCE',
     };
     modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.contextId = this.contextId();
+    modalRef.componentInstance.resource = this.resource();
     modalRef.componentInstance.saveTemplate
       .pipe(takeUntil(this.destroy$))
       .subscribe((templateData: ResourceTemplate) => this.createTemplate(templateData));
@@ -149,6 +151,8 @@ export class ResourceTemplatesListComponent implements OnDestroy {
     });
     modalRef.componentInstance.template = this.templates()?.find((item) => item.id === id);
     modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.contextId = this.contextId();
+    modalRef.componentInstance.resource = this.resource();
     modalRef.componentInstance.saveTemplate
       .pipe(takeUntil(this.destroy$))
       .subscribe((templateData: ResourceTemplate) => this.updateTemplate(templateData));

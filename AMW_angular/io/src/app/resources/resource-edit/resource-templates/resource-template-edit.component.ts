@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, OnInit, Signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
@@ -8,6 +8,13 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
 import { ResourceTemplate } from '../../../resource/resource-template';
+import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
+import { Resource } from '../../../resource/resource';
+
+interface TargetPlatformModel {
+  name: string;
+  selected: boolean;
+}
 
 @Component({
   selector: 'app-resource-template-edit',
@@ -26,17 +33,31 @@ import { ResourceTemplate } from '../../../resource/resource-template';
     IconComponent,
   ],
 })
-export class ResourceTemplateEditComponent {
+export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
+  @Input() resource: Resource;
   @Input() canEdit: boolean;
   @Input() isOverwrite: boolean;
+  @Input() contextId: number;
 
   @Output() saveTemplate: EventEmitter<ResourceTemplate> = new EventEmitter<ResourceTemplate>();
 
+  private templatesService = inject(ResourceTemplatesService);
+  allSelectableTargetPlatforms: Signal<string[]> = this.templatesService.allTargetPlatformsByContextId;
+
   public isFullscreen = false;
   public toggleFullscreenIcon = 'arrows-fullscreen';
+  public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
+    return this.loadTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
+  });
 
   constructor(public activeModal: NgbActiveModal) {}
+
+  ngOnInit(): void {
+    if (this.contextId) {
+      this.templatesService.setContexIdForAllTargetPlatforms(this.contextId);
+    }
+  }
 
   getTitle(): string {
     return (this.template.id ? (this.isOverwrite ? 'Overwrite' : 'Edit') : 'Add') + ' template';
@@ -44,6 +65,7 @@ export class ResourceTemplateEditComponent {
 
   cancel() {
     this.activeModal.close();
+    this.templatesService.setIdForResourceTemplateList(this.resource.id);
   }
 
   save() {
@@ -55,5 +77,23 @@ export class ResourceTemplateEditComponent {
     this.isFullscreen = !this.isFullscreen;
     this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
     this.activeModal.update({ fullscreen: this.isFullscreen });
+  }
+
+  loadTargetPlatformModelsForTemplate(allTargetPlatforms: string[]): TargetPlatformModel[] {
+    return allTargetPlatforms.map((name) => {
+      return {
+        name: name,
+        selected: this.template.targetPlatforms.includes(name),
+      };
+    });
+  }
+
+  selectTargetPlatform(targetPlatform: TargetPlatformModel) {
+    if (!this.template.targetPlatforms.includes(targetPlatform.name)) {
+      this.template.targetPlatforms.push(targetPlatform.name);
+    } else {
+      const indexOfTargetPlatformNameToRemove = this.template.targetPlatforms.indexOf(targetPlatform.name);
+      this.template.targetPlatforms.splice(indexOfTargetPlatformNameToRemove, 1);
+    }
   }
 }
