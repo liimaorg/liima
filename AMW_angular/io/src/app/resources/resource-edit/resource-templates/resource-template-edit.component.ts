@@ -7,7 +7,6 @@ import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
-import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { ResourceTemplate } from '../../../resource/resource-template';
 
 @Component({
@@ -17,7 +16,6 @@ import { ResourceTemplate } from '../../../resource/resource-template';
   standalone: true,
   imports: [
     CodeEditorComponent,
-    DiffEditorComponent,
     FormsModule,
     CommonModule,
     IconComponent,
