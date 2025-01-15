@@ -59,113 +59,87 @@ public class ResourceRelationsRestTest {
 
     @Test
     public void shouldReturnBadRequestIfSlaveResourceGroupNameIsNull() {
-        // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
-        String relationType = "consumed";
-
-        // when
-        Response response = rest.addRelation(null,relationType);
-
-        // then
+        Response response = rest.addRelation("Master", "TestRelease", null, "consumed");
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void shouldReturnBadRequestIfResourceTypeIsNull() {
-        // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
-
-        // when
-        Response response = rest.addRelation("Slave", null);
-
-        // then
+        Response response = rest.addRelation("Master", "TestRelease", "Slave", null);
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void shouldReturnBadRequestIfResourceTypeIsInvalid() {
-        // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
-        String relationType = "Test";
-
-        // when
-        Response response = rest.addRelation("Slave", relationType);
-
-        // then
+        Response response = rest.addRelation("Master", "TestRelease", "Slave", "Test");
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void shouldInvokeRelationEditorWithRightArgumentsForConsumedRelations() throws AMWException, ValidationException {
         // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
+        String resourceGroupName = "Master";
+        String releaseName = "TestRelease";
         String relationType = "consumed";
         String slaveResourceGroupName = "Slave";
 
         when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
 
         // when
-        Response response = rest.addRelation(slaveResourceGroupName, relationType);
+        Response response = rest.addRelation(resourceGroupName, releaseName, slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, false, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(resourceGroupName, slaveResourceGroupName, false, null, relationType, releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void shouldInvokeResourceRelationBoundaryAndRelationEditorWithRightArgumentsForProvidedRelations() throws AMWException, ValidationException {
         // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
+        String resourceGroupName = "Master";
+        String releaseName = "TestRelease";
         String relationType =  "PROVIDED";
         String slaveResourceGroupName = "Slave";
 
         when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
 
         // when
-        Response response = rest.addRelation(slaveResourceGroupName, relationType);
+        Response response = rest.addRelation(resourceGroupName, releaseName, slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(resourceGroupName, slaveResourceGroupName, true, null, relationType, releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void shouldInvokeResourceRelationBoundaryAndRelationEditorWithRightArgumentsForProvidedRelationsAndFail() throws AMWException, ValidationException {
         // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
+        String resourceGroupName = "Master";
+        String releaseName = "TestRelease";
         String relationType =  "PROVIDED";
         String slaveResourceGroupName = "Slave";
 
         when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
         doThrow(new ValidationException("Resource is already provided by another ResourceGroup")).when(relationEditorMock)
-                .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+                .addResourceRelationForSpecificRelease(resourceGroupName, slaveResourceGroupName, true, null, relationType, releaseName, ForeignableOwner.getSystemOwner());
 
         // when
-        Response response = rest.addRelation(slaveResourceGroupName, relationType);
+        Response response = rest.addRelation(resourceGroupName, releaseName, slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(resourceGroupName, slaveResourceGroupName, true, null, relationType, releaseName, ForeignableOwner.getSystemOwner());
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void shouldNotAttemptToRemoveRelationWithInvalidResourceRelationType() throws ValidationException {
         // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
         String relationType = "InValid";
-        String slaveResourceGroupName = "Slave";
 
         when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(false);
 
         // when
-        Response response = rest.removeRelation(slaveResourceGroupName, relationType);
+        Response response = rest.removeRelation("Master", "TestRelease", "Slave", relationType);
 
         // then
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
@@ -174,17 +148,14 @@ public class ResourceRelationsRestTest {
     @Test
     public void shouldReturnNotFoundOnRemoveRelationWithNonMatchingRelationName() throws ValidationException {
         // given
-        rest.resourceGroupName = "Master";
-        rest.releaseName = "TestRelease";
         String relationType = "CONSUMED";
-        String slaveResourceGroupName = "Slave";
         ResourceEntity resourceWithoutRelations = new ResourceEntity();
 
         when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
         when(resourceLocatorMock.getResourceByNameAndReleaseWithConsumedRelations(anyString(), anyString())).thenReturn(resourceWithoutRelations);
 
         // when
-        Response response = rest.removeRelation(slaveResourceGroupName, relationType);
+        Response response = rest.removeRelation("Master", "TestRelease", "Slave", "CONSUMED");
 
         // then
         assertEquals(NOT_FOUND.getStatusCode(), response.getStatus());

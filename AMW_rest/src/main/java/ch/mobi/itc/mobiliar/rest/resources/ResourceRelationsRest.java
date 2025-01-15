@@ -49,15 +49,9 @@ import java.util.*;
 import static javax.ws.rs.core.Response.Status.*;
 
 @RequestScoped
-@Path("/resources/{resourceGroupName}/{releaseName}/relations")
+@Path("/resources/relations")
 @Api(value = "/resources/{resourceGroupName}/{releaseName}/relations", description = "Resource relations")
 public class ResourceRelationsRest {
-
-    @PathParam("resourceGroupName")
-    String resourceGroupName;
-
-    @PathParam("releaseName")
-    String releaseName;
 
     @Inject
     ResourceLocator resourceLocator;
@@ -72,13 +66,17 @@ public class ResourceRelationsRest {
     ResourceRelationTemplatesRest resourceRelationTemplatesRest;
 
     @GET
+    @Path("/{resourceGroupName}/{releaseName}")
     @ApiOperation(value = "Get all relations of a resource in a specific release, optionally filtered by a slave resource type")
-    public List<ResourceRelationDTO> getResourceRelations(@ApiParam(value = "A String representing the type of the slave Resource")
+    public List<ResourceRelationDTO> getResourceRelations(@PathParam("resourceGroupName") String resourceGroupName,
+                                                          @PathParam("releaseName") String releaseName,
+                                                          @ApiParam(value = "A String representing the type of the slave Resource")
                                                           @QueryParam("type") String resourceType) throws ValidationException, ResourceNotFoundException {
-        return getResourceRelations(resourceGroupName, releaseName, resourceType);
+
+        return getResourceRelationsByRelease(resourceGroupName, releaseName, resourceType);
     }
 
-    List<ResourceRelationDTO> getResourceRelations(String resourceGroupName, String releaseName, String resourceType) throws ValidationException, ResourceNotFoundException {
+    List<ResourceRelationDTO> getResourceRelationsByRelease(String resourceGroupName, String releaseName, String resourceType) throws ValidationException, ResourceNotFoundException {
         ResourceEntity resource = resourceLocator.getResourceByNameAndReleaseWithAllRelations(resourceGroupName, releaseName);
         List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
         for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
@@ -107,11 +105,31 @@ public class ResourceRelationsRest {
         return resRel;
     }
 
-    @Path("/{relatedResourceGroupName}")
     @GET
+    @Path("/resource/{resourceId}")
+    @ApiOperation(value = "Get resource relations by resource id")
+    public List<ResourceRelationDTO> getRelationsByResourceId(@PathParam("resourceId") Integer resourceId) throws ResourceNotFoundException {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            throw new ResourceNotFoundException("Resource not found.");
+        }
+        List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
+        for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
+            ResourceRelationDTO dto = new ResourceRelationDTO(relation);
+            resourceRelations.add(dto);
+        }
+        for (ProvidedResourceRelationEntity relation : resource.getProvidedMasterRelations()) {
+            ResourceRelationDTO dto = new ResourceRelationDTO(relation);
+            resourceRelations.add(dto);
+        }
+        return resourceRelations;
+    }
+
+    @GET
+    @Path("/{resourceGroupName}/{releaseName}/{relatedResourceGroupName}")
     @ApiOperation(value = "Get all related releases of the given resource")
-    public List<ResourceRelationDTO> getRelatedResourcesForGroup(
-            @PathParam("relatedResourceGroupName") String relatedResourceGroupName) throws ValidationException, ResourceNotFoundException {
+    public List<ResourceRelationDTO> getRelatedResourcesForGroup(@PathParam("resourceGroupName") String resourceGroupName,
+                                                                 @PathParam("releaseName") String releaseName, @PathParam("relatedResourceGroupName") String relatedResourceGroupName) throws ValidationException, ResourceNotFoundException {
         List<ConsumedResourceRelationEntity> relations =
                 resourceRelationLocator.getRelatedResourcesForGroup(resourceGroupName, releaseName, relatedResourceGroupName);
         List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
@@ -126,10 +144,12 @@ public class ResourceRelationsRest {
     }
 
     // List of ResourceRelationDTO
-    @Path("/{relatedResourceGroupName}/{relatedReleaseName}")
     @GET
+    @Path("/{resourceGroupName}/{releaseName}/{relatedResourceGroupName}/{relatedReleaseName}")
     @ApiOperation(value = "Get the list of relations between the two resource releases")
-    public List<ResourceRelationDTO> getResourceRelation(@PathParam("relatedResourceGroupName") String relatedResourceGroupName,
+    public List<ResourceRelationDTO> getResourceRelation(@PathParam("resourceGroupName") String resourceGroupName,
+                                                         @PathParam("releaseName") String releaseName,
+                                                         @PathParam("relatedResourceGroupName") String relatedResourceGroupName,
                                                          @PathParam("relatedReleaseName") String relatedReleaseName) throws ValidationException, ResourceNotFoundException {
         List<ResourceRelationDTO> list = new ArrayList<>();
         for (ConsumedResourceRelationEntity dto : resourceRelationLocator.getResourceRelationList(resourceGroupName, releaseName,
@@ -149,10 +169,13 @@ public class ResourceRelationsRest {
      * @param slaveGroupName A String representing the name of an existing ResourceGroup which will be added as slave resource of the new ResourceRelation
      * @param relationType   A String representing the type of the Relation to be added
      */
-    @Path("/{slaveResourceGroupName}")
+
     @POST
+    @Path("/{resourceGroupName}/{releaseName}/{slaveResourceGroupName}")
     @ApiOperation(value = "Add a consumed or provided Relation")
-    public Response addRelation(@PathParam("slaveResourceGroupName") String slaveGroupName,
+    public Response addRelation(@PathParam("resourceGroupName") String resourceGroupName,
+                                @PathParam("releaseName") String releaseName,
+                                @PathParam("slaveResourceGroupName") String slaveGroupName,
                                 @ApiParam(value = "A String representing the type of the Relation", required = true)
                                 @QueryParam("type") String relationType) {
         if (StringUtils.isEmpty(slaveGroupName)) {
@@ -176,10 +199,12 @@ public class ResourceRelationsRest {
      * @param relationName A String representing the identifier of a Relation or the name of the related Resource to be removed
      * @param relationType A String representing the type of the Relation to be removed
      */
-    @Path("/{relationName}")
     @DELETE
+    @Path("/{resourceGroupName}/{releaseName}/{relationName}")
     @ApiOperation(value = "Remove a consumed or provided Relation from a specific Release", notes = "RelationName may be the identifier of a Relation or the name of the related Resource")
-    public Response removeRelation(@PathParam("relationName") String relationName,
+    public Response removeRelation(@PathParam("resourceGroupName") String resourceGroupName,
+                                   @PathParam("releaseName") String releaseName,
+                                   @PathParam("relationName") String relationName,
                                    @ApiParam(value = "A String representing the type of the Relation", required = true)
                                    @QueryParam("type") String relationType) throws ValidationException {
         if (StringUtils.isEmpty(relationName)) {

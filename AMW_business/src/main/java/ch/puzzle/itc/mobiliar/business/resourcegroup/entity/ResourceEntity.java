@@ -89,7 +89,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	private boolean deletable = true;
 
 	// Consumed resources
-	@OneToMany(cascade = ALL, mappedBy = "masterResource")
+	@OneToMany(fetch = FetchType.EAGER, cascade = ALL, mappedBy = "masterResource")
 	@BatchSize(size = 15)
 	@Getter
 	@Setter
@@ -101,7 +101,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	private Set<ConsumedResourceRelationEntity> consumedSlaveRelations;
 
 	// Provided resources
-	@OneToMany(cascade = ALL, mappedBy = "masterResource")
+	@OneToMany(fetch = FetchType.EAGER, cascade = ALL, mappedBy = "masterResource")
 	@BatchSize(size = 15)
 	@Getter
 	@Setter
