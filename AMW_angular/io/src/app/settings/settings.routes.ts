@@ -12,11 +12,11 @@ export const settingsRoutes = [
   {
     path: 'settings',
     component: SettingsComponent,
-    title: 'Settings',
+    title: 'Settings - Liima',
     children: [
       { path: '', component: EnvironmentsPageComponent },
       { path: 'releases', component: ReleasesComponent },
-      { title: 'Settings - Tags', path: 'tags', component: TagsComponent },
+      { path: 'tags', component: TagsComponent },
       {
         path: 'permission/delegation/:actingUser',
         component: PermissionComponent,
