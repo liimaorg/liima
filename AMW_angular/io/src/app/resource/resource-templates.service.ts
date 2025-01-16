@@ -5,7 +5,7 @@ import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { BaseService } from '../base/base.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-
+import { RevisionInformation } from '../shared/model/revisionInformation';
 @Injectable({ providedIn: 'root' })
 export class ResourceTemplatesService extends BaseService {
   private templates$: Subject<number> = new Subject<number>();
@@ -84,6 +84,22 @@ export class ResourceTemplatesService extends BaseService {
   getTargetPlatformsForContextId(contextId: number) {
     return this.http
       .get<string[]>(`${this.getBaseUrl()}/resources/templates/targetPlatforms/${contextId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getTemplateRevisions(id: number) {
+    return this.http
+      .get<RevisionInformation[]>(`${this.getBaseUrl()}/resources/templates/${id}/revisions`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getTemplateByIdAndRevision(id: number, revisionId: number): Observable<ResourceTemplate> {
+    return this.http
+      .get<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/${id}/revisions/${revisionId}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));

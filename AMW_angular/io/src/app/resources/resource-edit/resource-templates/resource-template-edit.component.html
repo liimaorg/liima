@@ -1,37 +1,35 @@
 <app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
 <div class="modal-body">
   <div class="form-horizontal mx-2">
-    <div class="mb-3">
-      <label for="name" class="form-label align-self-center">Template name</label>
-      <input type="text" class="form-control" id="name" [(ngModel)]="template.name"/>
-    </div>
-    <div class="mb-3">
-      <label for="targetPath" class="form-label align-self-center">Path/filename</label>
-      <input type="text" class="form-control" id="targetPath" [(ngModel)]="template.targetPath"/></div>
-    <div class="mb-3">
-    <div class="d-flex justify-content-between align-content-center mb-1">
+    <div class="d-flex justify-content-end mb-1">
       <div class="d-flex">
-        <div class="d-flex me-1">
-          <label class="align-self-center me-1">Compare with history</label>
-          <div ngbDropdown>
-            <app-button
-              [additionalClasses]="'dropdown-toggle'"
-              [variant]="'secondary'"
-              ngbDropdownToggle
-              [dataCy]="'button-dropdown'"
-            >
-              Select Revision
-            </app-button>
-            <ul ngbDropdownMenu>
-              <li ngbDropdownItem>
-                <a
-                  class="dropdown-item"
-                > revision display name</a
-                >
-              </li>
-            </ul>
+        @if (revisions.length > 0) {
+          <div class="d-flex me-1">
+            <label class="align-self-center me-1">Compare with history</label>
+            <div ngbDropdown>
+              <app-button
+                [additionalClasses]="'dropdown-toggle'"
+                [variant]="'secondary'"
+                ngbDropdownToggle
+                [dataCy]="'button-dropdown'"
+              >
+                {{ selectedRevisionName() || 'Select Revision' }}
+              </app-button>
+
+              <ul ngbDropdownMenu>
+                @for (revision of revisions.slice().reverse(); track revision) {
+                  <li ngbDropdownItem>
+                    <a
+                      class="dropdown-item"
+                      (click)="selectRevision(template.id, revision.revision, revision.displayName)"
+                    >{{ revision.displayName }}</a
+                    >
+                  </li>
+                }
+              </ul>
+            </div>
           </div>
-        </div>
+        }
         <div class="col-1">
           <app-button [variant]="'light'" (click)="toggleFullscreen()">
             <app-icon [icon]="toggleFullscreenIcon"></app-icon>
@@ -39,39 +37,100 @@
         </div>
       </div>
     </div>
-    <div class="editor border border-primary-subtle rounded">
-      <app-code-editor
-        [theme]="'light'"
-        [placeholder]="'Enter your code...'"
-        [(ngModel)]="template.fileContent"
-      ></app-code-editor>
+    @if (revision) {
+      <div class="mx-0 row">
+        <label class="col badge bg-info">Current version</label>
+        <label class="col badge bg-secondary">Version: {{ selectedRevisionName() }}</label>
+      </div>
+    }
+    <div class="container mb-3 p-0">
+      <div class="row">
+        <label for="name" class="form-label align-self-center">Template name</label>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="name" [(ngModel)]="template.name"/>
+        </div>
+        @if (revision) {
+          <div class="col-sm-6">
+            <p class="form-control-plaintext">{{ revision.name }}</p>
+          </div>
+        }
+      </div>
     </div>
-  </div>
-    <div class="mb-3">
-      @for (targetPlatform of targetPlatformModels(); track targetPlatform.name) {
-        <div class="form-check form-check-inline">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="targetPlatform.name"
-            [ngModel]="targetPlatform.selected"
-            (change)="selectTargetPlatform(targetPlatform)"
-          />
-          <label for="targetPlatform.name">{{ targetPlatform.name }}</label>
+    <div class="container mb-3 p-0">
+      <div class="row">
+        <label for="targetPath" class="form-label align-self-center">Path/filename</label>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="targetPath" [(ngModel)]="template.targetPath"/>
+        </div>
+        @if (revision) {
+          <div class="col-sm-6">
+            <p class="form-control-plaintext">{{ revision.targetPath }}</p>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="mb-3 fileContent">
+      <label class="form-label">Template file content</label>
+      @if (!revision) {
+        <div class="editor border border-primary-subtle rounded">
+          <app-code-editor
+            [theme]="'light'"
+            [placeholder]="'Enter your code...'"
+            [(ngModel)]="template.fileContent"
+          ></app-code-editor>
+        </div>
+      } @else {
+        <div class="editor border border-primary-subtle rounded">
+          <app-diff-editor [(ngModel)]="diffValue" revertControls="b-to-a"></app-diff-editor>
         </div>
       }
     </div>
-  </div>
-
-</div>
-<div class="modal-footer">
-  <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
-  @if (canEdit) {
-    <app-button
-      [variant]="'primary'"
-      [dataCy]="'button-save'"
-      (click)="save()"
-    >Save changes
-    </app-button>
-  }
-</div>
+    <div class="container mb-3 p-0">
+      <div class="row align-items-center">
+        <div class="col-sm-6">
+          @for (targetPlatform of targetPlatformModels(); track targetPlatform.name) {
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="targetPlatform.name"
+                [ngModel]="targetPlatform.selected"
+                (change)="selectTargetPlatform(targetPlatform)"
+              />
+              <label class="form-check-label" for="targetPlatform.name">{{ targetPlatform.name }}</label>
+            </div>
+          }
+        </div>
+        @if (revision) {
+          <div class="col-sm-6">
+            @for (revisionTargetPlatform of revisionTargetPlatformModels(); track revisionTargetPlatform.name) {
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="revisionTargetPlatform.name"
+                  disabled
+                  [checked]="revisionTargetPlatform.selected">
+                <label class="form-check-label" for="revisionTargetPlatform.name">
+                  {{ revisionTargetPlatform.name }}
+                </label>
+              </div>
+            }
+          </div>
+        }
+          </div>
+          <div class="modal-footer">
+            <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
+            @if (canEdit) {
+              <app-button
+                [variant]="'primary'"
+                [dataCy]="'button-save'"
+                (click)="save()"
+              >Save changes
+              </app-button>
+            }
+          </div>

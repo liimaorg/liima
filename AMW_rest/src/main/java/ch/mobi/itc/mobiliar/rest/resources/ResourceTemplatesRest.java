@@ -41,6 +41,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
+import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
@@ -148,6 +149,29 @@ public class ResourceTemplatesRest {
                 .collect(Collectors.toUnmodifiableList());
 
         return Response.ok(targetPlatformNames).build();
+    }
+
+    @GET
+    @Path("/{id}/revisions")
+    @ApiOperation(value = "Get all revisions of a specific resource template")
+    public Response getTemplateRevisions(@PathParam("id") int id) throws NotFoundException {
+        List<RevisionInformation> revisions = templateEditor.getTemplateRevisions(id);
+        if (revisions.isEmpty()) {
+            throw new NotFoundException("No template revisions found");
+        }
+        return Response.ok(revisions).build();
+    }
+
+    @GET
+    @Path("/{id}/revisions/{revisionId}")
+    @ApiOperation(value = "Get a specific revision of a resource template")
+    public Response getTemplateByIdAndRevision(@PathParam("id") int id, @PathParam("revisionId") int revisionId)
+            throws NotFoundException {
+        TemplateDescriptorEntity template = templateEditor.getTemplateByIdAndRevision(id, revisionId);
+        if (template == null) {
+            throw new NotFoundException("No template with id " + id + " and revision id " + revisionId + " found");
+        }
+        return Response.ok(new TemplateDTO(template)).build();
     }
 
     @GET

@@ -1,4 +1,15 @@
-import { Component, EventEmitter, inject, Input, Output, OnInit, Signal, computed } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  OnInit,
+  Signal,
+  computed,
+  WritableSignal,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
@@ -10,6 +21,8 @@ import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.comp
 import { ResourceTemplate } from '../../../resource/resource-template';
 import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
 import { Resource } from '../../../resource/resource';
+import { RevisionInformation } from '../../../shared/model/revisionInformation';
+import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 
 interface TargetPlatformModel {
   name: string;
@@ -31,6 +44,7 @@ interface TargetPlatformModel {
     ButtonComponent,
     ModalHeaderComponent,
     IconComponent,
+    DiffEditorComponent,
   ],
 })
 export class ResourceTemplateEditComponent implements OnInit {
@@ -45,17 +59,33 @@ export class ResourceTemplateEditComponent implements OnInit {
   private templatesService = inject(ResourceTemplatesService);
   allSelectableTargetPlatforms: Signal<string[]> = this.templatesService.allTargetPlatformsByContextId;
 
+  public revisions: RevisionInformation[] = [];
+  public revision: ResourceTemplate;
+  public selectedRevisionName: WritableSignal<string> = signal(null);
   public isFullscreen = false;
   public toggleFullscreenIcon = 'arrows-fullscreen';
   public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
     return this.loadTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
   });
+  public revisionTargetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
+    return this.loadRevisionTargetPlatformModelsForTemplate(
+      this.allSelectableTargetPlatforms(),
+      this.selectedRevisionName(),
+    );
+  });
+  public diffValue = {
+    original: '',
+    modified: '',
+  };
 
   constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     if (this.contextId) {
       this.templatesService.setContexIdForAllTargetPlatforms(this.contextId);
+    }
+    if (this.template && this.template.id) {
+      this.loadRevisions(this.template.id);
     }
   }
 
@@ -88,6 +118,16 @@ export class ResourceTemplateEditComponent implements OnInit {
     });
   }
 
+  private loadRevisionTargetPlatformModelsForTemplate(allTargetPlatforms: string[], s: string): TargetPlatformModel[] {
+    if (!this.revision) return;
+    return allTargetPlatforms.map((name) => {
+      return {
+        name: name,
+        selected: this.revision.targetPlatforms.includes(name),
+      };
+    });
+  }
+
   selectTargetPlatform(targetPlatform: TargetPlatformModel) {
     if (!this.template.targetPlatforms.includes(targetPlatform.name)) {
       this.template.targetPlatforms.push(targetPlatform.name);
@@ -95,5 +135,19 @@ export class ResourceTemplateEditComponent implements OnInit {
       const indexOfTargetPlatformNameToRemove = this.template.targetPlatforms.indexOf(targetPlatform.name);
       this.template.targetPlatforms.splice(indexOfTargetPlatformNameToRemove, 1);
     }
+  }
+
+  loadRevisions(templateId: number): void {
+    this.templatesService.getTemplateRevisions(templateId).subscribe((revisions) => {
+      this.revisions = revisions;
+    });
+  }
+
+  selectRevision(templateId: number, revisionId: number, displayName: string): void {
+    this.templatesService.getTemplateByIdAndRevision(templateId, revisionId).subscribe((revision) => {
+      this.revision = revision;
+      this.selectedRevisionName.update((value) => displayName);
+      this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
+    });
   }
 }
