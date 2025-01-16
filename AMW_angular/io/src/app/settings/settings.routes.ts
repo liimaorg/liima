@@ -7,14 +7,15 @@ import { DeploymentParameterComponent } from './deployment-parameter/deployment-
 import { PropertyTypesComponent } from './property-types/property-types.component';
 import { FunctionsComponent } from './functions/functions.component';
 import { EnvironmentsPageComponent } from './environments/environments-page.component';
+import { Routes } from '@angular/router';
 
-export const settingsRoutes = [
+export const settingsRoutes: Routes = [
   {
     path: 'settings',
     component: SettingsComponent,
     title: 'Settings - Liima',
     children: [
-      { path: '', component: EnvironmentsPageComponent },
+      { path: '', redirectTo: 'environments', pathMatch: 'full' },
       { path: 'releases', component: ReleasesComponent },
       { path: 'tags', component: TagsComponent },
       {
