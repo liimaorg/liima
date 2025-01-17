@@ -131,6 +131,16 @@ public class ResourceTemplatesRest {
         return Response.status(Response.Status.OK).entity(templateDTOs).build();
     }
 
+    @POST
+    @Path("/addForResource/{id : \\d+}")
+    @ApiOperation(value = "Add new resource template")
+    public Response addNewResourceTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request)
+            throws AMWException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForResource(template, id);
+        return Response.status(Response.Status.OK).build();
+    }
+
     @PUT
     @Path("updateForResource/{id : \\d+}")
     @ApiOperation(value = "Modify existing template for resource")
