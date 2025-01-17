@@ -144,7 +144,7 @@ public class ResourceTemplatesRest {
     @PUT
     @Path("updateForResource/{id : \\d+}")
     @ApiOperation(value = "Modify existing template for resource")
-    public Response modifyTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
+    public Response modifyResourceTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResource(template, id);
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();

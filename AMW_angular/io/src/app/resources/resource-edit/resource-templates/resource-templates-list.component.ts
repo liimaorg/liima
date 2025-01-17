@@ -143,7 +143,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
 
   private createTemplate(templateData: ResourceTemplate) {
     this.templatesService
-      .addTemplate(templateData, this.resource().id)
+      .addResourceTemplate(templateData, this.resource().id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
@@ -169,7 +169,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
 
   private updateTemplate(templateData: ResourceTemplate) {
     this.templatesService
-      .updateTemplate(templateData, this.resource().id)
+      .updateResourceTemplate(templateData, this.resource().id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),

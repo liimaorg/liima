@@ -73,7 +73,7 @@ export class ResourceTemplatesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  updateTemplate(template: ResourceTemplate, resourceId: number) {
+  updateResourceTemplate(template: ResourceTemplate, resourceId: number) {
     return this.http
       .put<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/updateForResource/${resourceId}`, template, {
         headers: this.getHeaders(),
@@ -81,7 +81,7 @@ export class ResourceTemplatesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  addTemplate(template: ResourceTemplate, resourceId: number) {
+  addResourceTemplate(template: ResourceTemplate, resourceId: number) {
     return this.http
       .post<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/addForResource/${resourceId}`, template, {
         headers: this.getHeaders(),
