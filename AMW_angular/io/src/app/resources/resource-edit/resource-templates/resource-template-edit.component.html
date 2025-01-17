@@ -49,7 +49,16 @@
       </div>
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <input type="text" class="form-control" id="name" [(ngModel)]="template.name"/>
+          <input type="text" class="form-control" id="name" [(ngModel)]="template.name"
+                 [class.is-invalid]="!isNameValid() && template && template.name && template.name.length > 0"
+                 [class.is-valid]="isNameValid() && template && template.name && template.name.length > 0"
+                 required
+                 pattern="^\S(.*\S)?$"/>
+          @if (!isNameValid() && template && template.name && template.name.length > 0) {
+            <div class="invalid-feedback">
+              The name must not be empty and must not contain any leading or trailing spaces.
+            </div>
+          }
         </div>
         @if (revision) {
           <div class="col-sm-6">
@@ -64,7 +73,19 @@
       </div>
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <input type="text" class="form-control" id="targetPath" [(ngModel)]="template.targetPath"/>
+          <input type="text"
+                 class="form-control"
+                 id="targetPath"
+                 [(ngModel)]="template.targetPath"
+                 [class.is-invalid]="!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
+                 [class.is-valid]="isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
+                 required
+                 pattern="^(?!/)(?!\.\./).*"/>
+          @if (!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0) {
+            <div class="invalid-feedback">
+              The file path must not be an absolute path (must not begin with '/') or a path traversal (must not begin with '../').
+            </div>
+          }
         </div>
         @if (revision) {
           <div class="col-sm-6">
@@ -122,15 +143,16 @@
             }
           </div>
         }
-          </div>
-          <div class="modal-footer">
-            <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
-            @if (canEdit) {
-              <app-button
-                [variant]="'primary'"
-                [dataCy]="'button-save'"
-                (click)="save()"
-              >Save changes
-              </app-button>
-            }
-          </div>
+      </div>
+      <div class="modal-footer">
+        <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
+        @if (canEdit) {
+          <app-button
+            [variant]="'primary'"
+            [dataCy]="'button-save'"
+            (click)="save()"
+            [disabled]="!isValidForm()"
+          >Save changes
+          </app-button>
+        }
+      </div>

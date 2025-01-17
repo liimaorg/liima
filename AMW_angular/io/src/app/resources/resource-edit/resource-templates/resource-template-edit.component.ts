@@ -99,8 +99,10 @@ export class ResourceTemplateEditComponent implements OnInit {
   }
 
   save() {
-    this.saveTemplate.emit(this.template);
-    this.activeModal.close();
+    if (this.isValidForm()) {
+      this.saveTemplate.emit(this.template);
+      this.activeModal.close();
+    }
   }
 
   toggleFullscreen() {
@@ -149,5 +151,19 @@ export class ResourceTemplateEditComponent implements OnInit {
       this.selectedRevisionName.update((value) => displayName);
       this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
     });
+  }
+
+  isValidForm(): boolean {
+    return this.isNameValid() && this.isValidTargetPath();
+  }
+
+  isNameValid(): boolean {
+    const REGEXP_NON_EMPTY_TRIMMED = /^\S(.*\S)?$/;
+    return this.template ? REGEXP_NON_EMPTY_TRIMMED.test(this.template.name) : false;
+  }
+
+  isValidTargetPath() {
+    const REGEXP_FILE_PATH_PATTERN = /^(?!\/)(?!\.\.\/).*/;
+    return this.template ? REGEXP_FILE_PATH_PATTERN.test(this.template.targetPath) : false;
   }
 }
