@@ -133,7 +133,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       fileContent: '',
       sourceType: 'RESOURCE',
     };
-    modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.canAddOrEdit = this.permissions().canAdd;
     modalRef.componentInstance.contextId = this.contextId();
     modalRef.componentInstance.resource = this.resource();
     modalRef.componentInstance.saveTemplate
@@ -150,7 +150,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       size: 'xl',
     });
     modalRef.componentInstance.template = this.templates()?.find((item) => item.id === id);
-    modalRef.componentInstance.canEdit = this.permissions().canEdit;
+    modalRef.componentInstance.canAddOrEdit = this.permissions().canEdit;
     modalRef.componentInstance.contextId = this.contextId();
     modalRef.componentInstance.resource = this.resource();
     modalRef.componentInstance.saveTemplate

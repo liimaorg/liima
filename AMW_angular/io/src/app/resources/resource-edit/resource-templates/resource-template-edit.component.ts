@@ -50,7 +50,7 @@ interface TargetPlatformModel {
 export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
   @Input() resource: Resource;
-  @Input() canEdit: boolean;
+  @Input() canAddOrEdit: boolean;
   @Input() isOverwrite: boolean;
   @Input() contextId: number;
 

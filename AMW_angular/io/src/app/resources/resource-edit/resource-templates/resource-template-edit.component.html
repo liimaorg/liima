@@ -146,7 +146,7 @@
       </div>
       <div class="modal-footer">
         <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
-        @if (canEdit) {
+        @if (canAddOrEdit) {
           <app-button
             [variant]="'primary'"
             [dataCy]="'button-save'"
