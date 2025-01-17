@@ -142,7 +142,16 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   }
 
   private createTemplate(templateData: ResourceTemplate) {
-    console.log('create template');
+    this.templatesService
+      .addTemplate(templateData, this.resource().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.templatesService.setIdForResourceTemplateList(this.resource().id);
+        },
+      });
   }
 
   private editTemplate(id: number) {

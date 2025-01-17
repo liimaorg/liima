@@ -81,6 +81,14 @@ export class ResourceTemplatesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
+  addTemplate(template: ResourceTemplate, resourceId: number) {
+    return this.http
+      .post<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/addForResource/${resourceId}`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   getTargetPlatformsForContextId(contextId: number) {
     return this.http
       .get<string[]>(`${this.getBaseUrl()}/resources/templates/targetPlatforms/${contextId}`, {
