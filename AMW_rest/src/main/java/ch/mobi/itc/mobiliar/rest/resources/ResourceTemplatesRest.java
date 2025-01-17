@@ -84,7 +84,7 @@ public class ResourceTemplatesRest {
     @Path("/{resourceGroupName}/{releaseName}")
     @ApiOperation(value = "Get all templates for a resource in a specific release")
     public List<TemplateDTO> getResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
-                                                @PathParam("releaseName") String releaseName) throws ValidationException {
+                                                  @PathParam("releaseName") String releaseName) throws ValidationException {
         List<TemplateDTO> templateDTOs = new ArrayList<>();
         List<TemplateDescriptorEntity> templates = templateService.getGlobalTemplateDescriptorsForResource(resourceGroupName, releaseName);
 
@@ -188,8 +188,8 @@ public class ResourceTemplatesRest {
     @Path("/{resourceGroupName}/{releaseName}/{templateName}")
     @ApiOperation(value = "Get a template for a resource in a specific release")
     public TemplateDTO getResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
-                                                 @PathParam("releaseName") String releaseName,
-                                                 @PathParam("templateName") String templateName) throws ValidationException, NotFoundException {
+                                           @PathParam("releaseName") String releaseName,
+                                           @PathParam("templateName") String templateName) throws ValidationException, NotFoundException {
         TemplateDescriptorEntity template = getTemplate(resourceGroupName, releaseName, templateName);
         if (template == null) {
             throw new NotFoundException("Template not found");
@@ -270,13 +270,13 @@ public class ResourceTemplatesRest {
         template.setTargetPath(templateDTO.getTargetPath());
         HashSet<ResourceGroupEntity> targetPlatforms = new HashSet<>();
         if (templateDTO.getTargetPlatforms() != null) {
-            for(String platform : templateDTO.getTargetPlatforms()) {
+            for (String platform : templateDTO.getTargetPlatforms()) {
                 ResourceGroupEntity platformEntity = resourceGroupLocator.getResourceGroupByName(platform);
                 targetPlatforms.add(platformEntity);
             }
         }
         template.setTargetPlatforms(targetPlatforms);
-        if(templateDTO.getVersion() != null){
+        if (templateDTO.getVersion() != null) {
             template.setV(templateDTO.getVersion());
         }
 
