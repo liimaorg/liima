@@ -82,7 +82,7 @@
                  [class.is-invalid]="!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
                  [class.is-valid]="isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
                  required
-                 pattern="^(?!/)(?!\.\./).*"/>
+                 pattern="^(?![\w]:|\/|\.\.)(?!.*\.\.).*[^/\\]$"/>
           @if (!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0) {
             <div class="invalid-feedback">
               The file path must not be an absolute path (must not begin with '/') or a path traversal (must not begin

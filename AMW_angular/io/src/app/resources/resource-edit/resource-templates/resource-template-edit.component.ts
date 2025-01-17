@@ -159,7 +159,7 @@ export class ResourceTemplateEditComponent implements OnInit {
   }
 
   isValidTargetPath() {
-    const REGEXP_FILE_PATH_PATTERN = /^(?!\/)(?!\.\.\/).*/;
+    const REGEXP_FILE_PATH_PATTERN = /^(?![\w]:|\/|\.\.)(?!.*\.\.).*[^/\\]$/;
     return this.template ? REGEXP_FILE_PATH_PATTERN.test(this.template.targetPath) : false;
   }
 }
