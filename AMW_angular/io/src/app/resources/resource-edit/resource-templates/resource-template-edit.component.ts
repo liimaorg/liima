@@ -20,7 +20,6 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
 import { ResourceTemplate } from '../../../resource/resource-template';
 import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
-import { Resource } from '../../../resource/resource';
 import { RevisionInformation } from '../../../shared/model/revisionInformation';
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 
@@ -49,7 +48,6 @@ interface TargetPlatformModel {
 })
 export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
-  @Input() resource: Resource;
   @Input() canAddOrEdit: boolean;
   @Input() contextId: number;
 
@@ -94,7 +92,6 @@ export class ResourceTemplateEditComponent implements OnInit {
 
   cancel() {
     this.activeModal.close();
-    this.templatesService.setIdForResourceTemplateList(this.resource.id);
   }
 
   save() {
