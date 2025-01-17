@@ -36,15 +36,19 @@
               style="display: inline-block"
               (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
             >
-              @if (resourceType.hasChildren) { @if (isExpanded(resourceType)) {
-              <app-icon icon="dash"></app-icon>
-              } @else {
-              <app-icon icon="plus"></app-icon>
-              } }
+              @if (resourceType.hasChildren) {
+              <span style="margin-left: -1.3rem">
+                @if (isExpanded(resourceType)) {
+                <app-icon icon="dash"></app-icon>
+                } @else {
+                <app-icon icon="plus"></app-icon>
+                }
+              </span>
+              }
               {{ resourceType.name }}
             </a>
             @if (resourceType.hasChildren && isExpanded(resourceType) ) {
-            <ul class="nav flex-column ps-4">
+            <ul class="nav flex-column ps-3">
               @for (child of resourceType.children; track child.name) {
               <li class="nav-item">
                 <a
