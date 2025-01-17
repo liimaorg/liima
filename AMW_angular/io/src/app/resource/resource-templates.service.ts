@@ -81,9 +81,25 @@ export class ResourceTemplatesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
+  updateResourceTypeTemplate(template: ResourceTemplate, resourceId: number) {
+    return this.http
+      .put<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/updateForResourceType/${resourceId}`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   addResourceTemplate(template: ResourceTemplate, resourceId: number) {
     return this.http
       .post<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/addForResource/${resourceId}`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  addResourceTypeTemplate(template: ResourceTemplate, resourceId: number) {
+    return this.http
+      .post<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/addForResourceType/${resourceId}`, template, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));

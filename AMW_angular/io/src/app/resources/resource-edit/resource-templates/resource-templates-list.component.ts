@@ -162,7 +162,10 @@ export class ResourceTemplatesListComponent implements OnDestroy {
     modalRef.componentInstance.contextId = this.contextId();
     modalRef.componentInstance.saveTemplate
       .pipe(takeUntil(this.destroy$))
-      .subscribe((templateData: ResourceTemplate) => this.updateTemplate(templateData));
+      .subscribe((templateData: ResourceTemplate) => {
+        templateData.sourceType = 'RESOURCE';
+        this.updateTemplate(templateData);
+      });
   }
 
   private updateTemplate(templateData: ResourceTemplate) {

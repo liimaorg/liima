@@ -150,6 +150,25 @@ public class ResourceTemplatesRest {
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
     }
 
+    @POST
+    @Path("/addForResourceType/{id : \\d+}")
+    @ApiOperation(value = "Add new resourceType template")
+    public Response addNewResourceTypeTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request)
+            throws AMWException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForResourceType(template, id);
+        return Response.status(Response.Status.OK).build();
+    }
+
+    @PUT
+    @Path("updateForResourceType/{id : \\d+}")
+    @ApiOperation(value = "Modify existing template for resourceType")
+    public Response modifyResourceTypeTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForResourceType(template, id);
+        return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
+    }
+
     @GET
     @Path("/targetPlatforms/{contextId: \\d+}")
     @ApiOperation(value = "Get all targetPlatforms for a context id")
