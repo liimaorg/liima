@@ -51,7 +51,6 @@ export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
   @Input() resource: Resource;
   @Input() canAddOrEdit: boolean;
-  @Input() isOverwrite: boolean;
   @Input() contextId: number;
 
   @Output() saveTemplate: EventEmitter<ResourceTemplate> = new EventEmitter<ResourceTemplate>();
@@ -90,7 +89,7 @@ export class ResourceTemplateEditComponent implements OnInit {
   }
 
   getTitle(): string {
-    return (this.template.id ? (this.isOverwrite ? 'Overwrite' : 'Edit') : 'Add') + ' template';
+    return (this.template.id ? 'Edit' : 'Add') + ' template';
   }
 
   cancel() {
