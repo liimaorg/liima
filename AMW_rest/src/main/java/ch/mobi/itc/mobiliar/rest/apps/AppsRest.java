@@ -1,12 +1,9 @@
 package ch.mobi.itc.mobiliar.rest.apps;
 
 import ch.mobi.itc.mobiliar.rest.dtos.AppAppServerDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.AppDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.AppServerDTO;
 import ch.puzzle.itc.mobiliar.business.apps.boundary.*;
-import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import io.swagger.annotations.Api;
@@ -20,6 +17,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
 
 import javax.enterprise.context.RequestScoped;
@@ -29,6 +27,8 @@ import javax.inject.Inject;
 @RequestScoped
 @Path("/apps")
 @Api(value = "/apps", description = "Application servers and apps")
+@Consumes(APPLICATION_JSON)
+@Produces(APPLICATION_JSON)
 public class AppsRest {
 
     @Inject
