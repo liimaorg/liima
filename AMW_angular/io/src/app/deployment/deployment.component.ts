@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ResourceService } from '../resource/resource.service';
@@ -24,6 +24,8 @@ import { NotificationComponent } from '../shared/elements/notification/notificat
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { PageComponent } from '../layout/page/page.component';
 import { ButtonComponent } from '../shared/button/button.component';
+import { ResourceTypesService } from '../resource/resource-types.service';
+import { ResourceType } from '../resource/resource-type';
 
 @Component({
   selector: 'app-deployment',
@@ -49,6 +51,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   // these are valid for all (loaded ony once)
   appservers: Resource[] = [];
+  appServerResourceType: ResourceType;
   environments: Environment[] = [];
   groupedEnvironments: { [key: string]: Environment[] } = {};
   deploymentParameters: DeploymentParameter[] = [];
@@ -92,6 +95,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     private deploymentService: DeploymentService,
     private activatedRoute: ActivatedRoute,
     private location: Location,
+    private resourceTypesService: ResourceTypesService,
   ) {}
 
   ngOnInit() {
@@ -107,6 +111,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
         this.prepareNewDeployment();
       }
     });
+    this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER').subscribe({
+      next: (resType) => {
+        this.appServerResourceType = resType;
+        if (resType) {
+          this.initAppservers();
+        }
+      },
+    });
   }
 
   ngAfterViewInit() {
@@ -115,8 +127,11 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   initAppservers() {
+    if (!this.appServerResourceType) {
+      return;
+    }
     this.isLoading = true;
-    this.resourceService.getByType('APPLICATIONSERVER').subscribe({
+    this.resourceService.getGroupsForType(this.appServerResourceType).subscribe({
       next: (r) =>
         (this.appservers = r.sort(function (a, b) {
           return a.name.localeCompare(b.name, undefined, {
