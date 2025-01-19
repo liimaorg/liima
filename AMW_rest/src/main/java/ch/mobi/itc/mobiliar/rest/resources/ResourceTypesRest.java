@@ -33,6 +33,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeRequestDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -68,6 +69,20 @@ public class ResourceTypesRest {
         return resourceTypeLocator.getAllResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
+    }
+
+    @Path("/resourceTypes/{name}")
+    @GET
+    @ApiOperation(value = "Get a resource type by name")
+    public ResourceTypeDTO getResourceTypeByName(@PathParam("name") String name) throws NotFoundException, ValidationException {
+        if (StringUtils.isEmpty(name)) {
+            throw new ValidationException("Resource type name must not be null or blank");
+        }
+        ResourceTypeEntity resourceType = resourceTypeLocator.getResourceTypeByName(name);
+        if (resourceType == null) {
+            throw new NotFoundException("Resource type '" + name + "' not found");
+        }
+        return new ResourceTypeDTO(resourceType);
     }
 
     @Path("/predefinedResourceTypes")

@@ -30,6 +30,10 @@ export class ResourceTypesService extends BaseService {
     return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resources/resourceTypes`);
   }
 
+  getResourceTypeByName(name: string): Observable<ResourceType> {
+    return this.http.get<ResourceType>(`${this.getBaseUrl()}/resources/resourceTypes/${name}`);
+  }
+
   getPredefinedResourceTypes(): Observable<ResourceType[]> {
     return this.http.get<ResourceType[]>(`${this.getBaseUrl()}/resources/predefinedResourceTypes`);
   }
