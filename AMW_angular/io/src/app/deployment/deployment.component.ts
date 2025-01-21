@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ResourceService } from '../resource/resource.service';
@@ -13,7 +13,7 @@ import { EnvironmentService } from './environment.service';
 import { Environment } from './environment';
 import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { IconComponent } from '../shared/icon/icon.component';
@@ -25,7 +25,8 @@ import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.
 import { PageComponent } from '../layout/page/page.component';
 import { ButtonComponent } from '../shared/button/button.component';
 import { ResourceTypesService } from '../resource/resource-types.service';
-import { ResourceType } from '../resource/resource-type';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-deployment',
@@ -50,8 +51,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   deploymentId: number;
 
   // these are valid for all (loaded ony once)
-  appservers: Resource[] = [];
-  appServerResourceType: ResourceType;
   environments: Environment[] = [];
   groupedEnvironments: { [key: string]: Environment[] } = {};
   deploymentParameters: DeploymentParameter[] = [];
@@ -89,6 +88,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   isLoading: boolean = false;
   isDeploymentBlocked: boolean = false;
 
+  appServerResourceType$ = this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER');
+
   constructor(
     private resourceService: ResourceService,
     private environmentService: EnvironmentService,
@@ -97,6 +98,13 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     private location: Location,
     private resourceTypesService: ResourceTypesService,
   ) {}
+
+  appservers = toSignal(
+    this.appServerResourceType$.pipe(
+      switchMap((resourceType) => (resourceType ? this.resourceService.getGroupsForType(resourceType) : of([]))),
+    ),
+    { initialValue: [] as Resource[] },
+  );
 
   ngOnInit() {
     this.initEnvironments();
@@ -111,14 +119,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
         this.prepareNewDeployment();
       }
     });
-    this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER').subscribe({
-      next: (resType) => {
-        this.appServerResourceType = resType;
-        if (resType) {
-          this.initAppservers();
-        }
-      },
-    });
   }
 
   ngAfterViewInit() {
@@ -127,23 +127,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   initAppservers() {
-    if (!this.appServerResourceType) {
-      return;
-    }
     this.isLoading = true;
-    this.resourceService.getGroupsForType(this.appServerResourceType).subscribe({
-      next: (r) =>
-        (this.appservers = r.sort(function (a, b) {
-          return a.name.localeCompare(b.name, undefined, {
-            sensitivity: 'base',
-          });
-        })),
-      error: (e) => (this.errorMessage = e),
-      complete: () => {
-        this.setPreselected();
-        this.isLoading = false;
-      },
-    });
+    this.setPreselected();
+    this.isLoading = false;
   }
 
   onChangeAppserver() {
@@ -446,7 +432,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // for url params only
   private setPreselected() {
     if (this.appserverName) {
-      this.selectedAppserver = _.find(this.appservers, {
+      this.selectedAppserver = _.find(this.appservers(), {
         name: this.appserverName,
       });
       if (this.selectedAppserver) {
