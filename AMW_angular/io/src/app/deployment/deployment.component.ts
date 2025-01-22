@@ -143,7 +143,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       this.selectedRelease = this.releases[0];
     }
     this.getRelatedForRelease();
-    this.goTo(this.selectedAppserver.name + '/' + this.selectedRelease.release);
+    this.goTo(this.selectedAppserver?.name + '/' + this.selectedRelease.release);
   }
 
   onChangeEnvironment() {
@@ -364,7 +364,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.errorMessage = '';
     this.successMessage = '';
     const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
-    deploymentRequest.appServerName = this.selectedAppserver.name;
+    deploymentRequest.appServerName = this.selectedAppserver?.name;
     deploymentRequest.releaseName = this.selectedRelease.release;
     deploymentRequest.contextIds = contextIds;
     deploymentRequest.simulate = this.simulate;
