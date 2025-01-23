@@ -148,8 +148,8 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
       {
         key: 'propertyTags',
         title: 'Tags',
-        type: 'badge',
-        nested: { key: 'name', title: 'Tag Name' },
+        type: 'badge-list',
+        nested: [{ key: 'name', title: 'Tag Name' }, { key: 'type' }],
       },
     ];
   }

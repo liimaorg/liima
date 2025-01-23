@@ -5,9 +5,9 @@ import { EntryAction, TileListEntryOutput } from '../tile/tile-list/tile-list.co
 
 export interface TableHeader {
   key: string;
-  title: string;
-  type?: 'badge';
-  nested?: TableHeader;
+  title?: string;
+  type?: 'badge-list' | 'split';
+  nested?: TableHeader[];
 }
 
 @Component({

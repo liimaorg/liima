@@ -3,7 +3,17 @@
     <thead>
     <tr>
       @for (header of headers(); track header) {
-        <th scope="col">{{ header.title }}</th>
+        @if (header.type === 'split'){
+          @if (header.nested) {
+            @for (n of header.nested; track n){
+              @if (n.title){
+                <th scope="col">{{ header.nested[header.nested.indexOf(n)].title }}</th>
+              }
+            }
+          }
+        } @else {
+          <th scope="col">{{ header.title }}</th>
+        }
       }
       @if (hasAction()) {
         <th class="text-end" scope="col">Actions</th>
@@ -14,17 +24,28 @@
       @for (row of data(); track row.id) {
         <tr>
           @for (header of headers(); track header){
-            @if (header.type === 'badge') {
+            @if (header.type === 'badge-list') {
               <td>
                 @if (header.nested){
-                  @for (elem of row[header.key]; track elem){
-                    <span class="badge bg-light text-dark rounded-pill">{{ elem[header.nested.key] }}</span>
+                  @for (n of header.nested; track n){
+                    @if (n.title){
+                        @for (elem of row[header.key]; track elem){ <!-- because is a badge-LIST -->
+                          <span class="badge bg-light text-dark rounded-pill">{{ elem[header.nested[header.nested.indexOf(n)].key] }}</span>
+                        }
+                    }
                   }
-                } @else{
-                  <span class="badge bg-light text-dark rounded-pill">{{ row[header.key] }}</span>
                 }
               </td>
-            } @else {
+            } @else if (header.type === 'split'){
+              @if (header.nested) {
+                @for (n of header.nested; track n){
+                  @if (n.title){
+                    <td>{{ row[header.key][n.key] }}</td>
+                  }
+                }
+              }
+            }
+            @else {
               <td>{{ row[header.key] }}</td>
             }
           }
