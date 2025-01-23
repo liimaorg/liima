@@ -4,27 +4,12 @@
   <div class="card row mt-2 mb-3">
     <div class="card-header"><b>Application Information</b></div>
     <div class="card-body">
-      <div class="table-responsive">
-        @if (appVersions().length > 0) {
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th>Key</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            @for (item of appVersions(); track item.key) {
-            <tr>
-              <td>{{ item.key }}</td>
-              <td>{{ item.value }}</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-        }
-      </div>
+      @if (appVersions().length > 0) {
+        <app-table
+          [headers]="appVersionsHeader()"
+          [data]="appVersions()">
+        </app-table>
+      }
     </div>
   </div>
 </div>
@@ -32,31 +17,12 @@
   <div class="card row">
     <div class="card-header"><b>Application Configuration</b></div>
     <div class="card-body">
-      <div class="table-responsive">
-        @if (appConfigs().length > 0) {
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th>Key</th>
-              <th>ENV</th>
-              <th>Value</th>
-              <th>DefaultValue</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            @for (item of appConfigs(); track item.key.value) {
-            <tr>
-              <td>{{ item.key.value }}</td>
-              <td>{{ item.key.env }}</td>
-              <td>{{ item.value }}</td>
-              <td>{{ item.defaultValue }}</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-        }
-      </div>
+      @if (appConfigs().length > 0) {
+        <app-table
+          [headers]="appConfigsHeader()"
+          [data]="appConfigs()">
+        </app-table>
+      }
     </div>
   </div>
 </div>
