@@ -31,11 +31,6 @@
               </div>
             </div>
           }
-          <div class="col-1">
-            <app-button [variant]="'light'" (click)="toggleFullscreen()">
-              <app-icon [icon]="toggleFullscreenIcon"></app-icon>
-            </app-button>
-          </div>
         </div>
       </div>
     }
@@ -97,7 +92,16 @@
       </div>
     </div>
     <div class="mb-3 fileContent">
-      <label class="form-label">Template file content</label>
+      <div class="d-flex justify-content-between align-content-center mb-1">
+        <div>
+          <label class="form-label">Template file content</label>
+        </div>
+        <div class="col-1 text-end">
+          <app-button [additionalClasses]="'p-0'" [variant]="'light'" (click)="toggleFullscreen()">
+            <app-icon [icon]="toggleFullscreenIcon"></app-icon>
+          </app-button>
+        </div>
+      </div>
       @if (!revision) {
         <div class="editor border border-primary-subtle rounded">
           <app-code-editor
