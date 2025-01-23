@@ -1,19 +1,18 @@
 import {
   Component,
+  computed,
   EventEmitter,
   inject,
   Input,
-  Output,
   OnInit,
+  Output,
   Signal,
-  computed,
-  WritableSignal,
   signal,
+  WritableSignal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
@@ -96,6 +95,7 @@ export class ResourceTemplateEditComponent implements OnInit {
 
   save() {
     if (this.isValidForm()) {
+      if (this.revision) this.template.fileContent = this.diffValue.original;
       this.saveTemplate.emit(this.template);
       this.activeModal.close();
     }
