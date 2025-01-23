@@ -12,11 +12,12 @@ import { PropertyTypeEditComponent } from './property-type-edit.component';
 import { Subject } from 'rxjs';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TableHeader, TableComponent } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-property-types',
   standalone: true,
-  imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent],
+  imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
   templateUrl: './property-types.component.html',
 })
 export class PropertyTypesComponent implements OnInit, OnDestroy {
@@ -82,17 +83,17 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
       .subscribe((propertyType: PropertyType) => this.save(propertyType));
   }
 
-  editModal(propertyType: PropertyType) {
+  editModal(propertyTypeId: number) {
     const modalRef = this.modalService.open(PropertyTypeEditComponent);
-    modalRef.componentInstance.propertyType = propertyType;
+    modalRef.componentInstance.propertyType = this.propertyTypes().find((item) => item.id === propertyTypeId);
     modalRef.componentInstance.savePropertyType
       .pipe(takeUntil(this.destroy$))
       .subscribe((propertyType: PropertyType) => this.save(propertyType));
   }
 
-  deleteModal(propertyType: PropertyType) {
+  deleteModal(propertyTypeId: number) {
     const modalRef = this.modalService.open(PropertyTypeDeleteComponent);
-    modalRef.componentInstance.propertyType = propertyType;
+    modalRef.componentInstance.propertyType = this.propertyTypes().find((item) => item.id === propertyTypeId);
     modalRef.componentInstance.deletePropertyType
       .pipe(takeUntil(this.destroy$))
       .subscribe((propertyType: PropertyType) => this.delete(propertyType));
@@ -128,5 +129,28 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
         },
       });
     this.isLoading = false;
+  }
+
+  propertyTypesHeader(): TableHeader[] {
+    return [
+      {
+        key: 'name',
+        title: 'Property Name',
+      },
+      {
+        key: 'encrypted',
+        title: 'Encrypted',
+      },
+      {
+        key: 'validationRegex',
+        title: 'Validation',
+      },
+      {
+        key: 'propertyTags',
+        title: 'Tags',
+        type: 'badge',
+        nested: { key: 'name', title: 'Tag Name' },
+      },
+    ];
   }
 }
