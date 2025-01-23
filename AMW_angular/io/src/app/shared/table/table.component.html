@@ -1,0 +1,59 @@
+<div class="table-responsive">
+  <table class="table table-sm table-striped">
+    <thead>
+    <tr>
+      @for (header of headers(); track header) {
+        <th scope="col">{{ header.title }}</th>
+      }
+      @if (hasAction()) {
+        <th class="text-end" scope="col">Actions</th>
+      }
+    </tr>
+    </thead>
+    <tbody>
+      @for (row of data(); track row.id) {
+        <tr>
+          @for (header of headers(); track header){
+            @if (header.type === 'badge') {
+              <td>
+                @if (header.nested){
+                  @for (elem of row[header.key]; track elem){
+                    <span class="badge bg-light text-dark rounded-pill">{{ elem[header.nested.key] }}</span>
+                  }
+                } @else{
+                  <span class="badge bg-light text-dark rounded-pill">{{ row[header.key] }}</span>
+                }
+              </td>
+            } @else {
+              <td>{{ row[header.key] }}</td>
+            }
+          }
+          @if (hasAction()) {
+            <td class="text-end">
+              @if (canEdit()) {
+                <app-button
+                  [size]="'sm'"
+                  [variant]="'primary'"
+                  [additionalClasses]="'me-1'"
+                  (click)="edit.emit({ action: EntryAction.edit, id: row.id })"
+                >
+                  <app-icon icon="pencil"></app-icon>
+                </app-button>
+              }
+              @if (canDelete()) {
+                <app-button
+                  [size]="'sm'"
+                  [variant]="'danger'"
+                  [additionalClasses]="'me-1'"
+                  (click)="delete.emit({ action: EntryAction.delete, id: row.id })"
+                >
+                  <app-icon icon="trash"></app-icon>
+                </app-button>
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
