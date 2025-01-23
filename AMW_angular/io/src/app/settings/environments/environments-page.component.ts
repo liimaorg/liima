@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { EnvironmentService } from '../../deployment/environment.service';
-import { Environment, EnvironmentTree } from '../../deployment/environment';
+import { Environment, EnvironmentTree, EnvironmentTreeUtils } from '../../deployment/environment';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { EnvironmentEditComponent } from './environment-edit/environment-edit.component';
 import { takeUntil } from 'rxjs/operators';
@@ -11,11 +11,12 @@ import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicat
 import { EnvironmentDeleteComponent } from './environment-delete/environment-delete.component';
 import { AuthService } from '../../auth/auth.service';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TableComponent, TableHeader } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-environments-page',
   standalone: true,
-  imports: [IconComponent, LoadingIndicatorComponent, ButtonComponent],
+  imports: [IconComponent, ButtonComponent, TableComponent],
   templateUrl: './environments-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -109,35 +110,19 @@ export class EnvironmentsPageComponent {
       .subscribe((environment: Environment) => this.save(environment));
   }
 
-  editContext(environmentTree: EnvironmentTree) {
+  editContext(environmentTreeId: number) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
     modalRef.componentInstance.globalName = this.globalEnv.name;
-    modalRef.componentInstance.environment = {
-      id: environmentTree.id,
-      name: environmentTree.name,
-      nameAlias: environmentTree.nameAlias,
-      parentName: environmentTree.parentName,
-      parentId: environmentTree.parentId,
-      selected: environmentTree.selected,
-      disabled: environmentTree.disabled,
-    } as Environment;
+    modalRef.componentInstance.environment = EnvironmentTreeUtils.searchById(this.environmentTree(), environmentTreeId);
     modalRef.componentInstance.saveEnvironment
       .pipe(takeUntil(this.destroy$))
       .subscribe((environment: Environment) => this.save(environment));
   }
 
-  deleteContext(environmentTree: EnvironmentTree) {
+  deleteContext(environmentTreeId: number) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentDeleteComponent);
     modalRef.componentInstance.globalName = this.globalEnv.name;
-    modalRef.componentInstance.environment = {
-      id: environmentTree.id,
-      name: environmentTree.name,
-      nameAlias: environmentTree.nameAlias,
-      parentName: environmentTree.parentName,
-      parentId: environmentTree.parentId,
-      selected: environmentTree.selected,
-      disabled: environmentTree.disabled,
-    } as Environment;
+    modalRef.componentInstance.environment = EnvironmentTreeUtils.searchById(this.environmentTree(), environmentTreeId);
     modalRef.componentInstance.deleteEnvironment
       .pipe(takeUntil(this.destroy$))
       .subscribe((environment: Environment) => this.delete(environment.id));
@@ -163,5 +148,18 @@ export class EnvironmentsPageComponent {
         error: (e) => this.error$.next(e),
         complete: () => this.environmentsService.refreshData(),
       });
+  }
+
+  environmentHeader(): TableHeader[] {
+    return [
+      {
+        key: 'name',
+        title: 'Environment name',
+      },
+      {
+        key: 'nameAlias',
+        title: 'Environment alias',
+      },
+    ];
   }
 }
