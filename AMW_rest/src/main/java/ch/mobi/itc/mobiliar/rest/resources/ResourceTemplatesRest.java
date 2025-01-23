@@ -170,13 +170,12 @@ public class ResourceTemplatesRest {
     }
 
     @GET
-    @Path("/targetPlatforms/{contextId: \\d+}")
-    @ApiOperation(value = "Get all targetPlatforms for a context id")
-    public Response getTargetPlatformsForContextId(@PathParam("contextId") Integer contextId) {
+    @Path("/targetPlatforms")
+    @ApiOperation(value = "Get all targetPlatforms ")
+    public Response getTargetPlatformsForContextId() {
         List<String> targetPlatformNames = commonService.getRuntimeResourceGroups().stream()
                 .map(ResourceGroupEntity::getName)
                 .collect(Collectors.toUnmodifiableList());
-
         return Response.ok(targetPlatformNames).build();
     }
 

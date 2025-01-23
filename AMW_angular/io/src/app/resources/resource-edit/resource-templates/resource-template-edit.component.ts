@@ -21,6 +21,7 @@ import { ResourceTemplate } from '../../../resource/resource-template';
 import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
 import { RevisionInformation } from '../../../shared/model/revisionInformation';
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 interface TargetPlatformModel {
   name: string;
@@ -48,12 +49,13 @@ interface TargetPlatformModel {
 export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
   @Input() canAddOrEdit: boolean;
-  @Input() contextId: number;
 
   @Output() saveTemplate: EventEmitter<ResourceTemplate> = new EventEmitter<ResourceTemplate>();
 
   private templatesService = inject(ResourceTemplatesService);
-  allSelectableTargetPlatforms: Signal<string[]> = this.templatesService.allTargetPlatformsByContextId;
+  allSelectableTargetPlatforms: Signal<string[]> = toSignal(this.templatesService.getAllTargetPlatforms(), {
+    initialValue: [],
+  });
 
   public revisions: RevisionInformation[] = [];
   public revision: ResourceTemplate;
@@ -77,9 +79,6 @@ export class ResourceTemplateEditComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
-    if (this.contextId) {
-      this.templatesService.setContexIdForAllTargetPlatforms(this.contextId);
-    }
     if (this.template && this.template.id) {
       this.loadRevisions(this.template.id);
     }

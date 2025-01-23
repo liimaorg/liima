@@ -22,16 +22,9 @@ export class ResourceTemplatesService extends BaseService {
     shareReplay(1),
   );
 
-  private allTargetPlatformsByContextId$: Observable<string[]> = this.contextIdForAllTargetPlatforms$.pipe(
-    switchMap((id: number) => this.getTargetPlatformsForContextId(id)),
-    shareReplay(1),
-  );
-
   resourceTemplates = toSignal(this.templateById$, { initialValue: [] });
 
   resourceTypeTemplates = toSignal(this.templateByTypeId$, { initialValue: [] });
-
-  allTargetPlatformsByContextId = toSignal(this.allTargetPlatformsByContextId$, { initialValue: [] });
 
   constructor(private http: HttpClient) {
     super();
@@ -43,10 +36,6 @@ export class ResourceTemplatesService extends BaseService {
 
   setIdForResourceTypeTemplateList(id: number) {
     this.templatesForType$.next(id);
-  }
-
-  setContexIdForAllTargetPlatforms(id: number) {
-    this.contextIdForAllTargetPlatforms$.next(id);
   }
 
   getResourceTemplates(id: number): Observable<ResourceTemplate[]> {
@@ -105,9 +94,9 @@ export class ResourceTemplatesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  getTargetPlatformsForContextId(contextId: number) {
+  getAllTargetPlatforms() {
     return this.http
-      .get<string[]>(`${this.getBaseUrl()}/resources/templates/targetPlatforms/${contextId}`, {
+      .get<string[]>(`${this.getBaseUrl()}/resources/templates/targetPlatforms`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
