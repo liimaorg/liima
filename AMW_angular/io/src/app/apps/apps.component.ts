@@ -134,6 +134,7 @@ export class AppsComponent implements OnInit, OnDestroy {
           this.appsService.refreshData();
         },
       });
+    this.showLoader.set(false);
   }
 
   saveApp(app: AppCreate) {
@@ -148,6 +149,7 @@ export class AppsComponent implements OnInit, OnDestroy {
           this.appsService.refreshData();
         },
       });
+    this.showLoader.set(false);
   }
 
   setMaxResultsPerPage(max: number) {
