@@ -13,7 +13,7 @@ import { EnvironmentService } from './environment.service';
 import { Environment } from './environment';
 import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { IconComponent } from '../shared/icon/icon.component';
@@ -24,6 +24,9 @@ import { NotificationComponent } from '../shared/elements/notification/notificat
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { PageComponent } from '../layout/page/page.component';
 import { ButtonComponent } from '../shared/button/button.component';
+import { ResourceTypesService } from '../resource/resource-types.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-deployment',
@@ -48,7 +51,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   deploymentId: number;
 
   // these are valid for all (loaded ony once)
-  appservers: Resource[] = [];
   environments: Environment[] = [];
   groupedEnvironments: { [key: string]: Environment[] } = {};
   deploymentParameters: DeploymentParameter[] = [];
@@ -86,13 +88,23 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   isLoading: boolean = false;
   isDeploymentBlocked: boolean = false;
 
+  appServerResourceType$ = this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER');
+
   constructor(
     private resourceService: ResourceService,
     private environmentService: EnvironmentService,
     private deploymentService: DeploymentService,
     private activatedRoute: ActivatedRoute,
     private location: Location,
+    private resourceTypesService: ResourceTypesService,
   ) {}
+
+  appservers = toSignal(
+    this.appServerResourceType$.pipe(
+      switchMap((resourceType) => (resourceType ? this.resourceService.getGroupsForType(resourceType) : of([]))),
+    ),
+    { initialValue: [] as Resource[] },
+  );
 
   ngOnInit() {
     this.initEnvironments();
@@ -116,19 +128,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   initAppservers() {
     this.isLoading = true;
-    this.resourceService.getByType('APPLICATIONSERVER').subscribe({
-      next: (r) =>
-        (this.appservers = r.sort(function (a, b) {
-          return a.name.localeCompare(b.name, undefined, {
-            sensitivity: 'base',
-          });
-        })),
-      error: (e) => (this.errorMessage = e),
-      complete: () => {
-        this.setPreselected();
-        this.isLoading = false;
-      },
-    });
+    this.setPreselected();
+    this.isLoading = false;
   }
 
   onChangeAppserver() {
@@ -142,7 +143,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       this.selectedRelease = this.releases[0];
     }
     this.getRelatedForRelease();
-    this.goTo(this.selectedAppserver.name + '/' + this.selectedRelease.release);
+    this.goTo(this.selectedAppserver?.name + '/' + this.selectedRelease.release);
   }
 
   onChangeEnvironment() {
@@ -363,7 +364,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.errorMessage = '';
     this.successMessage = '';
     const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
-    deploymentRequest.appServerName = this.selectedAppserver.name;
+    deploymentRequest.appServerName = this.selectedAppserver?.name;
     deploymentRequest.releaseName = this.selectedRelease.release;
     deploymentRequest.contextIds = contextIds;
     deploymentRequest.simulate = this.simulate;
@@ -431,7 +432,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   // for url params only
   private setPreselected() {
     if (this.appserverName) {
-      this.selectedAppserver = _.find(this.appservers, {
+      this.selectedAppserver = _.find(this.appservers(), {
         name: this.appserverName,
       });
       if (this.selectedAppserver) {

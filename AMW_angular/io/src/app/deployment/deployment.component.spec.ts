@@ -18,7 +18,7 @@ import { Environment } from './environment';
 import { EnvironmentService } from './environment.service';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 @Component({
   template: '',
@@ -74,13 +74,6 @@ describe('DeploymentComponent (create deployment)', () => {
     expect(component.isReadyForDeployment()).toBeFalsy();
   });
 
-  it('should call resourceService on ngOnInit', () => {
-    spyOn(resourceService, 'getByType').and.returnValue(of([]));
-    expect(resourceService.getByType).not.toHaveBeenCalled();
-    component.ngOnInit();
-    expect(resourceService.getByType).toHaveBeenCalled();
-  });
-
   it('should call environmentService on ngOnInit', () => {
     spyOn(environmentService, 'getAll').and.returnValue(of([]));
     expect(environmentService.getAll).not.toHaveBeenCalled();
@@ -114,14 +107,7 @@ describe('DeploymentComponent (create deployment)', () => {
     ];
     component.appserverName = 'testServer';
     component.releaseName = 'testRelease';
-    spyOn(resourceService, 'getByType').and.returnValue(
-      of([
-        {
-          name: 'testServer',
-          releases: testReleases,
-        } as Resource,
-      ]),
-    );
+    component.appservers = signal([{ name: 'testServer', releases: testReleases } as Resource]);
     spyOn(resourceService, 'getDeployableReleases').and.returnValue(of(testReleases));
     // when
     component.initAppservers();
@@ -134,14 +120,7 @@ describe('DeploymentComponent (create deployment)', () => {
     const testReleases: Release[] = [{ id: 1, release: 'testRelease' } as Release];
     component.appserverName = 'testServer';
     component.releaseName = 'missingRelease';
-    spyOn(resourceService, 'getByType').and.returnValue(
-      of([
-        {
-          name: 'testServer',
-          releases: testReleases,
-        } as Resource,
-      ]),
-    );
+    component.appservers = signal([{ name: 'testServer', releases: testReleases } as Resource]);
     // when
     component.initAppservers();
     // then

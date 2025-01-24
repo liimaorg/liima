@@ -49,6 +49,10 @@ public class ResourceTypeLocator {
         return resourceTypeDomainService.getAllResourceTypesWithoutChildren();
     }
 
+    public ResourceTypeEntity getResourceTypeByName(String resourceTypeName) {
+        return resourceTypeDomainService.getUniqueResourceTypeByName(resourceTypeName);
+    }
+
     public List<ResourceTypeEntity> getPredefinedResourceTypes() {
         return resourceTypeDomainService.getResourceTypes()
                 .stream()
