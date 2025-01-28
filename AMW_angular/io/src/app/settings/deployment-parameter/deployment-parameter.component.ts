@@ -7,7 +7,7 @@ import { AuthService, isAllowed } from '../../auth/auth.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { TableComponent } from '../../shared/table/table.component';
+import { TableComponent, TableHeader } from '../../shared/table/table.component';
 
 type Key = { id: number; name: string };
 
@@ -70,7 +70,7 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
     });
   }
 
-  deploymentParameterHeader() {
+  deploymentParameterHeader(): TableHeader[] {
     return [
       {
         key: 'name',

@@ -1,6 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { AsyncPipe } from '@angular/common';
 import { SettingService } from '../../setting/setting.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AppInformation } from '../../setting/app-information';
@@ -10,7 +9,7 @@ import { TableComponent, TableHeader } from '../../shared/table/table.component'
 @Component({
   selector: 'app-application-info',
   standalone: true,
-  imports: [LoadingIndicatorComponent, AsyncPipe, TableComponent],
+  imports: [LoadingIndicatorComponent, TableComponent],
   templateUrl: './application-info.component.html',
 })
 export class ApplicationInfoComponent {

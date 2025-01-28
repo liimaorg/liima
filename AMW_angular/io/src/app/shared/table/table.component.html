@@ -74,6 +74,10 @@
             </td>
           }
         </tr>
+      }@empty {
+          <tr>
+              <td [colSpan]="getTotalColspan()">No {{ entityName() }} defined</td>
+          </tr>
       }
     </tbody>
   </table>

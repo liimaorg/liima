@@ -20,9 +20,9 @@ describe('TableComponent', () => {
     fixture = TestBed.createComponent(TableComponent);
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
+    componentRef.setInput('entityName', 'name');
     componentRef.setInput('headers', [header]);
     componentRef.setInput('data', []);
-    componentRef.setInput('hasAction', false);
     fixture.detectChanges();
   });
 

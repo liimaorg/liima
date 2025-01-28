@@ -17,6 +17,7 @@
     </div>
     <div class="card-body">
       <app-table
+        [entityName]="'deployment parameters'"
         [headers]="deploymentParameterHeader()"
         [data]="paramKeys"
         [canDelete]="canDelete()"

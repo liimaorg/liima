@@ -7,7 +7,6 @@ import { EnvironmentEditComponent } from './environment-edit/environment-edit.co
 import { takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { EnvironmentDeleteComponent } from './environment-delete/environment-delete.component';
 import { AuthService } from '../../auth/auth.service';
 import { ButtonComponent } from '../../shared/button/button.component';

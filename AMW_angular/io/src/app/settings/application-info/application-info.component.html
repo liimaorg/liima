@@ -6,6 +6,7 @@
     <div class="card-body">
       @if (appVersions().length > 0) {
         <app-table
+          [entityName]="'application information'"
           [headers]="appVersionsHeader()"
           [data]="appVersions()">
         </app-table>
@@ -19,6 +20,7 @@
     <div class="card-body">
       @if (appConfigs().length > 0) {
         <app-table
+          [entityName]="'application configuration'"
           [headers]="appConfigsHeader()"
           [data]="appConfigs()">
         </app-table>
