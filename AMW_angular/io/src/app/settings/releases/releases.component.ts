@@ -15,11 +15,12 @@ import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TableComponent, TableHeader } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-releases',
   standalone: true,
-  imports: [DatePipe, IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent],
+  imports: [DatePipe, IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent, TableComponent],
   templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnDestroy {
@@ -89,9 +90,9 @@ export class ReleasesComponent implements OnDestroy {
       .subscribe((release: Release) => this.save(release));
   }
 
-  editRelease(release: Release) {
+  editRelease(releaseId: number) {
     const modalRef = this.modalService.open(ReleaseEditComponent);
-    modalRef.componentInstance.release = release;
+    modalRef.componentInstance.release = this.resultsSignal$().find((item) => item.id === releaseId);
     modalRef.componentInstance.saveRelease
       .pipe(takeUntil(this.destroy$))
       .subscribe((release: Release) => this.save(release));
@@ -114,13 +115,13 @@ export class ReleasesComponent implements OnDestroy {
     this.isLoading.set(false);
   }
 
-  deleteRelease(release: Release) {
+  deleteRelease(releaseId: number) {
     this.releasesService
-      .getReleaseResources(release.id)
+      .getReleaseResources(releaseId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((list) => {
         const modalRef = this.modalService.open(ReleaseDeleteComponent);
-        modalRef.componentInstance.release = release;
+        modalRef.componentInstance.release = this.resultsSignal$().find((item) => item.id === releaseId);
         modalRef.componentInstance.resources = list;
         modalRef.componentInstance.deleteRelease
           .pipe(takeUntil(this.destroy$))
@@ -154,5 +155,27 @@ export class ReleasesComponent implements OnDestroy {
   setNewOffset(offset: number) {
     this.offset.set(offset);
     this.releasesService.setOffsetAndMaxResultsForReleases({ offset: this.offset(), maxResults: this.maxResults() });
+  }
+
+  releasesHeader(): TableHeader[] {
+    return [
+      {
+        key: 'name',
+        title: 'Release Name',
+      },
+      {
+        key: 'mainRelease',
+        title: 'Main Release',
+      },
+      {
+        key: 'description',
+        title: 'Description',
+      },
+      {
+        key: 'installationInProductionAt',
+        title: 'Date',
+        type: 'date',
+      },
+    ];
   }
 }

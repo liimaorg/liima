@@ -1,11 +1,13 @@
 import { Component, computed, input, output } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
+import { DATE_FORMAT } from '../../core/amw-constants';
+import { DatePipe } from '@angular/common';
 
 export interface TableHeader {
   key: string;
   title?: string;
-  type?: 'badge-list' | 'split';
+  type?: 'badge-list' | 'split' | 'date';
   nested?: TableHeader[];
 }
 
@@ -22,7 +24,7 @@ export interface EntryActionOutput {
   selector: 'app-table',
   templateUrl: './table.component.html',
   standalone: true,
-  imports: [ButtonComponent, IconComponent],
+  imports: [ButtonComponent, IconComponent, DatePipe],
 })
 export class TableComponent {
   entityName = input.required<string>();
@@ -34,6 +36,7 @@ export class TableComponent {
   edit = output<EntryActionOutput>();
   delete = output<EntryActionOutput>();
   protected readonly EntryAction = EntryAction;
+  dateFormat = DATE_FORMAT;
 
   getTotalColspan() {
     return this.headers().length + (this.hasAction() ? 1 : 0) + this.totalSplitHeaders();
