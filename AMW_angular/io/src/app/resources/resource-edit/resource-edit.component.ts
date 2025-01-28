@@ -10,6 +10,7 @@ import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
 import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list.component';
+import { RelatedResourcesListComponent } from './related-resources/related-resources-list.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -20,6 +21,7 @@ import { ResourceTemplatesListComponent } from './resource-templates/resource-te
     TileComponent,
     ResourceFunctionsListComponent,
     ResourceTemplatesListComponent,
+    RelatedResourcesListComponent,
   ],
   templateUrl: './resource-edit.component.html',
 })

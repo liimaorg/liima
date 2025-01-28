@@ -1,0 +1,9 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Related Resources'"
+  [actionName]="'Add Relation'"
+  [canAction]="permissions().canAdd"
+  [lists]="relatedResourcesData()"
+  (tileAction)="addRelatedResource()"
+  (listAction)="doListAction($event)"
+></app-tile-component>
