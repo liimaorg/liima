@@ -67,8 +67,8 @@
     <div class="card-footer py-1">
       <div class="row bg-light align-items-center">
         <app-pagination
-          [currentPage]="currentPage"
-          [lastPage]="lastPage"
+          [currentPage]="currentPage()"
+          [lastPage]="lastPage()"
           (doSetMax)="setMaxResultsPerPage($event)"
           (doSetOffset)="setNewOffset($event)"
         >
