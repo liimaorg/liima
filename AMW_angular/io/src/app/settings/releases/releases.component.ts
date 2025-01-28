@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
+import { Component, computed, inject, signal, Signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Subject } from 'rxjs';

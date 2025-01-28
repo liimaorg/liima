@@ -3,12 +3,9 @@ import { BaseService } from '../../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Release } from './release';
-import { BehaviorSubject, Observable, startWith, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ResourceEntity } from './resource-entity';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { AppFunction } from '../functions/appFunction';
-import { Resource } from '../../resource/resource';
-import { ResourceType } from '../../resource/resource-type';
 
 @Injectable({ providedIn: 'root' })
 export class ReleasesService extends BaseService {
