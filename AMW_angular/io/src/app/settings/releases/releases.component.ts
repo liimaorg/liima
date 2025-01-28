@@ -1,5 +1,4 @@
 import { Component, computed, inject, OnDestroy, signal, Signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -20,7 +19,7 @@ import { TableComponent, TableHeader } from '../../shared/table/table.component'
 @Component({
   selector: 'app-releases',
   standalone: true,
-  imports: [DatePipe, IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent, TableComponent],
+  imports: [IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent, TableComponent],
   templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnDestroy {
@@ -39,7 +38,6 @@ export class ReleasesComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
 
   isLoading = signal(false);
-  dateFormat = DATE_FORMAT;
 
   // pagination with default values
   maxResults = signal(10);
@@ -92,7 +90,7 @@ export class ReleasesComponent implements OnDestroy {
 
   editRelease(releaseId: number) {
     const modalRef = this.modalService.open(ReleaseEditComponent);
-    modalRef.componentInstance.release = this.resultsSignal$().find((item) => item.id === releaseId);
+    modalRef.componentInstance.release = this.results().find((item) => item.id === releaseId);
     modalRef.componentInstance.saveRelease
       .pipe(takeUntil(this.destroy$))
       .subscribe((release: Release) => this.save(release));
@@ -121,7 +119,7 @@ export class ReleasesComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((list) => {
         const modalRef = this.modalService.open(ReleaseDeleteComponent);
-        modalRef.componentInstance.release = this.resultsSignal$().find((item) => item.id === releaseId);
+        modalRef.componentInstance.release = this.results().find((item) => item.id === releaseId);
         modalRef.componentInstance.resources = list;
         modalRef.componentInstance.deleteRelease
           .pipe(takeUntil(this.destroy$))
