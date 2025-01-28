@@ -28,11 +28,11 @@ export class ReleasesComponent {
   private releasesService = inject(ReleasesService);
   private toastService = inject(ToastService);
 
-  releasesSignal$: Signal<Release[]> = this.releasesService.releases;
-  defaultReleaseSignal: Signal<Release> = toSignal(this.releasesService.getDefaultRelease(), {
+  releases: Signal<Release[]> = this.releasesService.releases;
+  defaultRelease: Signal<Release> = toSignal(this.releasesService.getDefaultRelease(), {
     initialValue: null as Release,
   });
-  countSignal: Signal<number> = toSignal(this.releasesService.getCount(), { initialValue: null as number });
+  count: Signal<number> = toSignal(this.releasesService.getCount(), { initialValue: null as number });
 
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -45,12 +45,12 @@ export class ReleasesComponent {
   offset = signal(0);
 
   currentPage: Signal<number> = computed(() => Math.floor(this.offset() / this.maxResults()) + 1);
-  lastPage: Signal<number> = computed(() => Math.ceil(this.countSignal() / this.maxResults()));
+  lastPage: Signal<number> = computed(() => Math.ceil(this.count() / this.maxResults()));
 
-  resultsSignal$: Signal<Release[]> = computed(() => {
-    return this.releasesSignal$().map((release) => ({
+  results: Signal<Release[]> = computed(() => {
+    return this.releases().map((release) => ({
       ...release,
-      default: release.id === this.defaultReleaseSignal()?.id,
+      default: release.id === this.defaultRelease()?.id,
     }));
   });
 
