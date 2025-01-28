@@ -1,7 +1,7 @@
-import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
@@ -9,51 +9,50 @@ import { ReleaseEditComponent } from './release-edit.component';
 import { Release } from './release';
 import { ReleasesService } from './releases.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AuthService, isAllowed } from '../../auth/auth.service';
-import { map, takeUntil } from 'rxjs/operators';
+import { AuthService } from '../../auth/auth.service';
+import { takeUntil } from 'rxjs/operators';
 import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-releases',
   standalone: true,
-  imports: [
-    AsyncPipe,
-    DatePipe,
-    IconComponent,
-    LoadingIndicatorComponent,
-    PaginationComponent,
-    ReleaseEditComponent,
-    ReleaseDeleteComponent,
-    ButtonComponent,
-  ],
+  imports: [DatePipe, IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent],
   templateUrl: './releases.component.html',
 })
-export class ReleasesComponent implements OnInit, OnDestroy {
+export class ReleasesComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private releasesService = inject(ReleasesService);
   private toastService = inject(ToastService);
 
-  releases$: Observable<Release[]>;
-  defaultRelease$: Observable<Release>;
-  count$: Observable<number>;
-  results$: Observable<Release[]>;
-  private error$ = new BehaviorSubject<string>('');
+  releasesSignal$: Signal<Release[]> = this.releasesService.releases;
+  defaultReleaseSignal: Signal<Release> = toSignal(this.releasesService.getDefaultRelease(), {
+    initialValue: null as Release,
+  });
+  countSignal: Signal<number> = toSignal(this.releasesService.getCount(), { initialValue: null as number });
 
+  private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
+  isLoading = signal(false);
   dateFormat = DATE_FORMAT;
 
   // pagination with default values
-  maxResults = 10;
-  offset = 0;
-  allResults: number;
-  currentPage: number;
-  lastPage: number;
+  maxResults = signal(10);
+  offset = signal(0);
 
-  isLoading = true;
+  currentPage: Signal<number> = computed(() => Math.floor(this.offset() / this.maxResults()) + 1);
+  lastPage: Signal<number> = computed(() => Math.ceil(this.countSignal() / this.maxResults()));
+
+  resultsSignal$: Signal<Release[]> = computed(() => {
+    return this.releasesSignal$().map((release) => ({
+      ...release,
+      default: release.id === this.defaultReleaseSignal()?.id,
+    }));
+  });
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -70,42 +69,6 @@ export class ReleasesComponent implements OnInit, OnDestroy {
       };
     }
   });
-
-  ngOnInit(): void {
-    this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
-      msg !== '' ? this.toastService.error(msg) : null;
-    });
-    this.count$ = this.releasesService.getCount();
-    this.defaultRelease$ = this.releasesService.getDefaultRelease();
-    this.getReleases();
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next(undefined);
-  }
-
-  private getReleases() {
-    this.isLoading = true;
-    this.releases$ = this.releasesService.getReleases(this.offset, this.maxResults);
-    this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
-
-    this.results$ = combineLatest([this.releases$, this.defaultRelease$, this.count$])
-      .pipe(
-        map(([releases, defaultR, count]) => {
-          this.lastPage = Math.ceil(count / this.maxResults);
-          releases.map((release) => {
-            if (release.id === defaultR.id) {
-              release.default = true;
-            }
-            return release;
-          });
-          return releases;
-        }),
-      )
-      .pipe();
-
-    this.isLoading = false;
-  }
 
   addRelease() {
     const modalRef = this.modalService.open(ReleaseEditComponent);
@@ -131,16 +94,20 @@ export class ReleasesComponent implements OnInit, OnDestroy {
   }
 
   save(release: Release) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.releasesService
       .save(release)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Release saved successfully.'),
         error: (e) => this.error$.next(e),
-        complete: () => this.getReleases(),
+        complete: () =>
+          this.releasesService.setOffsetAndMaxResultsForReleases({
+            offset: this.offset(),
+            maxResults: this.maxResults(),
+          }),
       });
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 
   deleteRelease(release: Release) {
@@ -158,26 +125,30 @@ export class ReleasesComponent implements OnInit, OnDestroy {
   }
 
   delete(release: Release) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.releasesService
       .delete(release.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Release deleted.'),
         error: (e) => this.error$.next(e),
-        complete: () => this.getReleases(),
+        complete: () =>
+          this.releasesService.setOffsetAndMaxResultsForReleases({
+            offset: this.offset(),
+            maxResults: this.maxResults(),
+          }),
       });
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 
   setMaxResultsPerPage(max: number) {
-    this.maxResults = max;
-    this.offset = 0;
-    this.getReleases();
+    this.maxResults.set(max);
+    this.offset.set(0);
+    this.releasesService.setOffsetAndMaxResultsForReleases({ offset: this.offset(), maxResults: this.maxResults() });
   }
 
   setNewOffset(offset: number) {
-    this.offset = offset;
-    this.getReleases();
+    this.offset.set(offset);
+    this.releasesService.setOffsetAndMaxResultsForReleases({ offset: this.offset(), maxResults: this.maxResults() });
   }
 }

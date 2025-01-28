@@ -1,16 +1,36 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient } from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Release } from './release';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, startWith, Subject } from 'rxjs';
 import { ResourceEntity } from './resource-entity';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { AppFunction } from '../functions/appFunction';
+import { Resource } from '../../resource/resource';
+import { ResourceType } from '../../resource/resource-type';
 
 @Injectable({ providedIn: 'root' })
 export class ReleasesService extends BaseService {
   private allReleases$ = this.getAllReleases();
   allReleases = toSignal(this.allReleases$, { initialValue: [] as Release[] });
+
+  private offsetMaxResults$: BehaviorSubject<{ offset: number; maxResults: number }> = new BehaviorSubject<{
+    offset: number;
+    maxResults: number;
+  }>({
+    offset: 0,
+    maxResults: 10,
+  });
+
+  private releases$: Observable<Release[]> = this.offsetMaxResults$.pipe(
+    switchMap((offsetMaxResults: { offset: number; maxResults: number }) =>
+      this.getReleases(offsetMaxResults.offset, offsetMaxResults.maxResults),
+    ),
+    shareReplay(1),
+  );
+
+  releases: Signal<Release[]> = toSignal(this.releases$, { initialValue: [] as Release[] });
 
   constructor(private http: HttpClient) {
     super();
@@ -81,5 +101,9 @@ export class ReleasesService extends BaseService {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
+  }
+
+  setOffsetAndMaxResultsForReleases(offsetMAxResult: { offset: number; maxResults: number }): void {
+    this.offsetMaxResults$.next(offsetMAxResult);
   }
 }

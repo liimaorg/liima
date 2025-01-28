@@ -1,4 +1,4 @@
-<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <div class="container">
   <div class="card row mt-2 mb-3">
     <div class="card-header">
@@ -26,7 +26,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of results$ | async; track item) {
+            @for (item of resultsSignal$(); track item.id) {
             <tr>
               <td>{{ item.name }}</td>
               <td>{{ item.mainRelease }}</td>
