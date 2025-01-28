@@ -4,7 +4,7 @@
     <div class="card-header">
       <div class="row justify-content-between align-items-center">
         <div class="col-sm">
-          @if (canCreate()) {
+          @if (permissions().canCreate) {
           <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addRelease()">
             <app-icon icon="plus-circle"></app-icon>
             Add release</app-button
@@ -33,7 +33,7 @@
               <td>{{ item.description }}</td>
               <td>{{ item.installationInProductionAt | date: dateFormat }}</td>
               <td class="text-nowrap align-items-center">
-                @if (item.default !== true && canEdit()) {
+                @if (item.default !== true && permissions().canEdit) {
                 <app-button
                   [variant]="'link'"
                   [size]="'sm'"
@@ -43,7 +43,7 @@
                   <app-icon icon="pencil"></app-icon
                 ></app-button>
                 }
-                @if (item.default !== true && canDelete()) {
+                @if (item.default !== true && permissions().canDelete) {
                 <app-button
                   [variant]="'link'"
                   [size]="'sm'"

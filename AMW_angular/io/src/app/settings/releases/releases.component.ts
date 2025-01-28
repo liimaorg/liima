@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
@@ -55,15 +55,26 @@ export class ReleasesComponent implements OnInit, OnDestroy {
 
   isLoading = true;
 
-  canCreate = signal<boolean>(false);
-  canEdit = signal<boolean>(false);
-  canDelete = signal<boolean>(false);
+  permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canCreate: this.authService.hasPermission('RELEASE', 'CREATE'),
+        canEdit: this.authService.hasPermission('RELEASE', 'UPDATE'),
+        canDelete: this.authService.hasPermission('RELEASE', 'DELETE'),
+      };
+    } else {
+      return {
+        canCreate: false,
+        canEdit: false,
+        canDelete: false,
+      };
+    }
+  });
 
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
       msg !== '' ? this.toastService.error(msg) : null;
     });
-    this.getUserPermissions();
     this.count$ = this.releasesService.getCount();
     this.defaultRelease$ = this.releasesService.getDefaultRelease();
     this.getReleases();
@@ -71,13 +82,6 @@ export class ReleasesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
-  }
-
-  private getUserPermissions() {
-    const actions = this.authService.getActionsForPermission('RELEASE');
-    this.canCreate.set(actions.some(isAllowed('CREATE')));
-    this.canEdit.set(actions.some(isAllowed('UPDATE')));
-    this.canDelete.set(actions.some(isAllowed('DELETE')));
   }
 
   private getReleases() {
