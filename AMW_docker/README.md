@@ -1,6 +1,6 @@
 # Liima Docker image
 
-This image is meant to run liima code quickly on widlfly server provided on docker. 
+This image is meant to run liima code quickly on wildfly server provided on docker. 
 Data is stored in the embedded h2 database in the container and it will be lost if the container is removed.
 
 To run latest code on docker, build the latest ear package:
