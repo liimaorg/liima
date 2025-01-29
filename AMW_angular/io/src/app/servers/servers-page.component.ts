@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, OnInit } from '@angular/core';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { AuthService } from '../auth/auth.service';
@@ -10,6 +10,7 @@ import { Config, pluck } from '../shared/configuration';
 import { ServersFilterComponent } from './servers-filter/servers-filter.component';
 import { EnvironmentService } from '../deployment/environment.service';
 import { ServerFilter } from './servers-filter/server-filter';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-servers-page',
@@ -43,11 +44,13 @@ import { ServerFilter } from './servers-filter/server-filter';
       </div>
     </app-page>`,
 })
-export class ServersPageComponent {
+export class ServersPageComponent implements OnInit {
   private authService = inject(AuthService);
   private serversService = inject(ServersService);
   private environmentsService = inject(EnvironmentService);
   private configurationService = inject(ConfigurationService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   isLoading: boolean = false;
 
@@ -59,6 +62,14 @@ export class ServersPageComponent {
     return this.serversService.servers();
   });
   configuration: Signal<Config[]> = this.configurationService.configuration;
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((params: ServerFilter) => {
+      if (params) {
+        this.serversService.setServerFilter(params);
+      }
+    });
+  }
 
   linkToHostUrl = computed(() => {
     if (!this.configuration()) return;
@@ -84,6 +95,7 @@ export class ServersPageComponent {
 
   searchFilter($event: ServerFilter) {
     this.isLoading = true;
+    this.router.navigate(['/servers'], { queryParams: $event });
     this.serversService.setServerFilter($event);
   }
 }

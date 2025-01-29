@@ -23,6 +23,7 @@ import { Resource } from '../resource/resource';
 import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
 import { ResourceTypesService } from '../resource/resource-types.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-apps',
@@ -48,6 +49,8 @@ export class AppsComponent implements OnInit, OnDestroy {
   private resourceService = inject(ResourceService);
   private resourceTypesService = inject(ResourceTypesService);
   private toastService = inject(ToastService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   upcomingRelease: Signal<Release> = toSignal(this.releaseService.getUpcomingRelease());
 
@@ -100,6 +103,15 @@ export class AppsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
       msg !== '' ? this.toastService.error(msg) : null;
+    });
+
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      if (params.filter) {
+        this.filter.set(params.filter);
+      }
+      if (params.releaseId) {
+        this.releaseId.set(params.releaseId);
+      }
     });
   }
 
@@ -175,6 +187,10 @@ export class AppsComponent implements OnInit, OnDestroy {
       update = true;
     }
     if (update) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { filter: this.filter(), releaseId: this.releaseId() },
+      });
       this.appsService.refreshData();
     }
   }
