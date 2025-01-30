@@ -27,6 +27,16 @@
                   {{ row[header.key]  | date: dateFormat }}
                 </td>
               }
+              @case ('icon') {
+                <td>
+                  <app-icon icon="{{this.getIcon(row[header.key], header)}}"></app-icon>
+                </td>
+              }
+              @case ('function') {
+                <td>
+                  {{ header.function(row[header.key]) }}
+                </td>
+              }
               @default {
                 <td>
                   {{ row[header.key] }}

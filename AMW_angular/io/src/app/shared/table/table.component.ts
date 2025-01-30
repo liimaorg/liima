@@ -10,6 +10,8 @@ export interface TableHeader<T = any> {
   key: keyof T;
   title: string;
   type?: TableCellType;
+  iconMapping?: { value: any; icon: string }[];
+  function?: (value: any) => string;
 }
 
 export enum EntryAction {
@@ -41,5 +43,10 @@ export class TableComponent {
 
   getTotalColspan() {
     return this.headers().length + (this.hasAction() ? 1 : 0);
+  }
+
+  getIcon(cellValue: any, header: TableHeader): string | undefined {
+    const mapping = header.iconMapping?.find((m) => m.value === cellValue);
+    return mapping?.icon;
   }
 }
