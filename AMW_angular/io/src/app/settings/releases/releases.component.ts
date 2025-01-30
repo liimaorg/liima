@@ -53,6 +53,21 @@ export class ReleasesComponent implements OnDestroy {
     }));
   });
 
+  resultTableData = computed(() =>
+    this.results().map((release) => {
+      return {
+        id: release.id,
+        name: release.name,
+        description: release.description,
+        mainRelease: release.mainRelease,
+        default: release.default,
+        installationInProductionAt: release.installationInProductionAt,
+        v: release.v,
+        readonly: release.default,
+      };
+    }),
+  );
+
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
@@ -155,7 +170,16 @@ export class ReleasesComponent implements OnDestroy {
     this.releasesService.setOffsetAndMaxResultsForReleases({ offset: this.offset(), maxResults: this.maxResults() });
   }
 
-  releasesHeader(): TableHeader<Release>[] {
+  releasesHeader(): TableHeader<{
+    name: string;
+    mainRelease: boolean;
+    description: string;
+    installationInProductionAt: number;
+    id: number;
+    v: number;
+    default: boolean;
+    readonly: boolean;
+  }>[] {
     return [
       {
         key: 'name',

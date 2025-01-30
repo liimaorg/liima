@@ -1,10 +1,10 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, InputSignal, output, Signal } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { IconComponent } from '../icon/icon.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
 import { DatePipe } from '@angular/common';
 
-export type TableCellType = 'badge-list' | 'date' | 'function' | 'icon';
+export type TableCellType = 'badge-list' | 'date' | 'function' | 'icon' | 'permission';
 
 export interface TableHeader<T = any> {
   key: keyof T;
@@ -29,9 +29,10 @@ export interface EntryActionOutput {
   standalone: true,
   imports: [ButtonComponent, IconComponent, DatePipe],
 })
-export class TableComponent {
+export class TableComponent<T> {
   entityName = input.required<string>();
-  headers = input.required<TableHeader[]>();
+  headers = input.required<TableHeader<T>[]>();
+  readonlyFlag = input<keyof T>();
   data = input.required<any[]>();
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);

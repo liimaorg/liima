@@ -17,7 +17,8 @@
       <app-table
         [entityName]="'releases'"
         [headers]="releasesHeader()"
-        [data]="results()"
+        [data]="resultTableData()"
+        [readonlyFlag]="'readonly'"
         [canDelete]="permissions().canDelete"
         [canEdit]="permissions().canEdit"
         (edit)="editRelease($event.id)"

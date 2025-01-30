@@ -46,7 +46,7 @@
           }
           @if (hasAction()) {
             <td class="text-end">
-              @if (canEdit()) {
+              @if (canEdit() && !row[readonlyFlag()]) {
                 <app-button
                   [size]="'sm'"
                   [variant]="'link'"
@@ -56,7 +56,7 @@
                   <app-icon icon="pencil"></app-icon>
                 </app-button>
               }
-              @if (canDelete()) {
+              @if (canDelete() && !row[readonlyFlag()]) {
                 <app-button
                   [size]="'sm'"
                   [variant]="'link'"
