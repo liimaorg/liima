@@ -155,7 +155,7 @@ export class ReleasesComponent implements OnDestroy {
     this.releasesService.setOffsetAndMaxResultsForReleases({ offset: this.offset(), maxResults: this.maxResults() });
   }
 
-  releasesHeader(): TableHeader[] {
+  releasesHeader(): TableHeader<Release>[] {
     return [
       {
         key: 'name',

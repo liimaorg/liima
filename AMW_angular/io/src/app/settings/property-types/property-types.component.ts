@@ -44,6 +44,18 @@ export class PropertyTypesComponent implements OnDestroy {
     }
   });
 
+  propertyTypesTableData = computed(() =>
+    this.propertyTypes().map((propertyType) => {
+      return {
+        id: propertyType.id,
+        name: propertyType.name,
+        encrypted: propertyType.encrypted,
+        validationRegex: propertyType.validationRegex,
+        propertyTags: propertyType.propertyTags.map((tag) => tag.name),
+      };
+    }),
+  );
+
   private readonly PROPERTY_TYPE = 'Property type';
   isLoading = false;
 
@@ -135,7 +147,13 @@ export class PropertyTypesComponent implements OnDestroy {
     this.isLoading = false;
   }
 
-  propertyTypesHeader(): TableHeader[] {
+  propertyTypesHeader(): TableHeader<{
+    id: number;
+    name: string;
+    encrypted: boolean;
+    validationRegex: string;
+    propertyTags: string[];
+  }>[] {
     return [
       {
         key: 'name',
@@ -153,7 +171,6 @@ export class PropertyTypesComponent implements OnDestroy {
         key: 'propertyTags',
         title: 'Tags',
         type: 'badge-list',
-        nested: [{ key: 'name', title: 'Tag Name' }, { key: 'type' }],
       },
     ];
   }

@@ -70,7 +70,7 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
     });
   }
 
-  deploymentParameterHeader(): TableHeader[] {
+  deploymentParameterHeader(): TableHeader<Key>[] {
     return [
       {
         key: 'name',

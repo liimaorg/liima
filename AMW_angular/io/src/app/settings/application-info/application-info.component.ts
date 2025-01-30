@@ -16,9 +16,21 @@ export class ApplicationInfoComponent {
   private settingService = inject(SettingService);
   appVersions = toSignal(this.settingService.getAppInformation(), { initialValue: [] as AppInformation[] });
   appConfigs = toSignal(this.settingService.getAllAppSettings(), { initialValue: [] as AppConfiguration[] });
+
+  appConfigsTableData = computed(() =>
+    this.appConfigs().map((config) => {
+      return {
+        keyValue: config.key.value,
+        keyEnv: config.key.env,
+        value: config.value,
+        defaultValue: config.defaultValue,
+      };
+    }),
+  );
+
   isLoading = computed(() => !this.appVersions().length || !this.appConfigs().length);
 
-  appVersionsHeader(): TableHeader[] {
+  appVersionsHeader(): TableHeader<AppInformation>[] {
     return [
       {
         key: 'key',
@@ -31,16 +43,20 @@ export class ApplicationInfoComponent {
     ];
   }
 
-  appConfigsHeader(): TableHeader[] {
+  appConfigsHeader(): TableHeader<{
+    keyValue: string;
+    keyEnv: string;
+    value: string;
+    defaultValue: string;
+  }>[] {
     return [
       {
-        key: 'key',
-        title: 'key',
-        type: 'split',
-        nested: [
-          { key: 'value', title: 'Key' },
-          { key: 'env', title: 'ENV' },
-        ],
+        key: 'keyValue',
+        title: 'Key',
+      },
+      {
+        key: 'keyEnv',
+        title: 'ENV',
       },
       {
         key: 'value',

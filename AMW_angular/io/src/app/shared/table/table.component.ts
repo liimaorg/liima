@@ -4,11 +4,12 @@ import { IconComponent } from '../icon/icon.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
 import { DatePipe } from '@angular/common';
 
-export interface TableHeader {
-  key: string;
-  title?: string;
-  type?: 'badge-list' | 'split' | 'date';
-  nested?: TableHeader[];
+export type TableCellType = 'badge-list' | 'date' | 'function' | 'icon';
+
+export interface TableHeader<T = any> {
+  key: keyof T;
+  title: string;
+  type?: TableCellType;
 }
 
 export enum EntryAction {
@@ -39,16 +40,6 @@ export class TableComponent {
   dateFormat = DATE_FORMAT;
 
   getTotalColspan() {
-    return this.headers().length + (this.hasAction() ? 1 : 0) + this.totalSplitHeaders();
-  }
-
-  private totalSplitHeaders() {
-    let total = 0;
-    this.headers().forEach((header: TableHeader) => {
-      if (header.type === 'split' && header.nested) {
-        total += header.nested.length;
-      }
-    });
-    return total;
+    return this.headers().length + (this.hasAction() ? 1 : 0);
   }
 }

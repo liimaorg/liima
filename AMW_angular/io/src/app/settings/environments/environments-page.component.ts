@@ -149,7 +149,7 @@ export class EnvironmentsPageComponent {
       });
   }
 
-  environmentHeader(): TableHeader[] {
+  environmentHeader(): TableHeader<Environment>[] {
     return [
       {
         key: 'name',

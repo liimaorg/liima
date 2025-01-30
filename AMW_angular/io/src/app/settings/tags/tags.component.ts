@@ -6,7 +6,8 @@ import { AuthService, isAllowed } from '../../auth/auth.service';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { TagsService } from './tags.service';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { TableComponent } from '../../shared/table/table.component';
+import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { Tag } from './tag';
 
 @Component({
   selector: 'app-tags',
@@ -53,7 +54,7 @@ export class TagsComponent implements OnInit, OnDestroy {
     this.toastService.success('Tag deleted.');
   }
 
-  tagsHeader() {
+  tagsHeader(): TableHeader<Tag>[] {
     return [
       {
         key: 'name',

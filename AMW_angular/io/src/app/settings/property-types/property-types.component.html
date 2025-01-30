@@ -16,7 +16,7 @@
       <app-table
         [entityName]="'property types'"
         [headers]="propertyTypesHeader()"
-        [data]="propertyTypes()"
+        [data]="propertyTypesTableData()"
         [canDelete]="permissions().canDelete"
         [canEdit]="permissions().canEditName"
         (edit)="editModal($event.id)"

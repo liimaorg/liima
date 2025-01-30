@@ -3,17 +3,7 @@
     <thead>
     <tr>
       @for (header of headers(); track header) {
-        @if (header.type === 'split'){
-          @if (header.nested) {
-            @for (n of header.nested; track n){
-              @if (n.title){
-                <th scope="col">{{ header.nested[header.nested.indexOf(n)].title }}</th>
-              }
-            }
-          }
-        } @else {
-          <th scope="col">{{ header.title }}</th>
-        }
+        <th scope="col">{{ header.title }}</th>
       }
       @if (hasAction()) {
         <th class="text-end" scope="col">Actions</th>
@@ -23,32 +13,25 @@
     <tbody>
       @for (row of data(); track row.id) {
         <tr>
-          @for (header of headers(); track header){
-            @if (header.type === 'badge-list') {
-              <td>
-                @if (header.nested){
-                  @for (n of header.nested; track n){
-                    @if (n.title){
-                        @for (elem of row[header.key]; track elem){ <!-- because is a badge-LIST -->
-                          <span class="badge bg-light text-dark rounded-pill">{{ elem[header.nested[header.nested.indexOf(n)].key] }}</span>
-                        }
-                    }
+          @for (header of headers(); track header) {
+            @switch (header.type) {
+              @case ('badge-list') {
+                <td>
+                  @for (item of row[header.key]; track item.id) {
+                    <span class="badge bg-light text-dark rounded-pill">{{ item }}</span>
                   }
-                }
-              </td>
-            } @else if (header.type === 'split'){
-              @if (header.nested) {
-                @for (n of header.nested; track n){
-                  @if (n.title){
-                    <td>{{ row[header.key][n.key] }}</td>
-                  }
-                }
+                </td>
               }
-            } @else if (header.type === 'date') {
-              <td>{{ row[header.key]  | date: dateFormat}}</td>
-            }
-            @else {
-              <td>{{ row[header.key] }}</td>
+              @case ('date') {
+                <td>
+                  {{ row[header.key]  | date: dateFormat }}
+                </td>
+              }
+              @default {
+                <td>
+                  {{ row[header.key] }}
+                </td>
+              }
             }
           }
           @if (hasAction()) {
@@ -76,10 +59,10 @@
             </td>
           }
         </tr>
-      }@empty {
-          <tr>
-              <td [colSpan]="getTotalColspan()">No {{ entityName() }} defined</td>
-          </tr>
+      } @empty {
+        <tr>
+          <td [colSpan]="getTotalColspan()">No {{ entityName() }} defined</td>
+        </tr>
       }
     </tbody>
   </table>
