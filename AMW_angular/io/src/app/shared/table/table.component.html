@@ -49,7 +49,7 @@
               @if (canEdit()) {
                 <app-button
                   [size]="'sm'"
-                  [variant]="'primary'"
+                  [variant]="'link'"
                   [additionalClasses]="'me-1'"
                   (click)="edit.emit({ action: EntryAction.edit, id: row.id })"
                 >
@@ -59,8 +59,8 @@
               @if (canDelete()) {
                 <app-button
                   [size]="'sm'"
-                  [variant]="'danger'"
-                  [additionalClasses]="'me-1'"
+                  [variant]="'link'"
+                  [additionalClasses]="'me-1 link-danger'"
                   (click)="delete.emit({ action: EntryAction.delete, id: row.id })"
                 >
                   <app-icon icon="trash"></app-icon>
