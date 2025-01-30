@@ -13,6 +13,7 @@ import { Subject } from 'rxjs';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { TableHeader, TableComponent } from '../../shared/table/table.component';
+import { PropertyTag } from './property-tag';
 
 @Component({
   selector: 'app-property-types',
@@ -35,7 +36,7 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
   canEditValidation = signal<boolean>(false);
   canSave = signal<boolean>(false);
 
-  propertyTypes: Signal<PropertyType[]>;
+  propertyTypes: Signal<PropertyType[]> = this.propertyTypeService.propertyTypes;
   error = signal<string>('');
   handleError = computed(() => {
     if (this.error() != '') {
@@ -48,7 +49,6 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.getUserPermissions();
-    this.getPropertyTypes();
     this.isLoading = false;
   }
 
@@ -63,10 +63,6 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
     this.canEditName.set(this.authService.hasPermission('EDIT_PROP_TYPE_NAME', 'ALL'));
     this.canEditValidation.set(this.authService.hasPermission('EDIT_PROP_TYPE_VALIDATION', 'ALL'));
     this.canSave.set(this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', 'ALL'));
-  }
-
-  private getPropertyTypes() {
-    this.propertyTypes = this.propertyTypeService.propertyTypes;
   }
 
   addModal() {
