@@ -21,7 +21,7 @@ import { PropertyTag } from './property-tag';
   imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
   templateUrl: './property-types.component.html',
 })
-export class PropertyTypesComponent implements OnInit, OnDestroy {
+export class PropertyTypesComponent implements OnDestroy {
   private authService = inject(AuthService);
   private propertyTypeService = inject(PropertyTypesService);
   private modalService = inject(NgbModal);
@@ -45,24 +45,32 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
   });
 
   private readonly PROPERTY_TYPE = 'Property type';
-  isLoading = true;
+  isLoading = false;
 
-  ngOnInit(): void {
-    this.getUserPermissions();
-    this.isLoading = false;
-  }
+  permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canAdd: this.authService.hasPermission('ADD_PROPTYPE', 'ALL'),
+        canDelete: this.authService.hasPermission('DELETE_PROPTYPE', 'ALL'),
+        canDisplay: this.authService.hasPermission('PROP_TYPE_NAME_VALUE', 'ALL'),
+        canEditName: this.authService.hasPermission('EDIT_PROP_TYPE_NAME', 'ALL'),
+        canEditValidation: this.authService.hasPermission('EDIT_PROP_TYPE_VALIDATION', 'ALL'),
+        canSave: this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', 'ALL'),
+      };
+    } else {
+      return {
+        canAdd: false,
+        canDelete: false,
+        canDisplay: false,
+        canEditName: false,
+        canEditValidation: false,
+        canSave: false,
+      };
+    }
+  });
 
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
-  }
-
-  private getUserPermissions() {
-    this.canAdd.set(this.authService.hasPermission('ADD_PROPTYPE', 'ALL'));
-    this.canDelete.set(this.authService.hasPermission('DELETE_PROPTYPE', 'ALL'));
-    this.canDisplay.set(this.authService.hasPermission('PROP_TYPE_NAME_VALUE', 'ALL'));
-    this.canEditName.set(this.authService.hasPermission('EDIT_PROP_TYPE_NAME', 'ALL'));
-    this.canEditValidation.set(this.authService.hasPermission('EDIT_PROP_TYPE_VALIDATION', 'ALL'));
-    this.canSave.set(this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', 'ALL'));
   }
 
   addModal() {

@@ -2,7 +2,7 @@
 <div class="container">
   <div class="card">
     <div class="card-header">
-      @if (canAdd()) {
+      @if (permissions().canAdd) {
       <app-button
         [variant]="'primary'"
         [additionalClasses]="'float-end'"
@@ -17,8 +17,8 @@
         [entityName]="'property types'"
         [headers]="propertyTypesHeader()"
         [data]="propertyTypes()"
-        [canDelete]="canDelete()"
-        [canEdit]="canEditName()"
+        [canDelete]="permissions().canDelete"
+        [canEdit]="permissions().canEditName"
         (edit)="editModal($event.id)"
         (delete)="deleteModal($event.id)">
       </app-table>
