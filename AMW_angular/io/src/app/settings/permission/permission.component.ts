@@ -20,7 +20,6 @@ import { FormsModule } from '@angular/forms';
 import {
   NgbNav,
   NgbNavItem,
-  NgbNavItemRole,
   NgbNavLinkButton,
   NgbNavLinkBase,
   NgbNavContent,
@@ -38,7 +37,6 @@ import { ResourceTypesService } from '../../resource/resource-types.service';
     LoadingIndicatorComponent,
     NgbNav,
     NgbNavItem,
-    NgbNavItemRole,
     NgbNavLinkButton,
     NgbNavLinkBase,
     NgbNavContent,
@@ -67,8 +65,6 @@ export class PermissionComponent implements OnInit {
     { id: null, name: null, hasChildren: false, children: [], isApplication: false, isDefaultResourceType: false },
   ];
 
-  defaultNavItem: string = 'Roles';
-  // role | user
   restrictionType: string = 'role';
   delegationMode: boolean = false;
   assignedRestrictions: Restriction[] = [];
@@ -161,10 +157,11 @@ export class PermissionComponent implements OnInit {
     this.create = false;
   }
 
-  modifyRestriction(restriction: Restriction) {
+  modifyRestriction(restrictionId: number) {
     // reset restriction list, discard unsaved changes
     this.clearMessages();
     this.resetPermissionList();
+    const restriction = this.assignedRestrictions.find((r) => r.id === restrictionId);
     this.backupRestriction = { ...restriction };
     this.restriction = restriction;
   }

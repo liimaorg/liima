@@ -13,7 +13,7 @@
   </thead>
 
   <tbody>
-    @for (restriction of restrictions; track restriction) {
+    @for (restriction of restrictions(); track restriction) {
     <tr>
       <td>{{ restriction.permission.name }}</td>
       <td>
@@ -27,8 +27,8 @@
       <td>{{ restriction.resourceTypeName }}</td>
       <td>{{ restriction.resourceTypePermission }}</td>
       <td>
-        @if (!delegationMode) {
-        <app-button [variant]="'link'" [size]="'sm'" (click)="modifyRestriction(restriction)"
+        @if (!delegationMode()) {
+        <app-button [variant]="'link'" [size]="'sm'" (click)="modifyRestriction(restriction.id)"
           ><app-icon icon="pencil"></app-icon>
         </app-button>
         <app-button [variant]="'link'" [size]="'sm'" (click)="removeRestriction(restriction.id)"
