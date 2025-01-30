@@ -37,6 +37,15 @@
                   {{ header.function(row[header.key]) }}
                 </td>
               }
+              @case ('link') {
+                <td>
+                  @if(!row[header.urlKey] || row[header.urlKey] == '') {
+                    {{ row[header.key] }}
+                  } @else {
+                    <a href="{{ row[header.urlKey] }}">{{ row[header.key] }}</a>
+                  }
+                </td>
+              }
               @default {
                 <td>
                   {{ row[header.key] }}
@@ -71,7 +80,7 @@
         </tr>
       } @empty {
         <tr>
-          <td [colSpan]="getTotalColspan()">No {{ entityName() }} defined</td>
+          <td [colSpan]="getTotalColspan()">No {{ entityName() }} defined/found</td>
         </tr>
       }
     </tbody>

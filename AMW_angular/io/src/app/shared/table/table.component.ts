@@ -4,7 +4,7 @@ import { IconComponent } from '../icon/icon.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
 import { DatePipe } from '@angular/common';
 
-export type TableCellType = 'badge-list' | 'date' | 'function' | 'icon' | 'permission';
+export type TableCellType = 'badge-list' | 'date' | 'function' | 'icon' | 'link';
 
 export interface TableHeader<T = any> {
   key: keyof T;
@@ -12,6 +12,7 @@ export interface TableHeader<T = any> {
   type?: TableCellType;
   iconMapping?: { value: any; icon: string }[];
   function?: (value: any) => string;
+  urlKey?: keyof T;
 }
 
 export enum EntryAction {
