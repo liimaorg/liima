@@ -32,11 +32,6 @@
                   <app-icon icon="{{this.getIcon(row[header.key], header)}}"></app-icon>
                 </td>
               }
-              @case ('function') {
-                <td>
-                  {{ header.function(row[header.key]) }}
-                </td>
-              }
               @case ('link') {
                 <td>
                   @if(!row[header.urlKey] || row[header.urlKey] == '') {

@@ -4,14 +4,13 @@ import { IconComponent } from '../icon/icon.component';
 import { DATE_FORMAT } from '../../core/amw-constants';
 import { DatePipe } from '@angular/common';
 
-export type TableCellType = 'badge-list' | 'date' | 'function' | 'icon' | 'link';
+export type TableCellType = 'badge-list' | 'date' | 'icon' | 'link';
 
 export interface TableColumnType<T = any> {
   key: keyof T;
   columnTitle: string;
   cellType?: TableCellType;
   iconMapping?: { value: any; icon: string }[];
-  function?: (value: any) => string;
   urlKey?: keyof T;
 }
 

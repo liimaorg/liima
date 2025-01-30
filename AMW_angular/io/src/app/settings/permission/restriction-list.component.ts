@@ -24,7 +24,7 @@ export class RestrictionListComponent {
         userName: res.userName,
         permissionName: res.permission.name,
         permissionGlobal: res.permission.old,
-        resourceGroupId: res.resourceGroupId,
+        resourceGroupName: this.getGroupName(res.resourceGroupId),
         resourceTypeName: res.resourceTypeName,
         resourceTypePermission: res.resourceTypePermission,
         contextName: res.contextName,
@@ -57,7 +57,7 @@ export class RestrictionListComponent {
     userName: string;
     permissionName: string;
     permissionGlobal: boolean;
-    resourceGroupId: number;
+    resourceGroupName: number;
     resourceTypeName: string;
     resourceTypePermission: string;
     contextName: string;
@@ -86,10 +86,8 @@ export class RestrictionListComponent {
         columnTitle: 'Environment',
       },
       {
-        key: 'resourceGroupId',
+        key: 'resourceGroupName',
         columnTitle: 'Res. Group',
-        cellType: 'function',
-        function: (value) => this.getGroupName(value),
       },
       {
         key: 'resourceTypeName',
