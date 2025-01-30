@@ -3,9 +3,9 @@ import { TableHeader, TableComponent } from './table.component';
 import { ComponentRef } from '@angular/core';
 
 describe('TableComponent', () => {
-  let component: TableComponent;
-  let componentRef: ComponentRef<TableComponent>;
-  let fixture: ComponentFixture<TableComponent>;
+  let component: TableComponent<any>;
+  let componentRef: ComponentRef<TableComponent<any>>;
+  let fixture: ComponentFixture<TableComponent<any>>;
 
   const header: TableHeader = {
     key: 'name',
