@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TableHeader, TableComponent } from './table.component';
+import { TableColumnType, TableComponent } from './table.component';
 import { ComponentRef } from '@angular/core';
 
 describe('TableComponent', () => {
@@ -7,9 +7,9 @@ describe('TableComponent', () => {
   let componentRef: ComponentRef<TableComponent<any>>;
   let fixture: ComponentFixture<TableComponent<any>>;
 
-  const header: TableHeader = {
+  const header: TableColumnType = {
     key: 'name',
-    title: 'Name',
+    columnTitle: 'Name',
   };
 
   beforeEach(async () => {

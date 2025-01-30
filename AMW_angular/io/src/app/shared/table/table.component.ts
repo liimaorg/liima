@@ -6,10 +6,10 @@ import { DatePipe } from '@angular/common';
 
 export type TableCellType = 'badge-list' | 'date' | 'function' | 'icon' | 'link';
 
-export interface TableHeader<T = any> {
+export interface TableColumnType<T = any> {
   key: keyof T;
-  title: string;
-  type?: TableCellType;
+  columnTitle: string;
+  cellType?: TableCellType;
   iconMapping?: { value: any; icon: string }[];
   function?: (value: any) => string;
   urlKey?: keyof T;
@@ -32,7 +32,7 @@ export interface EntryActionOutput {
 })
 export class TableComponent<T> {
   entityName = input.required<string>();
-  headers = input.required<TableHeader<T>[]>();
+  headers = input.required<TableColumnType<T>[]>();
   readonlyFlag = input<keyof T>();
   data = input.required<any[]>();
   canEdit = input<boolean>(false);
@@ -47,7 +47,7 @@ export class TableComponent<T> {
     return this.headers().length + (this.hasAction() ? 1 : 0);
   }
 
-  getIcon(cellValue: any, header: TableHeader): string | undefined {
+  getIcon(cellValue: any, header: TableColumnType): string | undefined {
     const mapping = header.iconMapping?.find((m) => m.value === cellValue);
     return mapping?.icon;
   }

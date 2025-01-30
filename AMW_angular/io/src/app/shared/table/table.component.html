@@ -3,7 +3,7 @@
     <thead>
     <tr>
       @for (header of headers(); track header) {
-        <th scope="col">{{ header.title }}</th>
+        <th scope="col">{{ header.columnTitle }}</th>
       }
       @if (hasAction()) {
         <th class="text-end" scope="col">Actions</th>
@@ -14,7 +14,7 @@
       @for (row of data(); track row.id) {
         <tr>
           @for (header of headers(); track header) {
-            @switch (header.type) {
+            @switch (header.cellType) {
               @case ('badge-list') {
                 <td>
                   @for (item of row[header.key]; track item.id) {

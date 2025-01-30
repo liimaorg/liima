@@ -10,7 +10,7 @@ import { FunctionsService } from './functions.service';
 import { FunctionEditComponent } from './function-edit.component';
 import { FunctionDeleteComponent } from './function-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-functions',
@@ -114,11 +114,11 @@ export class FunctionsComponent implements OnDestroy {
       });
   }
 
-  functionsTableHeader(): TableHeader<Function>[] {
+  functionsTableHeader(): TableColumnType<Function>[] {
     return [
       {
         key: 'name',
-        title: 'Functions Name',
+        columnTitle: 'Functions Name',
       },
     ];
   }

@@ -10,7 +10,7 @@ import { ResourceAddComponent } from '../resource-add/resource-add.component';
 import { Release } from '../../settings/releases/release';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-type-delete.component';
-import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 import { Router } from '@angular/router';
 
 @Component({
@@ -78,7 +78,7 @@ export class ResourcesListComponent {
       .subscribe((resourceType: ResourceType) => this.resourceTypeToDelete.emit(resourceType));
   }
 
-  resourcesHeader(): TableHeader<{
+  resourcesHeader(): TableColumnType<{
     id: number;
     name: string;
     type: string;
@@ -90,11 +90,11 @@ export class ResourcesListComponent {
     return [
       {
         key: 'name',
-        title: 'Release name',
+        columnTitle: 'Release name',
       },
       {
         key: 'defaultRelease',
-        title: 'Release',
+        columnTitle: 'Release',
       },
     ];
   }

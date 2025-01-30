@@ -12,7 +12,7 @@ import { PropertyTypeEditComponent } from './property-type-edit.component';
 import { Subject } from 'rxjs';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { TableHeader, TableComponent } from '../../shared/table/table.component';
+import { TableColumnType, TableComponent } from '../../shared/table/table.component';
 import { PropertyTag } from './property-tag';
 
 @Component({
@@ -147,7 +147,7 @@ export class PropertyTypesComponent implements OnDestroy {
     this.isLoading = false;
   }
 
-  propertyTypesHeader(): TableHeader<{
+  propertyTypesHeader(): TableColumnType<{
     id: number;
     name: string;
     encrypted: boolean;
@@ -157,20 +157,20 @@ export class PropertyTypesComponent implements OnDestroy {
     return [
       {
         key: 'name',
-        title: 'Property Name',
+        columnTitle: 'Property Name',
       },
       {
         key: 'encrypted',
-        title: 'Encrypted',
+        columnTitle: 'Encrypted',
       },
       {
         key: 'validationRegex',
-        title: 'Validation',
+        columnTitle: 'Validation',
       },
       {
         key: 'propertyTags',
-        title: 'Tags',
-        type: 'badge-list',
+        columnTitle: 'Tags',
+        cellType: 'badge-list',
       },
     ];
   }

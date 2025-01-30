@@ -4,7 +4,7 @@ import { SettingService } from '../../setting/setting.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AppInformation } from '../../setting/app-information';
 import { AppConfiguration } from '../../setting/app-configuration';
-import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-application-info',
@@ -30,20 +30,20 @@ export class ApplicationInfoComponent {
 
   isLoading = computed(() => !this.appVersions().length || !this.appConfigs().length);
 
-  appVersionsHeader(): TableHeader<AppInformation>[] {
+  appVersionsHeader(): TableColumnType<AppInformation>[] {
     return [
       {
         key: 'key',
-        title: 'Key',
+        columnTitle: 'Key',
       },
       {
         key: 'value',
-        title: 'Value',
+        columnTitle: 'Value',
       },
     ];
   }
 
-  appConfigsHeader(): TableHeader<{
+  appConfigsHeader(): TableColumnType<{
     keyValue: string;
     keyEnv: string;
     value: string;
@@ -52,19 +52,19 @@ export class ApplicationInfoComponent {
     return [
       {
         key: 'keyValue',
-        title: 'Key',
+        columnTitle: 'Key',
       },
       {
         key: 'keyEnv',
-        title: 'ENV',
+        columnTitle: 'ENV',
       },
       {
         key: 'value',
-        title: 'Value',
+        columnTitle: 'Value',
       },
       {
         key: 'defaultValue',
-        title: 'Default value',
+        columnTitle: 'Default value',
       },
     ];
   }

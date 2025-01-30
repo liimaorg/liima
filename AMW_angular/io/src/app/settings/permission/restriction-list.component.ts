@@ -2,7 +2,7 @@ import { Component, computed, input, output } from '@angular/core';
 import { Restriction } from './restriction';
 import * as _ from 'lodash';
 import { Resource } from '../../resource/resource';
-import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-restriction-list',
@@ -51,7 +51,7 @@ export class RestrictionListComponent {
     return null;
   }
 
-  restrictionsHeader(): TableHeader<{
+  restrictionsHeader(): TableColumnType<{
     id: number;
     roleName: string;
     userName: string;
@@ -66,12 +66,12 @@ export class RestrictionListComponent {
     return [
       {
         key: 'permissionName',
-        title: 'Permission',
+        columnTitle: 'Permission',
       },
       {
         key: 'permissionGlobal',
-        title: 'Global',
-        type: 'icon',
+        columnTitle: 'Global',
+        cellType: 'icon',
         iconMapping: [
           { value: true, icon: 'check' },
           { value: false, icon: null },
@@ -79,25 +79,25 @@ export class RestrictionListComponent {
       },
       {
         key: 'action',
-        title: 'Action',
+        columnTitle: 'Action',
       },
       {
         key: 'contextName',
-        title: 'Environment',
+        columnTitle: 'Environment',
       },
       {
         key: 'resourceGroupId',
-        title: 'Res. Group',
-        type: 'function',
+        columnTitle: 'Res. Group',
+        cellType: 'function',
         function: (value) => this.getGroupName(value),
       },
       {
         key: 'resourceTypeName',
-        title: 'Res. Type',
+        columnTitle: 'Res. Type',
       },
       {
         key: 'resourceTypePermission',
-        title: 'Res. Type Cat.',
+        columnTitle: 'Res. Type Cat.',
       },
     ];
   }

@@ -10,7 +10,7 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
 import { EnvironmentDeleteComponent } from './environment-delete/environment-delete.component';
 import { AuthService } from '../../auth/auth.service';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-environments-page',
@@ -149,15 +149,15 @@ export class EnvironmentsPageComponent {
       });
   }
 
-  environmentHeader(): TableHeader<Environment>[] {
+  environmentHeader(): TableColumnType<Environment>[] {
     return [
       {
         key: 'name',
-        title: 'Environment name',
+        columnTitle: 'Environment name',
       },
       {
         key: 'nameAlias',
-        title: 'Environment alias',
+        columnTitle: 'Environment alias',
       },
     ];
   }

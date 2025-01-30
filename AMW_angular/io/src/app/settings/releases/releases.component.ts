@@ -14,7 +14,7 @@ import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-releases',
@@ -170,7 +170,7 @@ export class ReleasesComponent implements OnDestroy {
     this.releasesService.setOffsetAndMaxResultsForReleases({ offset: this.offset(), maxResults: this.maxResults() });
   }
 
-  releasesHeader(): TableHeader<{
+  releasesHeader(): TableColumnType<{
     name: string;
     mainRelease: boolean;
     description: string;
@@ -183,20 +183,20 @@ export class ReleasesComponent implements OnDestroy {
     return [
       {
         key: 'name',
-        title: 'Release Name',
+        columnTitle: 'Release Name',
       },
       {
         key: 'mainRelease',
-        title: 'Main Release',
+        columnTitle: 'Main Release',
       },
       {
         key: 'description',
-        title: 'Description',
+        columnTitle: 'Description',
       },
       {
         key: 'installationInProductionAt',
-        title: 'Date',
-        type: 'date',
+        columnTitle: 'Date',
+        cellType: 'date',
       },
     ];
   }

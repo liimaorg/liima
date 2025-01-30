@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, Signal } from '@angular/core';
 import { Server } from '../server';
-import { TableComponent, TableHeader } from '../../shared/table/table.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-servers-list',
@@ -37,7 +37,7 @@ export class ServersListComponent {
       }),
   );
 
-  serversHeader(): TableHeader<{
+  serversHeader(): TableColumnType<{
     host: string;
     hostLinkUrl: string;
     appServer: string;
@@ -52,37 +52,37 @@ export class ServersListComponent {
     return [
       {
         key: 'host',
-        title: 'Host',
-        type: 'link',
+        columnTitle: 'Host',
+        cellType: 'link',
         urlKey: 'hostLinkUrl',
       },
       {
         key: 'environment',
-        title: 'Env',
+        columnTitle: 'Env',
       },
       {
         key: 'appServer',
-        title: 'AppServer',
-        type: 'link',
+        columnTitle: 'AppServer',
+        cellType: 'link',
         urlKey: 'appServerLinkUrl',
       },
       {
         key: 'appServerRelease',
-        title: 'AppServer Release',
+        columnTitle: 'AppServer Release',
       },
       {
         key: 'runtime',
-        title: 'Runtime',
+        columnTitle: 'Runtime',
       },
       {
         key: 'node',
-        title: 'Node',
-        type: 'link',
+        columnTitle: 'Node',
+        cellType: 'link',
         urlKey: 'nodeLinkUrl',
       },
       {
         key: 'nodeRelease',
-        title: 'Node Release',
+        columnTitle: 'Node Release',
       },
     ];
   }
