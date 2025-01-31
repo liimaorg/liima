@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, Signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal, Signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -22,7 +22,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   imports: [DatePipe, IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent],
   templateUrl: './releases.component.html',
 })
-export class ReleasesComponent {
+export class ReleasesComponent implements OnDestroy {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private releasesService = inject(ReleasesService);
@@ -69,6 +69,10 @@ export class ReleasesComponent {
       };
     }
   });
+
+  ngOnDestroy(): void {
+    this.destroy$.next(undefined);
+  }
 
   addRelease() {
     const modalRef = this.modalService.open(ReleaseEditComponent);
