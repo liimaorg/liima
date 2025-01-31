@@ -1,10 +1,10 @@
-<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <div class="container">
   <div class="card row mt-2 mb-3">
     <div class="card-header">
       <div class="row justify-content-between align-items-center">
         <div class="col-sm">
-          @if (canCreate()) {
+          @if (permissions().canCreate) {
           <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addRelease()">
             <app-icon icon="plus-circle"></app-icon>
             Add release</app-button
@@ -26,14 +26,14 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of results$ | async; track item) {
+            @for (item of results(); track item.id) {
             <tr>
               <td>{{ item.name }}</td>
               <td>{{ item.mainRelease }}</td>
               <td>{{ item.description }}</td>
               <td>{{ item.installationInProductionAt | date: dateFormat }}</td>
               <td class="text-nowrap align-items-center">
-                @if (item.default !== true && canEdit()) {
+                @if (item.default !== true && permissions().canEdit) {
                 <app-button
                   [variant]="'link'"
                   [size]="'sm'"
@@ -43,7 +43,7 @@
                   <app-icon icon="pencil"></app-icon
                 ></app-button>
                 }
-                @if (item.default !== true && canDelete()) {
+                @if (item.default !== true && permissions().canDelete) {
                 <app-button
                   [variant]="'link'"
                   [size]="'sm'"
@@ -67,8 +67,8 @@
     <div class="card-footer py-1">
       <div class="row bg-light align-items-center">
         <app-pagination
-          [currentPage]="currentPage"
-          [lastPage]="lastPage"
+          [currentPage]="currentPage()"
+          [lastPage]="lastPage()"
           (doSetMax)="setMaxResultsPerPage($event)"
           (doSetOffset)="setNewOffset($event)"
         >
