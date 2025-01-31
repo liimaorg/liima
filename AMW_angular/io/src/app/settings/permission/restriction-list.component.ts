@@ -20,15 +20,13 @@ export class RestrictionListComponent {
     this.restrictions().map((res) => {
       return {
         id: res.id,
-        roleName: res.roleName,
-        userName: res.userName,
         permissionName: res.permission.name,
         permissionGlobal: res.permission.old,
+        action: res.action,
+        contextName: res.contextName,
         resourceGroupName: this.getGroupName(res.resourceGroupId),
         resourceTypeName: res.resourceTypeName,
         resourceTypePermission: res.resourceTypePermission,
-        contextName: res.contextName,
-        action: res.action,
       };
     }),
   );
@@ -53,15 +51,13 @@ export class RestrictionListComponent {
 
   restrictionsHeader(): TableColumnType<{
     id: number;
-    roleName: string;
-    userName: string;
     permissionName: string;
     permissionGlobal: boolean;
+    action: string;
+    contextName: string;
     resourceGroupName: number;
     resourceTypeName: string;
     resourceTypePermission: string;
-    contextName: string;
-    action: string;
   }>[] {
     return [
       {

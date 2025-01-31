@@ -34,11 +34,7 @@ export class ResourcesListComponent {
         return {
           id: resource.id,
           name: resource.name,
-          type: resource.type,
-          version: resource.version,
           defaultRelease: resource.defaultRelease.release,
-          releases: resource.releases,
-          defaultResourceId: resource.defaultResourceId,
         };
       }),
   );
@@ -80,11 +76,7 @@ export class ResourcesListComponent {
   resourcesHeader(): TableColumnType<{
     id: number;
     name: string;
-    type: string;
-    version: string;
     defaultRelease: string;
-    releases: Release[];
-    defaultResourceId?: number;
   }>[] {
     return [
       {

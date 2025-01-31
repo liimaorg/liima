@@ -58,11 +58,9 @@ export class ReleasesComponent implements OnDestroy {
       return {
         id: release.id,
         name: release.name,
-        description: release.description,
         mainRelease: release.mainRelease,
-        default: release.default,
+        description: release.description,
         installationInProductionAt: release.installationInProductionAt,
-        v: release.v,
         readonly: release.default,
       };
     }),
@@ -171,13 +169,11 @@ export class ReleasesComponent implements OnDestroy {
   }
 
   releasesHeader(): TableColumnType<{
+    id: number;
     name: string;
     mainRelease: boolean;
     description: string;
     installationInProductionAt: number;
-    id: number;
-    v: number;
-    default: boolean;
     readonly: boolean;
   }>[] {
     return [
