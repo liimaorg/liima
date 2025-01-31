@@ -11,7 +11,6 @@ import { Release } from '../../settings/releases/release';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-type-delete.component';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-resources-list',

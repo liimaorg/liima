@@ -13,7 +13,6 @@ import { Subject } from 'rxjs';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { TableColumnType, TableComponent } from '../../shared/table/table.component';
-import { PropertyTag } from './property-tag';
 
 @Component({
   selector: 'app-property-types',
