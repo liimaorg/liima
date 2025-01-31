@@ -36,12 +36,6 @@ export class EnvironmentsPageComponent {
     return envTree[0].children;
   });
 
-  private getUserPermissions() {
-    canAdd: this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', 'ALL');
-    canDelete: this.authService.hasPermission('REMOVE_ENV_OR_DOM', 'ALL');
-    canEdit: this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', 'ALL');
-  }
-
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
