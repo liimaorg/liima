@@ -11,6 +11,7 @@ import { ResourceType } from '../../../resource/resource-type';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
 import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete.component';
+import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit.component';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 
@@ -103,11 +104,62 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
   }
 
   addTemplate() {
-    this.modalService.open('This would open a modal to add a new resource type template');
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = {
+      id: null,
+      relatedResourceIdentifier: '',
+      name: '',
+      targetPath: '',
+      targetPlatforms: [],
+      fileContent: '',
+      sourceType: 'RESOURCE_TYPE',
+    };
+    modalRef.componentInstance.canAddOrEdit = this.permissions().canAdd;
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => this.createTemplate(templateData));
+  }
+
+  private createTemplate(templateData: ResourceTemplate) {
+    this.templatesService
+      .addResourceTypeTemplate(templateData, this.resourceType().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id);
+        },
+      });
   }
 
   private editTemplate(id: number) {
-    this.modalService.open('This would open a modal to edit template with id: ' + id);
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = this.templates()?.find((item) => item.id === id);
+    modalRef.componentInstance.canAddOrEdit = this.permissions().canEdit;
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => {
+        templateData.sourceType = 'RESOURCE_TYPE';
+        this.updateTemplate(templateData);
+      });
+  }
+
+  private updateTemplate(templateData: ResourceTemplate) {
+    this.templatesService
+      .updateResourceTypeTemplate(templateData, this.resourceType().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id);
+        },
+      });
   }
 
   private deleteTemplate(id: number) {
