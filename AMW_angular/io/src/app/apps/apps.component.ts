@@ -61,9 +61,6 @@ export class AppsComponent implements OnInit, OnDestroy {
     { initialValue: [] as Resource[] },
   );
   appServers = this.appsService.apps;
-  count = this.appsService.count;
-  maxResults = this.appsService.limit;
-  offset = this.appsService.offset;
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
@@ -84,8 +81,8 @@ export class AppsComponent implements OnInit, OnDestroy {
     }
   });
 
-  currentPage = computed(() => Math.floor(this.offset() / this.maxResults()) + 1);
-  lastPage = computed(() => Math.ceil(this.count() / this.maxResults()));
+  currentPage = computed(() => Math.floor(this.appsService.offset() / this.appsService.limit()) + 1);
+  lastPage = computed(() => Math.ceil(this.appsService.count() / this.appsService.limit()));
 
   constructor() {
     toObservable(this.upcomingRelease)
@@ -161,13 +158,13 @@ export class AppsComponent implements OnInit, OnDestroy {
   }
 
   setMaxResultsPerPage(max: number) {
-    this.maxResults.set(max);
-    this.offset.set(0);
+    this.appsService.limit.set(max);
+    this.appsService.offset.set(0);
     this.appsService.refreshData();
   }
 
   setNewOffset(offset: number) {
-    this.offset.set(offset);
+    this.appsService.offset.set(offset);
     this.appsService.refreshData();
   }
 
