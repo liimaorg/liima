@@ -1,7 +1,5 @@
 import { Component, Input, EventEmitter, Output, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Release } from '../../settings/releases/release';
-import { ServerFilter } from '../../servers/servers-filter/server-filter';
 
 @Component({
   selector: 'app-pagination',
