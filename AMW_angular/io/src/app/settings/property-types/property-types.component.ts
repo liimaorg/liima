@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, OnInit, Signal, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth/auth.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
