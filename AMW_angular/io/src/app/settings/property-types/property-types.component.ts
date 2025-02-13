@@ -38,13 +38,23 @@ export class PropertyTypesComponent implements OnDestroy {
 
   propertyTypesTableData = computed(() =>
     this.propertyTypes().map((propertyType) => {
-      return {
-        id: propertyType.id,
-        name: propertyType.name,
-        encrypted: propertyType.encrypted ? 'Yes' : 'No',
-        validationRegex: propertyType.validationRegex,
-        propertyTags: propertyType.propertyTags.map((tag) => tag.name),
-      };
+      if (this.permissions().canDisplay) {
+        return {
+          id: propertyType.id,
+          name: propertyType.name,
+          encrypted: propertyType.encrypted ? 'Yes' : 'No',
+          validationRegex: propertyType.validationRegex,
+          propertyTags: propertyType.propertyTags.map((tag) => tag.name),
+        };
+      } else {
+        return {
+          id: propertyType.id,
+          name: propertyType.name, //only name visible
+          encrypted: '',
+          validationRegex: '',
+          propertyTags: [],
+        };
+      }
     }),
   );
 
