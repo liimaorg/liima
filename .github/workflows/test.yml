@@ -2,9 +2,9 @@ name: test and build
 
 on:
   push:
-    branches: [ master, development ]
+    branches: [ master, development, angular_fixes ]
   pull_request:
-    branches: [ master, development ]
+    branches: [ master, development, angular_fixes ]
 
 jobs:
   build_and_test:
