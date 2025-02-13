@@ -28,13 +28,6 @@ export class PropertyTypesComponent implements OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  canAdd = signal<boolean>(false);
-  canDelete = signal<boolean>(false);
-  canDisplay = signal<boolean>(false);
-  canEditName = signal<boolean>(false);
-  canEditValidation = signal<boolean>(false);
-  canSave = signal<boolean>(false);
-
   propertyTypes: Signal<PropertyType[]> = this.propertyTypeService.propertyTypes;
   error = signal<string>('');
   handleError = computed(() => {
@@ -48,7 +41,7 @@ export class PropertyTypesComponent implements OnDestroy {
       return {
         id: propertyType.id,
         name: propertyType.name,
-        encrypted: propertyType.encrypted,
+        encrypted: propertyType.encrypted ? 'Yes' : 'No',
         validationRegex: propertyType.validationRegex,
         propertyTags: propertyType.propertyTags.map((tag) => tag.name),
       };
@@ -116,7 +109,7 @@ export class PropertyTypesComponent implements OnDestroy {
 
   save(propertyType: PropertyType) {
     this.isLoading = true;
-    if (this.canSave() && this.canEditValidation && this.canEditName) {
+    if (this.permissions().canSave && this.permissions().canEditValidation && this.permissions().canEditName) {
       this.propertyTypeService
         .save(propertyType)
         .pipe(takeUntil(this.destroy$))
