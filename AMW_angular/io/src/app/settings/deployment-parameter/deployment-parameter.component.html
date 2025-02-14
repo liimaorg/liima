@@ -19,6 +19,7 @@
       <app-table
         [entityName]="'deployment parameters'"
         [headers]="deploymentParameterHeader()"
+        [dataCyNameKey]="'name'"
         [data]="paramKeys"
         [canDelete]="canDelete()"
         (delete)="deleteKey($event.id)">

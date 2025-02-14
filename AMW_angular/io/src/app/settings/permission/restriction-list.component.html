@@ -1,6 +1,7 @@
 <app-table
   [entityName]="'restrictions'"
   [headers]="restrictionsHeader()"
+  [dataCyNameKey]="'permissionName'"
   [data]="restrictionsTableData()"
   [canDelete]="!delegationMode()"
   [canEdit]="!delegationMode()"

@@ -30,11 +30,13 @@ describe("PropertyTypes -CRUD", () => {
     cy.get("#regex").type("sd");
     cy.get('[data-cy="button-save"]').click();
     cy.contains("Property type already exists.");
-    cy.get('[data-cy="edit-test-property-type"]').click({ force: true });
+    cy.get('[data-cy="button-edit-test-property-type"]').click({ force: true });
     cy.get("#encrypted").click();
     cy.get('[data-cy="button-save"]').click();
     cy.contains("Property type saved.");
-    cy.get('[data-cy="delete-test-property-type"]').click({ force: true });
+    cy.get('[data-cy="button-delete-test-property-type"]').click({
+      force: true,
+    });
     cy.get('[data-cy="button-delete"]').click();
     cy.contains("Property type deleted.");
   });

@@ -43,6 +43,7 @@
       <app-table
         [entityName]="'environments'"
         [headers]="environmentHeader()"
+        [dataCyNameKey]="'name'"
         [data]="domain.children"
         [canDelete]="permissions().canDelete"
         [canEdit]="permissions().canEdit"

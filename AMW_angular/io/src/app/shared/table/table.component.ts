@@ -12,6 +12,7 @@ export interface TableColumnType<T = any> {
   cellType?: TableCellType;
   iconMapping?: { value: any; icon: string }[];
   urlKey?: keyof T;
+  nameKey?: keyof T;
 }
 
 export enum EntryAction {
@@ -32,6 +33,7 @@ export interface EntryActionOutput {
 export class TableComponent<T> {
   entityName = input.required<string>();
   headers = input.required<TableColumnType<T>[]>();
+  dataCyNameKey = input<keyof T>();
   readonlyFlag = input<keyof T>();
   data = input.required<any[]>();
   canEdit = input<boolean>(false);

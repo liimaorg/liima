@@ -16,6 +16,7 @@
       <app-table
         [entityName]="'property types'"
         [headers]="propertyTypesHeader()"
+        [dataCyNameKey]="'name'"
         [data]="propertyTypesTableData()"
         [canDelete]="permissions().canDisplay && permissions().canDelete"
         [canEdit]="permissions().canDisplay && permissions().canEditName"

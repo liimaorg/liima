@@ -1,5 +1,4 @@
 describe("Functions -CRUD", () => {
-
   /**
    * Test scenario:
    * 1. adding a function without content should not be possible
@@ -21,29 +20,28 @@ describe("Functions -CRUD", () => {
     cy.get('[data-cy="button-add"]').click();
     cy.get("#name").type("testFunction");
     cy.get('[data-cy="button-save"]').should("be.disabled");
-    cy.get('.cm-activeLine').invoke('text', "testContent");
+    cy.get(".cm-activeLine").invoke("text", "testContent");
     cy.get('[data-cy="button-save"]').click();
     cy.contains("Function saved successfully.");
     cy.get('[data-cy="button-add"]').click();
     cy.get("#name").type("testFunction");
-    cy.get('.cm-activeLine').invoke('text', "differentContent");
+    cy.get(".cm-activeLine").invoke("text", "differentContent");
     cy.get('[data-cy="button-save"]').click();
     cy.contains("Function with same name already exists");
     cy.get('[data-cy="button-add"]').click();
-    cy.get('.cm-activeLine').invoke('text', "testContent");
+    cy.get(".cm-activeLine").invoke("text", "testContent");
     cy.get('[data-cy="button-save"]').should("be.disabled");
     cy.get("#name").type("differentFunction");
     cy.get('[data-cy="button-save"]').click({ force: true });
-    cy.get('[data-cy="icon-delete"]').first().click();
+    cy.get('[data-cy="button-delete-testFunction"]').first().click();
     cy.get('[data-cy="button-delete"]').click();
     cy.contains("Function deleted");
-    cy.get('[data-cy="icon-delete"]').first().click();
+    cy.get('[data-cy="button-delete-differentFunction"]').first().click();
     cy.get('[data-cy="button-delete"]').click();
     cy.contains("Function deleted");
   });
 
   it("should create, edit, compare and delete a function", () => {
-
     /**
      * Test scenario:
      * 1. adding a function without content should not be possible
@@ -64,19 +62,19 @@ describe("Functions -CRUD", () => {
     cy.get('[data-cy="button-add"]').click();
     cy.get("#name").type("testFunctionEdit");
     cy.get('[data-cy="button-save"]').should("be.disabled");
-    cy.get('.cm-activeLine').invoke('text', "testContentBla");
+    cy.get(".cm-activeLine").invoke("text", "testContentBla");
     cy.get('[data-cy="button-save"]').click();
     cy.contains("Function saved successfully.");
-    cy.get('[data-cy="button-edit"]').click();
-    cy.get('.cm-activeLine').invoke('text', "{enter}differentContent");
+    cy.get('[data-cy="button-edit-testFunctionEdit"]').click();
+    cy.get(".cm-activeLine").invoke("text", "{enter}differentContent");
     cy.get('[data-cy="button-save"]').click({ force: true });
     cy.contains("Function saved successfully.");
-    cy.get('[data-cy="button-edit"]').click();
+    cy.get('[data-cy="button-edit-testFunctionEdit"]').click();
     cy.get('[data-cy="button-dropdown"]').click();
-    cy.get('.dropdown-item').first().click();
-    cy.get('app-diff-editor').should('be.visible');
-    cy.get('[data-cy="button-cancel"]').click({force: true});
-    cy.get('[data-cy="icon-delete"]').first().click();
+    cy.get(".dropdown-item").first().click();
+    cy.get("app-diff-editor").should("be.visible");
+    cy.get('[data-cy="button-cancel"]').click({ force: true });
+    cy.get('[data-cy="button-delete-testFunctionEdit"]').first().click();
     cy.get('[data-cy="button-delete"]').click();
     cy.contains("Function deleted");
   });

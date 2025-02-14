@@ -28,6 +28,7 @@
       <app-table
         [entityName]="'resources'"
         [headers]="resourcesHeader()"
+        [dataCyNameKey]="'name'"
         [data]="resourceGroupListTableData()"
         [canDelete]="false"
         [canEdit]="permissions().canReadResources"

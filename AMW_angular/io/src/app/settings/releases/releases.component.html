@@ -17,6 +17,7 @@
       <app-table
         [entityName]="'releases'"
         [headers]="releasesHeader()"
+        [dataCyNameKey]="'name'"
         [data]="resultTableData()"
         [readonlyFlag]="'readonly'"
         [canDelete]="permissions().canDelete"

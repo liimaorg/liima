@@ -55,6 +55,7 @@
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'me-1'"
+                  [dataCy]="'button-edit-' + row[dataCyNameKey()]"
                   (click)="edit.emit({ action: EntryAction.edit, id: row.id })"
                 >
                   <app-icon icon="pencil"></app-icon>
@@ -65,6 +66,7 @@
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'me-1 link-danger'"
+                  [dataCy]="'button-delete-'+ row[dataCyNameKey()]"
                   (click)="delete.emit({ action: EntryAction.delete, id: row.id })"
                 >
                   <app-icon icon="trash"></app-icon>

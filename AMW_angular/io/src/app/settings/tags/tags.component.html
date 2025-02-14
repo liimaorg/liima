@@ -19,6 +19,7 @@
       <app-table
         [entityName]="'tags'"
         [headers]="tagsHeader()"
+        [dataCyNameKey]="'name'"
         [data]="tags()"
         [canDelete]="canDelete()"
         (delete)="deleteTag($event.id)">
