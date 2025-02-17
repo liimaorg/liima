@@ -103,7 +103,7 @@ export class AppsComponent implements OnInit, OnDestroy {
         this.appsService.filter.set(params.filter);
       }
       if (params.releaseId) {
-        this.appsService.releaseId.set(params.releaseId);
+        this.appsService.releaseId.set(Number(params.releaseId));
       }
     });
   }
@@ -170,7 +170,10 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   updateFilter(values: { filter: string; releaseId: number }) {
     let update = false;
-    if (values.filter !== undefined && this.appsService.filter() !== values.filter) {
+    if (
+      !(this.isFilterEmpty(values.filter) && this.isFilterEmpty(this.appsService.filter())) &&
+      values.filter !== this.appsService.filter()
+    ) {
       this.appsService.filter.set(values.filter);
       update = true;
     }
@@ -186,6 +189,10 @@ export class AppsComponent implements OnInit, OnDestroy {
       });
       this.appsService.refreshData();
     }
+  }
+
+  private isFilterEmpty(value: string | null | undefined): boolean {
+    return value === null || value === undefined || value === '';
   }
 
   ngOnDestroy(): void {

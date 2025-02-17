@@ -38,15 +38,15 @@ export class AppsService extends BaseService {
     if (!releaseId) return of([]);
 
     let urlParams = '';
-    if (offset != null) {
+    if (offset !== null) {
       urlParams = `start=${offset}&`;
     }
 
-    if (limit != null) {
+    if (limit !== null) {
       urlParams += `limit=${limit}&`;
     }
 
-    if (filter != null) {
+    if (filter !== undefined && filter !== null && filter !== '') {
       urlParams += `appServerName=${filter}&`;
     }
 
