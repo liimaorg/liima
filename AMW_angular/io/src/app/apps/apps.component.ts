@@ -66,7 +66,7 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   showLoader = signal(false);
   isLoading = computed(() => {
-    return this.appServers() === undefined || this.showLoader();
+    return this.appServers() === undefined || this.appServers() === null || this.showLoader();
   });
 
   permissions = computed(() => {

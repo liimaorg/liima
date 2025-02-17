@@ -19,12 +19,12 @@ export class AppsService extends BaseService {
   filter = signal<string>(null);
   releaseId: WritableSignal<number | undefined> = signal(undefined);
   private apps$: Observable<AppServer[]> = this.reload$.pipe(
-    startWith(null),
     switchMap(() => this.getApps(this.offset(), this.limit(), this.filter(), this.releaseId())),
+    startWith(null),
     shareReplay(1),
   );
   count = signal(0);
-  apps = toSignal(this.apps$, { initialValue: [] as AppServer[] });
+  apps = toSignal(this.apps$, { initialValue: null as AppServer[] });
 
   constructor() {
     super();
