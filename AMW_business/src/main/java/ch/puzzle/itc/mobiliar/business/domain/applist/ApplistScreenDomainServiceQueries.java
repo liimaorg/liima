@@ -43,16 +43,10 @@ public class ApplistScreenDomainServiceQueries {
     @Inject
     private DatabaseUtil dbUtil;
 
-
-    Tuple<List<ResourceEntity>, Long> getAppServersWithApps(Integer startIndex, Integer maxResult, String nameFilter) {
+    Tuple<List<ResourceEntity>, Long> getAppServersWithApps(String nameFilter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
-
-
-
-        // Count all values before filtering
-        Long totalCount = getTotalCount(cb);
 
         // Filter and retrieve results
         CriteriaQuery<ResourceEntity> q = cb.createQuery(ResourceEntity.class);
@@ -85,15 +79,10 @@ public class ApplistScreenDomainServiceQueries {
 
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
 
-        if (startIndex != null) {
-            query.setFirstResult(startIndex);
-        }
+        // Count all values after filtering
+        Long count = (long) query.getResultList().size();
 
-        if (maxResult != null) {
-            query.setMaxResults(maxResult);
-        }
-
-        return  new Tuple<>(query.getResultList(), totalCount);
+        return  new Tuple<>(query.getResultList(), count);
     }
 
     private Long getTotalCount(CriteriaBuilder cb) {

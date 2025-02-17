@@ -38,14 +38,13 @@ public class ApplistScreenDomainService {
     @Inject
     private ApplistScreenDomainServiceQueries queries;
 
-    Tuple<List<ResourceEntity>, Long> getApplicationServerResources(Integer startIndex, Integer maxResults, String filter) {
-        return queries.getAppServersWithApps(startIndex, maxResults, filter);
+    public Tuple<List<ResourceEntity>, Long> getAppServerResourcesWithApplications(String filter, boolean withAppServerContainer) {
+        Tuple<List<ResourceEntity>, Long>  result = queries.getAppServersWithApps(filter);
+        List<ResourceEntity> appServerList = filterAppServersResourcesWithApplications(withAppServerContainer, result.getA());
+      return new Tuple<>(appServerList, (long) appServerList.size());
     }
 
-
-    public Tuple<List<ResourceEntity>, Long> getAppServerResourcesWithApplications(Integer startIndex, Integer maxResults, String filter, boolean withAppServerContainer) {
-        Tuple<List<ResourceEntity>, Long>  result = getApplicationServerResources(startIndex, maxResults, filter);
-        List<ResourceEntity> appServerList = result.getA();
+    private static List<ResourceEntity> filterAppServersResourcesWithApplications(boolean withAppServerContainer, List<ResourceEntity> appServerList) {
         for (ResourceEntity as : appServerList) {
             if (as.getName().equals(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName())) {
                 if (!withAppServerContainer || as.getConsumedMasterRelations().isEmpty()) {
@@ -55,7 +54,7 @@ public class ApplistScreenDomainService {
                 ;
             }
         }
-        return new Tuple<List<ResourceEntity>, Long>(appServerList, result.getB());
+        return appServerList;
     }
 
 }
