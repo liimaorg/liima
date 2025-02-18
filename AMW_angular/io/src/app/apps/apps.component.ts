@@ -192,7 +192,7 @@ export class AppsComponent implements OnInit, OnDestroy {
   }
 
   private isFilterEmpty(value: string | null | undefined): boolean {
-    return value === null || value === undefined || value === '';
+    return value === null || value === undefined || value.trim() === '';
   }
 
   ngOnDestroy(): void {
