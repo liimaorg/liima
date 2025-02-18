@@ -25,36 +25,15 @@
       </div>
     </div>
     <div class="card-body">
-      <table class="table table-sm table-striped">
-        <thead>
-          <tr>
-            <th scope="col" class="w-100">Resource name</th>
-            <th scope="col">Release</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (resource of resourceGroupList(); track resource.id) {
-          <tr>
-            <td>{{ resource.name }}</td>
-            <td>{{ resource.defaultRelease ? resource.defaultRelease.release : '' }}</td>
-            <td class="align-items-center">
-              <a
-                href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{
-                  resource.defaultResourceId ? resource.defaultResourceId : resource.id
-                }}"
-              >
-                <app-button [variant]="'link'" [size]="'sm'"> <app-icon icon="pencil"></app-icon></app-button>
-              </a>
-            </td>
-          </tr>
-          } @empty {
-          <tr>
-            <td colspan="4" class="text-center">No resources defined</td>
-          </tr>
-          }
-        </tbody>
-      </table>
+      <app-table
+        [entityName]="'resources'"
+        [headers]="resourcesHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="resourceGroupListTableData()"
+        [canDelete]="false"
+        [canEdit]="permissions().canReadResources"
+        (edit)="openEditResourcePage($event.id)">
+      </app-table>
     </div>
   </div>
   }

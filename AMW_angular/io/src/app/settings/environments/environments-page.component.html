@@ -9,20 +9,20 @@
     >
   }
   @for (domain of environmentTree(); track domain.id) {
-  <div class="card">
+  <div class="card mb-5">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
         <h3>{{ domain.name }}
           @if (permissions().canEdit) {
             <app-button [variant]="'link'"
-                        (click)="editContext(domain)">
+                        (click)="editContext(domain.id)">
               <app-icon icon="pencil"></app-icon>
             </app-button>
           }
           @if (permissions().canDelete) {
             <app-button [variant]="'link'"
                         [additionalClasses]="'link-danger'"
-                        (click)="deleteContext(domain)">
+                        (click)="deleteContext(domain.id)">
               <app-icon icon="trash"></app-icon>
             </app-button>
           }
@@ -40,46 +40,16 @@
       </div>
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th scope="col" class="w-25">Environment name</th>
-              <th scope="col" class="w-100">Environment alias</th>
-              <th scope="col" class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (env of domain.children; track env.id) {
-            <tr>
-              <td>{{ env.name }}</td>
-              <td>{{ env.nameAlias ? env.nameAlias : '-' }}</td>
-              <td class="text-nowrap text-center">
-                @if (permissions().canEdit) {
-                  <app-button [variant]="'link'"
-                              [size]="'sm'"
-                              (click)="editContext(env)">
-                    <app-icon icon="pencil"></app-icon>
-                  </app-button>
-                }
-                @if (permissions().canDelete) {
-                  <app-button [variant]="'link'"
-                              [size]="'sm'"
-                              [additionalClasses]="'link-danger'"
-                              (click)="deleteContext(env)">
-                    <app-icon icon="trash"></app-icon>
-                  </app-button>
-                }
-              </td>
-            </tr>
-            } @empty {
-            <tr>
-              <td colspan="3" class="text-center">No environments added yet</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-table
+        [entityName]="'environments'"
+        [headers]="environmentHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="domain.children"
+        [canDelete]="permissions().canDelete"
+        [canEdit]="permissions().canEdit"
+        (edit)="editContext($event.id)"
+        (delete)="deleteContext($event.id)">
+      </app-table>
     </div>
   </div>
   }

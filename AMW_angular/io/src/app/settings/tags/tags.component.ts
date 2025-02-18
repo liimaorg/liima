@@ -6,13 +6,15 @@ import { AuthService, isAllowed } from '../../auth/auth.service';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { TagsService } from './tags.service';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
+import { Tag } from './tag';
 
 @Component({
   selector: 'app-tags',
   templateUrl: './tags.component.html',
   styleUrl: './tags.component.scss',
   standalone: true,
-  imports: [FormsModule, IconComponent, ButtonComponent],
+  imports: [FormsModule, IconComponent, ButtonComponent, TableComponent],
 })
 export class TagsComponent implements OnInit, OnDestroy {
   private tagsService = inject(TagsService);
@@ -50,5 +52,14 @@ export class TagsComponent implements OnInit, OnDestroy {
   deleteTag(tagId: number): void {
     this.tagsService.delete(tagId);
     this.toastService.success('Tag deleted.');
+  }
+
+  tagsHeader(): TableColumnType<Tag>[] {
+    return [
+      {
+        key: 'name',
+        columnTitle: 'Name',
+      },
+    ];
   }
 }

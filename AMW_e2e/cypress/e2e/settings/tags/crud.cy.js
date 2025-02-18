@@ -25,9 +25,9 @@ describe("Tags -CRUD", () => {
     cy.get("#tagName").type("other-tag");
     cy.get('[data-cy="button-add"]').click();
     cy.get("#tagName").should("be.empty");
-    cy.get('[data-cy="delete-other-tag"]').click();
+    cy.get('[data-cy="button-delete-other-tag"]').click();
     cy.contains("Tag deleted");
-    cy.get('[data-cy="delete-test-tag"]').click();
+    cy.get('[data-cy="button-delete-test-tag"]').click();
     cy.contains("Tag deleted");
   });
 });

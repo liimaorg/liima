@@ -12,50 +12,16 @@
       }
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th scope="col" class="w-100">Function Name</th>
-              <th scope="col" class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (function of functions(); track function; let idx = $index) {
-            <tr>
-              <td class="align-middle">{{ function.name }}</td>
-              <td class="text-nowrap text-center">
-                @if (permissions().canView) {
-                <app-button
-                  [variant]="'link'"
-                  [size]="'sm'"
-                  [dataCy]="'button-edit'"
-                  [additionalClasses]="'me-0'"
-                  (click)="editFunction(function)"
-                >
-                  <app-icon icon="pencil"></app-icon
-                ></app-button>
-                }
-                @if (permissions().canManage) {
-                <app-button
-                  [variant]="'link'"
-                  [size]="'sm'"
-                  [additionalClasses]="'me-0 link-danger'"
-                  [dataCy]="'icon-delete'"
-                  (click)="deleteFunction(function)"
-                  ><app-icon icon="trash"></app-icon
-                ></app-button>
-                }
-              </td>
-            </tr>
-            } @empty {
-            <tr>
-              <td colspan="2" class="text-center">No functions defined</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-table
+        [entityName]="'functions'"
+        [headers]="functionsTableHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="functions()"
+        [canDelete]="permissions().canManage"
+        [canEdit]="permissions().canView"
+        (edit)="editFunction($event.id)"
+        (delete)="deleteFunction($event.id)">
+      </app-table>
     </div>
   </div>
 </div>

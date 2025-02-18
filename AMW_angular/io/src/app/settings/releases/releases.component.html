@@ -14,55 +14,17 @@
       </div>
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th class="w-25">Release Name</th>
-              <th class="w-25">Main Release</th>
-              <th class="w-25">Description</th>
-              <th class="w-25">Date</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of results(); track item.id) {
-            <tr>
-              <td>{{ item.name }}</td>
-              <td>{{ item.mainRelease }}</td>
-              <td>{{ item.description }}</td>
-              <td>{{ item.installationInProductionAt | date: dateFormat }}</td>
-              <td class="text-nowrap align-items-center">
-                @if (item.default !== true && permissions().canEdit) {
-                <app-button
-                  [variant]="'link'"
-                  [size]="'sm'"
-                  [additionalClasses]="'me-0'"
-                  (click)="editRelease(item)"
-                >
-                  <app-icon icon="pencil"></app-icon
-                ></app-button>
-                }
-                @if (item.default !== true && permissions().canDelete) {
-                <app-button
-                  [variant]="'link'"
-                  [size]="'sm'"
-                  [additionalClasses]="'me-0 link-danger'"
-                  (click)="deleteRelease(item)"
-                >
-                  <app-icon icon="trash"></app-icon
-                ></app-button>
-                }
-              </td>
-            </tr>
-            } @empty {
-            <tr>
-              <td colspan="5" class="text-center">No releases defined</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-table
+        [entityName]="'releases'"
+        [headers]="releasesHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="resultTableData()"
+        [readonlyFlag]="'readonly'"
+        [canDelete]="permissions().canDelete"
+        [canEdit]="permissions().canEdit"
+        (edit)="editRelease($event.id)"
+        (delete)="deleteRelease($event.id)">
+      </app-table>
     </div>
     <div class="card-footer py-1">
       <div class="row bg-light align-items-center">

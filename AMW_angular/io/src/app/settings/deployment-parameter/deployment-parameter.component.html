@@ -16,34 +16,14 @@
       </div>
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (paramKey of paramKeys; track paramKey) {
-            <tr>
-              <td class="align-middle">{{ paramKey.name }}</td>
-              <td class="text-end">
-                @if (canDelete()) {
-                <app-button [variant]="'link'" [size]="'sm'" [additionalClasses]="'me-0 link-danger'" (click)="deleteKey(paramKey.id)"
-                  ><app-icon icon="trash"></app-icon
-                ></app-button>
-                }
-              </td>
-            </tr>
-            } @empty {
-            <tr>
-              <td colspan="2" class="text-center">No deployment parameters defined</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-table
+        [entityName]="'deployment parameters'"
+        [headers]="deploymentParameterHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="paramKeys"
+        [canDelete]="canDelete()"
+        (delete)="deleteKey($event.id)">
+      </app-table>
     </div>
   </div>
 </div>

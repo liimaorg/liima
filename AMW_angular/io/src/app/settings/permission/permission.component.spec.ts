@@ -328,10 +328,18 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   it('should create a copy of the original Restriction on modifyRestriction', () => {
     // given
+    component.assignedRestrictions = [
+      {
+        id: 123,
+        contextName: 'B',
+        permission: { name: 'aPermission' },
+      } as Restriction,
+    ];
+
     expect(component.restriction).toBeNull();
     expect(component.backupRestriction).toBeNull();
     // when
-    component.modifyRestriction({ id: 123 } as Restriction);
+    component.modifyRestriction(123);
     // then
     expect(component.restriction).not.toBeNull();
     expect(component.restriction.id).toBe(123);

@@ -1,5 +1,4 @@
 import { Component, computed, inject, OnDestroy, signal, Signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -15,11 +14,12 @@ import { ReleaseDeleteComponent } from './release-delete.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-releases',
   standalone: true,
-  imports: [DatePipe, IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent],
+  imports: [IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent, TableComponent],
   templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnDestroy {
@@ -38,7 +38,6 @@ export class ReleasesComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
 
   isLoading = signal(false);
-  dateFormat = DATE_FORMAT;
 
   // pagination with default values
   maxResults = signal(10);
@@ -53,6 +52,19 @@ export class ReleasesComponent implements OnDestroy {
       default: release.id === this.defaultRelease()?.id,
     }));
   });
+
+  resultTableData = computed(() =>
+    this.results().map((release) => {
+      return {
+        id: release.id,
+        name: release.name,
+        mainRelease: release.mainRelease,
+        description: release.description,
+        installationInProductionAt: release.installationInProductionAt,
+        readonly: release.default,
+      };
+    }),
+  );
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -89,9 +101,9 @@ export class ReleasesComponent implements OnDestroy {
       .subscribe((release: Release) => this.save(release));
   }
 
-  editRelease(release: Release) {
+  editRelease(releaseId: number) {
     const modalRef = this.modalService.open(ReleaseEditComponent);
-    modalRef.componentInstance.release = release;
+    modalRef.componentInstance.release = this.results().find((item) => item.id === releaseId);
     modalRef.componentInstance.saveRelease
       .pipe(takeUntil(this.destroy$))
       .subscribe((release: Release) => this.save(release));
@@ -114,13 +126,13 @@ export class ReleasesComponent implements OnDestroy {
     this.isLoading.set(false);
   }
 
-  deleteRelease(release: Release) {
+  deleteRelease(releaseId: number) {
     this.releasesService
-      .getReleaseResources(release.id)
+      .getReleaseResources(releaseId)
       .pipe(takeUntil(this.destroy$))
       .subscribe((list) => {
         const modalRef = this.modalService.open(ReleaseDeleteComponent);
-        modalRef.componentInstance.release = release;
+        modalRef.componentInstance.release = this.results().find((item) => item.id === releaseId);
         modalRef.componentInstance.resources = list;
         modalRef.componentInstance.deleteRelease
           .pipe(takeUntil(this.destroy$))
@@ -154,5 +166,34 @@ export class ReleasesComponent implements OnDestroy {
   setNewOffset(offset: number) {
     this.offset.set(offset);
     this.releasesService.setOffsetAndMaxResultsForReleases({ offset: this.offset(), maxResults: this.maxResults() });
+  }
+
+  releasesHeader(): TableColumnType<{
+    id: number;
+    name: string;
+    mainRelease: boolean;
+    description: string;
+    installationInProductionAt: number;
+    readonly: boolean;
+  }>[] {
+    return [
+      {
+        key: 'name',
+        columnTitle: 'Release Name',
+      },
+      {
+        key: 'mainRelease',
+        columnTitle: 'Main Release',
+      },
+      {
+        key: 'description',
+        columnTitle: 'Description',
+      },
+      {
+        key: 'installationInProductionAt',
+        columnTitle: 'Date',
+        cellType: 'date',
+      },
+    ];
   }
 }

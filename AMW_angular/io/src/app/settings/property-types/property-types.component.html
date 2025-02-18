@@ -2,7 +2,7 @@
 <div class="container">
   <div class="card">
     <div class="card-header">
-      @if (canAdd()) {
+      @if (permissions().canAdd) {
       <app-button
         [variant]="'primary'"
         [additionalClasses]="'float-end'"
@@ -13,60 +13,16 @@
       }
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th scope="col">Property Name</th>
-              <th scope="col">Encrypted</th>
-              <th scope="col" class="w-50">Validation</th>
-              <th scope="col" class="w-25">Tags</th>
-              <th scope="col" class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (property of propertyTypes(); track property.id) {
-            <tr>
-              <td>{{ property.name }}</td>
-              @if (canDisplay()) {
-              <td>{{ property.encrypted ? 'Yes' : 'No' }}</td>
-              <td>{{ property.validationRegex }}</td>
-              <td>
-                @for (tag of property.propertyTags; track tag.name) {
-                <span class="badge bg-light text-dark rounded-pill">{{ tag.name }}</span>
-                }
-              </td>
-              <td class="text-nowrap text-center">
-                @if (canEditName()) {
-                <app-button
-                  [variant]="'link'"
-                  [size]="'sm'"
-                  [dataCy]="'edit-' + property.name"
-                  (click)="editModal(property)"
-                  ><app-icon icon="pencil"></app-icon
-                ></app-button>
-                }
-                @if (canDelete()) {
-                <app-button
-                  [variant]="'link'"
-                  [size]="'sm'"
-                  [additionalClasses]="'link-danger'"
-                  [dataCy]="'delete-' + property.name"
-                  (click)="deleteModal(property)"
-                  ><app-icon icon="trash"></app-icon
-                ></app-button>
-                }
-              </td>
-              }
-            </tr>
-            } @empty {
-            <tr>
-              <td colspan="5" class="">No property types defined</td>
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-table
+        [entityName]="'property types'"
+        [headers]="propertyTypesHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="propertyTypesTableData()"
+        [canDelete]="permissions().canDisplay && permissions().canDelete"
+        [canEdit]="permissions().canDisplay && permissions().canEditName"
+        (edit)="editModal($event.id)"
+        (delete)="deleteModal($event.id)">
+      </app-table>
     </div>
   </div>
 </div>
