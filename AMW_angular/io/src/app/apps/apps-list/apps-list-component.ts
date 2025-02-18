@@ -1,16 +1,14 @@
-import { Component, Input } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { PaginationComponent } from '../../shared/pagination/pagination.component';
+import { Component, input } from '@angular/core';
 import { App } from '../app';
 
 @Component({
   selector: 'app-apps-list',
   standalone: true,
-  imports: [AsyncPipe, PaginationComponent],
+  imports: [],
   templateUrl: './apps-list.component.html',
   styleUrl: './apps-list.component.scss',
 })
 export class AppsListComponent {
-  @Input() apps: App[];
-  @Input() even: boolean;
+  apps = input.required<App[]>();
+  even = input.required<boolean>();
 }
