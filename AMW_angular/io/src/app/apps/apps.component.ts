@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
 import { BehaviorSubject, of, skip, Subject, take } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
-import { AsyncPipe } from '@angular/common';
 import { IconComponent } from '../shared/icon/icon.component';
 import { PageComponent } from '../layout/page/page.component';
 import { AppsFilterComponent } from './apps-filter/apps-filter.component';
@@ -31,7 +30,6 @@ import { ActivatedRoute, Router } from '@angular/router';
   imports: [
     AppsFilterComponent,
     AppsServersListComponent,
-    AsyncPipe,
     IconComponent,
     LoadingIndicatorComponent,
     PageComponent,
@@ -63,11 +61,6 @@ export class AppsComponent implements OnInit, OnDestroy {
     { initialValue: [] as Resource[] },
   );
   appServers = this.appsService.apps;
-  count = this.appsService.count;
-  maxResults = this.appsService.limit;
-  offset = this.appsService.offset;
-  filter = this.appsService.filter;
-  releaseId = this.appsService.releaseId;
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
@@ -88,14 +81,14 @@ export class AppsComponent implements OnInit, OnDestroy {
     }
   });
 
-  currentPage = computed(() => Math.floor(this.offset() / this.maxResults()) + 1);
-  lastPage = computed(() => Math.ceil(this.count() / this.maxResults()));
+  currentPage = computed(() => Math.floor(this.appsService.offset() / this.appsService.limit()) + 1);
+  lastPage = computed(() => Math.ceil(this.appsService.count() / this.appsService.limit()));
 
   constructor() {
     toObservable(this.upcomingRelease)
       .pipe(takeUntil(this.destroy$), skip(1), take(1))
       .subscribe((release) => {
-        this.releaseId.set(release.id);
+        this.appsService.releaseId.set(release.id);
         this.appsService.refreshData();
       });
   }
@@ -107,10 +100,10 @@ export class AppsComponent implements OnInit, OnDestroy {
 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       if (params.filter) {
-        this.filter.set(params.filter);
+        this.appsService.filter.set(params.filter);
       }
       if (params.releaseId) {
-        this.releaseId.set(params.releaseId);
+        this.appsService.releaseId.set(Number(params.releaseId));
       }
     });
   }
@@ -165,34 +158,41 @@ export class AppsComponent implements OnInit, OnDestroy {
   }
 
   setMaxResultsPerPage(max: number) {
-    this.maxResults.set(max);
-    this.offset.set(0);
+    this.appsService.limit.set(max);
+    this.appsService.offset.set(0);
     this.appsService.refreshData();
   }
 
   setNewOffset(offset: number) {
-    this.offset.set(offset);
+    this.appsService.offset.set(offset);
     this.appsService.refreshData();
   }
 
   updateFilter(values: { filter: string; releaseId: number }) {
     let update = false;
-    if (values.filter !== undefined && this.filter() !== values.filter) {
-      this.filter.set(values.filter);
+    if (
+      !(this.isFilterEmpty(values.filter) && this.isFilterEmpty(this.appsService.filter())) &&
+      values.filter !== this.appsService.filter()
+    ) {
+      this.appsService.filter.set(values.filter);
       update = true;
     }
 
-    if (values.releaseId > 0 && this.releaseId() !== values.releaseId) {
-      this.releaseId.set(values.releaseId);
+    if (values.releaseId > 0 && this.appsService.releaseId() !== values.releaseId) {
+      this.appsService.releaseId.set(values.releaseId);
       update = true;
     }
     if (update) {
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { filter: this.filter(), releaseId: this.releaseId() },
+        queryParams: { filter: this.appsService.filter(), releaseId: this.appsService.releaseId() },
       });
       this.appsService.refreshData();
     }
+  }
+
+  private isFilterEmpty(value: string | null | undefined): boolean {
+    return value === null || value === undefined || value.trim() === '';
   }
 
   ngOnDestroy(): void {
