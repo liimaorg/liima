@@ -78,7 +78,7 @@ export class ResourceTypeFunctionsListComponent {
           canDelete: this.permissions().canDelete,
         });
       }
-      if (this.permissions().canShowSuperTypeFunctions) {
+      if (this.permissions().canShowSuperTypeFunctions && this.resourceType().hasParent) {
         result.push({
           title: 'Supertype Functions',
           entries: resource,

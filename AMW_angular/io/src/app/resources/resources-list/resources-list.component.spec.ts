@@ -15,6 +15,7 @@ describe('ResourcesListComponent', () => {
     id: 1,
     name: 'type',
     hasChildren: false,
+    hasParent: false,
     children: [],
     isApplication: false,
     isDefaultResourceType: false,

@@ -40,6 +40,7 @@ public class ResourceTypeDTO {
     private Integer id;
     private String name;
     private boolean hasChildren;
+    private boolean hasParent;
     private List<ResourceTypeDTO> children;
     @JsonProperty(value="isApplication")
     private boolean isApplication;
@@ -50,6 +51,7 @@ public class ResourceTypeDTO {
         this.id = resourceType.getId();
         this.name = resourceType.getName();
         this.hasChildren = resourceType.hasChildren();
+        this.hasParent = !resourceType.isRootResourceType();
         this.children = resourceType.getChildrenResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
                 .collect(Collectors.toList());
