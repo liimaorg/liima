@@ -54,7 +54,7 @@
                 <app-button
                   [size]="'sm'"
                   [variant]="'link'"
-                  [additionalClasses]="'me-1'"
+                  [additionalClasses]="'me-4 p-0'"
                   [dataCy]="'button-edit-' + row[dataCyNameKey()]"
                   (click)="edit.emit({ action: EntryAction.edit, id: row.id })"
                 >
@@ -65,7 +65,7 @@
                 <app-button
                   [size]="'sm'"
                   [variant]="'link'"
-                  [additionalClasses]="'me-1 link-danger'"
+                  [additionalClasses]="'p-0 link-danger'"
                   [dataCy]="'button-delete-'+ row[dataCyNameKey()]"
                   (click)="delete.emit({ action: EntryAction.delete, id: row.id })"
                 >
