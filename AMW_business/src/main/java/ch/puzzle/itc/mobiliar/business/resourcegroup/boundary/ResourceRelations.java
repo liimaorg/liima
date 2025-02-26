@@ -50,10 +50,9 @@ public class ResourceRelations {
     ResourceDependencyResolverService dependencyResolverService;
 
     @HasPermission(permission = Permission.APP_AND_APPSERVER_LIST)
-    public Tuple<List<ResourceWithRelations>, Long> getAppServersWithApplications(String filter, ReleaseEntity release) {
-        Tuple<List<ResourceEntity>, Long> result = applistScreenDomainService.getAppServerResourcesWithApplications(filter, true);
-        List<ResourceWithRelations> filteredResult = filterAppServersByRelease(release, result.getA());
-        return new Tuple<>(filteredResult, (long) filteredResult.size());
+    public List<ResourceWithRelations> getAppServersWithApplications(String filter, ReleaseEntity release) {
+        List<ResourceEntity> result = applistScreenDomainService.getAppServerResourcesWithApplications(filter, true);
+        return filterAppServersByRelease(release, result);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)

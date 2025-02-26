@@ -43,7 +43,7 @@ public class ApplistScreenDomainServiceQueries {
     @Inject
     private DatabaseUtil dbUtil;
 
-    Tuple<List<ResourceEntity>, Long> getAppServersWithApps(String nameFilter) {
+    List<ResourceEntity> getAppServersWithApps(String nameFilter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
@@ -79,22 +79,17 @@ public class ApplistScreenDomainServiceQueries {
 
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
 
-        // Count all values after filtering
-        Long count = (long) query.getResultList().size();
+        /*
+         * The maximum number of results to return when no name filter is applied.
+         * This is used to prevent large result sets from being returned.
+         */
+        int DEFAULT_MAX_RESULTS_OF_NON_FILTERED_RESULT = 20;
 
-        return  new Tuple<>(query.getResultList(), count);
+        if (nameFilterIsEmpty) {
+            query.setFirstResult(0);
+            query.setMaxResults(DEFAULT_MAX_RESULTS_OF_NON_FILTERED_RESULT);
+        }
+
+        return query.getResultList();
     }
-
-    private Long getTotalCount(CriteriaBuilder cb) {
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<ResourceEntity> appServer = countQuery.from(ResourceEntity.class);
-        Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
-        SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
-        Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
-        countQuery.select(cb.countDistinct(appServer.get("id")));
-        countQuery.where(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
-        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
-        return totalCount;
-    }
-
 }

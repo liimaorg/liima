@@ -38,10 +38,9 @@ public class ApplistScreenDomainService {
     @Inject
     private ApplistScreenDomainServiceQueries queries;
 
-    public Tuple<List<ResourceEntity>, Long> getAppServerResourcesWithApplications(String filter, boolean withAppServerContainer) {
-        Tuple<List<ResourceEntity>, Long>  result = queries.getAppServersWithApps(filter);
-        List<ResourceEntity> appServerList = filterAppServersResourcesWithApplications(withAppServerContainer, result.getA());
-      return new Tuple<>(appServerList, (long) appServerList.size());
+    public List<ResourceEntity> getAppServerResourcesWithApplications(String filter, boolean withAppServerContainer) {
+        List<ResourceEntity>  result = queries.getAppServersWithApps(filter);
+        return filterAppServersResourcesWithApplications(withAppServerContainer, result);
     }
 
     private static List<ResourceEntity> filterAppServersResourcesWithApplications(boolean withAppServerContainer, List<ResourceEntity> appServerList) {

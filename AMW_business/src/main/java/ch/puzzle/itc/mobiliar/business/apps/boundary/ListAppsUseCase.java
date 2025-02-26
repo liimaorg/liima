@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ListAppsUseCase {
 
-    Tuple<List<ResourceWithRelations>, Long> appsFor(Integer startIndex, Integer maxResults, String filter, Integer releaseId) throws NotFoundException;
+    List<ResourceWithRelations> appsFor(String filter, Integer releaseId) throws NotFoundException;
 
 }

@@ -86,7 +86,7 @@ public class ResourceRelationsTest {
         UserSettingsEntity userSettings = Mockito.mock(UserSettingsEntity.class);
         Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
         List<ResourceEntity> aslist = Arrays.asList(as);
-        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull(), Mockito.anyBoolean())).thenReturn(new Tuple<>(aslist,0L));
+        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull(), Mockito.anyBoolean())).thenReturn(aslist);
         service.getAppServersWithApplications(null, release);
         Mockito.verify(service).filterAppServersByRelease(release, aslist);
     }

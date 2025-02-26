@@ -43,10 +43,9 @@ public class AppsService implements ListAppsUseCase, AddAppServerUseCase, AddApp
     private ResourceTypeRepository resourceTypeRepository;
 
     @Override
-    public Tuple<List<ResourceWithRelations>, Long> appsFor(Integer startIndex, Integer maxResults, String filter, Integer releaseId) throws NotFoundException {
+    public List<ResourceWithRelations> appsFor( String filter, Integer releaseId) throws NotFoundException {
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
-        Tuple<List<ResourceWithRelations>, Long> result = resourceRelations.getAppServersWithApplications(filter, release);
-        return new Tuple<>(paginateList(result.getA(),maxResults, startIndex), result.getB());
+        return resourceRelations.getAppServersWithApplications(filter, release);
     }
 
     public List<ResourceWithRelations> paginateList(List<ResourceWithRelations> list, Integer maxResultsPerPage, Integer startIndex) {
