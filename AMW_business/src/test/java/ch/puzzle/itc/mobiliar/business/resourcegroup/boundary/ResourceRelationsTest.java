@@ -30,7 +30,6 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

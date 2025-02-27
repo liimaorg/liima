@@ -27,7 +27,6 @@ import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 /**
  * The ScreenDomainService for Applist Screens

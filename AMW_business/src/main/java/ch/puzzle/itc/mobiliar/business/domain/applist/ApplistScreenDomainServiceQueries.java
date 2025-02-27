@@ -33,7 +33,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 public class ApplistScreenDomainServiceQueries {
 

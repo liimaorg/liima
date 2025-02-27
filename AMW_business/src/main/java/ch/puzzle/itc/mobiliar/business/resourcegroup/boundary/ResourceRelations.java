@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelation
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;

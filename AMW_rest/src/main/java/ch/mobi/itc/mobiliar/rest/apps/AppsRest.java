@@ -5,7 +5,6 @@ import ch.mobi.itc.mobiliar.rest.dtos.AppServerDTO;
 import ch.puzzle.itc.mobiliar.business.apps.boundary.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
