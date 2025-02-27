@@ -50,7 +50,7 @@ public class ResourceRelations {
 
     @HasPermission(permission = Permission.APP_AND_APPSERVER_LIST)
     public List<ResourceWithRelations> getAppServersWithApplications(String filter, ReleaseEntity release) {
-        List<ResourceEntity> result = applistScreenDomainService.getAppServerResourcesWithApplications(filter, true);
+        List<ResourceEntity> result = applistScreenDomainService.getAppServerResourcesWithApplications(filter);
         return filterAppServersByRelease(release, result);
     }
 
