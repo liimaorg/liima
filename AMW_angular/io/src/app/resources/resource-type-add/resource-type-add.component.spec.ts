@@ -20,6 +20,7 @@ describe('ResourceTypeAddComponent', () => {
       id: 0,
       name: '',
       hasChildren: false,
+      hasParent: false,
       children: [],
       isApplication: false,
       isDefaultResourceType: false,
