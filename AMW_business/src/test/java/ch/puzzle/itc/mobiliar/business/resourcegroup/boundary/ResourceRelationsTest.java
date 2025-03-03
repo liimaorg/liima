@@ -82,11 +82,15 @@ public class ResourceRelationsTest {
 
     @Test
     public void testGetAppServersWithApplications() throws Exception {
+        ResourceEntity as2 = Mockito.mock(ResourceEntity.class);
+        ResourceEntity as3 = Mockito.mock(ResourceEntity.class);
+        ResourceEntity as4 = Mockito.mock(ResourceEntity.class);
+
         UserSettingsEntity userSettings = Mockito.mock(UserSettingsEntity.class);
         Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
-        List<ResourceEntity> aslist = Arrays.asList(as);
+        List<ResourceEntity> aslist = Arrays.asList(as,as2,as3,as4);
         Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull())).thenReturn(aslist);
-        service.getAppServersWithApplications(null, release);
+        service.getAppServersWithApplications("", release);
         Mockito.verify(service).filterAppServersByRelease(release, aslist);
     }
 
