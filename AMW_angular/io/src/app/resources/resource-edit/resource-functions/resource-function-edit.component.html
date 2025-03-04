@@ -42,14 +42,9 @@
           <label class="form-label">Function content</label>
         </div>
         <div class="d-flex">
-          @if (revisions.length > 0) {
-          <div class="d-flex">
-            <app-revision-compare
-              [revisions]="revisions"
-              (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"></app-revision-compare>
-          </div>
-
-          }
+          <app-revision-compare
+            [revisions]="revisions"
+            (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"></app-revision-compare>
           <div class="col-1">
             <app-button [variant]="'light'" (click)="toggleFullscreen()">
               <app-icon [icon]="toggleFullscreenIcon"></app-icon>

@@ -1,5 +1,4 @@
 import { Component, input, output } from '@angular/core';
-import { ButtonComponent } from '../button/button.component';
 import { RevisionInformation } from '../model/revisionInformation';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './revision-compare.component.html',
   styleUrl: './revision-compare.component.scss',
   standalone: true,
-  imports: [ButtonComponent, NgSelectModule, FormsModule],
+  imports: [NgSelectModule, FormsModule],
 })
 export class RevisionCompareComponent {
   selectedRevision = output<{ revisionId: number; displayName: string }>();
