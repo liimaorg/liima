@@ -11,6 +11,7 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { ResourceFunction } from '../../resource-function';
+import { RevisionCompareComponent } from '../../../shared/revision-compare/revision-compare.component';
 
 @Component({
   selector: 'app-resource-function-edit',
@@ -28,6 +29,7 @@ import { ResourceFunction } from '../../resource-function';
     ButtonComponent,
     ModalHeaderComponent,
     IconComponent,
+    RevisionCompareComponent,
   ],
 })
 export class ResourceFunctionEditComponent implements OnInit {
@@ -78,8 +80,8 @@ export class ResourceFunctionEditComponent implements OnInit {
     });
   }
 
-  selectRevision(functionId: number, revisionId: number, displayName: string): void {
-    this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe((revision) => {
+  selectRevision(revisionId: number, displayName: string): void {
+    this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
       this.revision = revision;
       this.selectedRevisionName = displayName;
       this.diffValue = { original: this.function.content, modified: this.revision.content };
