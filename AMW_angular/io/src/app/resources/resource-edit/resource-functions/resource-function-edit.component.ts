@@ -81,11 +81,17 @@ export class ResourceFunctionEditComponent implements OnInit {
   }
 
   selectRevision(revisionId: number, displayName: string): void {
-    this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
-      this.revision = revision;
-      this.selectedRevisionName = displayName;
-      this.diffValue = { original: this.function.content, modified: this.revision.content };
-    });
+    if (revisionId && displayName) {
+      this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
+        this.revision = revision;
+        this.selectedRevisionName = displayName;
+        this.diffValue = { original: this.function.content, modified: this.revision.content };
+      });
+    } else {
+      //reset selected revision
+      this.revision = null;
+      this.selectedRevisionName = null;
+    }
   }
 
   toggleFullscreen() {
