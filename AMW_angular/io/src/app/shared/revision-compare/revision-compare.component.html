@@ -1,0 +1,17 @@
+@if (revisions().length > 0) {
+  <div class="d-flex">
+    <label class="form-label align-self-center my-0 me-2">Compare with history</label>
+    <ng-select id="selectedRevision"
+               class="custom me-2"
+               placeholder="Select Revision"
+               [ngModel]="selection"
+               (change)="selectRevision($event)"
+               (clear)="resetRevision()"
+               [attr.data-cy]="'button-dropdown'"
+    >
+      @for (revision of revisions(); track revision.revision) {
+        <ng-option [value]="revision">{{ revision.displayName }}</ng-option>
+      }
+    </ng-select>
+  </div>
+}
