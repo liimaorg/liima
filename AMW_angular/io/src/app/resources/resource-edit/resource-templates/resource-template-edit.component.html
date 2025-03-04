@@ -4,13 +4,9 @@
     @if (template.id) {
       <div class="d-flex justify-content-end mb-1">
         <div class="d-flex">
-          @if (revisions.length > 0) {
-            <div class="d-flex">
-              <app-revision-compare
-                [revisions]="revisions"
-                (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"></app-revision-compare>
-            </div>
-          }
+          <app-revision-compare
+            [revisions]="revisions"
+            (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"></app-revision-compare>
         </div>
       </div>
     }
