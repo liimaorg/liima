@@ -22,6 +22,7 @@ import { ResourceTemplatesService } from '../../../resource/resource-templates.s
 import { RevisionInformation } from '../../../shared/model/revisionInformation';
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { RevisionCompareComponent } from '../../../shared/revision-compare/revision-compare.component';
 
 interface TargetPlatformModel {
   name: string;
@@ -44,6 +45,7 @@ interface TargetPlatformModel {
     ModalHeaderComponent,
     IconComponent,
     DiffEditorComponent,
+    RevisionCompareComponent,
   ],
 })
 export class ResourceTemplateEditComponent implements OnInit {
@@ -140,8 +142,8 @@ export class ResourceTemplateEditComponent implements OnInit {
     });
   }
 
-  selectRevision(templateId: number, revisionId: number, displayName: string): void {
-    this.templatesService.getTemplateByIdAndRevision(templateId, revisionId).subscribe((revision) => {
+  selectRevision(revisionId: number, displayName: string): void {
+    this.templatesService.getTemplateByIdAndRevision(this.template.id, revisionId).subscribe((revision) => {
       this.revision = revision;
       this.selectedRevisionName.update((value) => displayName);
       this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
