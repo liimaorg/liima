@@ -145,7 +145,7 @@ export class ResourceTemplateEditComponent implements OnInit {
   selectRevision(revisionId: number, displayName: string): void {
     this.templatesService.getTemplateByIdAndRevision(this.template.id, revisionId).subscribe((revision) => {
       this.revision = revision;
-      this.selectedRevisionName.update((value) => displayName);
+      this.selectedRevisionName.set(displayName);
       this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
     });
   }
