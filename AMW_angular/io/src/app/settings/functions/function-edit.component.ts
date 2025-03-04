@@ -11,6 +11,7 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
 import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { RevisionCompareComponent } from '../../shared/revision-compare/revision-compare.component';
 
 @Component({
   selector: 'app-function-edit',
@@ -25,6 +26,7 @@ import { IconComponent } from '../../shared/icon/icon.component';
     NgbDropdownModule,
     ModalHeaderComponent,
     ButtonComponent,
+    RevisionCompareComponent,
   ],
 })
 export class FunctionEditComponent implements OnInit {
@@ -81,12 +83,18 @@ export class FunctionEditComponent implements OnInit {
     });
   }
 
-  selectRevision(functionId: number, revisionId: number, displayName: string): void {
-    this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe((revision) => {
-      this.revision = revision;
-      this.selectedRevisionName = displayName;
-      this.diffValue = { original: this.function.content, modified: this.revision.content };
-    });
+  selectRevision(revisionId: number, displayName: string): void {
+    if (revisionId && displayName) {
+      this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
+        this.revision = revision;
+        this.selectedRevisionName = displayName;
+        this.diffValue = { original: this.function.content, modified: this.revision.content };
+      });
+    } else {
+      //reset selected revision
+      this.revision = null;
+      this.selectedRevisionName = null;
+    }
   }
 
   toggleFullscreen() {
