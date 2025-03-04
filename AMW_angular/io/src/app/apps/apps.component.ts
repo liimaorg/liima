@@ -52,12 +52,7 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
   appServerResourceType$ = this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER');
-  appServerGroups = toSignal(
-    this.appServerResourceType$.pipe(
-      switchMap((resourceType) => (resourceType ? this.resourceService.getGroupsForType(resourceType) : of([]))),
-    ),
-    { initialValue: [] as Resource[] },
-  );
+  appServerGroups = this.resourceService.resourceGroupListForType;
   appServers = this.appsService.apps;
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -80,6 +75,9 @@ export class AppsComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
+    this.appServerResourceType$.subscribe((asResourceType) => {
+      this.resourceService.setTypeForResourceGroupList(asResourceType);
+    });
     toObservable(this.upcomingRelease)
       .pipe(takeUntil(this.destroy$), skip(1), take(1))
       .subscribe((release) => {
@@ -89,6 +87,10 @@ export class AppsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.appServerResourceType$.subscribe((asResourceType) => {
+      this.resourceService.setTypeForResourceGroupList(asResourceType);
+    });
+
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
       msg !== '' ? this.toastService.error(msg) : null;
     });
@@ -132,6 +134,9 @@ export class AppsComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           this.appsService.refreshData();
+          this.appServerResourceType$.subscribe((asResourceType) => {
+            this.resourceService.setTypeForResourceGroupList(asResourceType);
+          });
         },
       });
     this.showLoader.set(false);
