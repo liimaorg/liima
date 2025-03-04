@@ -61,17 +61,14 @@ export class ResourceTemplateEditComponent implements OnInit {
 
   public revisions: RevisionInformation[] = [];
   public revision: ResourceTemplate;
-  public selectedRevisionName: WritableSignal<string> = signal(null);
+  public selectedRevisionName: string;
   public isFullscreen = false;
   public toggleFullscreenIcon = 'arrows-fullscreen';
   public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
     return this.loadTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
   });
   public revisionTargetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
-    return this.loadRevisionTargetPlatformModelsForTemplate(
-      this.allSelectableTargetPlatforms(),
-      this.selectedRevisionName(),
-    );
+    return this.loadRevisionTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
   });
   public diffValue = {
     original: '',
@@ -117,7 +114,7 @@ export class ResourceTemplateEditComponent implements OnInit {
     });
   }
 
-  private loadRevisionTargetPlatformModelsForTemplate(allTargetPlatforms: string[], s: string): TargetPlatformModel[] {
+  private loadRevisionTargetPlatformModelsForTemplate(allTargetPlatforms: string[]): TargetPlatformModel[] {
     if (!this.revision) return;
     return allTargetPlatforms.map((name) => {
       return {
@@ -143,11 +140,17 @@ export class ResourceTemplateEditComponent implements OnInit {
   }
 
   selectRevision(revisionId: number, displayName: string): void {
-    this.templatesService.getTemplateByIdAndRevision(this.template.id, revisionId).subscribe((revision) => {
-      this.revision = revision;
-      this.selectedRevisionName.set(displayName);
-      this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
-    });
+    if (revisionId && displayName) {
+      this.templatesService.getTemplateByIdAndRevision(this.template.id, revisionId).subscribe((revision) => {
+        this.revision = revision;
+        this.selectedRevisionName = displayName;
+        this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
+      });
+    } else {
+      //reset selected revision
+      this.revision = null;
+      this.selectedRevisionName = null;
+    }
   }
 
   isValidForm(): boolean {
