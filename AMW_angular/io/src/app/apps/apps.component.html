@@ -37,17 +37,6 @@
         <div class="card-body">
           <app-apps-servers-list [appServers]="appServers()"></app-apps-servers-list>
         </div>
-        <div class="card-footer py-1">
-          <div class="row bg-light align-items-center">
-            <app-pagination
-              [currentPage]="currentPage()"
-              [lastPage]="lastPage()"
-              (doSetMax)="setMaxResultsPerPage($event)"
-              (doSetOffset)="setNewOffset($event)"
-            >
-            </app-pagination>
-          </div>
-        </div>
         }
       </div>
     </div>

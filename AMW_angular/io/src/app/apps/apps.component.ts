@@ -12,7 +12,6 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
 import { AppsServersListComponent } from './apps-servers-list/apps-servers-list.component';
-import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -33,7 +32,6 @@ import { ActivatedRoute, Router } from '@angular/router';
     IconComponent,
     LoadingIndicatorComponent,
     PageComponent,
-    PaginationComponent,
     ButtonComponent,
   ],
   templateUrl: './apps.component.html',
@@ -66,7 +64,7 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   showLoader = signal(false);
   isLoading = computed(() => {
-    return this.appServers() === undefined || this.showLoader();
+    return this.appServers() === undefined || this.appServers() === null || this.showLoader();
   });
 
   permissions = computed(() => {
@@ -80,9 +78,6 @@ export class AppsComponent implements OnInit, OnDestroy {
       return { canCreateApp: false, canCreateAppServer: false, canViewAppList: false };
     }
   });
-
-  currentPage = computed(() => Math.floor(this.appsService.offset() / this.appsService.limit()) + 1);
-  lastPage = computed(() => Math.ceil(this.appsService.count() / this.appsService.limit()));
 
   constructor() {
     toObservable(this.upcomingRelease)
@@ -155,17 +150,6 @@ export class AppsComponent implements OnInit, OnDestroy {
         },
       });
     this.showLoader.set(false);
-  }
-
-  setMaxResultsPerPage(max: number) {
-    this.appsService.limit.set(max);
-    this.appsService.offset.set(0);
-    this.appsService.refreshData();
-  }
-
-  setNewOffset(offset: number) {
-    this.appsService.offset.set(offset);
-    this.appsService.refreshData();
   }
 
   updateFilter(values: { filter: string; releaseId: number }) {
