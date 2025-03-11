@@ -87,7 +87,7 @@ export class AppsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.appServerResourceType$.subscribe((asResourceType) => {
+    this.appServerResourceType$.pipe(takeUntil(this.destroy$)).subscribe((asResourceType) => {
       this.resourceService.setTypeForResourceGroupList(asResourceType);
     });
 
