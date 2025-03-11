@@ -75,9 +75,6 @@ export class AppsComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
-    this.appServerResourceType$.subscribe((asResourceType) => {
-      this.resourceService.setTypeForResourceGroupList(asResourceType);
-    });
     toObservable(this.upcomingRelease)
       .pipe(takeUntil(this.destroy$), skip(1), take(1))
       .subscribe((release) => {
