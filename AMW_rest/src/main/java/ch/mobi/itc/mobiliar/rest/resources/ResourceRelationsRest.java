@@ -25,8 +25,12 @@ import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
@@ -55,6 +59,12 @@ public class ResourceRelationsRest {
 
     @Inject
     ResourceLocator resourceLocator;
+
+    @Inject
+    ResourceGroupLocator resourceGroupLocator;
+
+    @Inject
+    ReleaseLocator releaseLocator;
 
     @Inject
     ResourceRelationLocator resourceRelationLocator;
@@ -94,6 +104,16 @@ public class ResourceRelationsRest {
         return resourceRelations;
     }
 
+    @GET
+    @Path("/{resourceGroupId}")
+    public List<ResourceRelationDTO> getLatestReleaseResourceRelations(@PathParam("resourceGroupId") Integer resourceGroupId, @QueryParam("resourceType") String resourceType) throws ValidationException, ResourceNotFoundException {
+
+        ResourceGroupEntity resourceGroup = resourceGroupLocator.getResourceGroupById(resourceGroupId);
+        ReleaseEntity release = releaseLocator.getLatestReleaseForResourceGroup(resourceGroup);
+
+        return getResourceRelationsByRelease(resourceGroup.getName(), release.getName(), resourceType);
+    }
+
     private ResourceRelationDTO createResourceRelationDTO(String resourceGroupName, String releaseName, String resourceType, AbstractResourceRelationEntity relation) throws ValidationException, ResourceNotFoundException {
         if (resourceType != null && !relation.getResourceRelationType().getResourceTypeB().getName().equals(resourceType)) {
             return null;
@@ -103,26 +123,6 @@ public class ResourceRelationsRest {
                 relation.getSlaveResource().getName(), relation.getSlaveResource().getRelease().getName());
         addTemplates(resRel, templates);
         return resRel;
-    }
-
-    @GET
-    @Path("/resource/{resourceId}")
-    @ApiOperation(value = "Get resource relations by resource id")
-    public List<ResourceRelationDTO> getRelationsByResourceId(@PathParam("resourceId") Integer resourceId) throws ResourceNotFoundException {
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
-        if (resource == null) {
-            throw new ResourceNotFoundException("Resource not found.");
-        }
-        List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
-        for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
-            ResourceRelationDTO dto = new ResourceRelationDTO(relation);
-            resourceRelations.add(dto);
-        }
-        for (ProvidedResourceRelationEntity relation : resource.getProvidedMasterRelations()) {
-            ResourceRelationDTO dto = new ResourceRelationDTO(relation);
-            resourceRelations.add(dto);
-        }
-        return resourceRelations;
     }
 
     @GET
@@ -161,6 +161,27 @@ public class ResourceRelationsRest {
             list.add(resRel);
         }
         return list;
+    }
+
+    @GET
+    @Path("/resource/{resourceId}")
+    @ApiOperation(value = "Get resource relations by resource id")
+    public List<ResourceRelationDTO> getRelationsByResourceId(@PathParam("resourceId") Integer resourceId) throws ResourceNotFoundException {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            throw new ResourceNotFoundException("Resource not found.");
+        }
+
+        List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
+        for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
+            ResourceRelationDTO dto = new ResourceRelationDTO(relation);
+            resourceRelations.add(dto);
+        }
+        for (ProvidedResourceRelationEntity relation : resource.getProvidedMasterRelations()) {
+            ResourceRelationDTO dto = new ResourceRelationDTO(relation);
+            resourceRelations.add(dto);
+        }
+        return resourceRelations;
     }
 
     /**

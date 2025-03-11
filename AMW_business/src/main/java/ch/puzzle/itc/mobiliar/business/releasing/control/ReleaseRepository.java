@@ -43,6 +43,13 @@ public class ReleaseRepository extends BaseRepository<ReleaseEntity> {
         return entityManager.createQuery("select r from ReleaseEntity r left join r.resources res left join res.resourceGroup resgrp where resgrp=:resgrp", ReleaseEntity.class).setParameter("resgrp", resgrp).getResultList();
     }
 
+    public ReleaseEntity getLatestReleaseForResourceGroup(ResourceGroupEntity resgrp){
+        return entityManager.createQuery("select r from ReleaseEntity r left join r.resources res left join res.resourceGroup resgrp where resgrp=:resgrp order by r.installationInProductionAt desc", ReleaseEntity.class)
+                .setParameter("resgrp", resgrp)
+                .setMaxResults(1)
+                .getSingleResult();
+    }
+
     public void removeRelease(ReleaseEntity release) {
         final Integer releaseId = release.getId();
         release = getReleaseWithDeployments(releaseId);

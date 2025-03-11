@@ -73,6 +73,10 @@ public class ReleaseLocator {
         return releaseRepository.getReleasesForResourceGroup(resourceGroup);
     }
 
+    public ReleaseEntity getLatestReleaseForResourceGroup(ResourceGroupEntity resourceGroup) {
+        return releaseRepository.getLatestReleaseForResourceGroup(resourceGroup);
+    }
+
     /**
      * @return the number of existing releases
      */
