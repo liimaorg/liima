@@ -29,6 +29,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import org.hibernate.Hibernate;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 
@@ -354,6 +355,7 @@ public class FunctionService {
     public AmwFunctionEntity getFunctionRevision(int functionId, Number revisionId) throws NotFoundException {
         AmwFunctionEntity function = AuditReaderFactory.get(entityManager).find(
                 AmwFunctionEntity.class, functionId, revisionId);
+        Hibernate.initialize(function.getMikNames());
         if (function == null) {
             throw new NotFoundException("No function with id " + functionId + " and revision id " + revisionId + " found");
         }
