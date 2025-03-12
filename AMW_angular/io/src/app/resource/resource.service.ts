@@ -20,7 +20,9 @@ export class ResourceService extends BaseService {
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
 
   private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
-    switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
+    switchMap((resourceType: ResourceType) => {
+      return this.getGroupsForType(resourceType);
+    }),
     startWith(null),
     shareReplay(1),
   );
