@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Resource } from './resource';
 import { Release } from './release';
@@ -32,7 +32,6 @@ export class ResourceService extends BaseService {
 
   private releasesForResourceGroupByResourceId$: Observable<Release[]> = this.resourceId$.pipe(
     switchMap((resourceId: number) => {
-      console.log('resourceId', resourceId);
       return this.getReleasesForResourceGroup(resourceId);
     }),
     shareReplay(1),
@@ -53,7 +52,6 @@ export class ResourceService extends BaseService {
   }
 
   setIdForResource(id: number) {
-    console.log('next', id);
     this.resourceId$.next(id);
   }
 
@@ -209,7 +207,6 @@ export class ResourceService extends BaseService {
   }
 
   getReleasesForResourceGroup(resourceId: number): Observable<Release[]> {
-    console.log('endpoint call');
     return this.http
       .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceId}/releases`)
       .pipe(catchError(this.handleError));

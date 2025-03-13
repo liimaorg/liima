@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, Signal, OnInit } from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute } from '@angular/router';
@@ -6,7 +6,6 @@ import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../../resource/resource.service';
 import { Resource } from '../../resource/resource';
-import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
 import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list.component';
@@ -26,11 +25,7 @@ export class ResourceEditComponent {
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
   resource: Signal<Resource> = this.resourceService.resource;
-  resourceGroupId: Signal<number> = computed(() => this.resource()?.resourceGroupId);
-
-  releases = signal<Release[]>([]);
-
-  releasesTestSomething: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
+  releases: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
 
   isLoading = computed(() => {
     if (this.id()) {
@@ -48,12 +43,4 @@ export class ResourceEditComponent {
       return { canEditResource: false };
     }
   });
-
-  /*  loadReleases(resourceGroupId: number): void {
-    console.log('load releases');
-    this.resourceService.getReleasesForResourceGroup(resourceGroupId).subscribe((releaseMap) => {
-      this.releases.set(releaseMap);
-      console.log('Loaded Releases:', this.releases());
-    });
-  }*/
 }

@@ -195,13 +195,13 @@ public class ResourceGroupsRest {
     @POST
     @ApiOperation(value = "Add a Resource")
     public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) throws ValidationException, NotFoundException, ElementAlreadyExistsException {
-        if(StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim()))
+        if (StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim()))
             throw new ValidationException("Resource name must not be null or blank");
 
-        if(StringUtils.isEmpty(request.getReleaseName()) || StringUtils.isEmpty(request.getReleaseName().trim()))
+        if (StringUtils.isEmpty(request.getReleaseName()) || StringUtils.isEmpty(request.getReleaseName().trim()))
             throw new ValidationException("Release name must not be null or blank");
 
-        if(!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getName()))
+        if (!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getName()))
             throw new ValidationException(NameChecker.getErrorTextForInvalidResourceName(
                     (request.getType() != null) ? request.getType() : null, request.getName()));
 
@@ -329,7 +329,7 @@ public class ResourceGroupsRest {
     @DELETE
     @ApiOperation(value = "Delete a specific resource release")
     public Response deleteResourceRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                                            @PathParam("releaseId") Integer releaseId) throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+                                          @PathParam("releaseId") Integer releaseId) throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupIdAndRelease(resourceGroupId, releaseId);
         if (resource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
@@ -405,7 +405,11 @@ public class ResourceGroupsRest {
         }
         ResourceGroup resourceGroup = ResourceGroup.createByResource(groupEntity);
         LinkedHashMap<String, Integer> releaseMap = resourceGroup.getReleaseToResourceMap();
-        //List<ReleaseDTO> releses = releaseMapToList(releaseMap);
-        return Response.ok(releaseMap).build(); //Response.ok(releses).build()
+        List<ReleaseDTO> releases = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : releaseMap.entrySet()) {
+            ReleaseDTO releaseDTO = new ReleaseDTO(entry.getValue(), entry.getKey());
+            releases.add(releaseDTO);
+        }
+        return Response.ok(releases).build();
     }
 }
