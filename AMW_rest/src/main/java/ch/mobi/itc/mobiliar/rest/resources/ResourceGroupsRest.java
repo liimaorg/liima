@@ -394,13 +394,18 @@ public class ResourceGroupsRest {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Get all releases for a specific resource group", notes = "Returns a map of release names to resource IDs")
-    public Response getReleasesForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) {
-        ResourceGroupEntity groupEntity = resourceGroupLocator.getResourceGroupById(resourceGroupId);
+    public Response getReleasesForResourceGroup(@PathParam("resourceGroupId") Integer resourceId) {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        ResourceGroupEntity groupEntity = resourceGroupLocator.getResourceGroupById(resource.getResourceGroup().getId());
         if (groupEntity == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto("Resource group not found")).build();
         }
         ResourceGroup resourceGroup = ResourceGroup.createByResource(groupEntity);
         LinkedHashMap<String, Integer> releaseMap = resourceGroup.getReleaseToResourceMap();
-        return Response.ok(releaseMap).build();
+        //List<ReleaseDTO> releses = releaseMapToList(releaseMap);
+        return Response.ok(releaseMap).build(); //Response.ok(releses).build()
     }
 }

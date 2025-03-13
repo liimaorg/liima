@@ -18,9 +18,11 @@
 
     <h3>Available Releases</h3>
     <h1>{{ this.resource()?.name }}</h1>
+    <h1>{{ this.resource()?.id }}</h1>
     <h1>{{ this.resource()?.resourceGroupId }}</h1>
+    <h1>{{ this.resourceGroupId() }}</h1>
     <ul>
-      @for (release of releases(); track release.id) {
+      @for (release of releasesTestSomething(); track release.id) {
       <li>{{ release.name }}</li>
       }
     </ul>

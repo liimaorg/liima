@@ -30,7 +30,18 @@ export class ResourceService extends BaseService {
     shareReplay(1),
   );
 
+  private releasesForResourceGroupByResourceId$: Observable<Release[]> = this.resourceId$.pipe(
+    switchMap((resourceId: number) => {
+      console.log('resourceId', resourceId);
+      return this.getReleasesForResourceGroup(resourceId);
+    }),
+    shareReplay(1),
+  );
+
   resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
+  releasesForResourceGroup = toSignal(this.releasesForResourceGroupByResourceId$, {
+    initialValue: [] as Release[],
+  });
   resource = toSignal(this.resourceById$, { initialValue: null });
 
   constructor(private http: HttpClient) {
@@ -42,6 +53,7 @@ export class ResourceService extends BaseService {
   }
 
   setIdForResource(id: number) {
+    console.log('next', id);
     this.resourceId$.next(id);
   }
 
@@ -196,9 +208,11 @@ export class ResourceService extends BaseService {
       );
   }
 
-  getReleasesForResourceGroup(resourceGroupId: number): Observable<Release[]> {
+  getReleasesForResourceGroup(resourceId: number): Observable<Release[]> {
     console.log('endpoint call');
-    return this.http.get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceGroupId}/releases`);
+    return this.http
+      .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceId}/releases`)
+      .pipe(catchError(this.handleError));
   }
 }
 

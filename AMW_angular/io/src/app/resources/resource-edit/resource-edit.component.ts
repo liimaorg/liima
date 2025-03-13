@@ -18,7 +18,7 @@ import { Release } from '../../resource/release';
   imports: [LoadingIndicatorComponent, PageComponent, ResourceFunctionsListComponent, ResourceTemplatesListComponent],
   templateUrl: './resource-edit.component.html',
 })
-export class ResourceEditComponent implements OnInit {
+export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
@@ -26,14 +26,11 @@ export class ResourceEditComponent implements OnInit {
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
   resource: Signal<Resource> = this.resourceService.resource;
+  resourceGroupId: Signal<number> = computed(() => this.resource()?.resourceGroupId);
 
   releases = signal<Release[]>([]);
 
-  ngOnInit(): void {
-    console.log('resource', this.resource());
-    this.resourceService.setIdForResource(this.id());
-    this.loadReleases(this.resource()?.resourceGroupId);
-  }
+  releasesTestSomething: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
 
   isLoading = computed(() => {
     if (this.id()) {
@@ -52,11 +49,11 @@ export class ResourceEditComponent implements OnInit {
     }
   });
 
-  loadReleases(resourceGroupId: number): void {
+  /*  loadReleases(resourceGroupId: number): void {
     console.log('load releases');
     this.resourceService.getReleasesForResourceGroup(resourceGroupId).subscribe((releaseMap) => {
       this.releases.set(releaseMap);
       console.log('Loaded Releases:', this.releases());
     });
-  }
+  }*/
 }
