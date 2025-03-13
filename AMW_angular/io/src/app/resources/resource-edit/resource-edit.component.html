@@ -1,6 +1,21 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
-  <div class="page-title">Edit {{ this.resource()?.name }}</div>
+  <div class="page-title d-flex">
+    <div class="resource-name">Edit {{ this.resource()?.name }}</div>
+    <div ngbDropdown>
+      <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+        {{ 'Select Release' }}
+      </app-button>
+
+      <ul ngbDropdownMenu>
+        @for (release of releases(); track release) {
+        <li ngbDropdownItem>
+          <a class="dropdown-item" (click)="dummyClick()">{{ release.name }}</a>
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
 
   <div class="page-content">
     @if ((this.resource()?.name && !permissions().canEditResource)) {
@@ -15,11 +30,5 @@
     <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
     <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
     }
-    <h3>Available Releases</h3>
-    <ul>
-      @for (release of releases(); track release.id) {
-      <li>{{ release.name }}</li>
-      }
-    </ul>
   </div>
 </app-page>

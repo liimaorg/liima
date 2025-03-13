@@ -10,12 +10,25 @@ import { AuthService } from '../../auth/auth.service';
 import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
 import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list.component';
 import { Release } from '../../resource/release';
+import { ButtonComponent } from '../../shared/button/button.component';
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-resource-edit',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, ResourceFunctionsListComponent, ResourceTemplatesListComponent],
+  imports: [
+    LoadingIndicatorComponent,
+    PageComponent,
+    ResourceFunctionsListComponent,
+    ResourceTemplatesListComponent,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownMenu,
+    NgbDropdownToggle,
+    NgbDropdownItem,
+  ],
   templateUrl: './resource-edit.component.html',
+  styleUrl: './resource-edit.component.scss',
 })
 export class ResourceEditComponent {
   private authService = inject(AuthService);
@@ -43,4 +56,8 @@ export class ResourceEditComponent {
       return { canEditResource: false };
     }
   });
+
+  dummyClick() {
+    //do nothing
+  }
 }
