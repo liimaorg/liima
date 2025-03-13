@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, inject, signal, Signal, OnInit } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute } from '@angular/router';
@@ -10,20 +10,15 @@ import { TileComponent } from '../../shared/tile/tile.component';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
 import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list.component';
+import { Release } from '../../resource/release';
 
 @Component({
   selector: 'app-resource-edit',
   standalone: true,
-  imports: [
-    LoadingIndicatorComponent,
-    PageComponent,
-    TileComponent,
-    ResourceFunctionsListComponent,
-    ResourceTemplatesListComponent,
-  ],
+  imports: [LoadingIndicatorComponent, PageComponent, ResourceFunctionsListComponent, ResourceTemplatesListComponent],
   templateUrl: './resource-edit.component.html',
 })
-export class ResourceEditComponent {
+export class ResourceEditComponent implements OnInit {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
@@ -31,6 +26,14 @@ export class ResourceEditComponent {
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
   resource: Signal<Resource> = this.resourceService.resource;
+
+  releases = signal<Release[]>([]);
+
+  ngOnInit(): void {
+    console.log('resource', this.resource());
+    this.resourceService.setIdForResource(this.id());
+    this.loadReleases(this.resource()?.resourceGroupId);
+  }
 
   isLoading = computed(() => {
     if (this.id()) {
@@ -48,4 +51,12 @@ export class ResourceEditComponent {
       return { canEditResource: false };
     }
   });
+
+  loadReleases(resourceGroupId: number): void {
+    console.log('load releases');
+    this.resourceService.getReleasesForResourceGroup(resourceGroupId).subscribe((releaseMap) => {
+      this.releases.set(releaseMap);
+      console.log('Loaded Releases:', this.releases());
+    });
+  }
 }

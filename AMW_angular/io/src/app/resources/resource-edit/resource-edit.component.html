@@ -15,5 +15,14 @@
     <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
     <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
     }
+
+    <h3>Available Releases</h3>
+    <h1>{{ this.resource()?.name }}</h1>
+    <h1>{{ this.resource()?.resourceGroupId }}</h1>
+    <ul>
+      @for (release of releases(); track release.id) {
+      <li>{{ release.name }}</li>
+      }
+    </ul>
   </div>
 </app-page>

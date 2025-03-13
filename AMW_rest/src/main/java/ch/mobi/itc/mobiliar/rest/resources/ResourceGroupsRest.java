@@ -27,18 +27,17 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
@@ -50,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -94,16 +94,10 @@ public class ResourceGroupsRest {
     private ResourceDependencyResolverService resourceDependencyResolverService;
 
     @Inject
-    private PermissionBoundary permissionBoundary;
-
-    @Inject
     private ResourceTemplatesRest resourceTemplatesRest;
 
     @Inject
     private ResourceRelationService resourceRelationService;
-
-    @Inject
-    PropertyEditor propertyEditor;
 
     @GET
     @ApiOperation(value = "Get resource groups", notes = "Returns the available resource groups")
@@ -156,7 +150,6 @@ public class ResourceGroupsRest {
 
         }).collect(Collectors.toList());
     }
-
 
     @Path("/{resourceGroupName}")
     @GET
@@ -397,4 +390,17 @@ public class ResourceGroupsRest {
         return Response.ok(mostRelevant).build();
     }
 
+    @Path("/resourceGroups/{resourceGroupId}/releases")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all releases for a specific resource group", notes = "Returns a map of release names to resource IDs")
+    public Response getReleasesForResourceGroup(@PathParam("resourceGroupId") Integer resourceGroupId) {
+        ResourceGroupEntity groupEntity = resourceGroupLocator.getResourceGroupById(resourceGroupId);
+        if (groupEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto("Resource group not found")).build();
+        }
+        ResourceGroup resourceGroup = ResourceGroup.createByResource(groupEntity);
+        LinkedHashMap<String, Integer> releaseMap = resourceGroup.getReleaseToResourceMap();
+        return Response.ok(releaseMap).build();
+    }
 }

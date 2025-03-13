@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
@@ -18,14 +18,14 @@ interface Named {
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
-  private resource$: Subject<Number> = new Subject<Number>();
+  private resourceId$: Subject<number> = new Subject<number>();
 
   private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
     switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
     shareReplay(1),
   );
 
-  private resourceById$: Observable<Resource> = this.resource$.pipe(
+  private resourceById$: Observable<Resource> = this.resourceId$.pipe(
     switchMap((id: number) => this.getResource(id)),
     shareReplay(1),
   );
@@ -42,7 +42,7 @@ export class ResourceService extends BaseService {
   }
 
   setIdForResource(id: number) {
-    this.resource$.next(id);
+    this.resourceId$.next(id);
   }
 
   getAll(): Observable<Resource[]> {
@@ -194,6 +194,11 @@ export class ResourceService extends BaseService {
         map((apps) => apps.map(toAppWithVersion)),
         catchError(this.handleError),
       );
+  }
+
+  getReleasesForResourceGroup(resourceGroupId: number): Observable<Release[]> {
+    console.log('endpoint call');
+    return this.http.get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceGroupId}/releases`);
   }
 }
 

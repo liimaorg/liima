@@ -4,8 +4,9 @@ import { ResourceTag } from './resource-tag';
 
 export interface Release {
   id: number;
-  release: string;
-  relations: Relation[];
-  properties: Property[];
-  resourceTags: ResourceTag[];
+  name?: string;
+  release?: string;
+  relations?: Relation[];
+  properties?: Property[];
+  resourceTags?: ResourceTag[];
 }
