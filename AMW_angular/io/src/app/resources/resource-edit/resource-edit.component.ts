@@ -1,7 +1,7 @@
 import { Component, computed, inject, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../../resource/resource.service';
@@ -34,6 +34,7 @@ export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
@@ -61,7 +62,11 @@ export class ResourceEditComponent {
     return this.releases().find((release) => release.id === this.id());
   });
 
-  dummyClick() {
-    //do nothing
+  loadResourceFromRelease(releaseId: number) {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { id: releaseId },
+      queryParamsHandling: 'merge',
+    });
   }
 }
