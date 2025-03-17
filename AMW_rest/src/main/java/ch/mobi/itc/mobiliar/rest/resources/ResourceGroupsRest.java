@@ -405,11 +405,9 @@ public class ResourceGroupsRest {
         }
         ResourceGroup resourceGroup = ResourceGroup.createByResource(groupEntity);
         LinkedHashMap<String, Integer> releaseMap = resourceGroup.getReleaseToResourceMap();
-        List<ReleaseDTO> releases = new ArrayList<>();
-        for (Map.Entry<String, Integer> entry : releaseMap.entrySet()) {
-            ReleaseDTO releaseDTO = new ReleaseDTO(entry.getValue(), entry.getKey());
-            releases.add(releaseDTO);
-        }
+        List<ReleaseDTO> releases = releaseMap.entrySet().stream()
+                .map(entry -> new ReleaseDTO(entry.getValue(), entry.getKey()))
+                .collect(Collectors.toList());
         return Response.ok(releases).build();
     }
 }
