@@ -390,11 +390,11 @@ public class ResourceGroupsRest {
         return Response.ok(mostRelevant).build();
     }
 
-    @Path("/resourceGroups/{resourceGroupId}/releases")
+    @Path("/resourceGroups/releases/{resourceId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get all releases for a specific resource group", notes = "Returns a map of release names to resource IDs")
-    public Response getReleasesForResourceGroup(@PathParam("resourceGroupId") Integer resourceId) {
+    @ApiOperation(value = "Get all releases related to a specific resource")
+    public Response getReleasesForResource(@PathParam("resourceId") Integer resourceId) {
         ResourceEntity resource = resourceLocator.getResourceById(resourceId);
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

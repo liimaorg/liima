@@ -32,7 +32,7 @@ export class ResourceService extends BaseService {
 
   private releasesForResourceGroupByResourceId$: Observable<Release[]> = this.resourceId$.pipe(
     switchMap((resourceId: number) => {
-      return this.getReleasesForResourceGroup(resourceId);
+      return this.getReleasesForResource(resourceId);
     }),
     shareReplay(1),
   );
@@ -206,9 +206,9 @@ export class ResourceService extends BaseService {
       );
   }
 
-  getReleasesForResourceGroup(resourceId: number): Observable<Release[]> {
+  getReleasesForResource(resourceId: number): Observable<Release[]> {
     return this.http
-      .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/${resourceId}/releases`)
+      .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`)
       .pipe(catchError(this.handleError));
   }
 }
