@@ -4,7 +4,7 @@
     <div class="resource-name">Edit {{ this.resource()?.name }}</div>
     <div ngbDropdown>
       <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-        {{ 'Select Release' }}
+        {{ selectedRelease()?.name }}
       </app-button>
 
       <ul ngbDropdownMenu>

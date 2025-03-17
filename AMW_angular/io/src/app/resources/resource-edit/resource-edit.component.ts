@@ -57,6 +57,10 @@ export class ResourceEditComponent {
     }
   });
 
+  selectedRelease = computed(() => {
+    return this.releases().find((release) => release.id === this.id());
+  });
+
   dummyClick() {
     //do nothing
   }
