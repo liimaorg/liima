@@ -73,7 +73,7 @@ describe("Functions -CRUD", () => {
     cy.contains("Function saved successfully.");
     cy.get('[data-cy="button-edit"]').click();
     cy.get('[data-cy="button-dropdown"]').click();
-    cy.get('.dropdown-item').first().click();
+    cy.get('ng-dropdown-panel').first().click();
     cy.get('app-diff-editor').should('be.visible');
     cy.get('[data-cy="button-cancel"]').click({force: true});
     cy.get('[data-cy="icon-delete"]').first().click();
