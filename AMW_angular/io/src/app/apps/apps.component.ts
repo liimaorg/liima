@@ -131,7 +131,7 @@ export class AppsComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           this.appsService.refreshData();
-          this.appServerResourceType$.subscribe((asResourceType) => {
+          this.appServerResourceType$.pipe(takeUntil(this.destroy$)).subscribe((asResourceType) => {
             this.resourceService.setTypeForResourceGroupList(asResourceType);
           });
         },
