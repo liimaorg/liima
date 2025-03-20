@@ -12,7 +12,7 @@ import { RevisionInformation } from '../../../shared/model/revisionInformation';
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RevisionCompareComponent } from '../../../shared/revision-compare/revision-compare.component';
-import {FullscreenToggleComponent} from "../../../shared/fullscreen-toggle/fullscreen-toggle.component";
+import { FullscreenToggleComponent } from '../../../shared/fullscreen-toggle/fullscreen-toggle.component';
 
 interface TargetPlatformModel {
   name: string;
@@ -152,7 +152,9 @@ export class ResourceTemplateEditComponent implements OnInit {
   }
 
   isValidTargetPath() {
-    const REGEXP_FILE_PATH_PATTERN = /^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s][^/\\]*[^\s]$|^$/;
-    return this.template ? REGEXP_FILE_PATH_PATTERN.test(this.template.targetPath) : false;
+    const REGEXP_FILE_PATH_PATTERN = /^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s].*[^\s]$|^$/;
+    return this.template && this.template.targetPath && this.template.targetPath.trim() !== ''
+      ? REGEXP_FILE_PATH_PATTERN.test(this.template.targetPath)
+      : false;
   }
 }
