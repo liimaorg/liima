@@ -113,11 +113,13 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   }
 
   mapListEntries(templates: ResourceTemplate[]) {
-    return templates.map((template) => ({
-      name: template.name,
-      description: template.targetPath,
-      id: template.id,
-    }));
+    return templates
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((template) => ({
+        name: template.name,
+        description: template.targetPath,
+        id: template.id,
+      }));
   }
 
   addTemplate() {
