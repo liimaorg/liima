@@ -1,6 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Resource } from './resource';
 import { Release } from './release';
@@ -18,19 +18,29 @@ interface Named {
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
-  private resource$: Subject<Number> = new Subject<Number>();
+  private resourceId$: Subject<number> = new Subject<number>();
 
   private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
     switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
     shareReplay(1),
   );
 
-  private resourceById$: Observable<Resource> = this.resource$.pipe(
+  private resourceById$: Observable<Resource> = this.resourceId$.pipe(
     switchMap((id: number) => this.getResource(id)),
     shareReplay(1),
   );
 
+  private releasesForResourceGroupByResourceId$: Observable<Release[]> = this.resourceId$.pipe(
+    switchMap((resourceId: number) => {
+      return this.getReleasesForResource(resourceId);
+    }),
+    shareReplay(1),
+  );
+
   resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
+  releasesForResourceGroup = toSignal(this.releasesForResourceGroupByResourceId$, {
+    initialValue: [] as Release[],
+  });
   resource = toSignal(this.resourceById$, { initialValue: null });
 
   constructor(private http: HttpClient) {
@@ -42,7 +52,7 @@ export class ResourceService extends BaseService {
   }
 
   setIdForResource(id: number) {
-    this.resource$.next(id);
+    this.resourceId$.next(id);
   }
 
   getAll(): Observable<Resource[]> {
@@ -194,6 +204,12 @@ export class ResourceService extends BaseService {
         map((apps) => apps.map(toAppWithVersion)),
         catchError(this.handleError),
       );
+  }
+
+  getReleasesForResource(resourceId: number): Observable<Release[]> {
+    return this.http
+      .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`)
+      .pipe(catchError(this.handleError));
   }
 }
 

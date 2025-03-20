@@ -91,9 +91,10 @@ public class ResourcesRest {
         result.setName(resource.getName());
         result.setReleaseName(resource.getRelease().getName());
         result.setType(resource.getResourceType().getName());
+        result.setResourceGroupId(resource.getResourceGroup().getId());
+
         return Response.ok(result).build();
     }
-
 
     @GET
     @Path("/{id : \\d+}")

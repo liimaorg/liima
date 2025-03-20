@@ -1,6 +1,21 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
-  <div class="page-title">Edit {{ this.resource()?.name }}</div>
+  <div class="page-title d-flex">
+    <div class="resource-name">Edit {{ this.resource()?.name }}</div>
+    <div ngbDropdown>
+      <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+        {{ selectedRelease()?.name }}
+      </app-button>
+
+      <ul ngbDropdownMenu>
+        @for (release of releases(); track release) {
+        <li ngbDropdownItem>
+          <a class="dropdown-item" (click)="loadResourceFromRelease(release.id)">{{ release.name }}</a>
+        </li>
+        }
+      </ul>
+    </div>
+  </div>
 
   <div class="page-content">
     @if ((this.resource()?.name && !permissions().canEditResource)) {
