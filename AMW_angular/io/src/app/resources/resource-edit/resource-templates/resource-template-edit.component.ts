@@ -12,6 +12,7 @@ import { RevisionInformation } from '../../../shared/model/revisionInformation';
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RevisionCompareComponent } from '../../../shared/revision-compare/revision-compare.component';
+import {FullscreenToggleComponent} from "../../../shared/fullscreen-toggle/fullscreen-toggle.component";
 
 interface TargetPlatformModel {
   name: string;
@@ -35,6 +36,7 @@ interface TargetPlatformModel {
     IconComponent,
     DiffEditorComponent,
     RevisionCompareComponent,
+    FullscreenToggleComponent,
   ],
 })
 export class ResourceTemplateEditComponent implements OnInit {
@@ -88,10 +90,8 @@ export class ResourceTemplateEditComponent implements OnInit {
     }
   }
 
-  toggleFullscreen() {
-    this.isFullscreen = !this.isFullscreen;
-    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-    this.activeModal.update({ fullscreen: this.isFullscreen });
+  toggleFullscreen(isFullscreen: boolean) {
+    this.activeModal.update({ fullscreen: isFullscreen });
   }
 
   loadTargetPlatformModelsForTemplate(allTargetPlatforms: string[]): TargetPlatformModel[] {
