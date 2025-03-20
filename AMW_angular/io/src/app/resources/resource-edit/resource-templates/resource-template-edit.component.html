@@ -81,11 +81,8 @@
         <div>
           <label class="form-label">Template file content</label>
         </div>
-        <div class="col-1 text-end">
-          <app-button [additionalClasses]="'p-0'" [variant]="'light'" (click)="toggleFullscreen()">
-            <app-icon [icon]="toggleFullscreenIcon"></app-icon>
-          </app-button>
-        </div>
+        <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
+
       </div>
       @if (!revision) {
         <div class="editor border border-primary-subtle rounded">

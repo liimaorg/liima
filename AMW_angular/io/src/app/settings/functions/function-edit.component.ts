@@ -12,6 +12,7 @@ import { CodeEditorComponent } from '../../shared/codemirror/code-editor.compone
 import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { RevisionCompareComponent } from '../../shared/revision-compare/revision-compare.component';
+import {FullscreenToggleComponent} from "../../shared/fullscreen-toggle/fullscreen-toggle.component";
 
 @Component({
   selector: 'app-function-edit',
@@ -27,6 +28,7 @@ import { RevisionCompareComponent } from '../../shared/revision-compare/revision
     ModalHeaderComponent,
     ButtonComponent,
     RevisionCompareComponent,
+    FullscreenToggleComponent,
   ],
 })
 export class FunctionEditComponent implements OnInit {
@@ -97,9 +99,7 @@ export class FunctionEditComponent implements OnInit {
     }
   }
 
-  toggleFullscreen() {
-    this.isFullscreen = !this.isFullscreen;
-    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-    this.activeModal.update({ fullscreen: this.isFullscreen });
+  toggleFullscreen(isFullscreen: boolean) {
+    this.activeModal.update({ fullscreen: isFullscreen });
   }
 }

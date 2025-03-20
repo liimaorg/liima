@@ -12,6 +12,7 @@ import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.comp
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { ResourceFunction } from '../../resource-function';
 import { RevisionCompareComponent } from '../../../shared/revision-compare/revision-compare.component';
+import {FullscreenToggleComponent} from "../../../shared/fullscreen-toggle/fullscreen-toggle.component";
 
 @Component({
   selector: 'app-resource-function-edit',
@@ -30,6 +31,7 @@ import { RevisionCompareComponent } from '../../../shared/revision-compare/revis
     ModalHeaderComponent,
     IconComponent,
     RevisionCompareComponent,
+    FullscreenToggleComponent,
   ],
 })
 export class ResourceFunctionEditComponent implements OnInit {
@@ -94,10 +96,8 @@ export class ResourceFunctionEditComponent implements OnInit {
     }
   }
 
-  toggleFullscreen() {
-    this.isFullscreen = !this.isFullscreen;
-    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-    this.activeModal.update({ fullscreen: this.isFullscreen });
+  toggleFullscreen(isFullscreen: boolean) {
+    this.activeModal.update({ fullscreen: isFullscreen });
   }
 
   addMik() {
