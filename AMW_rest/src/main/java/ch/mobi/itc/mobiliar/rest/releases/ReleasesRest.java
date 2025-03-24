@@ -24,6 +24,8 @@ import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.annotations.Api;
@@ -48,6 +50,8 @@ public class ReleasesRest {
     private ReleaseLocator releaseLocator;
     @Inject
     private ResourceDependencyResolverService resourceDependencyResolverService;
+    @Inject
+    private ResourceLocator resourceLocator;
 
     @GET
     @ApiOperation(value = "Get releases", notes = "Returns all releases")
@@ -144,5 +148,14 @@ public class ReleasesRest {
                 .entity(
                         new GenericEntity<>(releaseLocator.loadResourcesAndDeploymentsForRelease(id)) {
         }).build();
+    }
+
+    @GET
+    @Path("notDefined/{id : \\d+}")
+    @ApiOperation(value = "Get not defined releases for a resource")
+    public Response getNotDefinedReleasesForResource(@PathParam("id") int id) {
+        ResourceEntity resource = resourceLocator.getResourceById(id);
+        List<ReleaseEntity> releases = releaseLocator.getNotDefinedReleasesForResource(resource);
+        return Response.ok(releases).build();
     }
 }

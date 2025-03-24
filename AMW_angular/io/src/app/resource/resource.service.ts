@@ -30,7 +30,7 @@ export class ResourceService extends BaseService {
     shareReplay(1),
   );
 
-  private releasesForResourceGroupByResourceId$: Observable<Release[]> = this.resourceId$.pipe(
+  private releasesForResourceByResourceId$: Observable<Release[]> = this.resourceId$.pipe(
     switchMap((resourceId: number) => {
       return this.getReleasesForResource(resourceId);
     }),
@@ -38,7 +38,7 @@ export class ResourceService extends BaseService {
   );
 
   resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
-  releasesForResourceGroup = toSignal(this.releasesForResourceGroupByResourceId$, {
+  releasesForResource = toSignal(this.releasesForResourceByResourceId$, {
     initialValue: [] as Release[],
   });
   resource = toSignal(this.resourceById$, { initialValue: null });

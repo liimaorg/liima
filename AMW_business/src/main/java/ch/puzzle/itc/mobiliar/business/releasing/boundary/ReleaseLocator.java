@@ -50,6 +50,9 @@ public class ReleaseLocator {
     ReleaseRepository releaseRepository;
 
     @Inject
+    Releasing releasing;
+
+    @Inject
     ReleaseMgmtPersistenceService persistenceService;
 
     public ReleaseEntity getReleaseByName(String name) {
@@ -71,6 +74,10 @@ public class ReleaseLocator {
 
     public List<ReleaseEntity> getReleasesForResourceGroup(ResourceGroupEntity resourceGroup) {
         return releaseRepository.getReleasesForResourceGroup(resourceGroup);
+    }
+
+    public List<ReleaseEntity> getNotDefinedReleasesForResource(ResourceEntity resource) {
+        return releasing.getNotDefinedReleasesForResource(resource);
     }
 
     /**

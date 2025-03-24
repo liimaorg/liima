@@ -51,6 +51,12 @@ export class ReleasesService extends BaseService {
     );
   }
 
+  getNotDefinedReleasesForResource(resourceId: number): Observable<Release[]> {
+    return this.http
+      .get<Release[]>(`${this.getBaseUrl()}/releases/notDefined/${resourceId}`)
+      .pipe(catchError(this.handleError));
+  }
+
   save(release: Release) {
     if (release.id) {
       return this.update(release);
