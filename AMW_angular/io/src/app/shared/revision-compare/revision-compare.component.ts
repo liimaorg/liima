@@ -13,7 +13,6 @@ import { FormsModule } from '@angular/forms';
 export class RevisionCompareComponent {
   selectedRevision = output<{ revisionId: number; displayName: string }>();
   revisions = input.required<RevisionInformation[]>();
-  selection: RevisionInformation;
 
   selectRevision(revision: RevisionInformation) {
     if (!revision) return;
@@ -21,7 +20,6 @@ export class RevisionCompareComponent {
   }
 
   resetRevision() {
-    this.selection = null;
     this.selectedRevision.emit({ revisionId: null, displayName: null });
   }
 }
