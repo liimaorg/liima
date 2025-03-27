@@ -4,7 +4,6 @@
     <ng-select id="selectedRevision"
                class="custom me-2"
                placeholder="Select Revision"
-               [ngModel]="selection"
                (change)="selectRevision($event)"
                (clear)="resetRevision()"
                [attr.data-cy]="'button-dropdown'"
