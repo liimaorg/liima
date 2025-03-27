@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
-import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
 import { ResourceTemplate } from '../../../resource/resource-template';
@@ -28,12 +27,10 @@ interface TargetPlatformModel {
     CodeEditorComponent,
     FormsModule,
     CommonModule,
-    IconComponent,
     NgbDropdownModule,
     ModalHeaderComponent,
     ButtonComponent,
     ModalHeaderComponent,
-    IconComponent,
     DiffEditorComponent,
     RevisionCompareComponent,
     FullscreenToggleComponent,
@@ -53,8 +50,6 @@ export class ResourceTemplateEditComponent implements OnInit {
   public revisions: RevisionInformation[] = [];
   public revision: ResourceTemplate;
   public selectedRevisionName: string;
-  public isFullscreen = false;
-  public toggleFullscreenIcon = 'arrows-fullscreen';
   public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
     return this.loadTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
   });
