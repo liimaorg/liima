@@ -10,7 +10,6 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
 import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
-import { IconComponent } from '../../shared/icon/icon.component';
 import { RevisionCompareComponent } from '../../shared/revision-compare/revision-compare.component';
 import {FullscreenToggleComponent} from "../../shared/fullscreen-toggle/fullscreen-toggle.component";
 
@@ -24,7 +23,6 @@ import {FullscreenToggleComponent} from "../../shared/fullscreen-toggle/fullscre
     DiffEditorComponent,
     FormsModule,
     CommonModule,
-    IconComponent,
     NgbDropdownModule,
     ModalHeaderComponent,
     ButtonComponent,
@@ -41,8 +39,6 @@ export class FunctionEditComponent implements OnInit {
   public revisions: RevisionInformation[] = [];
   public revision: AppFunction;
   public selectedRevisionName: string;
-  public isFullscreen = false;
-  public toggleFullscreenIcon = 'arrows-fullscreen';
 
   public diffValue = {
     original: '',

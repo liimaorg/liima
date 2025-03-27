@@ -45,8 +45,6 @@ export class ResourceFunctionEditComponent implements OnInit {
   public revisions: RevisionInformation[] = [];
   public revision: ResourceFunction;
   public selectedRevisionName: string;
-  public isFullscreen = false;
-  public toggleFullscreenIcon = 'arrows-fullscreen';
   public newMik: string = '';
   public diffValue = {
     original: '',
