@@ -37,6 +37,7 @@ import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.apache.commons.lang3.StringUtils;
 
@@ -116,7 +117,7 @@ public class ResourceTypeDomainService {
 	 * @throws ResourceTypeNotFoundException
 	 */
 	@HasPermission(permission = Permission.RESOURCETYPE, action = Action.CREATE)
-	public ResourceType addResourceType(String newResourceTypeName, Integer parentId) throws ElementAlreadyExistsException, ResourceTypeNotFoundException {
+	public ResourceType addResourceType(String newResourceTypeName, Integer parentId) throws ElementAlreadyExistsException, ResourceTypeNotFoundException, ValidationException {
 
 		ResourceType result = null;
 		ResourceTypeEntity resourceType = getUniqueResourceTypeByName(newResourceTypeName);
@@ -146,13 +147,16 @@ public class ResourceTypeDomainService {
 	 * @param resourceTypeName
 	 * @return
 	 */
-	public Integer getResourceTypeIdByResourceTypeName(String resourceTypeName) {
+	public Integer getResourceTypeIdByResourceTypeName(String resourceTypeName) throws ValidationException {
 		ResourceTypeEntity resourceType = getUniqueResourceTypeByName(resourceTypeName);
 		return resourceType != null ? resourceType.getId() : null;
 	}
 
-	public ResourceTypeEntity getUniqueResourceTypeByName(String resourceTypeName){
+	public ResourceTypeEntity getUniqueResourceTypeByName(String resourceTypeName) throws ValidationException {
 		ResourceTypeEntity resourceType = null;
+		if (StringUtils.isEmpty(resourceTypeName)) {
+			throw new ValidationException("Resource type name must not be null or blank");
+		}
 		try {
 			Query searchUniqueResourceTypeQuery = queries.searchResourceTypeByNameCaseInsensitive(resourceTypeName);
 			resourceType = (ResourceTypeEntity) searchUniqueResourceTypeQuery.getSingleResult();

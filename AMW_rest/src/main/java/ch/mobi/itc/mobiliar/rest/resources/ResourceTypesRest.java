@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
@@ -74,14 +75,8 @@ public class ResourceTypesRest {
     @Path("/resourceTypes/{name}")
     @GET
     @ApiOperation(value = "Get a resource type by name")
-    public ResourceTypeDTO getResourceTypeByName(@PathParam("name") String name) throws NotFoundException, ValidationException {
-        if (StringUtils.isEmpty(name)) {
-            throw new ValidationException("Resource type name must not be null or blank");
-        }
+    public ResourceTypeDTO getResourceTypeByName(@NotNull @PathParam("name") String name) throws ValidationException {
         ResourceTypeEntity resourceType = resourceTypeLocator.getResourceTypeByName(name);
-        if (resourceType == null) {
-            throw new NotFoundException("Resource type '" + name + "' not found");
-        }
         return new ResourceTypeDTO(resourceType);
     }
 
