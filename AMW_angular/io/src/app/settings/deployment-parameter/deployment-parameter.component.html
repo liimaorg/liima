@@ -5,12 +5,12 @@
         <div class="col-sm"></div>
         @if (canCreate()) {
         <div class="col-sm-3">
-            <input id="keyName" type="text" class="form-control" [(ngModel)]="keyName" (keyup.enter)="addKey()" />
+          <input id="keyName" type="text" class="form-control" [(ngModel)]="keyName" (keyup.enter)="addKey()" />
         </div>
         <div class="col-md-auto">
           <app-button [variant]="'primary'" (click)="addKey()"
-              ><app-icon icon="plus-circle"></app-icon> Add key</app-button
-            >
+            ><app-icon icon="plus-circle"></app-icon> Add key</app-button
+          >
         </div>
         }
       </div>
@@ -22,7 +22,8 @@
         [dataCyNameKey]="'name'"
         [data]="paramKeys"
         [canDelete]="canDelete()"
-        (delete)="deleteKey($event.id)">
+        (delete)="deleteKey($event.id)"
+      >
       </app-table>
     </div>
   </div>

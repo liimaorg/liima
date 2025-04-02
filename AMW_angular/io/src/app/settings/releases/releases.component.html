@@ -23,7 +23,8 @@
         [canDelete]="permissions().canDelete"
         [canEdit]="permissions().canEdit"
         (edit)="editRelease($event.id)"
-        (delete)="deleteRelease($event.id)">
+        (delete)="deleteRelease($event.id)"
+      >
       </app-table>
     </div>
     <div class="card-footer py-1">
