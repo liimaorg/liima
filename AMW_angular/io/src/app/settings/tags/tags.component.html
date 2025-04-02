@@ -5,12 +5,18 @@
         <div class="col-sm"></div>
         @if (canCreate()) {
         <div class="col-sm-3">
-          <input id="tagName" type="text float-end" class="form-control" [(ngModel)]="tagName" (keyup.enter)="addTag()" />
+          <input
+            id="tagName"
+            type="text float-end"
+            class="form-control"
+            [(ngModel)]="tagName"
+            (keyup.enter)="addTag()"
+          />
         </div>
         <div class="col-md-auto">
-            <app-button [variant]="'primary'" [dataCy]="'button-add'" (click)="addTag()" [additionalClasses]="'float-end'"
-              ><app-icon icon="plus-circle"></app-icon> Add tag</app-button
-            >
+          <app-button [variant]="'primary'" [dataCy]="'button-add'" (click)="addTag()" [additionalClasses]="'float-end'"
+            ><app-icon icon="plus-circle"></app-icon> Add tag</app-button
+          >
         </div>
         }
       </div>
@@ -22,7 +28,8 @@
         [dataCyNameKey]="'name'"
         [data]="tags()"
         [canDelete]="canDelete()"
-        (delete)="deleteTag($event.id)">
+        (delete)="deleteTag($event.id)"
+      >
       </app-table>
     </div>
   </div>

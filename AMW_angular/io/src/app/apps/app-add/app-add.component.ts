@@ -52,7 +52,7 @@ export class AppAddComponent {
 
   save() {
     if (this.hasInvalidFields()) {
-      return
+      return;
     }
     const app: AppCreate = {
       appName: this.app.appName,

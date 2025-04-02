@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 @Stateless
 public class ResourceTypeLocator {
@@ -49,7 +50,7 @@ public class ResourceTypeLocator {
         return resourceTypeDomainService.getAllResourceTypesWithoutChildren();
     }
 
-    public ResourceTypeEntity getResourceTypeByName(String resourceTypeName) {
+    public ResourceTypeEntity getResourceTypeByName(String resourceTypeName) throws ValidationException {
         return resourceTypeDomainService.getUniqueResourceTypeByName(resourceTypeName);
     }
 

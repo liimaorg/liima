@@ -20,7 +20,8 @@
         [canDelete]="permissions().canManage"
         [canEdit]="permissions().canView"
         (edit)="editFunction($event.id)"
-        (delete)="deleteFunction($event.id)">
+        (delete)="deleteFunction($event.id)"
+      >
       </app-table>
     </div>
   </div>

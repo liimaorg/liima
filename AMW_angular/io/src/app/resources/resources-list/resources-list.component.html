@@ -4,17 +4,17 @@
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
         <h2>
-        {{ resourceType().name }}
-        <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&resTypId={{ resourceType().id }}">
-          <app-button [variant]="'link'"justify-content-start>
-            <app-icon icon="pencil"></app-icon>
+          {{ resourceType().name }}
+          <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&resTypId={{ resourceType().id }}">
+            <app-button [variant]="'link'" justify-content-start>
+              <app-icon icon="pencil"></app-icon>
+            </app-button>
+          </a>
+          @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
+          <app-button [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
+            <app-icon icon="trash"></app-icon>
           </app-button>
-        </a>
-        @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
-        <app-button [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
-          <app-icon icon="trash"></app-icon>
-        </app-button>
-        }
+          }
         </h2>
         @if (permissions().canCreateResource && !resourceType().isApplication) {
         <app-button [variant]="'primary'" (click)="addResource()" [additionalClasses]="'float-end'">
@@ -32,7 +32,8 @@
         [data]="resourceGroupListTableData()"
         [canDelete]="false"
         [canEdit]="permissions().canReadResources"
-        (edit)="openEditResourcePage($event.id)">
+        (edit)="openEditResourcePage($event.id)"
+      >
       </app-table>
     </div>
   </div>

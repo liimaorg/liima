@@ -16,7 +16,6 @@ import { TableComponent, TableColumnType } from '../../shared/table/table.compon
   selector: 'app-resources-list',
   standalone: true,
   templateUrl: './resources-list.component.html',
-  styleUrl: './resources-list.component.scss',
   imports: [ButtonComponent, IconComponent, TableComponent],
 })
 export class ResourcesListComponent {
@@ -91,7 +90,7 @@ export class ResourcesListComponent {
   }
 
   openEditResourcePage(id: number) {
-    let resource = this.resourceGroupList().find((res) => res.id === id);
+    const resource = this.resourceGroupList().find((res) => res.id === id);
     const dynamicUrl = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${
       resource.defaultResourceId ? resource.defaultResourceId : resource.id
     }`;

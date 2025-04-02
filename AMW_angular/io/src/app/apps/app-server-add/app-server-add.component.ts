@@ -34,7 +34,7 @@ export class AppServerAddComponent {
   save() {
     if (this.hasInvalidFields()) {
       document.querySelectorAll('.needs-validation')[0].classList.add('was-validated');
-      return
+      return;
     }
     const appServer: AppServer = {
       name: this.appServer.name,

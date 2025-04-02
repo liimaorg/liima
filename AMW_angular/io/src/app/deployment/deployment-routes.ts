@@ -1,11 +1,12 @@
 import { DeploymentComponent } from './deployment.component';
 
+const DEPLOYMENT_TITLE = 'Deployment - Liima';
 export const deploymentRoutes = [
-  { path: 'deployment', component: DeploymentComponent, title: 'Deployment - Liima' },
-  { path: 'deployment/:deploymentId', component: DeploymentComponent, title: 'Deployment - Liima' },
+  { path: 'deployment', component: DeploymentComponent, title: DEPLOYMENT_TITLE },
+  { path: 'deployment/:deploymentId', component: DeploymentComponent, title: DEPLOYMENT_TITLE },
   {
     path: 'deployment/:appserverName/:releaseName',
     component: DeploymentComponent,
-    title: 'Deployment - Liima',
+    title: DEPLOYMENT_TITLE,
   },
 ];

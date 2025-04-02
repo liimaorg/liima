@@ -3,11 +3,7 @@
   <div class="card">
     <div class="card-header">
       @if (permissions().canAdd) {
-      <app-button
-        [variant]="'primary'"
-        [additionalClasses]="'float-end'"
-        [dataCy]="'button-add'"
-        (click)="addModal()"
+      <app-button [variant]="'primary'" [additionalClasses]="'float-end'" [dataCy]="'button-add'" (click)="addModal()"
         ><app-icon icon="plus-circle"></app-icon> Add property type</app-button
       >
       }
@@ -21,7 +17,8 @@
         [canDelete]="permissions().canDisplay && permissions().canDelete"
         [canEdit]="permissions().canDisplay && permissions().canEditName"
         (edit)="editModal($event.id)"
-        (delete)="deleteModal($event.id)">
+        (delete)="deleteModal($event.id)"
+      >
       </app-table>
     </div>
   </div>

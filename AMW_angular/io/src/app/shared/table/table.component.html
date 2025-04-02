@@ -1,84 +1,73 @@
 <div class="table-responsive">
-  <table class="table table-sm">
+  <table class="table table-sm table-fixed w-100">
     <thead class="table-light">
-    <tr>
-      @for (header of headers(); track header) {
+      <tr>
+        @for (header of headers(); track header) {
         <th scope="col">{{ header.columnTitle }}</th>
-      }
-      @if (hasAction()) {
+        } @if (hasAction()) {
         <th class="text-end" scope="col">Actions</th>
-      }
-    </tr>
+        }
+      </tr>
     </thead>
     <tbody>
       @for (row of data(); track row.id) {
-        <tr>
-          @for (header of headers(); track header) {
-            @switch (header.cellType) {
-              @case ('badge-list') {
-                <td>
-                  @for (item of row[header.key]; track item.id) {
-                    <span class="badge bg-light text-dark rounded-pill">{{ item }}</span>
-                  }
-                </td>
-              }
-              @case ('date') {
-                <td>
-                  {{ row[header.key]  | date: dateFormat }}
-                </td>
-              }
-              @case ('icon') {
-                <td>
-                  <app-icon icon="{{this.getIcon(row[header.key], header)}}"></app-icon>
-                </td>
-              }
-              @case ('link') {
-                <td>
-                  @if(!row[header.urlKey] || row[header.urlKey] == '') {
-                    {{ row[header.key] }}
-                  } @else {
-                    <a href="{{ row[header.urlKey] }}">{{ row[header.key] }}</a>
-                  }
-                </td>
-              }
-              @default {
-                <td>
-                  {{ row[header.key] }}
-                </td>
-              }
-            }
+      <tr>
+        @for (header of headers(); track header) { @switch (header.cellType) { @case ('badge-list') {
+        <td>
+          @for (item of row[header.key]; track item.id) {
+          <span class="badge bg-light text-dark rounded-pill">{{ item }}</span>
           }
-          @if (hasAction()) {
-            <td class="text-end">
-              @if (canEdit() && !row[readonlyFlag()]) {
-                <app-button
-                  [size]="'sm'"
-                  [variant]="'link'"
-                  [additionalClasses]="'me-4 p-0'"
-                  [dataCy]="'button-edit-' + row[dataCyNameKey()]"
-                  (click)="edit.emit({ action: EntryAction.edit, id: row.id })"
-                >
-                  <app-icon icon="pencil"></app-icon>
-                </app-button>
-              }
-              @if (canDelete() && !row[readonlyFlag()]) {
-                <app-button
-                  [size]="'sm'"
-                  [variant]="'link'"
-                  [additionalClasses]="'p-0 link-danger'"
-                  [dataCy]="'button-delete-'+ row[dataCyNameKey()]"
-                  (click)="delete.emit({ action: EntryAction.delete, id: row.id })"
-                >
-                  <app-icon icon="trash"></app-icon>
-                </app-button>
-              }
-            </td>
+        </td>
+        } @case ('date') {
+        <td>
+          {{ row[header.key] | date: dateFormat }}
+        </td>
+        } @case ('icon') {
+        <td>
+          <app-icon icon="{{ this.getIcon(row[header.key], header) }}"></app-icon>
+        </td>
+        } @case ('link') {
+        <td>
+          @if(!row[header.urlKey] || row[header.urlKey] === '') {
+          {{ row[header.key] }}
+          } @else {
+          <a href="{{ row[header.urlKey] }}">{{ row[header.key] }}</a>
           }
-        </tr>
+        </td>
+        } @default {
+        <td>
+          {{ row[header.key] }}
+        </td>
+        } } } @if (hasAction()) {
+        <td class="text-end">
+          @if (canEdit() && !row[readonlyFlag()]) {
+          <app-button
+            [size]="'sm'"
+            [variant]="'link'"
+            [additionalClasses]="'me-4 p-0'"
+            [dataCy]="'button-edit-' + row[dataCyNameKey()]"
+            (click)="edit.emit({ action: EntryAction.edit, id: row.id })"
+          >
+            <app-icon icon="pencil"></app-icon>
+          </app-button>
+          } @if (canDelete() && !row[readonlyFlag()]) {
+          <app-button
+            [size]="'sm'"
+            [variant]="'link'"
+            [additionalClasses]="'p-0 link-danger'"
+            [dataCy]="'button-delete-' + row[dataCyNameKey()]"
+            (click)="delete.emit({ action: EntryAction.delete, id: row.id })"
+          >
+            <app-icon icon="trash"></app-icon>
+          </app-button>
+          }
+        </td>
+        }
+      </tr>
       } @empty {
-        <tr>
-          <td class="text-center" [colSpan]="getTotalColspan()">No {{ entityName() }} defined/found</td>
-        </tr>
+      <tr>
+        <td class="text-muted" [colSpan]="getTotalColspan()">No {{ entityName() }} defined/found</td>
+      </tr>
       }
     </tbody>
   </table>

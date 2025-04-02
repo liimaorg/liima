@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
-import { BehaviorSubject, of, skip, Subject, take } from 'rxjs';
+import { BehaviorSubject, skip, Subject, take } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { IconComponent } from '../shared/icon/icon.component';
 import { PageComponent } from '../layout/page/page.component';
@@ -8,7 +8,7 @@ import { AuthService } from '../auth/auth.service';
 import { ReleasesService } from '../settings/releases/releases.service';
 import { AppsService } from './apps.service';
 import { Release } from '../settings/releases/release';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
 import { AppsServersListComponent } from './apps-servers-list/apps-servers-list.component';
@@ -17,7 +17,6 @@ import { AppServerAddComponent } from './app-server-add/app-server-add.component
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
 import { ResourceService } from '../resource/resource.service';
-import { Resource } from '../resource/resource';
 import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
 import { ResourceTypesService } from '../resource/resource-types.service';
@@ -131,7 +130,7 @@ export class AppsComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           this.appsService.refreshData();
-          this.appServerResourceType$.subscribe((asResourceType) => {
+          this.appServerResourceType$.pipe(takeUntil(this.destroy$)).subscribe((asResourceType) => {
             this.resourceService.setTypeForResourceGroupList(asResourceType);
           });
         },

@@ -68,8 +68,7 @@
         (saveRestriction)="persistRestriction()"
       ></app-restriction-edit>
 
-      }
-      @if (create) {
+      } @if (create) {
 
       <app-restriction-add
         [roleName]="selectedRoleName"
@@ -94,8 +93,8 @@
       <div class="card row offset-1">
         @if (!restriction && !create) {
         <div class="card-header">
-          <app-button [variant]="'primary'" [additionalClasses]="'float-end'"  (click)="addRestriction()"
-          ><app-icon icon="plus-circle"></app-icon> Add permission
+          <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addRestriction()"
+            ><app-icon icon="plus-circle"></app-icon> Add permission
           </app-button>
         </div>
         }
