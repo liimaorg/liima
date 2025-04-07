@@ -6,6 +6,7 @@ export const deploymentsRoutes = [
   {
     path: 'deployments',
     component: DeploymentContainerComponent,
+    title: 'Deployments - Liima',
     children: [
       { path: '', component: DeploymentsComponent },
       { path: ':deploymentId/logs', component: DeploymentLogsComponent },

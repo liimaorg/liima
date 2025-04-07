@@ -10,13 +10,13 @@ import { ResourceAddComponent } from '../resource-add/resource-add.component';
 import { Release } from '../../settings/releases/release';
 import { AuthService } from '../../auth/auth.service';
 import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-type-delete.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-resources-list',
   standalone: true,
   templateUrl: './resources-list.component.html',
-  styleUrl: './resources-list.component.scss',
-  imports: [ButtonComponent, IconComponent],
+  imports: [ButtonComponent, IconComponent, TableComponent],
 })
 export class ResourcesListComponent {
   private modalService = inject(NgbModal);
@@ -27,6 +27,16 @@ export class ResourcesListComponent {
   releases = input.required<Release[]>();
   resourceToAdd = output<any>();
   resourceTypeToDelete = output<ResourceType>();
+  resourceGroupListTableData = computed(
+    () =>
+      this.resourceGroupList()?.map((resource) => {
+        return {
+          id: resource.id,
+          name: resource.name,
+          defaultRelease: resource.defaultRelease.release,
+        };
+      }),
+  );
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -60,5 +70,30 @@ export class ResourcesListComponent {
     modalRef.componentInstance.resourceTypeToDelete
       .pipe(takeUntil(this.destroy$))
       .subscribe((resourceType: ResourceType) => this.resourceTypeToDelete.emit(resourceType));
+  }
+
+  resourcesHeader(): TableColumnType<{
+    id: number;
+    name: string;
+    defaultRelease: string;
+  }>[] {
+    return [
+      {
+        key: 'name',
+        columnTitle: 'Release name',
+      },
+      {
+        key: 'defaultRelease',
+        columnTitle: 'Release',
+      },
+    ];
+  }
+
+  openEditResourcePage(id: number) {
+    const resource = this.resourceGroupList().find((res) => res.id === id);
+    const dynamicUrl = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${
+      resource.defaultResourceId ? resource.defaultResourceId : resource.id
+    }`;
+    window.location.href = dynamicUrl;
   }
 }

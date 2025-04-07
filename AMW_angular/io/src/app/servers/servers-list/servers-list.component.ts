@@ -1,64 +1,89 @@
-import { ChangeDetectionStrategy, Component, inject, input, Signal } from '@angular/core';
-import { AppsListComponent } from '../../apps/apps-list/apps-list-component';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { Server } from '../server';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-servers-list',
   standalone: true,
-  imports: [AppsListComponent],
+  imports: [TableComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<div class="table-responsive">
-    @if (servers() && servers().length > 0) {
-    <table class="table table-sm table-borderless">
-      <thead class="table-light">
-        <tr>
-          <th>Host</th>
-          <th>Env</th>
-          <th>AppServer</th>
-          <th>AppServer Release</th>
-          <th>Runtime</th>
-          <th>Node</th>
-          <th>Node Release</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (server of servers(); track server; let even = $even) {
-        <tr [class.table-light]="!even">
-          <td>
-            <a href="{{ linkToHostUrl() }}={{ server.host }}">{{ server.host }}</a>
-          </td>
-          <td>{{ server.environment }}</td>
-          <td>
-            @if(canReadAppServer()) {
-            <a
-              href="/AMW_web/pages/editResourceView.xhtml?ctx={{ server.environmentId }}&id={{ server.appServerId }}"
-              >{{ server.appServer }}</a
-            >
-            } @else {
-            {{ server.appServer }} }
-          </td>
-          <td>{{ server.appServerRelease }}</td>
-          <td>{{ server.runtime }}</td>
-          <td>
-            @if (canReadResources()) {
-            <a href="/AMW_web/pages/editResourceView.xhtml?ctx={{ server.environmentId }}&id={{ server.nodeId }}">{{
-              server.node
-            }}</a>
-            } @else {
-            {{ server.node }}
-            }
-          </td>
-          <td>{{ server.nodeRelease }}</td>
-        </tr>
-        }
-      </tbody>
-    </table>
-    }
-  </div>`,
+  templateUrl: './servers-list.component.html',
 })
 export class ServersListComponent {
   servers = input.required<Server[]>();
   canReadAppServer = input.required<boolean>();
   canReadResources = input.required<boolean>();
   linkToHostUrl = input.required<string>();
+
+  serversTableData = computed(
+    () =>
+      this.servers()?.map((server) => {
+        return {
+          host: server.host,
+          hostLinkUrl: this.linkToHostUrl() + '=' + server.host,
+          environment: server.environment,
+          appServer: server.appServer,
+          appServerLinkUrl: this.canReadAppServer()
+            ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.appServerId
+            : null,
+          appServerRelease: server.appServerRelease,
+          runtime: server.runtime,
+          node: server.node,
+          nodeLinkUrl: this.canReadResources()
+            ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.nodeId
+            : null,
+          nodeRelease: server.nodeRelease,
+        };
+      }),
+  );
+
+  serversHeader(): TableColumnType<{
+    host: string;
+    hostLinkUrl: string;
+    appServer: string;
+    appServerLinkUrl: string;
+    appServerRelease: string;
+    runtime: string;
+    node: string;
+    nodeLinkUrl: string;
+    nodeRelease: string;
+    environment: string;
+  }>[] {
+    return [
+      {
+        key: 'host',
+        columnTitle: 'Host',
+        cellType: 'link',
+        urlKey: 'hostLinkUrl',
+      },
+      {
+        key: 'environment',
+        columnTitle: 'Env',
+      },
+      {
+        key: 'appServer',
+        columnTitle: 'AppServer',
+        cellType: 'link',
+        urlKey: 'appServerLinkUrl',
+      },
+      {
+        key: 'appServerRelease',
+        columnTitle: 'AppServer Release',
+      },
+      {
+        key: 'runtime',
+        columnTitle: 'Runtime',
+      },
+      {
+        key: 'node',
+        columnTitle: 'Node',
+        cellType: 'link',
+        urlKey: 'nodeLinkUrl',
+      },
+      {
+        key: 'nodeRelease',
+        columnTitle: 'Node Release',
+      },
+    ];
+  }
 }

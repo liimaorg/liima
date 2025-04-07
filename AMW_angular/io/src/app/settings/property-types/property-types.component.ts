@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, OnInit, Signal, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth/auth.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
@@ -12,14 +12,15 @@ import { PropertyTypeEditComponent } from './property-type-edit.component';
 import { Subject } from 'rxjs';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TableColumnType, TableComponent } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-property-types',
   standalone: true,
-  imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent],
+  imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
   templateUrl: './property-types.component.html',
 })
-export class PropertyTypesComponent implements OnInit, OnDestroy {
+export class PropertyTypesComponent implements OnDestroy {
   private authService = inject(AuthService);
   private propertyTypeService = inject(PropertyTypesService);
   private modalService = inject(NgbModal);
@@ -27,14 +28,7 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  canAdd = signal<boolean>(false);
-  canDelete = signal<boolean>(false);
-  canDisplay = signal<boolean>(false);
-  canEditName = signal<boolean>(false);
-  canEditValidation = signal<boolean>(false);
-  canSave = signal<boolean>(false);
-
-  propertyTypes: Signal<PropertyType[]>;
+  propertyTypes: Signal<PropertyType[]> = this.propertyTypeService.propertyTypes;
   error = signal<string>('');
   handleError = computed(() => {
     if (this.error() != '') {
@@ -42,30 +36,55 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
     }
   });
 
-  private readonly PROPERTY_TYPE = 'Property type';
-  isLoading = true;
+  propertyTypesTableData = computed(() =>
+    this.propertyTypes().map((propertyType) => {
+      if (this.permissions().canDisplay) {
+        return {
+          id: propertyType.id,
+          name: propertyType.name,
+          encrypted: propertyType.encrypted ? 'Yes' : 'No',
+          validationRegex: propertyType.validationRegex,
+          propertyTags: propertyType.propertyTags.map((tag) => tag.name),
+        };
+      } else {
+        return {
+          id: propertyType.id,
+          name: propertyType.name, //only name visible
+          encrypted: '',
+          validationRegex: '',
+          propertyTags: [],
+        };
+      }
+    }),
+  );
 
-  ngOnInit(): void {
-    this.getUserPermissions();
-    this.getPropertyTypes();
-    this.isLoading = false;
-  }
+  private readonly PROPERTY_TYPE = 'Property type';
+  isLoading = false;
+
+  permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canAdd: this.authService.hasPermission('ADD_PROPTYPE', 'ALL'),
+        canDelete: this.authService.hasPermission('DELETE_PROPTYPE', 'ALL'),
+        canDisplay: this.authService.hasPermission('PROP_TYPE_NAME_VALUE', 'ALL'),
+        canEditName: this.authService.hasPermission('EDIT_PROP_TYPE_NAME', 'ALL'),
+        canEditValidation: this.authService.hasPermission('EDIT_PROP_TYPE_VALIDATION', 'ALL'),
+        canSave: this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', 'ALL'),
+      };
+    } else {
+      return {
+        canAdd: false,
+        canDelete: false,
+        canDisplay: false,
+        canEditName: false,
+        canEditValidation: false,
+        canSave: false,
+      };
+    }
+  });
 
   ngOnDestroy(): void {
     this.destroy$.next(undefined);
-  }
-
-  private getUserPermissions() {
-    this.canAdd.set(this.authService.hasPermission('ADD_PROPTYPE', 'ALL'));
-    this.canDelete.set(this.authService.hasPermission('DELETE_PROPTYPE', 'ALL'));
-    this.canDisplay.set(this.authService.hasPermission('PROP_TYPE_NAME_VALUE', 'ALL'));
-    this.canEditName.set(this.authService.hasPermission('EDIT_PROP_TYPE_NAME', 'ALL'));
-    this.canEditValidation.set(this.authService.hasPermission('EDIT_PROP_TYPE_VALIDATION', 'ALL'));
-    this.canSave.set(this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', 'ALL'));
-  }
-
-  private getPropertyTypes() {
-    this.propertyTypes = this.propertyTypeService.propertyTypes;
   }
 
   addModal() {
@@ -82,17 +101,17 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
       .subscribe((propertyType: PropertyType) => this.save(propertyType));
   }
 
-  editModal(propertyType: PropertyType) {
+  editModal(propertyTypeId: number) {
     const modalRef = this.modalService.open(PropertyTypeEditComponent);
-    modalRef.componentInstance.propertyType = propertyType;
+    modalRef.componentInstance.propertyType = this.propertyTypes().find((item) => item.id === propertyTypeId);
     modalRef.componentInstance.savePropertyType
       .pipe(takeUntil(this.destroy$))
       .subscribe((propertyType: PropertyType) => this.save(propertyType));
   }
 
-  deleteModal(propertyType: PropertyType) {
+  deleteModal(propertyTypeId: number) {
     const modalRef = this.modalService.open(PropertyTypeDeleteComponent);
-    modalRef.componentInstance.propertyType = propertyType;
+    modalRef.componentInstance.propertyType = this.propertyTypes().find((item) => item.id === propertyTypeId);
     modalRef.componentInstance.deletePropertyType
       .pipe(takeUntil(this.destroy$))
       .subscribe((propertyType: PropertyType) => this.delete(propertyType));
@@ -100,7 +119,7 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
 
   save(propertyType: PropertyType) {
     this.isLoading = true;
-    if (this.canSave() && this.canEditValidation && this.canEditName) {
+    if (this.permissions().canSave && this.permissions().canEditValidation && this.permissions().canEditName) {
       this.propertyTypeService
         .save(propertyType)
         .pipe(takeUntil(this.destroy$))
@@ -128,5 +147,33 @@ export class PropertyTypesComponent implements OnInit, OnDestroy {
         },
       });
     this.isLoading = false;
+  }
+
+  propertyTypesHeader(): TableColumnType<{
+    id: number;
+    name: string;
+    encrypted: boolean;
+    validationRegex: string;
+    propertyTags: string[];
+  }>[] {
+    return [
+      {
+        key: 'name',
+        columnTitle: 'Property Name',
+      },
+      {
+        key: 'encrypted',
+        columnTitle: 'Encrypted',
+      },
+      {
+        key: 'validationRegex',
+        columnTitle: 'Validation',
+      },
+      {
+        key: 'propertyTags',
+        columnTitle: 'Tags',
+        cellType: 'badge-list',
+      },
+    ];
   }
 }

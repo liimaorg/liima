@@ -33,7 +33,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.utils.JpaWildcardConverter;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 public class ApplistScreenDomainServiceQueries {
 
@@ -43,16 +42,10 @@ public class ApplistScreenDomainServiceQueries {
     @Inject
     private DatabaseUtil dbUtil;
 
-
-    Tuple<List<ResourceEntity>, Long> getAppServersWithApps(Integer startIndex, Integer maxResult, String nameFilter) {
+    List<ResourceEntity> getAppServersWithApps(String nameFilter) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Predicate p;
         boolean nameFilterIsEmpty = nameFilter == null || nameFilter.trim().isEmpty();
-
-
-
-        // Count all values before filtering
-        Long totalCount = getTotalCount(cb);
 
         // Filter and retrieve results
         CriteriaQuery<ResourceEntity> q = cb.createQuery(ResourceEntity.class);
@@ -85,27 +78,17 @@ public class ApplistScreenDomainServiceQueries {
 
         TypedQuery<ResourceEntity> query = entityManager.createQuery(q);
 
-        if (startIndex != null) {
-            query.setFirstResult(startIndex);
+        /*
+         * The maximum number of results to return when no name filter is applied.
+         * This is used to prevent large result sets from being returned.
+         */
+        int DEFAULT_MAX_RESULTS_OF_NON_FILTERED_RESULT = 20;
+
+        if (nameFilterIsEmpty) {
+            query.setFirstResult(0);
+            query.setMaxResults(DEFAULT_MAX_RESULTS_OF_NON_FILTERED_RESULT);
         }
 
-        if (maxResult != null) {
-            query.setMaxResults(maxResult);
-        }
-
-        return  new Tuple<>(query.getResultList(), totalCount);
+        return query.getResultList();
     }
-
-    private Long getTotalCount(CriteriaBuilder cb) {
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<ResourceEntity> appServer = countQuery.from(ResourceEntity.class);
-        Join<ResourceEntity, ResourceTypeEntity> appServerType = appServer.join("resourceType", JoinType.LEFT);
-        SetJoin<ResourceEntity, ConsumedResourceRelationEntity> relation = appServer.joinSet("consumedMasterRelations", JoinType.LEFT);
-        Join<ConsumedResourceRelationEntity, ResourceEntity> app = relation.join("slaveResource", JoinType.LEFT);
-        countQuery.select(cb.countDistinct(appServer.get("id")));
-        countQuery.where(cb.equal(appServerType.<String>get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name()));
-        Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
-        return totalCount;
-    }
-
 }

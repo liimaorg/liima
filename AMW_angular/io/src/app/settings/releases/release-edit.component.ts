@@ -27,7 +27,7 @@ export class ReleaseEditComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.release) {
-      this.installationDate = DateModel.fromEpoch(this.release.installationInProductionAt);
+      this.installationDate = DateModel.fromLocalString(this.release.installationInProductionAt);
     }
   }
 
@@ -44,12 +44,15 @@ export class ReleaseEditComponent implements OnInit {
   }
 
   save() {
+    if (this.hasInvalidDate()) {
+      return;
+    }
     if (this.installationDate.toEpoch() != null) {
       const release: Release = {
         name: this.release.name,
         mainRelease: this.release.mainRelease,
         description: this.release.description,
-        installationInProductionAt: this.installationDate.toEpoch(),
+        installationInProductionAt: this.installationDate.toISOFormat(),
         id: this.release.id ? this.release.id : null,
         default: false,
         v: this.release.v ? this.release.v : null,

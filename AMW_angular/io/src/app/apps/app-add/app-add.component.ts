@@ -51,6 +51,9 @@ export class AppAddComponent {
   }
 
   save() {
+    if (this.hasInvalidFields()) {
+      return;
+    }
     const app: AppCreate = {
       appName: this.app.appName,
       appReleaseId: this.app.appReleaseId,

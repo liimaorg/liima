@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelation
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -50,11 +49,9 @@ public class ResourceRelations {
     ResourceDependencyResolverService dependencyResolverService;
 
     @HasPermission(permission = Permission.APP_AND_APPSERVER_LIST)
-    public Tuple<List<ResourceWithRelations>, Long> getAppServersWithApplications(Integer startIndex, Integer maxResults, String filter, ReleaseEntity release) {
-        Tuple<List<ResourceEntity>, Long> result = applistScreenDomainService.getAppServerResourcesWithApplications(startIndex, maxResults, filter, true);
-        List<ResourceEntity> appServersWithAllApplications = result.getA();
-        List<ResourceWithRelations> filteredResult = filterAppServersByRelease(release, appServersWithAllApplications);
-        return new Tuple<>(filteredResult, result.getB());
+    public List<ResourceWithRelations> getAppServersWithApplications(String filter, ReleaseEntity release) {
+        List<ResourceEntity> result = applistScreenDomainService.getAppServerResourcesWithApplications(filter);
+        return filterAppServersByRelease(release, result);
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRED)

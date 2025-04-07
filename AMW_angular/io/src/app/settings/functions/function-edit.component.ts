@@ -62,7 +62,15 @@ export class FunctionEditComponent implements OnInit {
     this.functionsService.refreshData();
   }
 
+  hasInvalidFields(): boolean {
+    return this.function.name.length === 0 || this.function.content.length === 0;
+  }
+
   save() {
+    if (this.hasInvalidFields()) {
+      document.querySelectorAll('.needs-validation')[0].classList.add('was-validated');
+      return;
+    }
     if (this.revision) this.function.content = this.diffValue.original;
     this.saveFunction.emit(this.function);
     this.activeModal.close();

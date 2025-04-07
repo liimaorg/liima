@@ -30,7 +30,6 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,12 +82,20 @@ public class ResourceRelationsTest {
 
     @Test
     public void testGetAppServersWithApplications() throws Exception {
+        ResourceEntity as2 = Mockito.mock(ResourceEntity.class);
+        Mockito.when(as2.getResourceGroup()).thenReturn(asGrp);
+
+        ResourceEntity as3 = Mockito.mock(ResourceEntity.class);
+        Mockito.when(as3.getResourceGroup()).thenReturn(asGrp);
+
+        ResourceEntity as4 = Mockito.mock(ResourceEntity.class);
+        Mockito.when(as4.getResourceGroup()).thenReturn(asGrp);
+
         UserSettingsEntity userSettings = Mockito.mock(UserSettingsEntity.class);
         Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
-        List<ResourceEntity> aslist = Arrays.asList(as);
-        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull(),
-                Mockito.isNull(), Mockito.isNull(), Mockito.anyBoolean())).thenReturn(new Tuple<>(aslist,0L));
-        service.getAppServersWithApplications(null, null, null, release);
+        List<ResourceEntity> aslist = Arrays.asList(as,as2,as3,as4);
+        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull())).thenReturn(aslist);
+        service.getAppServersWithApplications(null, release);
         Mockito.verify(service).filterAppServersByRelease(release, aslist);
     }
 

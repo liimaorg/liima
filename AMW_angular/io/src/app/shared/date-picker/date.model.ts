@@ -1,6 +1,6 @@
 import { NgbTimeStruct, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import * as datefns from 'date-fns';
-import { DATE_FORMAT } from 'src/app/core/amw-constants';
+import { DATE_FORMAT, ISO_FORMAT } from 'src/app/core/amw-constants';
 
 export interface NgbDateTimeStruct extends NgbDateStruct, NgbTimeStruct {}
 
@@ -70,5 +70,9 @@ export class DateModel implements NgbDateStruct {
 
   public toJSON(): string {
     return this.toString();
+  }
+
+  public toISOFormat(): string {
+    return datefns.format(this.thisToDate(), ISO_FORMAT);
   }
 }

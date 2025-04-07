@@ -1,4 +1,4 @@
-import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -8,29 +8,27 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule],
 })
 export class PaginationComponent {
-  @Input() currentPage: number;
-  @Input() lastPage: number;
-  @Output() doSetOffset: EventEmitter<number> = new EventEmitter<number>();
-  @Output() doSetMax: EventEmitter<number> = new EventEmitter<number>();
+  currentPage = input.required<number>();
+  lastPage = input.required<number>();
+  doSetOffset = output<number>();
+  doSetMax = output<number>();
 
   paginatorItems: number = 5;
 
   maxResults: number = 10;
 
-  constructor() {}
-
   pages(): number[] {
-    if (this.lastPage > 1) {
+    if (this.lastPage() > 1) {
       const itemsBefore: number = Math.floor(this.paginatorItems / 2);
-      const start: number = this.currentPage > itemsBefore ? this.currentPage - itemsBefore : 1;
+      const start: number = this.currentPage() > itemsBefore ? this.currentPage() - itemsBefore : 1;
       const end: number = start + this.paginatorItems - 1;
-      return this.range(start, end < this.lastPage ? end : this.lastPage);
+      return this.range(start, end < this.lastPage() ? end : this.lastPage());
     }
     return;
   }
 
   toPage(page: number) {
-    if (page <= this.lastPage && page !== this.currentPage) {
+    if (page <= this.lastPage() && page !== this.currentPage()) {
       page = page > 0 ? page - 1 : 0;
       this.doSetOffset.emit(page * this.maxResults);
     }

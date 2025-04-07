@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
 import { BehaviorSubject, skip, Subject, take } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
-import { AsyncPipe } from '@angular/common';
 import { IconComponent } from '../shared/icon/icon.component';
 import { PageComponent } from '../layout/page/page.component';
 import { AppsFilterComponent } from './apps-filter/apps-filter.component';
@@ -13,15 +12,15 @@ import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { AppServer } from './app-server';
 import { AppsServersListComponent } from './apps-servers-list/apps-servers-list.component';
-import { PaginationComponent } from '../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
 import { ResourceService } from '../resource/resource.service';
-import { Resource } from '../resource/resource';
 import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
+import { ResourceTypesService } from '../resource/resource-types.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-apps',
@@ -29,11 +28,9 @@ import { ButtonComponent } from '../shared/button/button.component';
   imports: [
     AppsFilterComponent,
     AppsServersListComponent,
-    AsyncPipe,
     IconComponent,
     LoadingIndicatorComponent,
     PageComponent,
-    PaginationComponent,
     ButtonComponent,
   ],
   templateUrl: './apps.component.html',
@@ -45,26 +42,23 @@ export class AppsComponent implements OnInit, OnDestroy {
   private modalService = inject(NgbModal);
   private releaseService = inject(ReleasesService); // getCount -> getReleases(0, count)
   private resourceService = inject(ResourceService);
+  private resourceTypesService = inject(ResourceTypesService);
   private toastService = inject(ToastService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   upcomingRelease: Signal<Release> = toSignal(this.releaseService.getUpcomingRelease());
 
   releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
-  appServerGroups = toSignal(this.resourceService.getByType('APPLICATIONSERVER'), {
-    initialValue: [] as Resource[],
-  });
+  appServerResourceType$ = this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER');
+  appServerGroups = this.resourceService.resourceGroupListForType;
   appServers = this.appsService.apps;
-  count = this.appsService.count;
-  maxResults = this.appsService.limit;
-  offset = this.appsService.offset;
-  filter = this.appsService.filter;
-  releaseId = this.appsService.releaseId;
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
   showLoader = signal(false);
   isLoading = computed(() => {
-    return this.appServers() === undefined || this.showLoader();
+    return this.appServers() === undefined || this.appServers() === null || this.showLoader();
   });
 
   permissions = computed(() => {
@@ -79,21 +73,31 @@ export class AppsComponent implements OnInit, OnDestroy {
     }
   });
 
-  currentPage = computed(() => Math.floor(this.offset() / this.maxResults()) + 1);
-  lastPage = computed(() => Math.ceil(this.count() / this.maxResults()));
-
   constructor() {
     toObservable(this.upcomingRelease)
       .pipe(takeUntil(this.destroy$), skip(1), take(1))
       .subscribe((release) => {
-        this.releaseId.set(release.id);
+        this.appsService.releaseId.set(release.id);
         this.appsService.refreshData();
       });
   }
 
   ngOnInit(): void {
+    this.appServerResourceType$.pipe(takeUntil(this.destroy$)).subscribe((asResourceType) => {
+      this.resourceService.setTypeForResourceGroupList(asResourceType);
+    });
+
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
       msg !== '' ? this.toastService.error(msg) : null;
+    });
+
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      if (params.filter) {
+        this.appsService.filter.set(params.filter);
+      }
+      if (params.releaseId) {
+        this.appsService.releaseId.set(Number(params.releaseId));
+      }
     });
   }
 
@@ -126,8 +130,12 @@ export class AppsComponent implements OnInit, OnDestroy {
         },
         complete: () => {
           this.appsService.refreshData();
+          this.appServerResourceType$.pipe(takeUntil(this.destroy$)).subscribe((asResourceType) => {
+            this.resourceService.setTypeForResourceGroupList(asResourceType);
+          });
         },
       });
+    this.showLoader.set(false);
   }
 
   saveApp(app: AppCreate) {
@@ -142,33 +150,34 @@ export class AppsComponent implements OnInit, OnDestroy {
           this.appsService.refreshData();
         },
       });
-  }
-
-  setMaxResultsPerPage(max: number) {
-    this.maxResults.set(max);
-    this.offset.set(0);
-    this.appsService.refreshData();
-  }
-
-  setNewOffset(offset: number) {
-    this.offset.set(offset);
-    this.appsService.refreshData();
+    this.showLoader.set(false);
   }
 
   updateFilter(values: { filter: string; releaseId: number }) {
     let update = false;
-    if (values.filter !== undefined && this.filter() !== values.filter) {
-      this.filter.set(values.filter);
+    if (
+      !(this.isFilterEmpty(values.filter) && this.isFilterEmpty(this.appsService.filter())) &&
+      values.filter !== this.appsService.filter()
+    ) {
+      this.appsService.filter.set(values.filter);
       update = true;
     }
 
-    if (values.releaseId > 0 && this.releaseId() !== values.releaseId) {
-      this.releaseId.set(values.releaseId);
+    if (values.releaseId > 0 && this.appsService.releaseId() !== values.releaseId) {
+      this.appsService.releaseId.set(values.releaseId);
       update = true;
     }
     if (update) {
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { filter: this.appsService.filter(), releaseId: this.appsService.releaseId() },
+      });
       this.appsService.refreshData();
     }
+  }
+
+  private isFilterEmpty(value: string | null | undefined): boolean {
+    return value === null || value === undefined || value.trim() === '';
   }
 
   ngOnDestroy(): void {

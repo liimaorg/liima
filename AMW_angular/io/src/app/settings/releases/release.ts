@@ -2,7 +2,7 @@ export interface Release {
   name: string;
   mainRelease: boolean;
   description: string;
-  installationInProductionAt: number;
+  installationInProductionAt: string;
   id: number;
   v: number;
   default: boolean;

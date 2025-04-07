@@ -14,17 +14,14 @@ export class AppsService extends BaseService {
 
   private reload$ = new Subject<AppServer[]>();
 
-  offset = signal(0);
-  limit = signal(20);
   filter = signal<string>(null);
   releaseId: WritableSignal<number | undefined> = signal(undefined);
   private apps$: Observable<AppServer[]> = this.reload$.pipe(
+    switchMap(() => this.getApps(this.filter(), this.releaseId())),
     startWith(null),
-    switchMap(() => this.getApps(this.offset(), this.limit(), this.filter(), this.releaseId())),
     shareReplay(1),
   );
-  count = signal(0);
-  apps = toSignal(this.apps$, { initialValue: [] as AppServer[] });
+  apps = toSignal(this.apps$, { initialValue: null as AppServer[] });
 
   constructor() {
     super();
@@ -34,19 +31,11 @@ export class AppsService extends BaseService {
     this.reload$.next([]);
   }
 
-  private getApps(offset: number, limit: number, filter: string, releaseId: number | undefined) {
+  private getApps(filter: string, releaseId: number | undefined) {
     if (!releaseId) return of([]);
 
     let urlParams = '';
-    if (offset != null) {
-      urlParams = `start=${offset}&`;
-    }
-
-    if (limit != null) {
-      urlParams += `limit=${limit}&`;
-    }
-
-    if (filter != null) {
+    if (filter !== undefined && filter !== null && filter !== '') {
       urlParams += `appServerName=${filter}&`;
     }
 
@@ -58,11 +47,6 @@ export class AppsService extends BaseService {
       .pipe(catchError(this.handleError))
       .pipe(
         map((response: HttpResponse<AppServer[]>) => {
-          if (response.body.length <= 0) {
-            this.count.set(0);
-          } else {
-            this.count.set(Number(response.headers.get('x-total-count')));
-          }
           return response.body;
         }),
       );

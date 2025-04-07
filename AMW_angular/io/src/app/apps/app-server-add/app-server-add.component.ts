@@ -24,7 +24,7 @@ export class AppServerAddComponent {
   }
 
   hasInvalidFields(): boolean {
-    return this.appServer.name === '' || this.appServer.release?.id === null || this.appServer.release?.name === '';
+    return this.appServer.name === '' || this.appServer.release?.id == null;
   }
 
   cancel() {
@@ -32,6 +32,10 @@ export class AppServerAddComponent {
   }
 
   save() {
+    if (this.hasInvalidFields()) {
+      document.querySelectorAll('.needs-validation')[0].classList.add('was-validated');
+      return;
+    }
     const appServer: AppServer = {
       name: this.appServer.name,
       release: this.appServer.release,

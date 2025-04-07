@@ -2,6 +2,7 @@ import { ServersPageComponent } from './servers-page.component';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
 
 describe(ServersPageComponent.name, () => {
   let component: ServersPageComponent;
@@ -9,7 +10,7 @@ describe(ServersPageComponent.name, () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ServersPageComponent],
+      imports: [ServersPageComponent, RouterModule.forRoot([], { useHash: true })],
       providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 

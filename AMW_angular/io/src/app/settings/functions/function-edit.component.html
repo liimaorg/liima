@@ -1,9 +1,10 @@
 <app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
 <div class="modal-body">
   <div class="form-horizontal mx-2">
-    <div class="mb-3">
+    <div class="needs-validation mb-3">
       <label for="name" class="form-label align-self-center">Function name</label>
-      <input type="text" class="form-control" id="name" [(ngModel)]="function.name" />
+      <input type="text" class="form-control" id="name" [(ngModel)]="function.name" required pattern=".*\S+.*" />
+      <div class="invalid-feedback">Please enter a function name</div>
     </div>
 
     <div class="mb-3">
@@ -76,11 +77,7 @@
     data-toggle="tooltip"
     [title]="!function.name || !function.content ? 'Please provide function name and content' : ''"
   >
-    <app-button
-      [variant]="'primary'"
-      [disabled]="function.name.length === 0 || function.content.length === 0"
-      [dataCy]="'button-save'"
-      (click)="save()"
+    <app-button [variant]="'primary'" [disabled]="hasInvalidFields()" [dataCy]="'button-save'" (click)="save()"
       >Save changes
     </app-button>
   </span>

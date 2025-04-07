@@ -1,9 +1,6 @@
 import { Component, inject, Signal, computed, OnDestroy } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
-import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../auth/auth.service';
 import { takeUntil } from 'rxjs/operators';
@@ -13,19 +10,12 @@ import { FunctionsService } from './functions.service';
 import { FunctionEditComponent } from './function-edit.component';
 import { FunctionDeleteComponent } from './function-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-functions',
   standalone: true,
-  imports: [
-    AsyncPipe,
-    IconComponent,
-    LoadingIndicatorComponent,
-    PaginationComponent,
-    FunctionEditComponent,
-    FunctionDeleteComponent,
-    ButtonComponent,
-  ],
+  imports: [IconComponent, ButtonComponent, TableComponent],
   templateUrl: './functions.component.html',
 })
 export class FunctionsComponent implements OnDestroy {
@@ -72,11 +62,11 @@ export class FunctionsComponent implements OnDestroy {
       .subscribe((functionData: AppFunction) => this.saveNew(functionData));
   }
 
-  editFunction(functionData: AppFunction) {
+  editFunction(id: number) {
     const modalRef = this.modalService.open(FunctionEditComponent, {
       size: 'xl',
     });
-    modalRef.componentInstance.function = functionData;
+    modalRef.componentInstance.function = this.functions().find((item) => item.id === id);
     modalRef.componentInstance.canManage = this.permissions().canManage;
     modalRef.componentInstance.saveFunction
       .pipe(takeUntil(this.destroy$))
@@ -105,9 +95,9 @@ export class FunctionsComponent implements OnDestroy {
       });
   }
 
-  deleteFunction(functionData: AppFunction) {
+  deleteFunction(id: number) {
     const modalRef = this.modalService.open(FunctionDeleteComponent);
-    modalRef.componentInstance.function = functionData;
+    modalRef.componentInstance.function = this.functions().find((item) => item.id === id);
     modalRef.componentInstance.deleteFunction
       .pipe(takeUntil(this.destroy$))
       .subscribe((functionData: AppFunction) => this.delete(functionData));
@@ -122,5 +112,14 @@ export class FunctionsComponent implements OnDestroy {
         error: (e) => this.error$.next(e),
         complete: () => this.functionsService.refreshData(),
       });
+  }
+
+  functionsTableHeader(): TableColumnType<Function>[] {
+    return [
+      {
+        key: 'name',
+        columnTitle: 'Functions Name',
+      },
+    ];
   }
 }

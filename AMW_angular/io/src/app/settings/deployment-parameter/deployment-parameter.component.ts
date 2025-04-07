@@ -7,13 +7,14 @@ import { AuthService, isAllowed } from '../../auth/auth.service';
 import { Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 type Key = { id: number; name: string };
 
 @Component({
   selector: 'app-deployment-parameter',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent, TableComponent],
   templateUrl: './deployment-parameter.component.html',
   styleUrl: './deployment-parameter.component.scss',
 })
@@ -67,5 +68,14 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
       this.paramKeys = this.paramKeys.filter((key) => key.id !== keyId);
       this.toastService.success('Key deleted.');
     });
+  }
+
+  deploymentParameterHeader(): TableColumnType<Key>[] {
+    return [
+      {
+        key: 'name',
+        columnTitle: 'Name',
+      },
+    ];
   }
 }

@@ -35,10 +35,7 @@ import javax.inject.Named;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 
@@ -153,8 +150,10 @@ public class ResourceTypeDataProvider implements Serializable {
 					} else {
 						throw e;
 					}
-				}
-			}
+				} catch (ValidationException e) {
+					GlobalMessageAppender.addErrorMessage(e.getMessage());
+                }
+            }
 		} catch (ResourceTypeNotFoundException e) {
 			String message = "Could not find resourcetype.";
 			GlobalMessageAppender.addErrorMessage(message);

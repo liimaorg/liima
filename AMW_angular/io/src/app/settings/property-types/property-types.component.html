@@ -1,81 +1,25 @@
 <app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
 <div class="container">
-  <h1>Property Types</h1>
-  <div class="card row mt-2 mb-3">
+  <div class="card">
     <div class="card-header">
-      <div class="row justify-content-between align-items-center">
-        <div class="col-sm"></div>
-
-        <div class="col-sm">
-          @if (canAdd()) {
-          <app-button
-            [variant]="'primary'"
-            [additionalClasses]="'float-end'"
-            [dataCy]="'button-add'"
-            (click)="addModal()"
-            ><app-icon icon="plus-circle"></app-icon> Add property type</app-button
-          >
-          }
-        </div>
-      </div>
+      @if (permissions().canAdd) {
+      <app-button [variant]="'primary'" [additionalClasses]="'float-end'" [dataCy]="'button-add'" (click)="addModal()"
+        ><app-icon icon="plus-circle"></app-icon> Add property type</app-button
+      >
+      }
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-sm table-striped">
-          <thead>
-            <tr>
-              <th>Property Name</th>
-              <th>Encrypted</th>
-              <th>Validation</th>
-              <th>Tags</th>
-              <th>Edit</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (property of propertyTypes(); track property.id) {
-            <tr>
-              <td class="align-middle">{{ property.name }}</td>
-              @if (canDisplay()) {
-              <td class="align-middle">{{ property.encrypted ? 'Yes' : 'No' }}</td>
-              <td class="align-middle">{{ property.validationRegex }}</td>
-              <td class="align-middle">
-                <div>
-                  @for (tag of property.propertyTags; track tag.name) {
-                  <span class="badge bg-light text-dark rounded-pill">{{ tag.name }}</span>
-                  }
-                </div>
-              </td>
-              <td class="text-center">
-                @if (canEditName()) {
-                <app-button
-                  [variant]="'primary'"
-                  [size]="'sm'"
-                  [additionalClasses]="'me-0'"
-                  [dataCy]="'edit-' + property.name"
-                  (click)="editModal(property)"
-                  ><app-icon icon="pencil"></app-icon
-                ></app-button>
-                }
-              </td>
-              <td class="text-center">
-                @if (canDelete()) {
-                <app-button
-                  [variant]="'danger'"
-                  [size]="'sm'"
-                  [additionalClasses]="'me-0'"
-                  [dataCy]="'delete-' + property.name"
-                  (click)="deleteModal(property)"
-                  ><app-icon icon="trash"></app-icon
-                ></app-button>
-                }
-              </td>
-              }
-            </tr>
-            }
-          </tbody>
-        </table>
-      </div>
+      <app-table
+        [entityName]="'property types'"
+        [headers]="propertyTypesHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="propertyTypesTableData()"
+        [canDelete]="permissions().canDisplay && permissions().canDelete"
+        [canEdit]="permissions().canDisplay && permissions().canEditName"
+        (edit)="editModal($event.id)"
+        (delete)="deleteModal($event.id)"
+      >
+      </app-table>
     </div>
   </div>
 </div>

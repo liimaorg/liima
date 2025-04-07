@@ -1,21 +1,21 @@
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { EnvironmentService } from '../../deployment/environment.service';
-import { Environment, EnvironmentTree } from '../../deployment/environment';
+import { Environment, EnvironmentTree, EnvironmentTreeUtils } from '../../deployment/environment';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { EnvironmentEditComponent } from './environment-edit/environment-edit.component';
 import { takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { ToastService } from '../../shared/elements/toast/toast.service';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { EnvironmentDeleteComponent } from './environment-delete/environment-delete.component';
 import { AuthService } from '../../auth/auth.service';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-environments-page',
   standalone: true,
-  imports: [IconComponent, LoadingIndicatorComponent, ButtonComponent],
+  imports: [IconComponent, ButtonComponent, TableComponent],
   templateUrl: './environments-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -35,12 +35,6 @@ export class EnvironmentsPageComponent {
     if (!(envTree.length > 0)) return;
     return envTree[0].children;
   });
-
-  private getUserPermissions() {
-    canAdd: this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', 'ALL');
-    canDelete: this.authService.hasPermission('REMOVE_ENV_OR_DOM', 'ALL');
-    canEdit: this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', 'ALL');
-  }
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -109,35 +103,19 @@ export class EnvironmentsPageComponent {
       .subscribe((environment: Environment) => this.save(environment));
   }
 
-  editContext(environmentTree: EnvironmentTree) {
+  editContext(environmentTreeId: number) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
     modalRef.componentInstance.globalName = this.globalEnv.name;
-    modalRef.componentInstance.environment = {
-      id: environmentTree.id,
-      name: environmentTree.name,
-      nameAlias: environmentTree.nameAlias,
-      parentName: environmentTree.parentName,
-      parentId: environmentTree.parentId,
-      selected: environmentTree.selected,
-      disabled: environmentTree.disabled,
-    } as Environment;
+    modalRef.componentInstance.environment = EnvironmentTreeUtils.searchById(this.environmentTree(), environmentTreeId);
     modalRef.componentInstance.saveEnvironment
       .pipe(takeUntil(this.destroy$))
       .subscribe((environment: Environment) => this.save(environment));
   }
 
-  deleteContext(environmentTree: EnvironmentTree) {
+  deleteContext(environmentTreeId: number) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentDeleteComponent);
     modalRef.componentInstance.globalName = this.globalEnv.name;
-    modalRef.componentInstance.environment = {
-      id: environmentTree.id,
-      name: environmentTree.name,
-      nameAlias: environmentTree.nameAlias,
-      parentName: environmentTree.parentName,
-      parentId: environmentTree.parentId,
-      selected: environmentTree.selected,
-      disabled: environmentTree.disabled,
-    } as Environment;
+    modalRef.componentInstance.environment = EnvironmentTreeUtils.searchById(this.environmentTree(), environmentTreeId);
     modalRef.componentInstance.deleteEnvironment
       .pipe(takeUntil(this.destroy$))
       .subscribe((environment: Environment) => this.delete(environment.id));
@@ -163,5 +141,18 @@ export class EnvironmentsPageComponent {
         error: (e) => this.error$.next(e),
         complete: () => this.environmentsService.refreshData(),
       });
+  }
+
+  environmentHeader(): TableColumnType<Environment>[] {
+    return [
+      {
+        key: 'name',
+        columnTitle: 'Environment name',
+      },
+      {
+        key: 'nameAlias',
+        columnTitle: 'Environment alias',
+      },
+    ];
   }
 }
