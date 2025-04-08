@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgTemplateOutlet } from '@angular/common';
 import { ToastService } from './toast.service';
 
 @Component({
     selector: 'app-toasts',
-    imports: [NgbToastModule, NgTemplateOutlet],
+    imports: [NgbToastModule],
     template: `@for (toast of toastService.toasts; track toast) {
     <ngb-toast
       [class]="['toast', toast.type]"

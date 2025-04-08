@@ -6,19 +6,10 @@ import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUnti
 import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { DeploymentLog } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { FormsModule } from '@angular/forms';
 
-import {
-  NgbDropdown,
-  NgbDropdownToggle,
-  NgbDropdownMenu,
-  NgbDropdownButtonItem,
-  NgbDropdownItem,
-} from '@ng-bootstrap/ng-bootstrap';
 import { PageComponent } from '../../layout/page/page.component';
 import { ToastService } from '../../shared/elements/toast/toast.service';
-import { NotificationComponent } from '../../shared/elements/notification/notification.component';
 import { Deployment } from '../../deployment/deployment';
 import { DeploymentLogContentComponent } from './deployment-log-content.component';
 import { DeploymentLogFileSelectorComponent } from './deployment-log-file-selector.component';
@@ -37,16 +28,9 @@ function failed(): Observable<Failed> {
     templateUrl: './deployment-logs.component.html',
     encapsulation: ViewEncapsulation.None,
     imports: [
-        NgbDropdown,
-        NgbDropdownToggle,
-        NgbDropdownMenu,
-        NgbDropdownButtonItem,
-        NgbDropdownItem,
         FormsModule,
-        LoadingIndicatorComponent,
         AsyncPipe,
         PageComponent,
-        NotificationComponent,
         DeploymentLogContentComponent,
         DeploymentLogFileSelectorComponent,
     ]

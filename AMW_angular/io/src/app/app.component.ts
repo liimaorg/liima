@@ -12,7 +12,7 @@ import { ToastContainerComponent } from './shared/elements/toast/toast-container
     encapsulation: ViewEncapsulation.None,
     styleUrls: ['./app.component.scss'],
     templateUrl: './app.component.html',
-    imports: [RouterOutlet, AsyncPipe, NavigationComponent, ToastContainerComponent]
+    imports: [RouterOutlet, NavigationComponent, ToastContainerComponent]
 })
 export class AppComponent implements OnInit {
   logoutUrl: string;

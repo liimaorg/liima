@@ -5,11 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { AuthService } from '../../../auth/auth.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
-import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
     selector: 'app-environment-edit',
-    imports: [FormsModule, ModalHeaderComponent, ButtonComponent, IconComponent],
+    imports: [FormsModule, ModalHeaderComponent, ButtonComponent],
     templateUrl: './environment-edit.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
