@@ -8,11 +8,10 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
-  selector: 'app-environment-edit',
-  standalone: true,
-  imports: [FormsModule, ModalHeaderComponent, ButtonComponent, IconComponent],
-  templateUrl: './environment-edit.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-environment-edit',
+    imports: [FormsModule, ModalHeaderComponent, ButtonComponent, IconComponent],
+    templateUrl: './environment-edit.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EnvironmentEditComponent {
   private authService = inject(AuthService);

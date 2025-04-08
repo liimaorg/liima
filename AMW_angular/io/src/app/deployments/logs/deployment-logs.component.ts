@@ -32,25 +32,24 @@ function failed(): Observable<Failed> {
 }
 
 @Component({
-  selector: 'app-logs',
-  styleUrls: ['./deployment-logs.component.scss'],
-  templateUrl: './deployment-logs.component.html',
-  encapsulation: ViewEncapsulation.None,
-  standalone: true,
-  imports: [
-    NgbDropdown,
-    NgbDropdownToggle,
-    NgbDropdownMenu,
-    NgbDropdownButtonItem,
-    NgbDropdownItem,
-    FormsModule,
-    LoadingIndicatorComponent,
-    AsyncPipe,
-    PageComponent,
-    NotificationComponent,
-    DeploymentLogContentComponent,
-    DeploymentLogFileSelectorComponent,
-  ],
+    selector: 'app-logs',
+    styleUrls: ['./deployment-logs.component.scss'],
+    templateUrl: './deployment-logs.component.html',
+    encapsulation: ViewEncapsulation.None,
+    imports: [
+        NgbDropdown,
+        NgbDropdownToggle,
+        NgbDropdownMenu,
+        NgbDropdownButtonItem,
+        NgbDropdownItem,
+        FormsModule,
+        LoadingIndicatorComponent,
+        AsyncPipe,
+        PageComponent,
+        NotificationComponent,
+        DeploymentLogContentComponent,
+        DeploymentLogFileSelectorComponent,
+    ]
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
   constructor(

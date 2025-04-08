@@ -25,11 +25,10 @@ export interface EntryActionOutput {
   id: number;
 }
 @Component({
-  selector: 'app-table',
-  templateUrl: './table.component.html',
-  styleUrl: './table.component.scss',
-  standalone: true,
-  imports: [ButtonComponent, IconComponent, DatePipe],
+    selector: 'app-table',
+    templateUrl: './table.component.html',
+    styleUrl: './table.component.scss',
+    imports: [ButtonComponent, IconComponent, DatePipe]
 })
 export class TableComponent<T> {
   entityName = input.required<string>();

@@ -8,12 +8,11 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { ToastContainerComponent } from './shared/elements/toast/toast-container.component';
 
 @Component({
-  selector: 'app',
-  encapsulation: ViewEncapsulation.None,
-  styleUrls: ['./app.component.scss'],
-  templateUrl: './app.component.html',
-  standalone: true,
-  imports: [RouterOutlet, AsyncPipe, NavigationComponent, ToastContainerComponent],
+    selector: 'app',
+    encapsulation: ViewEncapsulation.None,
+    styleUrls: ['./app.component.scss'],
+    templateUrl: './app.component.html',
+    imports: [RouterOutlet, AsyncPipe, NavigationComponent, ToastContainerComponent]
 })
 export class AppComponent implements OnInit {
   logoutUrl: string;

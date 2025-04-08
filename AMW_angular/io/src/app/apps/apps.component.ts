@@ -23,18 +23,17 @@ import { ResourceTypesService } from '../resource/resource-types.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-apps',
-  standalone: true,
-  imports: [
-    AppsFilterComponent,
-    AppsServersListComponent,
-    IconComponent,
-    LoadingIndicatorComponent,
-    PageComponent,
-    ButtonComponent,
-  ],
-  templateUrl: './apps.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-apps',
+    imports: [
+        AppsFilterComponent,
+        AppsServersListComponent,
+        IconComponent,
+        LoadingIndicatorComponent,
+        PageComponent,
+        ButtonComponent,
+    ],
+    templateUrl: './apps.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppsComponent implements OnInit, OnDestroy {
   private appsService = inject(AppsService);

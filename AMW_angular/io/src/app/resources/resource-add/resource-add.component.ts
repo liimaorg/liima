@@ -8,11 +8,10 @@ import { Release } from '../../settings/releases/release';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
-  selector: 'app-resource-add',
-  standalone: true,
-  imports: [FormsModule, ModalHeaderComponent, ButtonComponent, NgbTypeahead, NgSelectModule],
-  templateUrl: './resource-add.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-resource-add',
+    imports: [FormsModule, ModalHeaderComponent, ButtonComponent, NgbTypeahead, NgSelectModule],
+    templateUrl: './resource-add.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResourceAddComponent {
   activeModal = inject(NgbActiveModal);
