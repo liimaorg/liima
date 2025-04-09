@@ -2,16 +2,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Release } from './release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { AsyncPipe, KeyValuePipe } from '@angular/common';
+import { KeyValuePipe } from '@angular/common';
 import { ResourceEntity } from './resource-entity';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'app-release-delete',
-  standalone: true,
-  imports: [AsyncPipe, KeyValuePipe, FormsModule, ModalHeaderComponent, ButtonComponent],
-  templateUrl: './release-delete.component.html',
+    selector: 'app-release-delete',
+    imports: [KeyValuePipe, FormsModule, ModalHeaderComponent, ButtonComponent],
+    templateUrl: './release-delete.component.html'
 })
 export class ReleaseDeleteComponent implements OnInit {
   @Input() release: Release;

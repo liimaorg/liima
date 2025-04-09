@@ -5,10 +5,9 @@ import { Resource } from '../../resource/resource';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-  selector: 'app-restriction-list',
-  templateUrl: './restriction-list.component.html',
-  standalone: true,
-  imports: [TableComponent],
+    selector: 'app-restriction-list',
+    templateUrl: './restriction-list.component.html',
+    imports: [TableComponent]
 })
 export class RestrictionListComponent {
   delegationMode = input.required<boolean>();

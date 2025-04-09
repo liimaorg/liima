@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-navigation',
-  template: `
+    selector: 'app-navigation',
+    template: `
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top bg-dark mb-0">
       <div class="container-fluid">
         <span class="navbar-brand">
@@ -54,9 +54,8 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
       </div>
     </nav>
   `,
-  styleUrls: ['./navigation.component.scss'],
-  standalone: true,
-  imports: [NgbCollapse],
+    styleUrls: ['./navigation.component.scss'],
+    imports: [NgbCollapse]
 })
 export class NavigationComponent {
   @Input()

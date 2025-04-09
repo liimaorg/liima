@@ -9,18 +9,17 @@ import { IconComponent } from '../icon/icon.component';
 import { ButtonComponent } from '../button/button.component';
 
 @Component({
-  selector: 'app-date-picker',
-  templateUrl: './date-picker.component.html',
-  providers: [
-    DatePipe,
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => DatePickerComponent),
-      multi: true,
-    },
-  ],
-  standalone: true,
-  imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, ButtonComponent],
+    selector: 'app-date-picker',
+    templateUrl: './date-picker.component.html',
+    providers: [
+        DatePipe,
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => DatePickerComponent),
+            multi: true,
+        },
+    ],
+    imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, ButtonComponent]
 })
 export class DatePickerComponent implements ControlValueAccessor, OnInit {
   @Input()

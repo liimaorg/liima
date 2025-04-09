@@ -13,10 +13,9 @@ import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-ty
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-  selector: 'app-resources-list',
-  standalone: true,
-  templateUrl: './resources-list.component.html',
-  imports: [ButtonComponent, IconComponent, TableComponent],
+    selector: 'app-resources-list',
+    templateUrl: './resources-list.component.html',
+    imports: [ButtonComponent, IconComponent, TableComponent]
 })
 export class ResourcesListComponent {
   private modalService = inject(NgbModal);

@@ -5,10 +5,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'app-resource-type-delete',
-  standalone: true,
-  templateUrl: './resource-type-delete.component.html',
-  imports: [ModalHeaderComponent, ButtonComponent, ModalHeaderComponent, ButtonComponent],
+    selector: 'app-resource-type-delete',
+    templateUrl: './resource-type-delete.component.html',
+    imports: [ModalHeaderComponent, ButtonComponent, ModalHeaderComponent, ButtonComponent]
 })
 export class ResourceTypeDeleteComponent {
   activeModal = inject(NgbActiveModal);

@@ -10,11 +10,10 @@ import { TableComponent, TableColumnType } from '../../shared/table/table.compon
 import { Tag } from './tag';
 
 @Component({
-  selector: 'app-tags',
-  templateUrl: './tags.component.html',
-  styleUrl: './tags.component.scss',
-  standalone: true,
-  imports: [FormsModule, IconComponent, ButtonComponent, TableComponent],
+    selector: 'app-tags',
+    templateUrl: './tags.component.html',
+    styleUrl: './tags.component.scss',
+    imports: [FormsModule, IconComponent, ButtonComponent, TableComponent]
 })
 export class TagsComponent implements OnInit, OnDestroy {
   private tagsService = inject(TagsService);

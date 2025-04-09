@@ -6,10 +6,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'app-property-type-delete',
-  standalone: true,
-  imports: [FormsModule, ModalHeaderComponent, ButtonComponent],
-  templateUrl: './property-type-delete.component.html',
+    selector: 'app-property-type-delete',
+    imports: [FormsModule, ModalHeaderComponent, ButtonComponent],
+    templateUrl: './property-type-delete.component.html'
 })
 export class PropertyTypeDeleteComponent {
   @Input() propertyType: PropertyType;

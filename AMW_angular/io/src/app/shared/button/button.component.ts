@@ -2,8 +2,8 @@ import { Component, input } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-button',
-  template: `
+    selector: 'app-button',
+    template: `
     <button
       type="button"
       class="btn"
@@ -15,8 +15,7 @@ import { NgClass } from '@angular/common';
       <ng-content></ng-content>
     </button>
   `,
-  standalone: true,
-  imports: [NgClass],
+    imports: [NgClass]
 })
 export class ButtonComponent {
   variant = input<'primary' | 'secondary' | 'danger' | 'light' | 'close' | 'link'>();

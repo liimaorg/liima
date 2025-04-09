@@ -5,8 +5,8 @@ import { CodeEditorComponent } from '../../shared/codemirror/code-editor.compone
 
 type Failed = 'failed';
 @Component({
-  selector: 'app-deployment-log-content',
-  template: `
+    selector: 'app-deployment-log-content',
+    template: `
     <div class="m-2 h-100">
       @if (content !== null && content !== 'failed') {
 
@@ -22,8 +22,7 @@ type Failed = 'failed';
       } @else { ... }
     </div>
   `,
-  standalone: true,
-  imports: [FormsModule, CodeEditorComponent],
+    imports: [FormsModule, CodeEditorComponent]
 })
 export class DeploymentLogContentComponent {
   @Input() content: DeploymentLog | Failed;

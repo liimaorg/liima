@@ -3,11 +3,10 @@ import { Server } from '../server';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-  selector: 'app-servers-list',
-  standalone: true,
-  imports: [TableComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './servers-list.component.html',
+    selector: 'app-servers-list',
+    imports: [TableComponent],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    templateUrl: './servers-list.component.html'
 })
 export class ServersListComponent {
   servers = input.required<Server[]>();

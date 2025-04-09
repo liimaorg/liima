@@ -13,20 +13,19 @@ import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.compone
 import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
-  selector: 'app-function-edit',
-  templateUrl: './function-edit.component.html',
-  styleUrl: './function-edit.component.scss',
-  standalone: true,
-  imports: [
-    CodeEditorComponent,
-    DiffEditorComponent,
-    FormsModule,
-    CommonModule,
-    IconComponent,
-    NgbDropdownModule,
-    ModalHeaderComponent,
-    ButtonComponent,
-  ],
+    selector: 'app-function-edit',
+    templateUrl: './function-edit.component.html',
+    styleUrl: './function-edit.component.scss',
+    imports: [
+        CodeEditorComponent,
+        DiffEditorComponent,
+        FormsModule,
+        CommonModule,
+        IconComponent,
+        NgbDropdownModule,
+        ModalHeaderComponent,
+        ButtonComponent,
+    ]
 })
 export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;
