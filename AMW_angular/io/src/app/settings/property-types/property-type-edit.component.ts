@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { DatePickerComponent } from '../../shared/date-picker/date-picker.component';
 import { PropertyType } from './property-type';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PropertyTag } from './property-tag';
@@ -10,10 +9,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'app-property-type-edit',
-  templateUrl: './property-type-edit.component.html',
-  standalone: true,
-  imports: [DatePickerComponent, IconComponent, FormsModule, ModalHeaderComponent, ButtonComponent],
+    selector: 'app-property-type-edit',
+    templateUrl: './property-type-edit.component.html',
+    imports: [IconComponent, FormsModule, ModalHeaderComponent, ButtonComponent]
 })
 export class PropertyTypeEditComponent {
   @Input() propertyType: PropertyType;

@@ -4,13 +4,11 @@ import { EnvironmentService } from '../../deployment/environment.service';
 import { DeploymentService } from '../../deployment/deployment.service';
 
 @Component({
-  selector: 'app-deployment-container',
-  template: ` <router-outlet></router-outlet> `,
-  styles: [],
-  standalone: true,
-  providers: [EnvironmentService, DeploymentService],
-
-  imports: [RouterOutlet],
+    selector: 'app-deployment-container',
+    template: ` <router-outlet></router-outlet> `,
+    styles: [],
+    providers: [EnvironmentService, DeploymentService],
+    imports: [RouterOutlet]
 })
 export class DeploymentContainerComponent {
   constructor() {}

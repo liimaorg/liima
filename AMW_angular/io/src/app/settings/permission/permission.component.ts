@@ -30,25 +30,24 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { ResourceTypesService } from '../../resource/resource-types.service';
 
 @Component({
-  selector: 'app-permission',
-  templateUrl: './permission.component.html',
-  standalone: true,
-  imports: [
-    LoadingIndicatorComponent,
-    NgbNav,
-    NgbNavItem,
-    NgbNavLinkButton,
-    NgbNavLinkBase,
-    NgbNavContent,
-    FormsModule,
-    NgSelectModule,
-    NgbNavOutlet,
-    IconComponent,
-    RestrictionEditComponent,
-    RestrictionAddComponent,
-    RestrictionListComponent,
-    ButtonComponent,
-  ],
+    selector: 'app-permission',
+    templateUrl: './permission.component.html',
+    imports: [
+        LoadingIndicatorComponent,
+        NgbNav,
+        NgbNavItem,
+        NgbNavLinkButton,
+        NgbNavLinkBase,
+        NgbNavContent,
+        FormsModule,
+        NgSelectModule,
+        NgbNavOutlet,
+        IconComponent,
+        RestrictionEditComponent,
+        RestrictionAddComponent,
+        RestrictionListComponent,
+        ButtonComponent,
+    ]
 })
 export class PermissionComponent implements OnInit {
   // loaded only once

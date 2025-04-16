@@ -10,10 +10,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'app-app-add',
-  standalone: true,
-  imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
-  templateUrl: './app-add.component.html',
+    selector: 'app-app-add',
+    imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
+    templateUrl: './app-add.component.html'
 })
 export class AppAddComponent {
   @Input() releases: Signal<Release[]>;

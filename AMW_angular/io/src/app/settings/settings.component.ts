@@ -4,10 +4,9 @@ import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  standalone: true,
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, PageComponent],
+    selector: 'app-settings',
+    templateUrl: './settings.component.html',
+    imports: [RouterLink, RouterLinkActive, RouterOutlet, PageComponent]
 })
 export class SettingsComponent {
   authService = inject(AuthService);
