@@ -30,24 +30,24 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { ResourceTypesService } from '../../resource/resource-types.service';
 
 @Component({
-    selector: 'app-permission',
-    templateUrl: './permission.component.html',
-    imports: [
-        LoadingIndicatorComponent,
-        NgbNav,
-        NgbNavItem,
-        NgbNavLinkButton,
-        NgbNavLinkBase,
-        NgbNavContent,
-        FormsModule,
-        NgSelectModule,
-        NgbNavOutlet,
-        IconComponent,
-        RestrictionEditComponent,
-        RestrictionAddComponent,
-        RestrictionListComponent,
-        ButtonComponent,
-    ]
+  selector: 'app-permission',
+  templateUrl: './permission.component.html',
+  imports: [
+    LoadingIndicatorComponent,
+    NgbNav,
+    NgbNavItem,
+    NgbNavLinkButton,
+    NgbNavLinkBase,
+    NgbNavContent,
+    FormsModule,
+    NgSelectModule,
+    NgbNavOutlet,
+    IconComponent,
+    RestrictionEditComponent,
+    RestrictionAddComponent,
+    RestrictionListComponent,
+    ButtonComponent,
+  ],
 })
 export class PermissionComponent implements OnInit {
   // loaded only once
@@ -140,7 +140,9 @@ export class PermissionComponent implements OnInit {
       this.permissionService.removeRestriction(id).subscribe({
         next: () => '',
         error: (e) => (this.errorMessage = e),
-        complete: () => _.remove(this.assignedRestrictions, { id }),
+        complete: () => {
+          this.assignedRestrictions = this.assignedRestrictions.filter((restriction) => restriction.id !== id);
+        },
       });
     } else {
       this.restriction = null;
