@@ -13,10 +13,10 @@ import { ServerFilter } from './servers-filter/server-filter';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-servers-page',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent, ServersFilterComponent],
-    template: `<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+  selector: 'app-servers-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent, ServersFilterComponent],
+  template: `<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
@@ -41,7 +41,7 @@ import { ActivatedRoute, Router } from '@angular/router';
           </div>
         </div>
       </div>
-    </app-page>`
+    </app-page>`,
 })
 export class ServersPageComponent implements OnInit {
   private authService = inject(AuthService);

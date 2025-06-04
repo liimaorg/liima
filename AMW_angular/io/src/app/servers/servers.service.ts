@@ -4,7 +4,7 @@ import { inject, Injectable, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Server } from './server';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, startWith, Subject, of } from 'rxjs';
 import { Resource } from '../resource/resource';
 import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filter';
 
@@ -14,8 +14,13 @@ export class ServersService extends BaseService {
   private serversUrl = `${this.getBaseUrl()}/servers`;
   private serverFilter$: Subject<ServerFilter> = new Subject<ServerFilter>();
   private reloadedServers: Observable<Server[]> = this.serverFilter$.pipe(
-    switchMap((filter: ServerFilter) => this.getServers(filter)),
-    startWith(null),
+    switchMap((filter: ServerFilter) => {
+      if (filter && !isServerFilterEmpty(filter)) {
+        return this.getServers(filter);
+      }
+      return of([]);
+    }),
+    startWith([]),
     shareReplay(1),
   );
 
