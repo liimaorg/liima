@@ -17,7 +17,7 @@ The playwright tests run against a docker-build of the liima-application. Theref
 
 ```bash
 npm run docker:build
-npm run docker:start
+npm start
 ```
 
 ## Run tests
