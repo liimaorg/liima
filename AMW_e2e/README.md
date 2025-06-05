@@ -8,6 +8,7 @@ Install all dependencies:
 
 ```bash
 npm install
+npx playwright install --with-deps
 ```
 
 ## Build the application
@@ -15,8 +16,8 @@ npm install
 The playwright tests run against a docker-build of the liima-application. Therefore you have to build it for the first time.
 
 ```bash
-cd ../AMW_angular/io/
 npm run docker:build
+npm run docker:start
 ```
 
 ## Run tests
