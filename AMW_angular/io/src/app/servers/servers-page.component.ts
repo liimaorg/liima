@@ -52,6 +52,7 @@ export class ServersPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   isLoading: boolean = false;
+  hasSearched = false;
 
   environments = this.environmentsService.envs;
   runtimes = this.serversService.runtimes;
@@ -64,7 +65,7 @@ export class ServersPageComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: ServerFilter) => {
-      if (params) {
+      if (this.hasSearched && params) {
         this.serversService.setServerFilter(params);
       }
     });
@@ -93,6 +94,7 @@ export class ServersPageComponent implements OnInit {
   });
 
   searchFilter($event: ServerFilter) {
+    this.hasSearched = true;
     this.isLoading = true;
     this.router.navigate(['/servers'], { queryParams: $event });
     this.serversService.setServerFilter($event);
