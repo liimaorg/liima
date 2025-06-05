@@ -1,6 +1,6 @@
 # Liima End to End Tests
 
-This module contains end-to-end tests using [cypress](https://www.cypress.io/) 
+This module contains end-to-end tests using [playwright](https://playwright.dev/) 
 
 ## Getting started
 
@@ -10,46 +10,33 @@ Install all dependencies:
 npm install
 ```
 
-## Run the application 
+## Build the application
 
-To run the e2e test, you need a running application on http://localhost:8080/AMW_web
-
-You can use the docker image to get an application with a fresh h2 database:
+The playwright tests run against a docker-build of the liima-application. Therefore you have to build it for the first time.
 
 ```bash
+cd ../AMW_angular/io/
 npm run docker:build
 ```
 
-Start and stop the application manually:
+## Run tests
+
+Run all tests with: 
 
 ```bash
-npm start
-npm stop
+npm run test
 ```
+With this command the liima-container is started and the test run against it.
 
-Note: there are other ways to start the application. Using docker is the most convenient way if you want to focus on written end-to-end tests.
+## Using the playwright ui
 
-## Using the cypress ui
-
-You can run the cypress ui with the following command:
+You can run the playwright ui with the following command:
 
 ```bash
 npm run test:ui
 ```
 
-This will start the cypress ui that lets you run individual tests and inspect the runs. You have to choose the test type and environment first. 
-Note: only e2e tests are setup up for this project, no component testing.
-
-See https://docs.cypress.io/guides/getting-started/opening-the-app for more information.
-
-
-## Run tests in headless mode
-
-To just run all tests, without the ui use:
-
-```bash
-npm run test
-```
+This will start the playwright ui that lets you run individual tests and inspect the runs. 
 
 ## Run tests on CI
 

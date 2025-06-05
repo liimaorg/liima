@@ -2,13 +2,13 @@
   <div class="card">
     <div class="card-header">
       @if (permissions().canManage) {
-      <app-button
-        [variant]="'primary'"
-        [additionalClasses]="'float-end'"
-        [dataCy]="'button-add'"
-        (click)="addFunction()"
-        ><app-icon icon="plus-circle"></app-icon> Add function</app-button
-      >
+        <app-button
+          [variant]="'primary'"
+          [additionalClasses]="'float-end'"
+          [dataTestId]="'button-add'"
+          (click)="addFunction()"
+          ><app-icon icon="plus-circle"></app-icon> Add function</app-button
+        >
       }
     </div>
     <div class="card-body">
