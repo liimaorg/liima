@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "End to end tests for AMW Liima",
   "scripts": {
-    "start": "npm run docker:start",
+    "start": "npm run docker:start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",
     "stop": "npm run docker:stop",
-    "prepare": "npm start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",
     "test": "npm run prepare && playwright test",
     "test:ui": "npm run prepare && playwright test --ui",
     "test:ci": "npm run prepare && playwright test --headed",
