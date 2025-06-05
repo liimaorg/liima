@@ -13,13 +13,13 @@ export class ServersService extends BaseService {
   private http = inject(HttpClient);
   private serversUrl = `${this.getBaseUrl()}/servers`;
   private serverFilter$: Subject<ServerFilter> = new Subject<ServerFilter>();
-  private reloadedServers: Observable<Server[]> = this.serverFilter$.pipe(
+  private servers$: Observable<Server[]> = this.serverFilter$.pipe(
     switchMap((filter: ServerFilter) => this.getServers(filter)),
     startWith(null),
     shareReplay(1),
   );
 
-  servers: Signal<Server[]> = toSignal(this.reloadedServers, { initialValue: [] as Server[] });
+  servers: Signal<Server[]> = toSignal(this.servers$, { initialValue: [] as Server[] });
 
   private runtimes$ = this.http
     .get<Resource[]>(`${this.serversUrl}/runtimes`)

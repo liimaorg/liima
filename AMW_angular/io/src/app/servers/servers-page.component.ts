@@ -13,10 +13,10 @@ import { ServerFilter } from './servers-filter/server-filter';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-servers-page',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent, ServersFilterComponent],
-    template: `<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+  selector: 'app-servers-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [PageComponent, LoadingIndicatorComponent, ServersListComponent, ServersFilterComponent],
+  template: `<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
     <app-page>
       <div class="page-title">Servers</div>
       <div class="page-content">
@@ -41,7 +41,7 @@ import { ActivatedRoute, Router } from '@angular/router';
           </div>
         </div>
       </div>
-    </app-page>`
+    </app-page>`,
 })
 export class ServersPageComponent implements OnInit {
   private authService = inject(AuthService);
@@ -52,6 +52,7 @@ export class ServersPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
 
   isLoading: boolean = false;
+  hasSearched = false;
 
   environments = this.environmentsService.envs;
   runtimes = this.serversService.runtimes;
@@ -64,7 +65,7 @@ export class ServersPageComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: ServerFilter) => {
-      if (params) {
+      if (this.hasSearched && params) {
         this.serversService.setServerFilter(params);
       }
     });
@@ -93,6 +94,7 @@ export class ServersPageComponent implements OnInit {
   });
 
   searchFilter($event: ServerFilter) {
+    this.hasSearched = true;
     this.isLoading = true;
     this.router.navigate(['/servers'], { queryParams: $event });
     this.serversService.setServerFilter($event);
