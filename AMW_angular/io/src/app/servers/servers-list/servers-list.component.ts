@@ -19,7 +19,7 @@ export class ServersListComponent {
       this.servers()?.map((server) => {
         return {
           host: server.host,
-          hostLinkUrl: this.linkToHostUrl() + '=' + server.host,
+          hostLinkUrl: this.linkToHostUrl().replace('{hostName}', server.host),
           environment: server.environment,
           appServer: server.appServer,
           appServerLinkUrl: this.canReadAppServer()

@@ -37,8 +37,8 @@ public enum ConfigKey {
     DEPLOYMENT_CLEANUP_SCHEDULER_DISABLED("amw.deploymentCleanupSchedulerDisabled", "AMW_DEPLOYMENTCLEANUPSCHEDULERDISABLED", "false", false),
     /** Age of folders to be deleted in minutes */
     DEPLOYMENT_CLEANUP_AGE("amw.deploymentCleanupAge", "AMW_DEPLOYMENTCLEANUPAGE", "240", false),
-    VM_DETAIL_URL("amw.vmDetailUrl", "AMW_VMDETAILURL", false),
-    VM_URL_PARAM("amw.vmUrlParam", "AMW_VMURLPARAM", false),
+    VM_DETAIL_URL("amw.vmDetailUrl", "AMW_VMDETAILURL", false), // can contain a placeholder {hostName} which will be replaced by the host name of the host
+    VM_URL_PARAM("amw.vmUrlParam", "AMW_VMURLPARAM", false), // deprecated, use VM_DETAIL_URL instead
     CSV_SEPARATOR("amw.csvSeparator", "AMW_CSVSEPARATOR", ";", false),
     LOCAL_ENV("amw.localEnv", "AMW_LOCALENV", "Local", false),
     PROVIDABLE_SOFTLINK_RESOURCE_TYPES("amw.providableSoftlinkResourceTypes", "AMW_PROVIDABLESOFTLINKRESOURCETYPES", false),
