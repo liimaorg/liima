@@ -17,7 +17,7 @@
             Create new deployment
           }
         </h1>
-        @if (appservers().length > 0) {
+        @if (!isRedeployment) {
           <div class="form-group row">
             <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
             <div class="col-sm-10 col-md-5">
@@ -32,15 +32,6 @@
               </ng-select>
             </div>
           </div>
-        }
-        @if (isRedeployment) {
-          <div class="form-group row">
-            <div class="col-sm-10 col-md-5 offset-sm-2">
-              <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
-            </div>
-          </div>
-        }
-        @if (!isRedeployment) {
           <div class="form-group row">
             <label for="selectRelease" class="col-sm-2 fw-bold text-end">Release</label>
             <div class="col-sm-10 col-md-5">
@@ -55,6 +46,14 @@
                 >
                 </ng-select>
               }
+            </div>
+          </div>
+        }
+        @else {
+          <div class="form-group row">
+            <label class="col-sm-2 fw-bold text-end">Applicationserver</label>
+            <div class="col-sm-10 col-md-5">
+              <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
             </div>
           </div>
         }
@@ -102,8 +101,6 @@
               }
             </div>
           </div>
-        }
-        @if (!isRedeployment) {
           <div class="form-group row">
             <label class="col-sm-2 fw-bold text-end">Runtime</label>
             <div class="col-sm-10 col-md-5">
@@ -114,8 +111,6 @@
               }
             </div>
           </div>
-        }
-        @if (!isRedeployment) {
           <div class="form-group row">
             <label for="selectState" class="col-sm-2 fw-bold text-end">State</label>
             @if (bestForSelectedRelease) {
