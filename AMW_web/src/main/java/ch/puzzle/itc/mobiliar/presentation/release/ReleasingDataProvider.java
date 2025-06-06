@@ -20,12 +20,15 @@
 
 package ch.puzzle.itc.mobiliar.presentation.release;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.enterprise.event.Observes;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
@@ -209,7 +212,7 @@ public class ReleasingDataProvider implements Serializable {
 		return null;
 	}
 
-	public String removeRelease() {
+	public String removeRelease() throws IOException {
 		try {
 		    	LinkedHashMap<String, Integer> releaseToResourceMap = propertyEditDataProvider.getGroup()
 				    .getReleaseToResourceMap();
@@ -237,7 +240,12 @@ public class ReleasingDataProvider implements Serializable {
 				resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), currentSelectedResource.getId());
 			}
 		    GlobalMessageAppender.addSuccessMessage("Release successfully removed!");
-		    	return fallbackRelease==null ? "resourceList?faces-redirect=true" : NavigationUtils.getRefreshOutcomeWithResource(fallbackRelease);
+			if (fallbackRelease == null) {
+				ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+				externalContext.redirect("/AMW_angular/#/resources");			}
+			else {
+				return NavigationUtils.getRefreshOutcomeWithResource(fallbackRelease);
+			}
 		}
         catch (ForeignableOwnerViolationException e) {
             GlobalMessageAppender.addErrorMessage("Release can not be deleted by owner " + e.getViolatingOwner());

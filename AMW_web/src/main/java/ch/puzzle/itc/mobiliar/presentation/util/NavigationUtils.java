@@ -24,11 +24,6 @@ import javax.faces.context.FacesContext;
 
 public class NavigationUtils {
 
-    public static String getRefreshOutcomeWithAdditionalParam(String param) {
-        return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&"
-                + param;
-    }
-
     public static String getRefreshOutcomeWithResource(Integer resourceId) {
         return FacesContext.getCurrentInstance().getViewRoot().getViewId() + "?faces-redirect=true&id="
                 + resourceId;
