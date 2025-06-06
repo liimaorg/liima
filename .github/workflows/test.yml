@@ -46,5 +46,14 @@ jobs:
     - name: Run e2e tests
       run: |
         cd AMW_e2e
-        npm install
-        npm run test:ci
+        npm ci
+        npm start
+        npx playwright install --with-deps
+        npx playwright test
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: AMW_e2e/playwright-report/
+        retention-days: 10
+
