@@ -84,7 +84,6 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 	private long v;
 
 	@Getter
-	@Setter
 	@Column(nullable = true)
 	private String identifier;
 
@@ -180,6 +179,14 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 	public String toString() {
 		return "AbstractResourceRelationEntity [id=" + id + ", masterResource=" + masterResource
 				+ ", slaveResource=" + slaveResource + "]";
+	}
+
+	public void setIdentifier(String identifier) {
+		if (identifier != null && identifier.isBlank()) {
+			// allow null but not blank
+			throw new IllegalArgumentException("Identifier of relation must not be blank");
+		}
+		this.identifier = identifier;
 	}
 
 	public String buildIdentifer() {

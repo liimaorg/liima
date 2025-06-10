@@ -385,7 +385,7 @@ public class ResourceRelationService implements Serializable{
 					.getIdentifier());
 
 			for (AbstractResourceRelationEntity rel : relations) {
-				if (isMatchingRelation(relation, hasResourceIdentifier, hasResourceTypeIdentifier, rel)) {
+				if (isMatchingRelation(relation, rel)) {
 					relation.getMasterResource().removeRelation(rel);
 					relation.getSlaveResource().removeSlaveRelation(rel);
 					entityManager.remove(rel);
@@ -399,8 +399,9 @@ public class ResourceRelationService implements Serializable{
 		}
 	}
 
-	private boolean isMatchingRelation(AbstractResourceRelationEntity relation, boolean hasResourceIdentifier,
-									   boolean hasResourceTypeIdentifier, AbstractResourceRelationEntity rel) {
+	private boolean isMatchingRelation(AbstractResourceRelationEntity relation, AbstractResourceRelationEntity rel) {
+		boolean hasResourceIdentifier = relation.getIdentifier() != null;
+		boolean hasResourceTypeIdentifier = relation.getResourceRelationType().getIdentifier() != null;
 		if (hasResourceIdentifier && relation.getIdentifier().equals(rel.getIdentifier())) {
             return true;
         }

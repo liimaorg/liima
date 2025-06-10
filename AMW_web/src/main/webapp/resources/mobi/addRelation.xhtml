@@ -34,7 +34,7 @@
                   event="click"
                   onbegin="showLoader();"
                   oncomplete="if(confirmAddRelation()){#{rich:component('addRelationPopup')}.show();} hideLoader();"
-                  listener="#{relationDataProvider.loadResourceGroupsForType(null, null)}"></a4j:ajax>
+                  listener="#{relationDataProvider.loadResourceGroupsForType()}"></a4j:ajax>
     </h:commandLink>
 
     <h:commandLink styleClass="btn light right"
@@ -83,7 +83,7 @@
                                             <div class="ellipsisRight" title="#{resType.name}">#{resType.name}</div>
                                             <a4j:ajax execute="@this" render="relationPopupContent"
                                                       oncomplete="hideLoader();restoreScrollPositions();"
-                                                      listener="#{relationDataProvider.loadResourceGroupsForType(resType.name, null)}"></a4j:ajax>
+                                                      listener="#{relationDataProvider.loadResourceGroupsForType(resType.name)}"></a4j:ajax>
                                         </h:commandLink>
                                         <ul>
                                             <ui:repeat var="subType" rendered="${relationDataProvider.isCurrentType(resType.id) or relationDataProvider.isChildCurrentType(resType.id)}"
@@ -96,7 +96,7 @@
                                                         <a4j:ajax execute="@this"
                                                                   render="relationPopupContent"
                                                                   oncomplete="hideLoader();restoreScrollPositions();"
-                                                                  listener="#{relationDataProvider.loadResourceGroupsForType(subType.name, null)}"></a4j:ajax>
+                                                                  listener="#{relationDataProvider.loadResourceGroupsForType(subType.name)}"></a4j:ajax>
                                                     </h:commandLink>
                                                 </li>
                                             </ui:repeat>
