@@ -71,12 +71,12 @@ public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<P
 		app = builder.app;
 
 		ConsumedResourceRelationEntity adInternRelation = builder.buildConsumedRelation(app, adIntern, ForeignableOwner.AMW);
-		adInternRelation.setIdentifier("");
+		adInternRelation.setIdentifier(null);
 		ConsumedResourceRelationEntity adintern_1Relation = builder.buildConsumedRelation(app, adIntern, ForeignableOwner.AMW);
 		adintern_1Relation.setIdentifier("1");
 
 		ConsumedResourceRelationEntity adExternRelation = builder.buildConsumedRelation(app, adExtern, ForeignableOwner.AMW);
-		adExternRelation.setIdentifier("");
+		adExternRelation.setIdentifier(null);
 		ConsumedResourceRelationEntity adExtern_1Relation = builder.buildConsumedRelation(app, adExtern, ForeignableOwner.AMW);
 		adExtern_1Relation.setIdentifier("1");
 	}

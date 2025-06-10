@@ -205,9 +205,14 @@ public class RelationDataProvider implements Serializable {
         selectableItems.addAll(resourceTypes);
     }
 
-    /**
-     * @param typeName
-     */
+    public void loadResourceGroupsForType() {
+        loadResourceGroupsForType(null, null);
+    }
+
+    public void loadResourceGroupsForType(String typeName) {
+        loadResourceGroupsForType(typeName, null);
+    }
+
     public void loadResourceGroupsForType(String typeName, String identifier) {
         addApplicationToAppServerMode = false;
         addRuntimeToAppServerMode = false;
