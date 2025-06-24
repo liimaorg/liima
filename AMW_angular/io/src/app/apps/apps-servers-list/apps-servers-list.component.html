@@ -1,6 +1,6 @@
 <div class="table-responsive">
   <table class="table table-sm">
-    <thead class="table-light">
+    <thead>
       <tr>
         <th scope="col">App Name</th>
         <th scope="col" class="text-end">Release</th>
@@ -8,7 +8,7 @@
     </thead>
     <tbody>
       @for (appServer of appServers(); track appServer; let even = $even) {
-      <tr [class.table-light]="!even">
+      <tr [class.li-table-striped]="even">
         <td class="border-0">
           @if (!appServer.deletable) {
           <div id="appServer.id">{{ appServer.name }}</div>
@@ -21,9 +21,9 @@
         </td>
       </tr>
       @if (appServer.apps && appServer.apps.length > 0) {
-      <tr [class.table-light]="!even">
+      <tr [class.li-table-striped]="even">
         <td colspan="2" class="border-0 ps-4 py-0">
-          <app-apps-list [apps]="appServer.apps" [even]="even"></app-apps-list>
+          <app-apps-list [apps]="appServer.apps"></app-apps-list>
         </td>
       </tr>
       } } @empty {

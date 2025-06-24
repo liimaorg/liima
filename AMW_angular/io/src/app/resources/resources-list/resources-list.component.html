@@ -16,7 +16,7 @@
           </app-button>
           }
         </h2>
-        @if (permissions().canCreateResource && !resourceType().isApplication) {
+        @if (permissions().canCreateResource) {
         <app-button [variant]="'primary'" (click)="addResource()" [additionalClasses]="'float-end'">
           <app-icon icon="plus-circle"></app-icon>
           New Resource
