@@ -65,6 +65,7 @@ export class ServersPageComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: ServerFilter) => {
+      console.log('Query params:', params);
       if (this.hasSearched && params) {
         this.serversService.setServerFilter(params);
       }

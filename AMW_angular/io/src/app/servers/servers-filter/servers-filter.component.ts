@@ -26,6 +26,26 @@ export class ServersFilterComponent {
   host: string;
   node: string;
 
+  private static readonly SESSION_KEY = 'servers-filter';
+
+/*
+  ngOnInit() {
+    const saved = sessionStorage.getItem(ServersFilterComponent.SESSION_KEY);
+    if (!saved) {
+      return;
+    }
+    try {
+      const filter = JSON.parse(saved);
+      this.selectedEnvironmentName = filter.environmentName ?? 'All';
+      this.selectedRuntimeName = filter.runtimeName ?? 'All';
+      this.appServer = filter.appServer ?? null;
+      this.host = filter.host ?? null;
+      this.node = filter.node ?? null;
+    } catch {
+      // ignore parse errors, use defaults
+    }
+  }*/
+
   search: OperatorFunction<string, readonly string[]> = (text$: Observable<string>) =>
     text$.pipe(
       debounceTime(200),
@@ -47,6 +67,7 @@ export class ServersFilterComponent {
       host: this.host,
       node: this.node,
     };
+    sessionStorage.setItem(ServersFilterComponent.SESSION_KEY, JSON.stringify(filter));
     this.searchFilter.emit(filter);
   }
 
@@ -56,5 +77,6 @@ export class ServersFilterComponent {
     this.appServer = null;
     this.host = null;
     this.node = null;
+    sessionStorage.removeItem(ServersFilterComponent.SESSION_KEY);
   }
 }
