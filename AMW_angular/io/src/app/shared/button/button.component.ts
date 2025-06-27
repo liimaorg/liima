@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -9,13 +9,12 @@ import { NgClass } from '@angular/common';
       class="btn"
       [ngClass]="[variantClass(), sizeClass(), additionalClasses()]"
       [disabled]="disabled()"
-      [attr.data-cy]="dataCy()"
+      [attr.data-testid]="dataTestId()"
     >
       <ng-content select="[data-cy-slot]"></ng-content>
       <ng-content></ng-content>
     </button>
   `,
-  standalone: true,
   imports: [NgClass],
 })
 export class ButtonComponent {
@@ -24,7 +23,7 @@ export class ButtonComponent {
   additionalClasses = input<string>('');
   disabled = input<boolean>(false);
   isOutlined = input<boolean>(false);
-  dataCy = input<string>('');
+  dataTestId = input<string>('');
 
   variantClass(): string {
     return this.variant() ? (this.isOutlined() ? `btn-outline-${this.variant()}` : `btn-${this.variant()}`) : '';

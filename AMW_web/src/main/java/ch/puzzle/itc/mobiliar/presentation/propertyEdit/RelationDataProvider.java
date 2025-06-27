@@ -205,9 +205,14 @@ public class RelationDataProvider implements Serializable {
         selectableItems.addAll(resourceTypes);
     }
 
-    /**
-     * @param typeName
-     */
+    public void loadResourceGroupsForType() {
+        loadResourceGroupsForType(null, null);
+    }
+
+    public void loadResourceGroupsForType(String typeName) {
+        loadResourceGroupsForType(typeName, null);
+    }
+
     public void loadResourceGroupsForType(String typeName, String identifier) {
         addApplicationToAppServerMode = false;
         addRuntimeToAppServerMode = false;
@@ -251,7 +256,6 @@ public class RelationDataProvider implements Serializable {
             String message = "No resource for exclusion selected.";
             GlobalMessageAppender.addErrorMessage(message);
         } else {
-            // #4361 don't use the user settings for adding resources
             for (ResourceGroupEntity resourceGroupEntity : resourceGroupLocator.getGroupsForType(id,  true)) {
                 resourcesByResourceType.add(ResourceGroup.createByResource(resourceGroupEntity));
             }

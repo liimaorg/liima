@@ -14,12 +14,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelation
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -46,9 +42,14 @@ public class AppsService implements ListAppsUseCase, AddAppServerUseCase, AddApp
     private ResourceTypeRepository resourceTypeRepository;
 
     @Override
-    public Tuple<List<ResourceWithRelations>, Long> appsFor(Integer startIndex, Integer maxResults, String filter, Integer releaseId) throws NotFoundException {
+    public List<ResourceWithRelations> appsFor( String filter, Integer releaseId) throws NotFoundException {
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
-        return resourceRelations.getAppServersWithApplications(startIndex, maxResults, filter, release);
+        return resourceRelations.getAppServersWithApplications(filter, release);
+    }
+
+    public List<ResourceWithRelations> paginateList(List<ResourceWithRelations> list, Integer maxResultsPerPage, Integer startIndex) {
+        Integer endIndex = Math.min(startIndex + maxResultsPerPage, list.size());
+        return list.subList(startIndex, endIndex);
     }
 
 

@@ -13,8 +13,9 @@ $container-max-widths: (
 $toast-padding-x: 0;
 $toast-padding-y: 0;
 
+// bootstrap doesn't support @use yet
+@use '@ng-select/ng-select/themes/default.theme.css' as *;
 @import 'bootstrap/scss/bootstrap';
-@import '@ng-select/ng-select/themes/default.theme.css';
 
 .text-warning-2 {
   color: #8a6d3b;
@@ -54,5 +55,4 @@ $toast-padding-y: 0;
   min-height: 20vh;
   max-height: 60vh;
   overflow-y: auto;
-
 }

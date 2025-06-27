@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,6 +36,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeRequestDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -82,6 +84,14 @@ public class ResourceTypesRest {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@ApiParam("ResourceType ID") @PathParam("id") Integer id) throws NotFoundException {
         return Response.ok(new ResourceTypeDTO(resourceBoundary.getResourceType(id))).build();
+    }
+
+    @Path("/{name}")
+    @GET
+    @ApiOperation(value = "Get a resource type by name")
+    public ResourceTypeDTO getResourceTypeByName(@NotNull @PathParam("name") String name) throws ValidationException {
+        ResourceTypeEntity resourceType = resourceTypeLocator.getResourceTypeByName(name);
+        return new ResourceTypeDTO(resourceType);
     }
 
     @Path("/predefinedResourceTypes")

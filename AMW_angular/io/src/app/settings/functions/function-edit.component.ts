@@ -13,20 +13,19 @@ import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.compone
 import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
-  selector: 'app-function-edit',
-  templateUrl: './function-edit.component.html',
-  styleUrl: './function-edit.component.scss',
-  standalone: true,
-  imports: [
-    CodeEditorComponent,
-    DiffEditorComponent,
-    FormsModule,
-    CommonModule,
-    IconComponent,
-    NgbDropdownModule,
-    ModalHeaderComponent,
-    ButtonComponent,
-  ],
+    selector: 'app-function-edit',
+    templateUrl: './function-edit.component.html',
+    styleUrl: './function-edit.component.scss',
+    imports: [
+        CodeEditorComponent,
+        DiffEditorComponent,
+        FormsModule,
+        CommonModule,
+        IconComponent,
+        NgbDropdownModule,
+        ModalHeaderComponent,
+        ButtonComponent,
+    ]
 })
 export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;
@@ -62,7 +61,15 @@ export class FunctionEditComponent implements OnInit {
     this.functionsService.refreshData();
   }
 
+  hasInvalidFields(): boolean {
+    return this.function.name.length === 0 || this.function.content.length === 0;
+  }
+
   save() {
+    if (this.hasInvalidFields()) {
+      document.querySelectorAll('.needs-validation')[0].classList.add('was-validated');
+      return;
+    }
     if (this.revision) this.function.content = this.diffValue.original;
     this.saveFunction.emit(this.function);
     this.activeModal.close();

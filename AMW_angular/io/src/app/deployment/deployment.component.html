@@ -4,118 +4,125 @@
   <div class="page-content">
     <div>
       @if (successMessage) {
-      <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>
-      } @if (errorMessage) {
-      <app-notification [message]="errorMessage" [messageType]="'warning'"></app-notification>
+        <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>
+      }
+      @if (errorMessage) {
+        <app-notification [message]="errorMessage" [messageType]="'warning'"></app-notification>
       }
       <span class="form-horizontal">
-        <h1 class="offset-2 mb-4">@if (isRedeployment) { Redeployment } @else { Create new deployment }</h1>
-        @if (appservers.length > 0) {
-        <div class="form-group row">
-          <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
-          <div class="col-sm-10 col-md-5">
-            <ng-select
-              daty-cy="app-server-select"
-              id="selectApplicationserver"
-              [items]="appservers"
-              bindLabel="name"
-              placeholder=""
-              [(ngModel)]="selectedAppserver"
-              (ngModelChange)="onChangeAppserver()"
-            >
-            </ng-select>
+        <h1 class="offset-2 mb-4">
+          @if (isRedeployment) {
+            Redeployment
+          } @else {
+            Create new deployment
+          }
+        </h1>
+        @if (!isRedeployment) {
+          <div class="form-group row">
+            <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
+            <div class="col-sm-10 col-md-5">
+              <ng-select
+                id="selectApplicationserver"
+                [items]="appservers()"
+                bindLabel="name"
+                placeholder=""
+                [(ngModel)]="selectedAppserver"
+                (ngModelChange)="onChangeAppserver()"
+              >
+              </ng-select>
+            </div>
           </div>
-        </div>
-        } @if (isRedeployment) {
-        <div class="form-group row">
-          <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
-          <div class="col-sm-10 col-md-5">
-            <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
+          <div class="form-group row">
+            <label for="selectRelease" class="col-sm-2 fw-bold text-end">Release</label>
+            <div class="col-sm-10 col-md-5">
+              @if (selectedAppserver) {
+                <ng-select
+                  id="selectRelease"
+                  [items]="releases"
+                  bindLabel="release"
+                  placeholder=""
+                  [(ngModel)]="selectedRelease"
+                  (ngModelChange)="onChangeRelease()"
+                >
+                </ng-select>
+              }
+            </div>
           </div>
-        </div>
-        } @if (!isRedeployment) {
-        <div class="form-group row">
-          <label for="selectRelease" class="col-sm-2 fw-bold text-end">Release</label>
-          <div class="col-sm-10 col-md-5">
-            @if (selectedAppserver) {
-            <ng-select
-              id="selectRelease"
-              [items]="releases"
-              bindLabel="release"
-              placeholder=""
-              [(ngModel)]="selectedRelease"
-              (ngModelChange)="onChangeRelease()"
-            >
-            </ng-select>
-            }
+        }
+        @else {
+          <div class="form-group row">
+            <label class="col-sm-2 fw-bold text-end">Applicationserver</label>
+            <div class="col-sm-10 col-md-5">
+              <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
+            </div>
           </div>
-        </div>
         }
 
         <div class="form-group row">
           <label class="col-sm-2 fw-bold text-end">Environments</label>
           <div class="col-sm-10">
             @for (group of getEnvironmentGroups(); track group) {
-
-            <p class="mb-1">{{ group }}:</p>
-            @for (env of groupedEnvironments[group]; track env) {
-            <div class="d-inline me-3">
-              <label
-                ><input
-                  class="me-2 form-check-input"
-                  type="checkbox"
-                  [attr.data-cy]="env.name"
-                  (change)="onChangeEnvironment()"
-                  [(ngModel)]="env.selected"
-                />{{ env.name }} @if (env.nameAlias) { ({{ env.nameAlias }}) }
-              </label>
-            </div>
-            } }
+              <p class="mb-1">{{ group }}:</p>
+              @for (env of groupedEnvironments[group]; track env) {
+                <div class="d-inline me-3">
+                  <label
+                    ><input
+                      class="me-2 form-check-input"
+                      type="checkbox"
+                      [attr.data-cy]="env.name"
+                      (change)="onChangeEnvironment()"
+                      [(ngModel)]="env.selected"
+                    />{{ env.name }}
+                    @if (env.nameAlias) {
+                      ({{ env.nameAlias }})
+                    }
+                  </label>
+                </div>
+              }
+            }
           </div>
         </div>
 
         @if (!isRedeployment) {
-        <div class="form-group row">
-          <label class="col-sm-2 fw-bold text-end">Applications</label>
-          <div class="col-sm-10 col-md-5">
-            @if (appsWithVersion.length > 0) {
-            <table class="table table-striped pt-0">
-              @for (app of appsWithVersion; track app) {
-              <tr class="pt-0 pb-3">
-                <td class="pt-0 pb-3">{{ app.applicationName }}</td>
-                <td class="pt-0 pb-3">
-                  <input class="form-control" type="text" [(ngModel)]="app.version" />
-                </td>
-              </tr>
+          <div class="form-group row">
+            <label class="col-sm-2 fw-bold text-end">Applications</label>
+            <div class="col-sm-10 col-md-5">
+              @if (appsWithVersion.length > 0) {
+                <table class="table table-striped pt-0">
+                  @for (app of appsWithVersion; track app) {
+                    <tr class="pt-0 pb-3">
+                      <td class="pt-0 pb-3">{{ app.applicationName }}</td>
+                      <td class="pt-0 pb-3">
+                        <input class="form-control" type="text" [(ngModel)]="app.version" />
+                      </td>
+                    </tr>
+                  }
+                </table>
               }
-            </table>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 fw-bold text-end">Runtime</label>
+            <div class="col-sm-10 col-md-5">
+              @if (runtime) {
+                <h5 class="environments-title">
+                  {{ runtime.identifier }}
+                </h5>
+              }
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="selectState" class="col-sm-2 fw-bold text-end">State</label>
+            @if (bestForSelectedRelease) {
+              <div class="col-sm-10 col-md-5">
+                <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">
+                  @for (resourceTag of resourceTags; track resourceTag) {
+                    <option [ngValue]="resourceTag">{{ resourceTag.label }}</option>
+                  }
+                </select>
+              </div>
             }
           </div>
-        </div>
-        } @if (!isRedeployment) {
-        <div class="form-group row">
-          <label class="col-sm-2 fw-bold text-end">Runtime</label>
-          <div class="col-sm-10 col-md-5">
-            @if (runtime) {
-            <h5 class="environments-title">
-              {{ runtime.identifier }}
-            </h5>
-            }
-          </div>
-        </div>
-        } @if (!isRedeployment) {
-        <div class="form-group row">
-          <label for="selectState" class="col-sm-2 fw-bold text-end">State</label>
-          @if (bestForSelectedRelease) {
-          <div class="col-sm-10 col-md-5">
-            <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">
-              @for (resourceTag of resourceTags; track resourceTag) {
-              <option [ngValue]="resourceTag">{{ resourceTag.label }}</option>
-              }
-            </select>
-          </div>
-          }
-        </div>
         }
 
         <div class="form-group row">
@@ -135,7 +142,7 @@
             <input class="form-control" list="depParamList" type="text" [(ngModel)]="transDeploymentParameter.key" />
             <datalist id="depParamList">
               @for (depParam of deploymentParameters; track depParam) {
-              <option>{{ depParam.key }}</option>
+                <option>{{ depParam.key }}</option>
               }
             </datalist>
           </div>
@@ -144,28 +151,29 @@
           </div>
           <div class="col-sm-2">
             @if (transDeploymentParameter.key && transDeploymentParameter.value) {
-            <app-button [variant]="'secondary'" (click)="onAddParam()"><app-icon icon="plus"></app-icon></app-button>
+              <app-button [variant]="'secondary'" (click)="onAddParam()"><app-icon icon="plus"></app-icon></app-button>
             }
           </div>
         </div>
 
-        @if (transDeploymentParameters.length > 0) { @for (transDepParam of transDeploymentParameters; track
-        transDepParam) {
-        <div class="form-group row">
-          <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end"></label>
-          <div class="col-sm-2">
-            <input class="form-control" disabled type="text" value="{{ transDepParam.key }}" />
-          </div>
-          <div class="col-sm-3">
-            <input class="form-control" disabled type="text" value="{{ transDepParam.value }}" />
-          </div>
-          <div class="col-sm-2">
-            <app-button [variant]="'secondary'" (click)="onRemoveParam(transDepParam)"
-              ><app-icon icon="trash"></app-icon
-            ></app-button>
-          </div>
-        </div>
-        } }
+        @if (transDeploymentParameters.length > 0) {
+          @for (transDepParam of transDeploymentParameters; track transDepParam) {
+            <div class="form-group row">
+              <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end"></label>
+              <div class="col-sm-2">
+                <input class="form-control" disabled type="text" value="{{ transDepParam.key }}" />
+              </div>
+              <div class="col-sm-3">
+                <input class="form-control" disabled type="text" value="{{ transDepParam.value }}" />
+              </div>
+              <div class="col-sm-2">
+                <app-button [variant]="'secondary'" (click)="onRemoveParam(transDepParam)"
+                  ><app-icon icon="trash"></app-icon
+                ></app-button>
+              </div>
+            </div>
+          }
+        }
 
         <div class="form-group row">
           <label class="col-sm-2 fw-bold text-end">Details</label>
@@ -195,7 +203,7 @@
               [variant]="'primary'"
               [additionalClasses]="'mb-2 me-2'"
               [disabled]="!hasPermissionToDeploy"
-              [dataCy]="'btn-deploy'"
+              [dataTestId]="'btn-deploy'"
               (click)="createDeployment()"
               >Deploy</app-button
             >

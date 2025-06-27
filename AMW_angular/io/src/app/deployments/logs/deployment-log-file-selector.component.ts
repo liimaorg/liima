@@ -4,9 +4,8 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
 
 type Failed = 'failed';
 @Component({
-  selector: 'app-deployment-logs-selector',
-  standalone: true,
-  template: `
+    selector: 'app-deployment-logs-selector',
+    template: `
     @if(logFiles === 'failed') {
     <span>Unable to load log files</span>
 
@@ -26,7 +25,7 @@ type Failed = 'failed';
     </div>
     }
   `,
-  imports: [NgbDropdownMenu, NgbDropdownItem, NgbDropdownToggle, NgbDropdown],
+    imports: [NgbDropdownMenu, NgbDropdownItem, NgbDropdownToggle, NgbDropdown]
 })
 export class DeploymentLogFileSelectorComponent {
   @Input() logFiles: DeploymentLog[] | Failed;

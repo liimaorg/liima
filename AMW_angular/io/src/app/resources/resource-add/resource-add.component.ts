@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { NgbActiveModal, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -8,11 +8,10 @@ import { Release } from '../../settings/releases/release';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
-  selector: 'app-resource-add',
-  standalone: true,
-  imports: [FormsModule, ModalHeaderComponent, ButtonComponent, NgbTypeahead, NgSelectModule],
-  templateUrl: './resource-add.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-resource-add',
+    imports: [FormsModule, ModalHeaderComponent, ButtonComponent, NgSelectModule],
+    templateUrl: './resource-add.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResourceAddComponent {
   activeModal = inject(NgbActiveModal);

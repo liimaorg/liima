@@ -5,7 +5,6 @@ import ch.mobi.itc.mobiliar.rest.dtos.AppServerDTO;
 import ch.puzzle.itc.mobiliar.business.apps.boundary.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -17,6 +16,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.*;
 
 import javax.enterprise.context.RequestScoped;
@@ -26,6 +26,8 @@ import javax.inject.Inject;
 @RequestScoped
 @Path("/apps")
 @Api(value = "/apps", description = "Application servers and apps")
+@Consumes(APPLICATION_JSON)
+@Produces(APPLICATION_JSON)
 public class AppsRest {
 
     @Inject
@@ -45,13 +47,11 @@ public class AppsRest {
     @GET
     @ApiOperation(value = "Get applicationservers and apps", notes = "Returns all apps")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getApps(@QueryParam("start") Integer start,
-                            @QueryParam("limit") Integer limit,
-                            @QueryParam("appServerName") String filter,
+    public Response getApps(@QueryParam("appServerName") String filter,
                             @NotNull @QueryParam("releaseId") Integer releaseId) throws NotFoundException {
-        Tuple<List<ResourceWithRelations>, Long> result = listAppsUseCase.appsFor(start, limit, filter, releaseId);
+        List<ResourceWithRelations> result = listAppsUseCase.appsFor(filter, releaseId);
 
-        return Response.status(OK).entity(appServersToResponse(result.getA())).header("X-total-count", result.getB()).build();
+        return Response.status(OK).entity(appServersToResponse(result)).build();
     }
 
     private List<AppServerDTO> appServersToResponse(List<ResourceWithRelations> apps) {

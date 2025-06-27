@@ -1,38 +1,97 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { Restriction } from './restriction';
 import * as _ from 'lodash';
 import { Resource } from '../../resource/resource';
-import { IconComponent } from '../../shared/icon/icon.component';
-import { ButtonComponent } from '../../shared/button/button.component';
+import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-  selector: 'app-restriction-list',
-  templateUrl: './restriction-list.component.html',
-  standalone: true,
-  imports: [IconComponent, ButtonComponent],
+    selector: 'app-restriction-list',
+    templateUrl: './restriction-list.component.html',
+    imports: [TableComponent]
 })
 export class RestrictionListComponent {
-  @Input() delegationMode: boolean;
-  @Input() restrictions: Restriction[] = [];
-  @Input() resourceGroups: Resource[] = [];
-  @Output() deleteRestriction: EventEmitter<number> = new EventEmitter<number>();
-  @Output() editRestriction: EventEmitter<Restriction> = new EventEmitter<Restriction>();
+  delegationMode = input.required<boolean>();
+  restrictions = input.required<Restriction[]>();
+  resourceGroups = input.required<Resource[]>();
+  deleteRestriction = output<number>();
+  editRestriction = output<number>();
+  restrictionsTableData = computed(() =>
+    this.restrictions().map((res) => {
+      return {
+        id: res.id,
+        permissionName: res.permission.name,
+        permissionGlobal: res.permission.old,
+        action: res.action,
+        contextName: res.contextName,
+        resourceGroupName: this.getGroupName(res.resourceGroupId),
+        resourceTypeName: res.resourceTypeName,
+        resourceTypePermission: res.resourceTypePermission,
+      };
+    }),
+  );
 
   removeRestriction(id: number) {
     this.deleteRestriction.emit(id);
   }
 
-  modifyRestriction(restriction: Restriction) {
-    this.editRestriction.emit(restriction);
+  modifyRestriction(restrictionId: number) {
+    this.editRestriction.emit(restrictionId);
   }
 
   getGroupName(id: number): string {
     if (id) {
-      const resource = _.find(this.resourceGroups, { id });
+      const resource = _.find(this.resourceGroups(), { id });
       if (resource) {
         return resource['name'];
       }
     }
     return null;
+  }
+
+  restrictionsHeader(): TableColumnType<{
+    id: number;
+    permissionName: string;
+    permissionGlobal: boolean;
+    action: string;
+    contextName: string;
+    resourceGroupName: number;
+    resourceTypeName: string;
+    resourceTypePermission: string;
+  }>[] {
+    return [
+      {
+        key: 'permissionName',
+        columnTitle: 'Permission',
+      },
+      {
+        key: 'permissionGlobal',
+        columnTitle: 'Global',
+        cellType: 'icon',
+        iconMapping: [
+          { value: true, icon: 'check' },
+          { value: false, icon: null },
+        ],
+      },
+      {
+        key: 'action',
+        columnTitle: 'Action',
+      },
+      {
+        key: 'contextName',
+        columnTitle: 'Environment',
+      },
+      {
+        key: 'resourceGroupName',
+        columnTitle: 'Res. Group',
+      },
+      {
+        key: 'resourceTypeName',
+        columnTitle: 'Res. Type',
+      },
+      {
+        key: 'resourceTypePermission',
+        columnTitle: 'Res. Type Cat.',
+      },
+    ];
   }
 }

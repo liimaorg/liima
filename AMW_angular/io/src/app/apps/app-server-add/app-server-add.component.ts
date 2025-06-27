@@ -8,10 +8,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'app-server-add',
-  standalone: true,
-  imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
-  templateUrl: './app-server-add.component.html',
+    selector: 'app-server-add',
+    imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
+    templateUrl: './app-server-add.component.html'
 })
 export class AppServerAddComponent {
   @Input() releases: Signal<Release[]>;
@@ -24,7 +23,7 @@ export class AppServerAddComponent {
   }
 
   hasInvalidFields(): boolean {
-    return this.appServer.name === '' || this.appServer.release?.id === null || this.appServer.release?.name === '';
+    return this.appServer.name === '' || this.appServer.release?.id == null;
   }
 
   cancel() {
@@ -32,6 +31,10 @@ export class AppServerAddComponent {
   }
 
   save() {
+    if (this.hasInvalidFields()) {
+      document.querySelectorAll('.needs-validation')[0].classList.add('was-validated');
+      return;
+    }
     const appServer: AppServer = {
       name: this.appServer.name,
       release: this.appServer.release,

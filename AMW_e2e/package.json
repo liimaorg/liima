@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "description": "End to end tests for AMW Liima",
   "scripts": {
-    "start": "npm run docker:start",
+    "start": "npm run docker:start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",
     "stop": "npm run docker:stop",
-    "test:ui": "cypress open",
-    "test": "cypress run",
-    "test:ci": "npm start & wait-on http://admin:admin@127.0.0.1:8080/AMW_web && cypress run",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:ci": "playwright test --headed",
     "docker:build": "cd ./../ && mvn clean install -DskipTests && ./AMW_docker/build.sh && cd ./AMW_e2e",
     "docker:start": "docker compose -f ./../AMW_docker/docker-compose/docker-compose.yml up -d",
     "docker:stop": "docker compose -f ./../AMW_docker/docker-compose/docker-compose.yml down"
@@ -15,7 +15,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cypress": "^13.15.0",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
     "wait-on": "^7.2.0"
   }
 }

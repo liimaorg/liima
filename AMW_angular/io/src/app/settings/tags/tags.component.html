@@ -1,38 +1,40 @@
 <div class="container">
-  <h1>{{ pageTitle }}</h1>
-  <div class="row mt-2 py-4">
-    <div class="col-6 ms-auto">
-      <div class="input-group">
+  <div class="card row mt-2 mb-3">
+    <div class="card-header">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-sm"></div>
         @if (canCreate()) {
-        <input id="tagName" type="text" class="form-control" [(ngModel)]="tagName" (keyup.enter)="addTag()" />
-        <app-button [variant]="'primary'" [dataCy]="'button-add'" (click)="addTag()"
-          ><app-icon icon="plus-circle"></app-icon> Add tag</app-button
-        >
+          <div class="col-sm-3">
+            <input
+              id="tagName"
+              type="text float-end"
+              class="form-control"
+              [(ngModel)]="tagName"
+              (keyup.enter)="addTag()"
+            />
+          </div>
+          <div class="col-md-auto">
+            <app-button
+              [variant]="'primary'"
+              [dataTestId]="'button-add'"
+              (click)="addTag()"
+              [additionalClasses]="'float-end'"
+              ><app-icon icon="plus-circle"></app-icon> Add tag</app-button
+            >
+          </div>
         }
       </div>
     </div>
+    <div class="card-body">
+      <app-table
+        [entityName]="'tags'"
+        [headers]="tagsHeader()"
+        [dataCyNameKey]="'name'"
+        [data]="tags()"
+        [canDelete]="canDelete()"
+        (delete)="deleteTag($event.id)"
+      >
+      </app-table>
+    </div>
   </div>
-
-  <table class="table table-sm table-striped table-bordered">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (tag of tags(); track tag) {
-      <tr>
-        <td>{{ tag.name }}</td>
-        <td>
-          @if (canDelete()) {
-          <app-button [variant]="'danger'" [size]="'sm'" [dataCy]="'delete-' + tag.name" (click)="deleteTag(tag.id)"
-            ><app-icon icon="trash"></app-icon
-          ></app-button>
-          }
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
 </div>

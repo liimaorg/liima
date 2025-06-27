@@ -11,10 +11,9 @@ import { NgClass } from '@angular/common';
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-  selector: 'app-restriction-edit',
-  templateUrl: './restriction-edit.component.html',
-  standalone: true,
-  imports: [FormsModule, NgClass, IconComponent, ButtonComponent],
+    selector: 'app-restriction-edit',
+    templateUrl: './restriction-edit.component.html',
+    imports: [FormsModule, NgClass, IconComponent, ButtonComponent]
 })
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   actions: string[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];

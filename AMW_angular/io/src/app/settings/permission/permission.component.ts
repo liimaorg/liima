@@ -20,7 +20,6 @@ import { FormsModule } from '@angular/forms';
 import {
   NgbNav,
   NgbNavItem,
-  NgbNavItemRole,
   NgbNavLinkButton,
   NgbNavLinkBase,
   NgbNavContent,
@@ -33,12 +32,10 @@ import { ResourceTypesService } from '../../resource/resource-types.service';
 @Component({
   selector: 'app-permission',
   templateUrl: './permission.component.html',
-  standalone: true,
   imports: [
     LoadingIndicatorComponent,
     NgbNav,
     NgbNavItem,
-    NgbNavItemRole,
     NgbNavLinkButton,
     NgbNavLinkBase,
     NgbNavContent,
@@ -75,8 +72,6 @@ export class PermissionComponent implements OnInit {
     },
   ];
 
-  defaultNavItem: string = 'Roles';
-  // role | user
   restrictionType: string = 'role';
   delegationMode: boolean = false;
   assignedRestrictions: Restriction[] = [];
@@ -153,7 +148,9 @@ export class PermissionComponent implements OnInit {
       this.permissionService.removeRestriction(id).subscribe({
         next: () => '',
         error: (e) => (this.errorMessage = e),
-        complete: () => _.remove(this.assignedRestrictions, { id }),
+        complete: () => {
+          this.assignedRestrictions = this.assignedRestrictions.filter((restriction) => restriction.id !== id);
+        },
       });
     } else {
       this.restriction = null;
@@ -169,10 +166,11 @@ export class PermissionComponent implements OnInit {
     this.create = false;
   }
 
-  modifyRestriction(restriction: Restriction) {
+  modifyRestriction(restrictionId: number) {
     // reset restriction list, discard unsaved changes
     this.clearMessages();
     this.resetPermissionList();
+    const restriction = this.assignedRestrictions.find((r) => r.id === restrictionId);
     this.backupRestriction = { ...restriction };
     this.restriction = restriction;
   }

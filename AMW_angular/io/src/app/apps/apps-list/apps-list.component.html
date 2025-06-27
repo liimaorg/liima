@@ -1,12 +1,12 @@
-@if (apps && apps.length > 0) {
-<table class="table table-sm table-borderless mb-0">
+@if (apps() && apps().length > 0) {
+<table class="table table-sm mb-0">
   <tbody>
-    @for (app of apps; track app) {
-    <tr [class.table-light]="!even">
-      <td class="align-middle ps-2 w-90 border-0 py-2">
+    @for (app of apps(); track app) {
+    <tr [class.table-light]="!even()">
+      <td>
         <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ app.id }}">{{ app.name }}</a>
       </td>
-      <td class="align-middle ps-4 w-10 border-0 py-2">
+      <td class="text-end pe-0">
         <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ app.id }}">{{ app.release.name }}</a>
       </td>
     </tr>

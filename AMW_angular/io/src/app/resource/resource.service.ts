@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
+import { Observable, startWith, Subject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Resource } from './resource';
 import { Release } from './release';
@@ -21,7 +21,10 @@ export class ResourceService extends BaseService {
   private resourceId$: Subject<number> = new Subject<number>();
 
   private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
-    switchMap((resourceType: ResourceType) => this.getGroupsForType(resourceType)),
+    switchMap((resourceType: ResourceType) => {
+      return this.getGroupsForType(resourceType);
+    }),
+    startWith(null),
     shareReplay(1),
   );
 

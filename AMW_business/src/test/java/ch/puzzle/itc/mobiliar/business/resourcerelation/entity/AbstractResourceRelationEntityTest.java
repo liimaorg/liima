@@ -107,8 +107,9 @@ public class AbstractResourceRelationEntityTest {
 		ConsumedResourceRelationEntity relation = builder.relationFor(APP, AD);
 		assertEquals("adIntern", relation.buildIdentifer());
 
-		relation.setIdentifier("");
-		assertEquals("adIntern", relation.buildIdentifer());
+		assertThrows(IllegalArgumentException.class, () -> {
+			relation.setIdentifier("");
+		});
 	}
 	
 	@Test

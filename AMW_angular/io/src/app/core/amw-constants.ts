@@ -7,3 +7,4 @@ export const ENVIRONMENT = {
 // used for date-fns
 export const DATE_TIME_FORMAT = 'dd.MM.yyyy HH:mm';
 export const DATE_FORMAT = 'dd.MM.yyyy';
+export const ISO_FORMAT = 'yyyy-MM-dd';
