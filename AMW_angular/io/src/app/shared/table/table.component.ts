@@ -25,15 +25,16 @@ export interface EntryActionOutput {
   id: number;
 }
 @Component({
-    selector: 'app-table',
-    templateUrl: './table.component.html',
-    styleUrl: './table.component.scss',
-    imports: [ButtonComponent, IconComponent, DatePipe]
+  selector: 'app-table',
+  templateUrl: './table.component.html',
+  styleUrl: './table.component.scss',
+  standalone: true,
+  imports: [ButtonComponent, IconComponent, DatePipe],
 })
 export class TableComponent<T> {
   entityName = input.required<string>();
   headers = input.required<TableColumnType<T>[]>();
-  dataCyNameKey = input<keyof T>();
+  dataCyNameKey = input<keyof T>(); //TODO: remove
   readonlyFlag = input<keyof T>();
   data = input.required<any[]>();
   canEdit = input<boolean>(false);

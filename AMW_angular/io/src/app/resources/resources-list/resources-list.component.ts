@@ -17,7 +17,6 @@ import { TableComponent, TableColumnType } from '../../shared/table/table.compon
   selector: 'app-resources-list',
   standalone: true,
   templateUrl: './resources-list.component.html',
-  styleUrl: './resources-list.component.scss',
   imports: [ButtonComponent, IconComponent, RouterLink, TableComponent],
 })
 export class ResourcesListComponent {
@@ -29,15 +28,14 @@ export class ResourcesListComponent {
   releases = input.required<Release[]>();
   resourceToAdd = output<any>();
   resourceTypeToDelete = output<ResourceType>();
-  resourceGroupListTableData = computed(
-    () =>
-      this.resourceGroupList()?.map((resource) => {
-        return {
-          id: resource.id,
-          name: resource.name,
-          defaultRelease: resource.defaultRelease.release,
-        };
-      }),
+  resourceGroupListTableData = computed(() =>
+    this.resourceGroupList()?.map((resource) => {
+      return {
+        id: resource.id,
+        name: resource.name,
+        defaultRelease: resource.defaultRelease.release,
+      };
+    }),
   );
 
   permissions = computed(() => {

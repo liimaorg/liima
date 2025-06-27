@@ -8,12 +8,7 @@
             <div class="d-flex me-1">
               <label class="align-self-center me-1">Compare with history</label>
               <div ngbDropdown>
-                <app-button
-                  [additionalClasses]="'dropdown-toggle'"
-                  [variant]="'secondary'"
-                  ngbDropdownToggle
-                  [dataCy]="'button-dropdown'"
-                >
+                <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
                   {{ selectedRevisionName() || 'Select Revision' }}
                 </app-button>
 
@@ -23,7 +18,7 @@
                       <a
                         class="dropdown-item"
                         (click)="selectRevision(template.id, revision.revision, revision.displayName)"
-                      >{{ revision.displayName }}</a
+                        >{{ revision.displayName }}</a
                       >
                     </li>
                   }
@@ -46,11 +41,16 @@
       </div>
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <input type="text" class="form-control" id="name" [(ngModel)]="template.name"
-                 [class.is-invalid]="!isNameValid() && template && template.name && template.name.length > 0"
-                 [class.is-valid]="isNameValid() && template && template.name && template.name.length > 0"
-                 required
-                 pattern="^\S(.*\S)?$"/>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            [(ngModel)]="template.name"
+            [class.is-invalid]="!isNameValid() && template && template.name && template.name.length > 0"
+            [class.is-valid]="isNameValid() && template && template.name && template.name.length > 0"
+            required
+            pattern="^\S(.*\S)?$"
+          />
           @if (!isNameValid() && template && template.name && template.name.length > 0) {
             <div class="invalid-feedback">
               The name must not be empty and must not contain any leading or trailing spaces.
@@ -70,13 +70,17 @@
       </div>
       <div class="row align-items-center">
         <div class="col-sm-6">
-          <input type="text"
-                 class="form-control"
-                 id="targetPath"
-                 [(ngModel)]="template.targetPath"
-                 [class.is-invalid]="!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
-                 [class.is-valid]="isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
-                 pattern="^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s][^/\\]*[^\s]$|^$"/>
+          <input
+            type="text"
+            class="form-control"
+            id="targetPath"
+            [(ngModel)]="template.targetPath"
+            [class.is-invalid]="
+              !isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0
+            "
+            [class.is-valid]="isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
+            pattern="^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s][^/\\]*[^\s]$|^$"
+          />
           @if (!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0) {
             <div class="invalid-feedback">
               The file path must not be an absolute path (must not begin with '/') or a path traversal (must not begin
@@ -142,7 +146,8 @@
                   type="checkbox"
                   id="revisionTargetPlatform.name"
                   disabled
-                  [checked]="revisionTargetPlatform.selected">
+                  [checked]="revisionTargetPlatform.selected"
+                />
                 <label class="form-check-label" for="revisionTargetPlatform.name">
                   {{ revisionTargetPlatform.name }}
                 </label>
@@ -152,14 +157,11 @@
         }
       </div>
       <div class="modal-footer">
-        <app-button [variant]="'light'" (click)="cancel()" [dataCy]="'button-cancel'">Cancel</app-button>
+        <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
         @if (canAddOrEdit) {
-          <app-button
-            [variant]="'primary'"
-            [dataCy]="'button-save'"
-            (click)="save()"
-            [disabled]="!isValidForm()"
-          >Save changes
-          </app-button>
+          <app-button [variant]="'primary'" (click)="save()" [disabled]="!isValidForm()">Save changes </app-button>
         }
       </div>
+    </div>
+  </div>
+</div>

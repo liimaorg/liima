@@ -1,4 +1,4 @@
-import { Component, Input, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -16,6 +16,7 @@ import { NgClass } from '@angular/common';
     </button>
   `,
   imports: [NgClass],
+  standalone: true,
 })
 export class ButtonComponent {
   variant = input<'primary' | 'secondary' | 'danger' | 'light' | 'close' | 'link'>();
