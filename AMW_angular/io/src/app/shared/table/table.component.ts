@@ -34,7 +34,6 @@ export interface EntryActionOutput {
 export class TableComponent<T> {
   entityName = input.required<string>();
   headers = input.required<TableColumnType<T>[]>();
-  dataCyNameKey = input<keyof T>(); //TODO: remove
   readonlyFlag = input<keyof T>();
   data = input.required<any[]>();
   canEdit = input<boolean>(false);
