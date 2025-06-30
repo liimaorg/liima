@@ -126,8 +126,8 @@ export class ResourceTypeFunctionsListComponent {
         (!element.isOverwritingFunction && element.functionOriginResourceName !== this.resourceType().name
           ? ` (Defined on ${element.functionOriginResourceName})`
           : element.isOverwritingFunction && element.functionOriginResourceName !== element.overwrittenParentName
-          ? ` (Overwrite function from ${element.overwrittenParentName})`
-          : ''),
+            ? ` (Overwrite function from ${element.overwrittenParentName})`
+            : ''),
       description: [...element.miks].join(', '),
       id: element.id,
     }));

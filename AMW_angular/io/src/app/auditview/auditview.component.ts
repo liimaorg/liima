@@ -11,10 +11,10 @@ import { AuditviewTableService } from './auditview-table/auditview-table.service
 import { PageComponent } from '../layout/page/page.component';
 
 @Component({
-    selector: 'app-auditview',
-    templateUrl: './auditview.component.html',
-    providers: [AuditviewService, AuditviewTableService, DatePipe],
-    imports: [LoadingIndicatorComponent, NotificationComponent, AuditviewTableComponent, PageComponent]
+  selector: 'app-auditview',
+  templateUrl: './auditview.component.html',
+  providers: [AuditviewService, AuditviewTableService, DatePipe],
+  imports: [LoadingIndicatorComponent, NotificationComponent, AuditviewTableComponent, PageComponent],
 })
 export class AuditviewComponent implements OnInit {
   name: string;

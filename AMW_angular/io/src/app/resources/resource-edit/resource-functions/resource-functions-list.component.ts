@@ -141,8 +141,8 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
         (element.definedOnResourceType
           ? ` (Defined on ${element.functionOriginResourceName})`
           : element.isOverwritingFunction
-          ? ` (Overwrite function from ${element.overwrittenParentName})`
-          : ''),
+            ? ` (Overwrite function from ${element.overwrittenParentName})`
+            : ''),
       description: [...element.miks].join(', '),
       id: element.id,
     }));

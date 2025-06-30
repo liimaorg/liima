@@ -17,9 +17,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-    selector: 'app-releases',
-    imports: [IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent, TableComponent],
-    templateUrl: './releases.component.html'
+  selector: 'app-releases',
+  imports: [IconComponent, LoadingIndicatorComponent, PaginationComponent, ButtonComponent, TableComponent],
+  templateUrl: './releases.component.html',
 })
 export class ReleasesComponent implements OnDestroy {
   private authService = inject(AuthService);

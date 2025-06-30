@@ -13,9 +13,9 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-restriction-add',
-    templateUrl: './restriction-add.component.html',
-    imports: [NgSelectModule, FormsModule, IconComponent, ButtonComponent]
+  selector: 'app-restriction-add',
+  templateUrl: './restriction-add.component.html',
+  imports: [NgSelectModule, FormsModule, IconComponent, ButtonComponent],
 })
 export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   actions: Action[] = [

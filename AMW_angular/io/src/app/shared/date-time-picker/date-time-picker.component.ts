@@ -16,18 +16,18 @@ import { IconComponent } from '../icon/icon.component';
 import { ButtonComponent } from '../button/button.component';
 
 @Component({
-    selector: 'app-date-time-picker',
-    templateUrl: './date-time-picker.component.html',
-    styleUrls: ['./date-time-picker.component.scss'],
-    providers: [
-        DatePipe,
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => DateTimePickerComponent),
-            multi: true,
-        },
-    ],
-    imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker, ButtonComponent]
+  selector: 'app-date-time-picker',
+  templateUrl: './date-time-picker.component.html',
+  styleUrls: ['./date-time-picker.component.scss'],
+  providers: [
+    DatePipe,
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => DateTimePickerComponent),
+      multi: true,
+    },
+  ],
+  imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker, ButtonComponent],
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input()

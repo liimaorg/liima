@@ -3,27 +3,27 @@
   <div class="form-horizontal mx-2">
     <div class="mb-3">
       @if (!hasResources) {
-      <div class="text-body">Do you really want to delete the release {{ release.name }} ?</div>
+        <div class="text-body">Do you really want to delete the release {{ release.name }} ?</div>
       } @else {
-      <div class="text-body">
-        The release {{ release.name }} is used by the following resources and can not be deleted:
-        <ul class="list-group mt-2">
-          @for (item of resources | keyvalue; track item) {
-          <li class="list-group-item">
-            <div class="d-flex justify-content-between align-items-start">
-              {{ item.key }} <span class="badge bg-primary rounded-pill ms-auto">{{ item.value.length }}</span>
-            </div>
-            <ul class="list-unstyled">
-              @for (rs of item.value; track rs) {
-              <li>
-                <small class="bi-dot">{{ rs.name }}</small>
+        <div class="text-body">
+          The release {{ release.name }} is used by the following resources and can not be deleted:
+          <ul class="list-group mt-2">
+            @for (item of resources | keyvalue; track item) {
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                  {{ item.key }} <span class="badge bg-primary rounded-pill ms-auto">{{ item.value.length }}</span>
+                </div>
+                <ul class="list-unstyled">
+                  @for (rs of item.value; track rs) {
+                    <li>
+                      <small class="bi-dot">{{ rs.name }}</small>
+                    </li>
+                  }
+                </ul>
               </li>
-              }
-            </ul>
-          </li>
-          }
-        </ul>
-      </div>
+            }
+          </ul>
+        </div>
       }
     </div>
   </div>

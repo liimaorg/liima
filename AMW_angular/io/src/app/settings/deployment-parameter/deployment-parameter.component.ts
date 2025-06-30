@@ -12,10 +12,10 @@ import { TableComponent, TableColumnType } from '../../shared/table/table.compon
 type Key = { id: number; name: string };
 
 @Component({
-    selector: 'app-deployment-parameter',
-    imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent, TableComponent],
-    templateUrl: './deployment-parameter.component.html',
-    styleUrl: './deployment-parameter.component.scss'
+  selector: 'app-deployment-parameter',
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent, TableComponent],
+  templateUrl: './deployment-parameter.component.html',
+  styleUrl: './deployment-parameter.component.scss',
 })
 export class DeploymentParameterComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);

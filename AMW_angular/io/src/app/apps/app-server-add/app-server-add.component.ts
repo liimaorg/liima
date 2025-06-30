@@ -8,9 +8,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-server-add',
-    imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
-    templateUrl: './app-server-add.component.html'
+  selector: 'app-server-add',
+  imports: [FormsModule, NgSelectModule, ModalHeaderComponent, ButtonComponent],
+  templateUrl: './app-server-add.component.html',
 })
 export class AppServerAddComponent {
   @Input() releases: Signal<Release[]>;

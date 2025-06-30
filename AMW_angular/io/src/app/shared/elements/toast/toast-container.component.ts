@@ -3,9 +3,9 @@ import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from './toast.service';
 
 @Component({
-    selector: 'app-toasts',
-    imports: [NgbToastModule],
-    template: `@for (toast of toastService.toasts; track toast) {
+  selector: 'app-toasts',
+  imports: [NgbToastModule],
+  template: `@for (toast of toastService.toasts; track toast) {
     <ngb-toast
       [class]="['toast', toast.type]"
       [autohide]="true"
@@ -17,8 +17,8 @@ import { ToastService } from './toast.service';
         <div class="px-4 align-self-center">{{ toast.body }}</div>
       </div>
     </ngb-toast>
-    }`,
-    styles: `
+  }`,
+  styles: `
     :host {
       position: fixed;
       bottom: 3rem;
@@ -58,7 +58,7 @@ import { ToastService } from './toast.service';
     .danger .content {
       color: darkred;
     }
-  `
+  `,
 })
 export class ToastContainerComponent {
   constructor(public toastService: ToastService) {}

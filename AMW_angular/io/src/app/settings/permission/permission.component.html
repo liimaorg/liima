@@ -18,9 +18,11 @@
               (ngModelChange)="onChangeRole()"
             />
             <datalist id="roleList">
-              @if (roleNames.length > 0) { @for (roleName of roleNames; track roleName) {
-              <option [ngValue]="roleName">{{ roleName }}</option>
-              } }
+              @if (roleNames.length > 0) {
+                @for (roleName of roleNames; track roleName) {
+                  <option [ngValue]="roleName">{{ roleName }}</option>
+                }
+              }
             </datalist>
           </div>
         </div>
@@ -54,61 +56,58 @@
     <label class="col-sm-1"></label>
     <div class="col">
       @if (restriction) {
-
-      <app-restriction-edit
-        class="bg-light"
-        [restriction]="restriction"
-        [groupedEnvironments]="groupedEnvironments"
-        [permissions]="getPermissions()"
-        [resourceGroups]="resourceGroups"
-        [resourceTypes]="resourceTypes"
-        [availableRestrictions]="assignableRestrictions"
-        [delegationMode]="delegationMode"
-        (cancelEdit)="cancel()"
-        (saveRestriction)="persistRestriction()"
-      ></app-restriction-edit>
-
-      } @if (create) {
-
-      <app-restriction-add
-        [roleName]="selectedRoleName"
-        [userNames]="selectedUserNames"
-        [groupedEnvironments]="groupedEnvironments"
-        [permissions]="getPermissions()"
-        [resourceGroups]="resourceGroups"
-        [resourceTypes]="resourceTypes"
-        [availableRestrictions]="assignableRestrictions"
-        [delegationMode]="delegationMode"
-        (cancelEdit)="cancel()"
-        (saveRestrictions)="createRestrictions($event)"
-      ></app-restriction-add>
-
+        <app-restriction-edit
+          class="bg-light"
+          [restriction]="restriction"
+          [groupedEnvironments]="groupedEnvironments"
+          [permissions]="getPermissions()"
+          [resourceGroups]="resourceGroups"
+          [resourceTypes]="resourceTypes"
+          [availableRestrictions]="assignableRestrictions"
+          [delegationMode]="delegationMode"
+          (cancelEdit)="cancel()"
+          (saveRestriction)="persistRestriction()"
+        ></app-restriction-edit>
+      }
+      @if (create) {
+        <app-restriction-add
+          [roleName]="selectedRoleName"
+          [userNames]="selectedUserNames"
+          [groupedEnvironments]="groupedEnvironments"
+          [permissions]="getPermissions()"
+          [resourceGroups]="resourceGroups"
+          [resourceTypes]="resourceTypes"
+          [availableRestrictions]="assignableRestrictions"
+          [delegationMode]="delegationMode"
+          (cancelEdit)="cancel()"
+          (saveRestrictions)="createRestrictions($event)"
+        ></app-restriction-add>
       }
     </div>
   </div>
   @if (selectedRoleName || selectedUserNames.length > 0) {
-  <div class="form-group">
-    <label class="col-sm-1"></label>
-    <div class="col">
-      <div class="card row offset-1">
-        @if (!restriction && !create) {
-        <div class="card-header">
-          <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addRestriction()"
-            ><app-icon icon="plus-circle"></app-icon> Add permission
-          </app-button>
-        </div>
-        }
-        <div class="card-body">
-          <app-restriction-list
-            [restrictions]="assignedRestrictions"
-            [resourceGroups]="resourceGroups"
-            [delegationMode]="delegationMode"
-            (deleteRestriction)="removeRestriction($event)"
-            (editRestriction)="modifyRestriction($event)"
-          ></app-restriction-list>
+    <div class="form-group">
+      <label class="col-sm-1"></label>
+      <div class="col">
+        <div class="card row offset-1">
+          @if (!restriction && !create) {
+            <div class="card-header">
+              <app-button [variant]="'primary'" [additionalClasses]="'float-end'" (click)="addRestriction()"
+                ><app-icon icon="plus-circle"></app-icon> Add permission
+              </app-button>
+            </div>
+          }
+          <div class="card-body">
+            <app-restriction-list
+              [restrictions]="assignedRestrictions"
+              [resourceGroups]="resourceGroups"
+              [delegationMode]="delegationMode"
+              (deleteRestriction)="removeRestriction($event)"
+              (editRestriction)="modifyRestriction($event)"
+            ></app-restriction-list>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   }
 </div>

@@ -1,29 +1,30 @@
 <app-page>
   <div class="page-title">Settings</div>
   @if (permissions().canViewSettings) {
-  <div class="page-content row">
-    <div class="col-2">
-      <nav class="nav nav-pills flex-column">
-        <a class="nav-link" routerLink="/settings/environments" routerLinkActive="active">Environments</a>
-        <a class="nav-link" routerLink="/settings/property-types" routerLinkActive="active">Property Types</a>
-        @if (permissions().canViewPermissionsTab) {
-        <a class="nav-link" routerLink="/settings/tags" routerLinkActive="active">Tags</a>
-        }
-        <a class="nav-link" routerLink="/settings/functions" routerLinkActive="active">Functions</a>
-        <a class="nav-link" routerLink="/settings/deployment-parameter" routerLinkActive="active"
-          >Deployment Parameter</a
-        >
-        <a class="nav-link" routerLink="/settings/releases" routerLinkActive="active">Releases</a>
-        @if (permissions().canViewPermissionsTab) {
-        <a class="nav-link" routerLink="/settings/permission" routerLinkActive="active">Roles and Permissions</a>
-        } @if (permissions().canViewAppInfo) {
-        <a class="nav-link" routerLink="/settings/application-info" routerLinkActive="active">Application Info</a>
-        }
-      </nav>
+    <div class="page-content row">
+      <div class="col-2">
+        <nav class="nav nav-pills flex-column">
+          <a class="nav-link" routerLink="/settings/environments" routerLinkActive="active">Environments</a>
+          <a class="nav-link" routerLink="/settings/property-types" routerLinkActive="active">Property Types</a>
+          @if (permissions().canViewPermissionsTab) {
+            <a class="nav-link" routerLink="/settings/tags" routerLinkActive="active">Tags</a>
+          }
+          <a class="nav-link" routerLink="/settings/functions" routerLinkActive="active">Functions</a>
+          <a class="nav-link" routerLink="/settings/deployment-parameter" routerLinkActive="active"
+            >Deployment Parameter</a
+          >
+          <a class="nav-link" routerLink="/settings/releases" routerLinkActive="active">Releases</a>
+          @if (permissions().canViewPermissionsTab) {
+            <a class="nav-link" routerLink="/settings/permission" routerLinkActive="active">Roles and Permissions</a>
+          }
+          @if (permissions().canViewAppInfo) {
+            <a class="nav-link" routerLink="/settings/application-info" routerLinkActive="active">Application Info</a>
+          }
+        </nav>
+      </div>
+      <div class="col-10">
+        <router-outlet></router-outlet>
+      </div>
     </div>
-    <div class="col-10">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
   }
 </app-page>

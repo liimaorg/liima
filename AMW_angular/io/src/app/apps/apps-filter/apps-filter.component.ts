@@ -6,10 +6,10 @@ import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-apps-filter',
-    imports: [FormsModule, NgSelectModule, ButtonComponent],
-    templateUrl: './apps-filter.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-apps-filter',
+  imports: [FormsModule, NgSelectModule, ButtonComponent],
+  templateUrl: './apps-filter.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsFilterComponent {
   releases = input.required<Release[]>();

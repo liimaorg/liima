@@ -76,7 +76,8 @@ export class ServersPageComponent implements OnInit {
     const config = this.configuration();
     const vmDetailUrl = pluck(ENVIRONMENT.AMW_VM_DETAILS_URL, config);
     const vmUrlParam = pluck(ENVIRONMENT.AMW_VM_URL_PARAM, config);
-    if (vmUrlParam) { // old logic for backward compatibility
+    if (vmUrlParam) {
+      // old logic for backward compatibility
       return `${vmDetailUrl}?${vmUrlParam}={hostName}`;
     }
     return vmDetailUrl; // {hostName} will be replaced with the actual host name
