@@ -6,7 +6,7 @@
           <h2>
             {{ resourceType().name }}
             <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&resTypId={{ resourceType().id }}">
-              <app-button [variant]="'link'" justify-content-start>
+              <app-button [variant]="'link'">
                 <app-icon icon="pencil"></app-icon>
               </app-button>
             </a>
@@ -30,20 +30,15 @@
         </div>
       </div>
       <div class="card-body">
-        <!-- TODO: -->
-        <!--<a
-        [routerLink]="['/resource/edit']"
-        [queryParams]="{ ctx: 1, id: resource.defaultResourceId ? resource.defaultResourceId : resource.id }"
-      >
-        <app-button [variant]="'primary'" [size]="'sm'"> <app-icon icon="rocket-takeoff"></app-icon></app-button>
-      </a>-->
         <app-table
           [entityName]="'resources'"
           [headers]="resourcesHeader()"
           [data]="resourceGroupListTableData()"
           [canDelete]="false"
           [canEdit]="permissions().canReadResources"
+          [canNavigate]="permissions().canReadResources"
           (edit)="openEditResourcePage($event.id)"
+          (navigate)="openMigratedResourcePage($event.id)"
         >
         </app-table>
       </div>
