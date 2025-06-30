@@ -7,7 +7,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (appServer of appServers(); track appServer; let even = $even) {
+      @for (appServer of appServers(); track appServer.id; let even = $even) {
       <tr [class.li-table-striped]="even">
         <td class="border-0">
           @if (!appServer.deletable) {

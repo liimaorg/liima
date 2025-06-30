@@ -2,23 +2,23 @@
   <div class="row g-2 mb-2">
     <div class="col-md-3">
       <label for="appServer" class="form-label">AppServer</label>
-      <input type="text" class="form-control" id="appServer" [ngbTypeahead]="search" [(ngModel)]="appServer" />
+      <input type="text" class="form-control" id="appServer" [ngbTypeahead]="search" [(ngModel)]="filter.appServer" />
     </div>
     <div class="col-md-3">
       <label class="form-label">Runtime</label>
-      <select class="form-select" [(ngModel)]="selectedRuntimeName">
+      <select class="form-select" [(ngModel)]="filter.runtimeName">
         <option [value]="'All'">All</option>
         @for (runtime of runtimes(); track runtime.id) {
-        <option [value]="runtime.name">{{ runtime.name }}</option>
+          <option [value]="runtime.name">{{ runtime.name }}</option>
         }
       </select>
     </div>
     <div class="col-md-3">
       <label class="form-label">Env</label>
-      <select class="form-select in" [(ngModel)]="selectedEnvironmentName">
+      <select class="form-select in" [(ngModel)]="filter.environmentName">
         <option [value]="'All'">All</option>
         @for (env of environments(); track env.id) {
-        <option [value]="env.name">{{ env.name }}</option>
+          <option [value]="env.name">{{ env.name }}</option>
         }
       </select>
     </div>
@@ -26,11 +26,11 @@
   <div class="row g-4 mb-4">
     <div class="col-md-3">
       <label for="host" class="form-label">Host</label>
-      <input type="text" class="form-control" id="host" [(ngModel)]="host" />
+      <input type="text" class="form-control" id="host" [(ngModel)]="filter.host" />
     </div>
     <div class="col-md-3">
       <label for="node" class="form-label">Node</label>
-      <input type="text" class="form-control" id="node" [(ngModel)]="node" />
+      <input type="text" class="form-control" id="node" [(ngModel)]="filter.node" />
     </div>
     <div class="col-md-3 d-flex align-items-end">
       <app-button [variant]="'primary'" (click)="searchServerFilter()">Search</app-button>

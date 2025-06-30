@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, OnChanges, SimpleChanges } from '@angular/core';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Environment } from '../../deployment/environment';
@@ -15,16 +15,32 @@ import { ButtonComponent } from '../../shared/button/button.component';
     templateUrl: './servers-filter.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ServersFilterComponent {
+export class ServersFilterComponent implements OnChanges {
   environments = input.required<Environment[]>();
   runtimes = input.required<Resource[]>();
   appServerSuggestions = input.required<string[]>();
+  inputSearchFilter = input<ServerFilter>();
   searchFilter = output<ServerFilter>();
-  selectedEnvironmentName: string = 'All';
-  selectedRuntimeName: string = 'All';
-  appServer: string;
-  host: string;
-  node: string;
+  filter: ServerFilter = {
+    environmentName: 'All',
+    runtimeName: 'All',
+    appServer: null,
+    host: null,
+    node: null
+  };
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['inputSearchFilter'] && this.inputSearchFilter()) {
+      const input = this.inputSearchFilter();
+      this.filter = {
+        environmentName: input.environmentName ?? 'All',
+        runtimeName: input.runtimeName ?? 'All',
+        appServer: input.appServer ?? null,
+        host: input.host ?? null,
+        node: input.node ?? null
+      };
+    }
+  }
 
   search: OperatorFunction<string, readonly string[]> = (text$: Observable<string>) =>
     text$.pipe(
@@ -40,21 +56,16 @@ export class ServersFilterComponent {
     );
 
   searchServerFilter() {
-    const filter: ServerFilter = {
-      environmentName: this.selectedEnvironmentName,
-      runtimeName: this.selectedRuntimeName,
-      appServer: this.appServer,
-      host: this.host,
-      node: this.node,
-    };
-    this.searchFilter.emit(filter);
+    this.searchFilter.emit(this.filter);
   }
 
   reset() {
-    this.selectedEnvironmentName = 'All';
-    this.selectedRuntimeName = 'All';
-    this.appServer = null;
-    this.host = null;
-    this.node = null;
+    this.filter = {
+      environmentName: 'All',
+      runtimeName: 'All',
+      appServer: null,
+      host: null,
+      node: null
+    };
   }
 }

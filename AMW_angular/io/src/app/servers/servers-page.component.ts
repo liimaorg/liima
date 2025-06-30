@@ -9,7 +9,7 @@ import { ENVIRONMENT } from '../core/amw-constants';
 import { Config, pluck } from '../shared/configuration';
 import { ServersFilterComponent } from './servers-filter/servers-filter.component';
 import { EnvironmentService } from '../deployment/environment.service';
-import { ServerFilter } from './servers-filter/server-filter';
+import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filter';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -27,6 +27,7 @@ import { ActivatedRoute, Router } from '@angular/router';
                 [environments]="environments()"
                 [runtimes]="runtimes()"
                 [appServerSuggestions]="appServerSuggestions()"
+                [inputSearchFilter]="serversService.serverFilter()"
                 (searchFilter)="searchFilter($event)"
               />
             </div>
@@ -45,7 +46,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class ServersPageComponent implements OnInit {
   private authService = inject(AuthService);
-  private serversService = inject(ServersService);
+  public serversService = inject(ServersService);
   private environmentsService = inject(EnvironmentService);
   private configurationService = inject(ConfigurationService);
   private router = inject(Router);
@@ -65,7 +66,7 @@ export class ServersPageComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: ServerFilter) => {
-      if (this.hasSearched && params) {
+      if (this.hasSearched || !isServerFilterEmpty(params)) {
         this.serversService.setServerFilter(params);
       }
     });
