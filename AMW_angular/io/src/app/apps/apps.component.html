@@ -9,7 +9,8 @@
             <div class="col-sm">
               <app-apps-filter
                 [releases]="releases()"
-                [upcoming]="upcomingRelease() ? upcomingRelease().id : null"
+                [releaseId]="appsService.releaseId()"
+                [filter]="appsService.filter()"
                 (filterEvent)="updateFilter($event)"
               ></app-apps-filter>
             </div>
@@ -36,7 +37,7 @@
         </div>
         @if (permissions().canViewAppList) {
           <div class="card-body">
-            <app-apps-servers-list [appServers]="appServers()"></app-apps-servers-list>
+            <app-apps-servers-list [appServers]="appsService.apps()"></app-apps-servers-list>
           </div>
         }
       </div>
