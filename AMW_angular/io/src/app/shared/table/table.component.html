@@ -55,7 +55,6 @@
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'me-4 p-0'"
-                  [dataTestId]="'button-edit-' + row[dataCyNameKey()]"
                   (click)="edit.emit({ action: EntryAction.edit, id: row.id })"
                 >
                   <app-icon icon="pencil"></app-icon>
@@ -66,7 +65,6 @@
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'p-0 link-danger'"
-                  [dataTestId]="'button-delete-' + row[dataCyNameKey()]"
                   (click)="delete.emit({ action: EntryAction.delete, id: row.id })"
                 >
                   <app-icon icon="trash"></app-icon>
