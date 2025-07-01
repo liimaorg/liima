@@ -52,6 +52,7 @@
             <td class="text-end">
               @if (canEdit() && !row[readonlyFlag()]) {
                 <app-button
+                  title="Edit"
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'me-4 p-0'"
@@ -63,6 +64,7 @@
               }
               @if (canDelete() && !row[readonlyFlag()]) {
                 <app-button
+                  title="Delete"
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'p-0 link-danger'"

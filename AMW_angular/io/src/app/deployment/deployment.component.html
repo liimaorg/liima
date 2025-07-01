@@ -151,7 +151,7 @@
           </div>
           <div class="col-sm-2">
             @if (transDeploymentParameter.key && transDeploymentParameter.value) {
-              <app-button [variant]="'secondary'" (click)="onAddParam()"><app-icon icon="plus"></app-icon></app-button>
+              <app-button title="Add parameter" [variant]="'secondary'" (click)="onAddParam()"><app-icon icon="save"></app-icon></app-button>
             }
           </div>
         </div>
@@ -167,7 +167,7 @@
                 <input class="form-control" disabled type="text" value="{{ transDepParam.value }}" />
               </div>
               <div class="col-sm-2">
-                <app-button [variant]="'secondary'" (click)="onRemoveParam(transDepParam)"
+                <app-button title="Remove parameter" [variant]="'secondary'" (click)="onRemoveParam(transDepParam)"
                   ><app-icon icon="trash"></app-icon
                 ></app-button>
               </div>

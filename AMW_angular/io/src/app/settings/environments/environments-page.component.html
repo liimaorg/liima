@@ -11,11 +11,11 @@
         <h3>
           {{ domain.name }}
           @if (permissions().canEdit) {
-          <app-button [variant]="'link'" (click)="editContext(domain.id)">
+          <app-button title="Edit" [variant]="'link'" (click)="editContext(domain.id)">
             <app-icon icon="pencil"></app-icon>
           </app-button>
           } @if (permissions().canDelete) {
-          <app-button [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteContext(domain.id)">
+          <app-button title="Delete" [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteContext(domain.id)">
             <app-icon icon="trash"></app-icon>
           </app-button>
           }
