@@ -12,6 +12,7 @@ import { AuthService } from '../../auth/auth.service';
 import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-type-delete.component';
 import { RouterLink } from '@angular/router';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-resources-list',
@@ -22,6 +23,7 @@ import { TableComponent, TableColumnType } from '../../shared/table/table.compon
 export class ResourcesListComponent {
   private modalService = inject(NgbModal);
   private authService = inject(AuthService);
+  private router = inject(Router);
   private destroy$ = new Subject<void>();
   resourceType = input.required<ResourceType>();
   resourceGroupList = input.required<Resource[]>();
@@ -34,6 +36,7 @@ export class ResourcesListComponent {
         id: resource.id,
         name: resource.name,
         defaultRelease: resource.defaultRelease.release,
+        defaultResourceId: resource.defaultResourceId,
       };
     }),
   );
@@ -76,6 +79,7 @@ export class ResourcesListComponent {
     id: number;
     name: string;
     defaultRelease: string;
+    defaultResourceId: number;
   }>[] {
     return [
       {
@@ -95,5 +99,15 @@ export class ResourcesListComponent {
       resource.defaultResourceId ? resource.defaultResourceId : resource.id
     }`;
     window.location.href = dynamicUrl;
+  }
+
+  openMigratedResourcePage(id: number) {
+    const resource = this.resourceGroupList().find((res) => res.id === id);
+    this.router.navigate(['/resource/edit'], {
+      queryParams: {
+        ctx: 1,
+        id: resource.defaultResourceId ? resource.defaultResourceId : resource.id,
+      },
+    });
   }
 }

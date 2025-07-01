@@ -5,9 +5,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-function-delete',
-    templateUrl: './function-delete.component.html',
-    imports: [ModalHeaderComponent, ButtonComponent]
+  selector: 'app-function-delete',
+  templateUrl: './function-delete.component.html',
+  imports: [ModalHeaderComponent, ButtonComponent],
 })
 export class FunctionDeleteComponent {
   @Input() function: AppFunction;

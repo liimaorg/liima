@@ -9,7 +9,7 @@
       <select class="form-select" [(ngModel)]="selectedRuntimeName">
         <option [value]="'All'">All</option>
         @for (runtime of runtimes(); track runtime.id) {
-        <option [value]="runtime.name">{{ runtime.name }}</option>
+          <option [value]="runtime.name">{{ runtime.name }}</option>
         }
       </select>
     </div>
@@ -18,7 +18,7 @@
       <select class="form-select in" [(ngModel)]="selectedEnvironmentName">
         <option [value]="'All'">All</option>
         @for (env of environments(); track env.id) {
-        <option [value]="env.name">{{ env.name }}</option>
+          <option [value]="env.name">{{ env.name }}</option>
         }
       </select>
     </div>

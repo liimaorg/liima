@@ -60,6 +60,16 @@
                   <app-icon icon="pencil"></app-icon>
                 </app-button>
               }
+              @if (canNavigate() && !row[readonlyFlag()]) {
+                <app-button
+                  [size]="'sm'"
+                  [variant]="'link'"
+                  [additionalClasses]="'me-4 p-0'"
+                  (click)="navigate.emit({ action: EntryAction.navigate, id: row.id })"
+                >
+                  <app-icon icon="rocket-takeoff"></app-icon>
+                </app-button>
+              }
               @if (canDelete() && !row[readonlyFlag()]) {
                 <app-button
                   [size]="'sm'"

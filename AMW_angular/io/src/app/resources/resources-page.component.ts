@@ -29,11 +29,11 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-resources-page',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [PageComponent, LoadingIndicatorComponent, ButtonComponent, IconComponent, ResourcesListComponent, NgClass],
-    templateUrl: './resources-page.component.html',
-    styleUrl: 'resources-page.component.css'
+  selector: 'app-resources-page',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [PageComponent, LoadingIndicatorComponent, ButtonComponent, IconComponent, ResourcesListComponent, NgClass],
+  templateUrl: './resources-page.component.html',
+  styleUrl: 'resources-page.component.css',
 })
 export class ResourcesPageComponent implements OnDestroy {
   private authService = inject(AuthService);

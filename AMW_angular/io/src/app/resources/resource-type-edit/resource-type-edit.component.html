@@ -4,22 +4,22 @@
 
   <div class="page-content">
     @if (this.resourceType()?.name && !permissions().canEditResourceType) {
-    <div class="container">
-      <span class="text-warning-2">Not Authorized! You are not allowed to Edit-ResourceTypes.</span>
-    </div>
-    } @else if (id() === 0 ) {
-    <div class="container">
-      <span>Please provide a resourceType-id to edit a resource.</span>
-    </div>
+      <div class="container">
+        <span class="text-warning-2">Not Authorized! You are not allowed to Edit-ResourceTypes.</span>
+      </div>
+    } @else if (id() === 0) {
+      <div class="container">
+        <span>Please provide a resourceType-id to edit a resource.</span>
+      </div>
     } @else {
-    <app-resource-type-templates-list
-      [resourceType]="resourceType()"
-      [contextId]="contextId()"
-    ></app-resource-type-templates-list>
-    <app-resource-type-functions-list
-      [resourceType]="resourceType()"
-      [contextId]="contextId()"
-    ></app-resource-type-functions-list>
+      <app-resource-type-templates-list
+        [resourceType]="resourceType()"
+        [contextId]="contextId()"
+      ></app-resource-type-templates-list>
+      <app-resource-type-functions-list
+        [resourceType]="resourceType()"
+        [contextId]="contextId()"
+      ></app-resource-type-functions-list>
     }
   </div>
 </app-page>

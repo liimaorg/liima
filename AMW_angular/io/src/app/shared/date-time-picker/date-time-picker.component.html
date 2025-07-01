@@ -1,8 +1,8 @@
 @if (errorMessage) {
-<div class="alert alert-warning alert-dismissible" role="alert">
-  <span [innerHTML]="errorMessage"></span>
-  <app-button [variant]="'close'" (click)="cancel()"></app-button>
-</div>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <span [innerHTML]="errorMessage"></span>
+    <app-button [variant]="'close'" (click)="cancel()"></app-button>
+  </div>
 }
 <div class="input-group me-2">
   <input
@@ -27,42 +27,43 @@
 <ng-template #calendarContent>
   <div>
     @if (!showTimePickerToggle) {
-    <div class="d-grid">
-      <ngb-datepicker name="datepicker" [ngModel]="datetime" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
-      <!-- TODO: convert this button-->
-      <button
-        class="btn btn-secondary m-0"
-        [disabled]="!datetime?.day"
-        [ngbPopover]="timePickerContent"
-        type="button"
-        (click)="toggleDateTimeState($event)"
-      >
-        <app-icon icon="clock"></app-icon>
-      </button>
-    </div>
-    } @if (showTimePickerToggle) {
-    <div class="d-grid">
-      <!-- TODO: convert this button-->
-      <button
-        class="btn btn-secondary m-0"
-        [ngbPopover]="calendarContent"
-        type="button"
-        (click)="toggleDateTimeState($event)"
-      >
-        <app-icon icon="calendar3"></app-icon>
-      </button>
-      <div class="mt-auto">
-        <ngb-timepicker
-          name="timepicker"
-          [ngModel]="datetime"
-          (ngModelChange)="onTimeChange($event)"
-          [seconds]="seconds"
-          [hourStep]="hourStep"
-          [minuteStep]="minuteStep"
-          [secondStep]="secondStep"
-        ></ngb-timepicker>
+      <div class="d-grid">
+        <ngb-datepicker name="datepicker" [ngModel]="datetime" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
+        <!-- TODO: convert this button-->
+        <button
+          class="btn btn-secondary m-0"
+          [disabled]="!datetime?.day"
+          [ngbPopover]="timePickerContent"
+          type="button"
+          (click)="toggleDateTimeState($event)"
+        >
+          <app-icon icon="clock"></app-icon>
+        </button>
       </div>
-    </div>
+    }
+    @if (showTimePickerToggle) {
+      <div class="d-grid">
+        <!-- TODO: convert this button-->
+        <button
+          class="btn btn-secondary m-0"
+          [ngbPopover]="calendarContent"
+          type="button"
+          (click)="toggleDateTimeState($event)"
+        >
+          <app-icon icon="calendar3"></app-icon>
+        </button>
+        <div class="mt-auto">
+          <ngb-timepicker
+            name="timepicker"
+            [ngModel]="datetime"
+            (ngModelChange)="onTimeChange($event)"
+            [seconds]="seconds"
+            [hourStep]="hourStep"
+            [minuteStep]="minuteStep"
+            [secondStep]="secondStep"
+          ></ngb-timepicker>
+        </div>
+      </div>
     }
   </div>
 </ng-template>
@@ -73,8 +74,8 @@
 <!-- workaround to make the datetimepicker actually work -->
 <div class="d-none">
   @if (false) {
-  <div></div>
+    <div></div>
   } @else {
-  <div calenderContent></div>
+    <div calenderContent></div>
   }
 </div>

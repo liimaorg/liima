@@ -18,6 +18,7 @@ export interface TableColumnType<T = any> {
 export enum EntryAction {
   edit = 'edit',
   delete = 'delete',
+  navigate = 'navigate',
 }
 
 export interface EntryActionOutput {
@@ -38,9 +39,11 @@ export class TableComponent<T> {
   data = input.required<any[]>();
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
-  hasAction = computed(() => this.canEdit() || this.canDelete());
+  canNavigate = input<boolean>(false);
+  hasAction = computed(() => this.canEdit() || this.canDelete() || this.canNavigate());
   edit = output<EntryActionOutput>();
   delete = output<EntryActionOutput>();
+  navigate = output<EntryActionOutput>();
   protected readonly EntryAction = EntryAction;
   dateFormat = DATE_FORMAT;
 

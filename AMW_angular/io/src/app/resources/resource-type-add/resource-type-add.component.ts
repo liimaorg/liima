@@ -9,9 +9,9 @@ import { ResourceTypeRequest } from '../../resource/resource-type-request';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
-    selector: 'app-resource-type-add',
-    imports: [ModalHeaderComponent, ButtonComponent, FormsModule, NgSelectModule],
-    templateUrl: './resource-type-add.component.html'
+  selector: 'app-resource-type-add',
+  imports: [ModalHeaderComponent, ButtonComponent, FormsModule, NgSelectModule],
+  templateUrl: './resource-type-add.component.html',
 })
 export class ResourceTypeAddComponent {
   @Input() resourceType: ResourceType;

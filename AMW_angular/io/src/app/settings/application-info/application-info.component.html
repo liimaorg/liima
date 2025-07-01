@@ -5,8 +5,8 @@
     <div class="card-header"><b>Application Information</b></div>
     <div class="card-body">
       @if (appVersions().length > 0) {
-      <app-table [entityName]="'application information'" [headers]="appVersionsHeader()" [data]="appVersions()">
-      </app-table>
+        <app-table [entityName]="'application information'" [headers]="appVersionsHeader()" [data]="appVersions()">
+        </app-table>
       }
     </div>
   </div>
@@ -16,12 +16,12 @@
     <div class="card-header"><b>Application Configuration</b></div>
     <div class="card-body">
       @if (appConfigs().length > 0) {
-      <app-table
-        [entityName]="'application configuration'"
-        [headers]="appConfigsHeader()"
-        [data]="appConfigsTableData()"
-      >
-      </app-table>
+        <app-table
+          [entityName]="'application configuration'"
+          [headers]="appConfigsHeader()"
+          [data]="appConfigsTableData()"
+        >
+        </app-table>
       }
     </div>
   </div>
