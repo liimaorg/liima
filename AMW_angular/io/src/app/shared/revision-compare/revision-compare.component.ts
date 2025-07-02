@@ -10,7 +10,15 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
   templateUrl: './revision-compare.component.html',
   styleUrl: './revision-compare.component.scss',
   standalone: true,
-  imports: [NgSelectModule, FormsModule, ButtonComponent, NgbDropdown, NgbDropdownMenu, NgbDropdownItem, NgbDropdownToggle]
+  imports: [
+    NgSelectModule,
+    FormsModule,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+    NgbDropdownToggle,
+  ],
 })
 export class RevisionCompareComponent {
   selectedRevision = output<{ revisionId: number; displayName: string }>();
