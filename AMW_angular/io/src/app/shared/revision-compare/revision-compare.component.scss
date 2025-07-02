@@ -1,7 +1,3 @@
-.ng-select.custom ::ng-deep.ng-clear-wrapper {
-  margin-left: 0.5rem;
-}
-
-.ng-select.custom ::ng-deep.ng-clear-wrapper .ng-clear {
-  line-height: unset;
+app-button.dropdown-toggle:after {
+  display: none;
 }

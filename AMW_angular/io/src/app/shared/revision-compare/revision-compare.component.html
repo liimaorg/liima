@@ -1,15 +1,38 @@
 @if (revisions().length > 0) {
   <div class="d-flex">
     <label class="form-label align-self-center my-0 me-2">Compare with history</label>
-    <ng-select id="selectedRevision"
-               class="custom me-2"
-               placeholder="Select Revision"
-               (change)="selectRevision($event)"
-               (clear)="resetRevision()"
-    >
-      @for (revision of revisions(); track revision.revision) {
-        <ng-option [value]="revision">{{ revision.displayName }}</ng-option>
-      }
-    </ng-select>
+    <div ngbDropdown>
+      <app-button ngbDropdownToggle
+                  [additionalClasses]="'dropdown-toggle'"
+                  [variant]="'secondary'"
+                  [isOutlined]="true"
+      >
+        {{ selectedRevisionName || 'Select Revision' }}
+      </app-button>
+      <ul ngbDropdownMenu>
+        @for (revision of revisions().slice().reverse(); track revision) {
+          <li ngbDropdownItem>
+            <a
+              class="dropdown-item"
+              (click)="selectRevision(revision)"
+            >
+              {{ revision.displayName }}
+            </a>
+          </li>
+        }
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+        <!-- Clear Selection Option -->
+        <li ngbDropdownItem>
+          <a
+            class="dropdown-item text-danger"
+            (click)="resetRevision()"
+          >
+            Clear Selection
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 }
