@@ -6,9 +6,9 @@ import { TileComponent } from '../../../shared/tile/tile.component';
 
 import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
 import { Action, AuthService } from '../../../auth/auth.service';
-import { ResourceFunctionsService } from '../../resource-functions.service';
-import { ResourceFunction } from '../../resource-function';
-import { ResourceType } from '../../../resource/resource-type';
+import { ResourceFunctionsService } from '../../services/resource-functions.service';
+import { ResourceFunction } from '../../models/resource-function';
+import { ResourceType } from '../../models/resource-type';
 import { ResourceFunctionEditComponent } from '../../resource-edit/resource-functions/resource-function-edit.component';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../../shared/elements/toast/toast.service';

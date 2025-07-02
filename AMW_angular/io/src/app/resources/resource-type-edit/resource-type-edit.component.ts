@@ -5,8 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../auth/auth.service';
-import { ResourceType } from '../../resource/resource-type';
-import { ResourceTypesService } from '../../resource/resource-types.service';
+import { ResourceType } from '../models/resource-type';
+import { ResourceTypesService } from '../services/resource-types.service';
 import { ResourceTypeFunctionsListComponent } from './resource-type-functions/resource-type-functions-list.component';
 import { ResourceTypeTemplatesListComponent } from './resource-type-templates/resource-type-templates-list.component';
 

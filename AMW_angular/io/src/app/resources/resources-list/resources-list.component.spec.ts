@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResourcesListComponent } from './resources-list.component';
 import { ComponentRef } from '@angular/core';
-import { Resource } from '../../resource/resource';
-import { ResourceType } from '../../resource/resource-type';
+import { Resource } from '../models/resource';
+import { ResourceType } from '../models/resource-type';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';

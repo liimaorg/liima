@@ -2,9 +2,9 @@ import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, A
 import { Restriction } from './restriction';
 import { Permission } from './permission';
 import * as _ from 'lodash';
-import { Resource } from '../../resource/resource';
+import { Resource } from '../../resources/models/resource';
 import { Environment } from '../../deployment/environment';
-import { ResourceType } from '../../resource/resource-type';
+import { ResourceType } from '../../resources/models/resource-type';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
