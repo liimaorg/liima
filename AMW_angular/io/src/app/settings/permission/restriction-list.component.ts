@@ -1,7 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Restriction } from './restriction';
 import * as _ from 'lodash';
-import { Resource } from '../../resource/resource';
+import { Resource } from '../../resources/models/resource';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({

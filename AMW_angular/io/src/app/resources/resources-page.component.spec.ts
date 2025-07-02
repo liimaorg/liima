@@ -11,7 +11,9 @@ describe('ResourcesPageComponent', () => {
 
   const mockRoute = {
     snapshot: {},
-    queryParams: of({}),
+    queryParamMap: of({
+      get: () => null,
+    }),
   };
 
   beforeEach(async () => {

@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
-import { ResourceService } from '../resource/resource.service';
+import { ResourceService } from '../resources/services/resource.service';
 import * as _ from 'lodash';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';

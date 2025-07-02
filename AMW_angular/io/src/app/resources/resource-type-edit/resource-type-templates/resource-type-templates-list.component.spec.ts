@@ -3,7 +3,7 @@ import { InputSignal, signal } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ResourceTypeTemplatesListComponent } from './resource-type-templates-list.component';
-import { ResourceType } from '../../../resource/resource-type';
+import { ResourceType } from '../../models/resource-type';
 
 describe('ResourceTypeTemplatesListComponent', () => {
   let component: ResourceTypeTemplatesListComponent;

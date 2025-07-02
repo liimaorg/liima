@@ -17,8 +17,8 @@ import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
-import { ResourceTemplate } from '../../../resource/resource-template';
-import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
+import { ResourceTemplate } from '../../models/resource-template';
+import { ResourceTemplatesService } from '../../services/resource-templates.service';
 import { RevisionInformation } from '../../../shared/model/revisionInformation';
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { toSignal } from '@angular/core/rxjs-interop';

@@ -4,7 +4,7 @@ import { Restriction } from './restriction';
 import { Permission } from './permission';
 import { ChangeDetectorRef } from '@angular/core';
 import { Environment } from '../../deployment/environment';
-import { Resource } from '../../resource/resource';
+import { Resource } from '../../resources/models/resource';
 
 describe('RestrictionEditComponent', () => {
   // provide our implementations or mocks to the dependency injector

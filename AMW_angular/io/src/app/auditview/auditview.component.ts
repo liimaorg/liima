@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuditviewService } from './auditview.service';
-import { ResourceService } from '../resource/resource.service';
+import { ResourceService } from '../resources/services/resource.service';
 import { AuditLogEntry } from './auditview-entry';
 import { AuditviewTableComponent } from './auditview-table/auditview-table.component';
 import { NotificationComponent } from '../shared/elements/notification/notification.component';

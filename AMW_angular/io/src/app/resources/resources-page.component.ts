@@ -13,16 +13,16 @@ import { NgClass } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
-import { ResourceTypesService } from '../resource/resource-types.service';
-import { ResourceType } from '../resource/resource-type';
+import { ResourceTypesService } from './services/resource-types.service';
+import { ResourceType } from './models/resource-type';
 import { ButtonComponent } from '../shared/button/button.component';
 import { IconComponent } from '../shared/icon/icon.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResourceTypeAddComponent } from './resource-type-add/resource-type-add.component';
-import { ResourceTypeRequest } from '../resource/resource-type-request';
+import { ResourceTypeRequest } from './models/resource-type-request';
 import { ResourcesListComponent } from './resources-list/resources-list.component';
-import { ResourceService } from '../resource/resource.service';
-import { Resource } from '../resource/resource';
+import { ResourceService } from './services/resource.service';
+import { Resource } from './models/resource';
 import { ReleasesService } from '../settings/releases/releases.service';
 import { Release } from '../settings/releases/release';
 import { ToastService } from '../shared/elements/toast/toast.service';
@@ -35,7 +35,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PageComponent, LoadingIndicatorComponent, ButtonComponent, IconComponent, ResourcesListComponent, NgClass],
   templateUrl: './resources-page.component.html',
-  styleUrl: 'resources-page.component.css',
+  styleUrl: 'resources-page.component.scss',
 })
 export class ResourcesPageComponent implements OnDestroy, OnInit {
   private authService = inject(AuthService);

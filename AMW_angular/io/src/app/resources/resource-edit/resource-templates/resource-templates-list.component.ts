@@ -4,10 +4,10 @@ import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indi
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
 import { Action, AuthService } from '../../../auth/auth.service';
-import { Resource } from '../../../resource/resource';
+import { Resource } from '../../models/resource';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
-import { ResourceTemplate } from '../../../resource/resource-template';
+import { ResourceTemplatesService } from '../../services/resource-templates.service';
+import { ResourceTemplate } from '../../models/resource-template';
 import { ResourceTemplateDeleteComponent } from './resource-template-delete.component';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
