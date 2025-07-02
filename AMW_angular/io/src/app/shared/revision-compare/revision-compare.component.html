@@ -6,7 +6,6 @@
                placeholder="Select Revision"
                (change)="selectRevision($event)"
                (clear)="resetRevision()"
-               [attr.data-cy]="'button-dropdown'"
     >
       @for (revision of revisions(); track revision.revision) {
         <ng-option [value]="revision">{{ revision.displayName }}</ng-option>
