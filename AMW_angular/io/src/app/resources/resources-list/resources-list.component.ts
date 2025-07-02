@@ -101,12 +101,14 @@ export class ResourcesListComponent {
     window.location.href = dynamicUrl;
   }
 
+  // TODO: Rename this to openEditResourcePage once resource edit pages are fully implemented
   openMigratedResourcePage(id: number) {
     const resource = this.resourceGroupList().find((res) => res.id === id);
     this.router.navigate(['/resource/edit'], {
       queryParams: {
         ctx: 1,
         id: resource.defaultResourceId ? resource.defaultResourceId : resource.id,
+        selectedResourceTypeId: this.resourceType().id,
       },
     });
   }

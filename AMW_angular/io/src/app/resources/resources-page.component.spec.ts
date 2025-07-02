@@ -3,12 +3,16 @@ import { ResourcesPageComponent } from './resources-page.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 describe('ResourcesPageComponent', () => {
   let component: ResourcesPageComponent;
   let fixture: ComponentFixture<ResourcesPageComponent>;
 
-  const mockRoute: any = { snapshot: {} };
+  const mockRoute = {
+    snapshot: {},
+    queryParams: of({}),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
