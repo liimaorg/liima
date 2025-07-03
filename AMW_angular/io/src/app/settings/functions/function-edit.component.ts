@@ -10,7 +10,8 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
 import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
-import { IconComponent } from '../../shared/icon/icon.component';
+import { RevisionCompareComponent } from '../../shared/revision-compare/revision-compare.component';
+import { FullscreenToggleComponent } from "../../shared/fullscreen-toggle/fullscreen-toggle.component";
 
 @Component({
   selector: 'app-function-edit',
@@ -21,10 +22,11 @@ import { IconComponent } from '../../shared/icon/icon.component';
     DiffEditorComponent,
     FormsModule,
     CommonModule,
-    IconComponent,
     NgbDropdownModule,
     ModalHeaderComponent,
     ButtonComponent,
+    RevisionCompareComponent,
+    FullscreenToggleComponent,
   ],
 })
 export class FunctionEditComponent implements OnInit {
@@ -36,8 +38,6 @@ export class FunctionEditComponent implements OnInit {
   public revisions: RevisionInformation[] = [];
   public revision: AppFunction;
   public selectedRevisionName: string;
-  public isFullscreen = false;
-  public toggleFullscreenIcon = 'arrows-fullscreen';
 
   public diffValue = {
     original: '',
@@ -81,17 +81,21 @@ export class FunctionEditComponent implements OnInit {
     });
   }
 
-  selectRevision(functionId: number, revisionId: number, displayName: string): void {
-    this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe((revision) => {
-      this.revision = revision;
-      this.selectedRevisionName = displayName;
-      this.diffValue = { original: this.function.content, modified: this.revision.content };
-    });
+  selectRevision(revisionId: number, displayName: string): void {
+    if (revisionId && displayName) {
+      this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
+        this.revision = revision;
+        this.selectedRevisionName = displayName;
+        this.diffValue = { original: this.function.content, modified: this.revision.content };
+      });
+    } else {
+      //reset selected revision
+      this.revision = null;
+      this.selectedRevisionName = null;
+    }
   }
 
-  toggleFullscreen() {
-    this.isFullscreen = !this.isFullscreen;
-    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-    this.activeModal.update({ fullscreen: this.isFullscreen });
+  toggleFullscreen(isFullscreen: boolean) {
+    this.activeModal.update({ fullscreen: isFullscreen });
   }
 }

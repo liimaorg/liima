@@ -10,7 +10,6 @@ import { RevisionInformation } from '../shared/model/revisionInformation';
 export class ResourceTemplatesService extends BaseService {
   private templates$: Subject<number> = new Subject<number>();
   private templatesForType$: Subject<number> = new Subject<number>();
-  private contextIdForAllTargetPlatforms$: Subject<number> = new Subject<number>();
 
   private templateById$: Observable<ResourceTemplate[]> = this.templates$.pipe(
     switchMap((id: number) => this.getResourceTemplates(id)),
