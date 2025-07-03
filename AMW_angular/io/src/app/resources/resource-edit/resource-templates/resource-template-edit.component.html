@@ -77,24 +77,33 @@
       </div>
     </div>
     <div class="mb-3 fileContent">
-      <div class="d-flex justify-content-between align-content-center mb-1">
+      <div class="d-flex justify-content-between align-items-center mb-1">
         <div>
           <label class="form-label">Template file content</label>
         </div>
-        <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
-
+        <div class="d-flex align-items-center">
+          <div class="form-check me-3">
+            <input class="form-check-input" type="checkbox" id="isWrapLines" [(ngModel)]="wrapLinesEnabled">
+            <label class="form-check-label" for="isWrapLines">
+              Wrap lines
+            </label>
+          </div>
+          <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
+        </div>
       </div>
       @if (!revision) {
         <div class="editor border border-primary-subtle rounded">
           <app-code-editor
             [theme]="'light'"
             [placeholder]="'Enter your code...'"
+            [lineWrapping]="wrapLinesEnabled"
             [(ngModel)]="template.fileContent"
           ></app-code-editor>
         </div>
       } @else {
         <div class="editor border border-primary-subtle rounded">
-          <app-diff-editor [(ngModel)]="diffValue" revertControls="b-to-a"></app-diff-editor>
+          <app-diff-editor [lineWrapping]="wrapLinesEnabled" [(ngModel)]="diffValue"
+                           revertControls="b-to-a"></app-diff-editor>
         </div>
       }
     </div>
