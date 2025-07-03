@@ -3,14 +3,14 @@ import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { ResourceFunctionsService } from '../../services/resource-functions.service';
-import { RevisionInformation } from '../../../shared/model/revisionInformation';
-import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
-import { IconComponent } from '../../../shared/icon/icon.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
-import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
-import { ResourceFunction } from '../../models/resource-function';
+import { ResourceFunctionsService } from '../../../services/resource-functions.service';
+import { RevisionInformation } from '../../../../shared/model/revisionInformation';
+import { ModalHeaderComponent } from '../../../../shared/modal-header/modal-header.component';
+import { IconComponent } from '../../../../shared/icon/icon.component';
+import { ButtonComponent } from '../../../../shared/button/button.component';
+import { CodeEditorComponent } from '../../../../shared/codemirror/code-editor.component';
+import { DiffEditorComponent } from '../../../../shared/codemirror/diff-editor.component';
+import { ResourceFunction } from '../../../models/resource-function';
 
 @Component({
   selector: 'app-resource-function-edit',

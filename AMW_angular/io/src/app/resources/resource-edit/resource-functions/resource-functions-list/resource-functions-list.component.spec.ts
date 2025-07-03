@@ -2,20 +2,20 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InputSignal, signal } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { ResourceTemplatesListComponent } from './resource-templates-list.component';
-import { Resource } from '../../models/resource';
+import { ResourceFunctionsListComponent } from './resource-functions-list.component';
+import { Resource } from '../../../models/resource';
 
-describe('ResourceTemplatesComponent', () => {
-  let component: ResourceTemplatesListComponent;
-  let fixture: ComponentFixture<ResourceTemplatesListComponent>;
+describe('ResourceFunctionsComponent', () => {
+  let component: ResourceFunctionsListComponent;
+  let fixture: ComponentFixture<ResourceFunctionsListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResourceTemplatesListComponent],
+      imports: [ResourceFunctionsListComponent],
       providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ResourceTemplatesListComponent);
+    fixture = TestBed.createComponent(ResourceFunctionsListComponent);
     component = fixture.componentInstance;
     component.resource = signal<Resource>(null) as unknown as InputSignal<Resource>;
     fixture.detectChanges();

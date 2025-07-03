@@ -10,8 +10,8 @@ import { ResourceTemplate } from '../../models/resource-template';
 import { ResourceType } from '../../models/resource-type';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
-import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete.component';
-import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit.component';
+import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete/resource-template-delete.component';
+import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 

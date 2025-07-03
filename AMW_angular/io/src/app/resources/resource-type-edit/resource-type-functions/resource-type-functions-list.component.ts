@@ -9,11 +9,11 @@ import { Action, AuthService } from '../../../auth/auth.service';
 import { ResourceFunctionsService } from '../../services/resource-functions.service';
 import { ResourceFunction } from '../../models/resource-function';
 import { ResourceType } from '../../models/resource-type';
-import { ResourceFunctionEditComponent } from '../../resource-edit/resource-functions/resource-function-edit.component';
+import { ResourceFunctionEditComponent } from '../../resource-edit/resource-functions/resource-function-edit/resource-function-edit.component';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { ResourceFunctionDeleteComponent } from '../../resource-edit/resource-functions/resource-function-delete.component';
+import { ResourceFunctionDeleteComponent } from '../../resource-edit/resource-functions/resource-function-delete/resource-function-delete.component';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
