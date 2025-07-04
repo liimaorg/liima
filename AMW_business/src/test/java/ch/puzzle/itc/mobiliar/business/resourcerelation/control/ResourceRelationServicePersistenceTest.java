@@ -197,29 +197,26 @@ public class ResourceRelationServicePersistenceTest {
 		// given
 		ResourceEntity master0 = ResourceFactory.createNewResource("C");
 		master0.setResourceType(new ResourceTypeEntityBuilder().name("rt_c").build());
-		ReleaseEntity release0 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
-		master0.setRelease(release0);
+		ReleaseEntity release2 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
+		master0.setRelease(release2);
 
 		ResourceEntity master1 = ResourceFactory.createNewResource("D");
 		master1.setResourceType(new ResourceTypeEntityBuilder().name("rt_b").build());
-		ReleaseEntity release1 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
-		master1.setRelease(release1);
+		master1.setRelease(release2);
 
 		ResourceEntity master2 = ResourceFactory.createNewResource("B");
 		master2.setResourceType(new ResourceTypeEntityBuilder().name("rt_a").build());
-		ReleaseEntity release2 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
 		master2.setRelease(release2);
 
 		ResourceEntity master3 = ResourceFactory.createNewResource("A");
 		master3.setResourceType(new ResourceTypeEntityBuilder().name("rt_a").build());
-		ReleaseEntity release3 = new ReleaseEntityBuilder().buildReleaseEntity("2", new Date(), false);
-		master3.setRelease(release3);
+		master3.setRelease(release2);
 
 		ResourceEntity master4 = ResourceFactory.createNewResource("A");
 		master4.setResourceGroup(master3.getResourceGroup());
 		master4.setResourceType(new ResourceTypeEntityBuilder().name("rt_a").build());
-		ReleaseEntity release4 = new ReleaseEntityBuilder().buildReleaseEntity("1", new Date(), false);
-		master4.setRelease(release4);
+		ReleaseEntity release1 = new ReleaseEntityBuilder().buildReleaseEntity("1", new Date(), false);
+		master4.setRelease(release1);
 
 		ResourceEntity slave = ResourceFactory.createNewResource("slave");
 
@@ -254,11 +251,8 @@ public class ResourceRelationServicePersistenceTest {
 		master4.addConsumedRelation(relation4);
 
 
-		entityManager.persist(release0);
 		entityManager.persist(release1);
 		entityManager.persist(release2);
-		entityManager.persist(release3);
-		entityManager.persist(release4);
 		entityManager.persist(master0);
 		entityManager.persist(master1);
 		entityManager.persist(master2);

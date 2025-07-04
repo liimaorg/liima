@@ -79,6 +79,7 @@ public class ReleaseEntity implements Serializable, Comparable<ReleaseEntity> {
      */
     @Getter
     @Setter
+    @Column(unique = true, nullable = false)
     private String name;
     /**
      * Additional information about the description for better readability -

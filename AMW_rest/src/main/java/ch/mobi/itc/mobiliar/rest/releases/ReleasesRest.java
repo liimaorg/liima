@@ -102,7 +102,7 @@ public class ReleasesRest {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
         if (releaseLocator.create(request)) {
-            return Response.status(CREATED).build();
+            return Response.status(CREATED).entity(request).build();
         } else {
             return Response.status(BAD_REQUEST).build();
         }
@@ -115,6 +115,7 @@ public class ReleasesRest {
     @ApiOperation(value = "Update a release")
     public Response updateRelease(@ApiParam("Release ID") @PathParam("id") Integer id, ReleaseEntity request) throws NotFoundException, ConcurrentModificationException {
         releaseLocator.getReleaseById(id);
+        request.setId(id);
         if (releaseLocator.update(request)) {
             return Response.status(OK).build();
         } else {
