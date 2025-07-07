@@ -38,7 +38,7 @@ export class TableComponent<T> {
   data = input.required<any[]>();
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
-  fixed = input<boolean>(true);
+  fixed = input<boolean>(false);
   hasAction = computed(() => this.canEdit() || this.canDelete());
   edit = output<EntryActionOutput>();
   delete = output<EntryActionOutput>();
