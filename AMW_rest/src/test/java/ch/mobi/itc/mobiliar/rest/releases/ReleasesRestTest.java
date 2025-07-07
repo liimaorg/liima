@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
@@ -84,4 +85,22 @@ public class ReleasesRestTest {
 
         assertEquals(id, request.getId());
     }
+
+    @Test
+    public void addRelease_shouldReturnConflict_whenReleaseWithNameExists() {
+        ReleaseEntity request = new ReleaseEntity();
+        String name = "existingRelease";
+        request.setName(name);
+        // Simulate that a release with the same name exists
+        when(releaseLocator.getReleaseByName(name)).thenReturn(new ReleaseEntity());
+
+        Response response = releasesRest.addRelease(request);
+
+        assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
+        ExceptionDto exceptionDto = (ExceptionDto) response.getEntity();
+
+        assertEquals(409, response.getStatus());
+        assertEquals("Release with name existingRelease already exists", exceptionDto.getMessage());
+    }
+
 }
