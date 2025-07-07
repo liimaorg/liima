@@ -9,19 +9,15 @@
         <div class="form-group row">
           <label for="selectRole" class="col-sm-1 fw-bold text-end align-middle">Role</label>
           <div class="col-6">
-            <input
+            <ng-select
               id="selectRole"
-              class="form-control input-sm"
-              list="roleList"
-              type="text"
+              placeholder="Select role"
+              [items]="roleNames"
+              [clearable]=false
               [(ngModel)]="selectedRoleName"
               (ngModelChange)="onChangeRole()"
-            />
-            <datalist id="roleList">
-              @if (roleNames.length > 0) { @for (roleName of roleNames; track roleName) {
-              <option [ngValue]="roleName">{{ roleName }}</option>
-              } }
-            </datalist>
+            >
+            </ng-select>
           </div>
         </div>
       </ng-template>
