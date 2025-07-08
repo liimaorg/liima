@@ -1,3 +1,6 @@
+# v1.18.1
+* fix(restriction-list): use signals for restrictionsHeader to prevent unnecessary rerenders [#880](https://github.com/liimaorg/liima/pull/880)
+
 # v1.18.0
 * All screens except for Resource and Resource type edit where migrated to Angular.
 * Various updates of dependencies.
