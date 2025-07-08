@@ -25,10 +25,10 @@ export interface EntryActionOutput {
   id: number;
 }
 @Component({
-    selector: 'app-table',
-    templateUrl: './table.component.html',
-    styleUrl: './table.component.scss',
-    imports: [ButtonComponent, IconComponent, DatePipe]
+  selector: 'app-table',
+  templateUrl: './table.component.html',
+  styleUrl: './table.component.scss',
+  imports: [ButtonComponent, IconComponent, DatePipe]
 })
 export class TableComponent<T> {
   entityName = input.required<string>();
@@ -38,6 +38,7 @@ export class TableComponent<T> {
   data = input.required<any[]>();
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
+  fixed = input<boolean>(false);
   hasAction = computed(() => this.canEdit() || this.canDelete());
   edit = output<EntryActionOutput>();
   delete = output<EntryActionOutput>();
@@ -51,5 +52,11 @@ export class TableComponent<T> {
   getIcon(cellValue: any, header: TableColumnType): string | undefined {
     const mapping = header.iconMapping?.find((m) => m.value === cellValue);
     return mapping?.icon;
+  }
+
+  get tableClass() {
+    let base = 'table table-sm table-striped w-100';
+    if (this.fixed()) base += ' table-fixed';
+    return base;
   }
 }

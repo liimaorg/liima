@@ -5,7 +5,6 @@ import { ActivatedRoute, Params } from '@angular/router';
 import * as _ from 'lodash';
 import * as datefns from 'date-fns';
 import { Subscription, timer } from 'rxjs';
-import { ResourceService } from '../resource/resource.service';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { DeploymentFilterType } from '../deployment/deployment-filter-type';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
@@ -105,7 +104,6 @@ export class DeploymentsComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private location: Location,
     private deploymentService: DeploymentService,
-    private resourceService: ResourceService,
     private modalService: NgbModal,
     private toastService: ToastService,
   ) {}

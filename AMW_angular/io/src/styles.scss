@@ -56,3 +56,14 @@ $toast-padding-y: 0;
   max-height: 60vh;
   overflow-y: auto;
 }
+
+/* for apps table */
+.li-table-striped>td {
+  color: var(--bs-table-striped-color);
+  background-color: var(--bs-table-striped-bg);
+}
+
+.li-table-striped>td>app-apps-list>table>tbody>tr>td {
+  color: var(--bs-table-striped-color);
+  background-color: transparent;
+}
