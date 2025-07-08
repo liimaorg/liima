@@ -29,7 +29,7 @@
               }
               @case ('icon') {
                 <td>
-                  <app-icon icon="{{ this.getIcon(row[header.key], header) }}"></app-icon>
+                  <app-icon [icon]="row[header.key]"></app-icon>
                 </td>
               }
               @case ('link') {
@@ -37,7 +37,7 @@
                   @if (!row[header.urlKey] || row[header.urlKey] === '') {
                     {{ row[header.key] }}
                   } @else {
-                    <a href="{{ row[header.urlKey] }}">{{ row[header.key] }}</a>
+                    <a [href]="row[header.urlKey]">{{ row[header.key] }}</a>
                   }
                 </td>
               }
