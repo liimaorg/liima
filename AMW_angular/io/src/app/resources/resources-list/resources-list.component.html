@@ -1,41 +1,47 @@
 <div class="container">
   @if (resourceType() && permissions().canReadResources) {
-  <div class="card">
-    <div class="card-header">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2>
-          {{ resourceType().name }}
-          <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&resTypId={{ resourceType().id }}">
-            <app-button title="Edit" [variant]="'link'" justify-content-start>
-              <app-icon icon="pencil"></app-icon>
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>
+            {{ resourceType().name }}
+            <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&resTypId={{ resourceType().id }}">
+              <app-button title="Edit" [variant]="'link'">
+                <app-icon icon="pencil"></app-icon>
+              </app-button>
+            </a>
+            <a [routerLink]="['/resourceType/edit']" [queryParams]="{ ctx: 1, id: resourceType().id }">
+              <app-button title="Edit" [variant]="'link'">
+                <app-icon icon="rocket-takeoff"></app-icon>
+              </app-button>
+            </a>
+            @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
+              <app-button title="Delete" [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
+                <app-icon icon="trash"></app-icon>
+              </app-button>
+            }
+          </h2>
+          @if (permissions().canCreateResource) {
+            <app-button [variant]="'primary'" (click)="addResource()" [additionalClasses]="'float-end'">
+              <app-icon icon="plus-circle"></app-icon>
+              New Resource
             </app-button>
-          </a>
-          @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
-          <app-button title="Delete" [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
-            <app-icon icon="trash"></app-icon>
-          </app-button>
           }
-        </h2>
-        @if (permissions().canCreateResource) {
-        <app-button [variant]="'primary'" (click)="addResource()" [additionalClasses]="'float-end'">
-          <app-icon icon="plus-circle"></app-icon>
-          New Resource
-        </app-button>
-        }
+        </div>
+      </div>
+      <div class="card-body">
+        <app-table
+          [entityName]="'resources'"
+          [headers]="resourcesHeader()"
+          [data]="resourceGroupListTableData()"
+          [canDelete]="false"
+          [canEdit]="permissions().canReadResources"
+          [canNavigate]="permissions().canReadResources"
+          (edit)="openEditResourcePage($event.id)"
+          (navigate)="openMigratedResourcePage($event.id)"
+        >
+        </app-table>
       </div>
     </div>
-    <div class="card-body">
-      <app-table
-        [entityName]="'resources'"
-        [headers]="resourcesHeader()"
-        [dataCyNameKey]="'name'"
-        [data]="resourceGroupListTableData()"
-        [canDelete]="false"
-        [canEdit]="permissions().canReadResources"
-        (edit)="openEditResourcePage($event.id)"
-      >
-      </app-table>
-    </div>
-  </div>
   }
 </div>

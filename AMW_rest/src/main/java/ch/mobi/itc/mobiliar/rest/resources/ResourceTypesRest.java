@@ -27,11 +27,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTypeRequestDTO;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -44,6 +46,7 @@ import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -51,11 +54,14 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
-@Path("/resources")
-@Api(value = "/resources", description = "ResourceTypes")
+@Path("/resourceTypes")
+@Api(value = "/resourceTypes")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ResourceTypesRest {
+
+    @Inject
+    private ResourceBoundary resourceBoundary;
 
     @Inject
     private ResourceTypeLocator resourceTypeLocator;
@@ -63,7 +69,7 @@ public class ResourceTypesRest {
     @Inject
     private ResourceTypeDomainService resourceTypeDomainService;
 
-    @Path("/resourceTypes")
+    @Path("/")
     @GET
     @ApiOperation(value = "Get all resource types")
     public List<ResourceTypeDTO> getAllResourceTypes() {
@@ -72,7 +78,15 @@ public class ResourceTypesRest {
                 .collect(Collectors.toList());
     }
 
-    @Path("/resourceTypes/{name}")
+    @GET
+    @Path("/{id : \\d+}")
+    @ApiOperation(value = "Get a resourceType by id")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getById(@ApiParam("ResourceType ID") @PathParam("id") Integer id) throws NotFoundException {
+        return Response.ok(new ResourceTypeDTO(resourceBoundary.getResourceType(id))).build();
+    }
+
+    @Path("/{name}")
     @GET
     @ApiOperation(value = "Get a resource type by name")
     public ResourceTypeDTO getResourceTypeByName(@NotNull @PathParam("name") String name) throws ValidationException {
@@ -98,7 +112,7 @@ public class ResourceTypesRest {
                 .collect(Collectors.toList());
     }
 
-    @Path("/resourceTypes")
+    @Path("/")
     @POST
     @ApiOperation(value = "Add a new resource type")
     @Consumes("application/json")
@@ -123,7 +137,7 @@ public class ResourceTypesRest {
 
 
     @DELETE
-    @Path("/resourceTypes/{id : \\d+}")
+    @Path("/{id : \\d+}")
     @ApiOperation(value = "Delete a resource type")
     public Response deleteResourceType(@PathParam("id") Integer id) throws NotAuthorizedException, NotFoundException {
         try {

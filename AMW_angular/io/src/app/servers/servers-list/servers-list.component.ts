@@ -3,10 +3,10 @@ import { Server } from '../server';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-    selector: 'app-servers-list',
-    imports: [TableComponent],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    templateUrl: './servers-list.component.html'
+  selector: 'app-servers-list',
+  imports: [TableComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './servers-list.component.html',
 })
 export class ServersListComponent {
   servers = input.required<Server[]>();
@@ -14,26 +14,25 @@ export class ServersListComponent {
   canReadResources = input.required<boolean>();
   linkToHostUrl = input.required<string>();
 
-  serversTableData = computed(
-    () =>
-      this.servers()?.map((server) => {
-        return {
-          host: server.host,
-          hostLinkUrl: this.linkToHostUrl() ? this.linkToHostUrl().replace('{hostName}', server.host) : undefined,
-          environment: server.environment,
-          appServer: server.appServer,
-          appServerLinkUrl: this.canReadAppServer()
-            ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.appServerId
-            : null,
-          appServerRelease: server.appServerRelease,
-          runtime: server.runtime,
-          node: server.node,
-          nodeLinkUrl: this.canReadResources()
-            ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.nodeId
-            : null,
-          nodeRelease: server.nodeRelease,
-        };
-      }),
+  serversTableData = computed(() =>
+    this.servers()?.map((server) => {
+      return {
+        host: server.host,
+        hostLinkUrl: this.linkToHostUrl() ? this.linkToHostUrl().replace('{hostName}', server.host) : undefined,
+        environment: server.environment,
+        appServer: server.appServer,
+        appServerLinkUrl: this.canReadAppServer()
+          ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.appServerId
+          : null,
+        appServerRelease: server.appServerRelease,
+        runtime: server.runtime,
+        node: server.node,
+        nodeLinkUrl: this.canReadResources()
+          ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.nodeId
+          : null,
+        nodeRelease: server.nodeRelease,
+      };
+    }),
   );
 
   serversHeader(): TableColumnType<{

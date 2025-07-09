@@ -8,28 +8,30 @@
     </thead>
     <tbody>
       @for (appServer of appServers(); track appServer.id; let even = $even) {
-      <tr [class.li-table-striped]="even">
-        <td class="border-0">
-          @if (!appServer.deletable) {
-          <div id="appServer.id">{{ appServer.name }}</div>
-          } @else {
-          <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.id }}">{{ appServer.name }}</a> [
-          {{ appServer.runtimeName }} ] }
-        </td>
-        <td class="text-end border-0">
-          <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.id }}">{{ appServer.release.name }}</a>
-        </td>
-      </tr>
-      @if (appServer.apps && appServer.apps.length > 0) {
-      <tr [class.li-table-striped]="even">
-        <td colspan="2" class="border-0 ps-4 py-0">
-          <app-apps-list [apps]="appServer.apps"></app-apps-list>
-        </td>
-      </tr>
-      } } @empty {
-      <tr>
-        <td colspan="2" class="text-center">No results found in database</td>
-      </tr>
+        <tr [class.li-table-striped]="even">
+          <td class="border-0">
+            @if (!appServer.deletable) {
+              <div id="appServer.id">{{ appServer.name }}</div>
+            } @else {
+              <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.id }}">{{ appServer.name }}</a> [
+              {{ appServer.runtimeName }} ]
+            }
+          </td>
+          <td class="text-end border-0">
+            <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.id }}">{{ appServer.release.name }}</a>
+          </td>
+        </tr>
+        @if (appServer.apps && appServer.apps.length > 0) {
+          <tr [class.li-table-striped]="even">
+            <td colspan="2" class="border-0 ps-4 py-0">
+              <app-apps-list [apps]="appServer.apps"></app-apps-list>
+            </td>
+          </tr>
+        }
+      } @empty {
+        <tr>
+          <td colspan="2" class="text-center">No results found in database</td>
+        </tr>
       }
     </tbody>
   </table>

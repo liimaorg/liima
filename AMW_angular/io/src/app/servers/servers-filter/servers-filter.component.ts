@@ -10,10 +10,10 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-servers-filter',
-    imports: [NgSelectModule, ReactiveFormsModule, FormsModule, NgbTypeahead, ButtonComponent],
-    templateUrl: './servers-filter.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-servers-filter',
+  imports: [NgSelectModule, ReactiveFormsModule, FormsModule, NgbTypeahead, ButtonComponent],
+  templateUrl: './servers-filter.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ServersFilterComponent implements OnChanges {
   environments = input.required<Environment[]>();

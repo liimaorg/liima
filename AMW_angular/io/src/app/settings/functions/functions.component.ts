@@ -13,9 +13,9 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-    selector: 'app-functions',
-    imports: [IconComponent, ButtonComponent, TableComponent],
-    templateUrl: './functions.component.html'
+  selector: 'app-functions',
+  imports: [IconComponent, ButtonComponent, TableComponent],
+  templateUrl: './functions.component.html',
 })
 export class FunctionsComponent implements OnDestroy {
   private authService = inject(AuthService);

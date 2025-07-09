@@ -36,5 +36,6 @@ public class ResourceReleaseDTO {
     private String name;
     private String type;
     private String releaseName;
+    private Integer resourceGroupId;
 
 }

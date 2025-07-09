@@ -1,0 +1,145 @@
+<app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
+<div class="modal-body">
+  <div class="form-horizontal mx-2">
+    @if (template.id) {
+      <div class="d-flex justify-content-end mb-1">
+        <div class="d-flex">
+          <app-revision-compare
+            [revisions]="revisions"
+            (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"></app-revision-compare>
+        </div>
+      </div>
+    }
+    @if (revision) {
+      <div class="mx-0 row">
+        <label class="col badge bg-info">Current version</label>
+        <label class="col badge bg-secondary">Version: {{ selectedRevisionName }}</label>
+      </div>
+    }
+    <div class="container mb-3 p-0">
+      <div class="row">
+        <label for="name" class="form-label align-self-center">Template name</label>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-sm-6">
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            [(ngModel)]="template.name"
+            [class.is-invalid]="!isNameValid() && template && template.name && template.name.length > 0"
+            [class.is-valid]="isNameValid() && template && template.name && template.name.length > 0"
+            required
+            pattern="^\S(.*\S)?$"
+          />
+          @if (!isNameValid() && template && template.name && template.name.length > 0) {
+            <div class="invalid-feedback">
+              The name must not be empty and must not contain any leading or trailing spaces.
+            </div>
+          }
+        </div>
+        @if (revision) {
+          <div class="col-sm-6">
+            <p class="form-control-plaintext">{{ revision.name }}</p>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="container mb-3 p-0">
+      <div class="row">
+        <label for="targetPath" class="form-label align-self-center">Path/filename</label>
+      </div>
+      <div class="row align-items-center">
+        <div class="col-sm-6">
+          <input
+            type="text"
+            class="form-control"
+            id="targetPath"
+            [(ngModel)]="template.targetPath"
+            [class.is-invalid]="
+              !isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0
+            "
+            [class.is-valid]="isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
+            pattern="^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s][^/\\]*[^\s]$|^$"
+          />
+          @if (!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0) {
+            <div class="invalid-feedback">
+              The file path must not be an absolute path (must not begin with '/') or a path traversal (must not begin
+              with '../') or contain only whitespace or have leading or trailing whitespace.
+            </div>
+          }
+        </div>
+        @if (revision) {
+          <div class="col-sm-6">
+            <p class="form-control-plaintext">{{ revision.targetPath }}</p>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="mb-3 fileContent">
+      <div class="d-flex justify-content-between align-content-center mb-1">
+        <div>
+          <label class="form-label">Template file content</label>
+        </div>
+        <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
+
+      </div>
+      @if (!revision) {
+        <div class="editor border border-primary-subtle rounded">
+          <app-code-editor
+            [theme]="'light'"
+            [placeholder]="'Enter your code...'"
+            [(ngModel)]="template.fileContent"
+          ></app-code-editor>
+        </div>
+      } @else {
+        <div class="editor border border-primary-subtle rounded">
+          <app-diff-editor [(ngModel)]="diffValue" revertControls="b-to-a"></app-diff-editor>
+        </div>
+      }
+    </div>
+    <div class="container mb-3 p-0">
+      <label class="form-label">Valid for:</label>
+      <div class="row align-items-center">
+        <div class="col-sm-6">
+          @for (targetPlatform of targetPlatformModels(); track targetPlatform.name) {
+            <div class="form-check form-check-inline">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="targetPlatform.name"
+                [ngModel]="targetPlatform.selected"
+                (change)="selectTargetPlatform(targetPlatform)"
+              />
+              <label class="form-check-label" for="targetPlatform.name">{{ targetPlatform.name }}</label>
+            </div>
+          }
+        </div>
+        @if (revision) {
+          <div class="col-sm-6">
+            @for (revisionTargetPlatform of revisionTargetPlatformModels(); track revisionTargetPlatform.name) {
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="revisionTargetPlatform.name"
+                  disabled
+                  [checked]="revisionTargetPlatform.selected"
+                />
+                <label class="form-check-label" for="revisionTargetPlatform.name">
+                  {{ revisionTargetPlatform.name }}
+                </label>
+              </div>
+            }
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+        @if (canAddOrEdit) {
+          <app-button [variant]="'primary'" (click)="save()" [disabled]="!isValidForm()">Save changes</app-button>
+        }
+      </div>
+    </div>
+  </div>
+</div>

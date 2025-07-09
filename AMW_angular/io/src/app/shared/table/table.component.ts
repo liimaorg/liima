@@ -17,6 +17,7 @@ export interface TableColumnType<T = any> {
 export enum EntryAction {
   edit = 'edit',
   delete = 'delete',
+  navigate = 'navigate',
 }
 
 export interface EntryActionOutput {
@@ -27,20 +28,22 @@ export interface EntryActionOutput {
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
-  imports: [ButtonComponent, IconComponent, DatePipe]
+  standalone: true,
+  imports: [ButtonComponent, IconComponent, DatePipe],
 })
 export class TableComponent<T> {
   entityName = input.required<string>();
   headers = input.required<TableColumnType<T>[]>();
-  dataCyNameKey = input<keyof T>();
   readonlyFlag = input<keyof T>();
   data = input.required<any[]>();
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
   fixed = input<boolean>(false);
-  hasAction = computed(() => this.canEdit() || this.canDelete());
+  canNavigate = input<boolean>(false);
+  hasAction = computed(() => this.canEdit() || this.canDelete() || this.canNavigate());
   edit = output<EntryActionOutput>();
   delete = output<EntryActionOutput>();
+  navigate = output<EntryActionOutput>();
   protected readonly EntryAction = EntryAction;
   dateFormat = DATE_FORMAT;
 

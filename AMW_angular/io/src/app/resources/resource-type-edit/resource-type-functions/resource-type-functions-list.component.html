@@ -1,0 +1,9 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Functions'"
+  [actionName]="'New Function'"
+  [canAction]="permissions().canAdd"
+  [lists]="functionsData()"
+  (tileAction)="add()"
+  (listAction)="doListAction($event)"
+></app-tile-component>

@@ -26,19 +26,19 @@ import { ButtonComponent } from '../shared/button/button.component';
 declare let $: any;
 
 @Component({
-    selector: 'app-deployments',
-    templateUrl: './deployments.component.html',
-    imports: [
-        LoadingIndicatorComponent,
-        NotificationComponent,
-        FormsModule,
-        DateTimePickerComponent,
-        IconComponent,
-        DeploymentsListComponent,
-        PaginationComponent,
-        PageComponent,
-        ButtonComponent,
-    ]
+  selector: 'app-deployments',
+  templateUrl: './deployments.component.html',
+  imports: [
+    LoadingIndicatorComponent,
+    NotificationComponent,
+    FormsModule,
+    DateTimePickerComponent,
+    IconComponent,
+    DeploymentsListComponent,
+    PaginationComponent,
+    PageComponent,
+    ButtonComponent,
+  ],
 })
 export class DeploymentsComponent implements OnInit {
   defaultComparator = 'eq';
