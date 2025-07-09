@@ -20,7 +20,7 @@ export class RestrictionListComponent {
       return {
         id: res.id,
         permissionName: res.permission.name,
-        permissionGlobal: res.permission.old,
+        permissionGlobal: res.permission.old ? 'check' : null,
         action: res.action,
         contextName: res.contextName,
         resourceGroupName: this.getGroupName(res.resourceGroupId),
@@ -38,10 +38,6 @@ export class RestrictionListComponent {
       key: 'permissionGlobal',
       columnTitle: 'Global',
       cellType: 'icon',
-      iconMapping: [
-        { value: true, icon: 'check' },
-        { value: false, icon: null },
-      ],
     },
     {
       key: 'action',

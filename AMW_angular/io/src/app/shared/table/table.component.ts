@@ -10,7 +10,6 @@ export interface TableColumnType<T = any> {
   key: keyof T;
   columnTitle: string;
   cellType?: TableCellType;
-  iconMapping?: { value: any; icon: string }[];
   urlKey?: keyof T;
   nameKey?: keyof T;
 }
@@ -47,11 +46,6 @@ export class TableComponent<T> {
 
   getTotalColspan() {
     return this.headers().length + (this.hasAction() ? 1 : 0);
-  }
-
-  getIcon(cellValue: any, header: TableColumnType): string | undefined {
-    const mapping = header.iconMapping?.find((m) => m.value === cellValue);
-    return mapping?.icon;
   }
 
   get tableClass() {
