@@ -1,3 +1,7 @@
+# v1.18.2
+* feat: turn servers and apps filters into form so enter works [#881](https://github.com/liimaorg/liima/pull/881)
+* fix: improve performance of permissions table by mapping icon directly in datasource [#882](https://github.com/liimaorg/liima/pull/882)
+
 # v1.18.1
 * fix(restriction-list): use signals for restrictionsHeader to prevent unnecessary rerenders [#880](https://github.com/liimaorg/liima/pull/880)
 
