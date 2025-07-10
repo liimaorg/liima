@@ -1,21 +1,26 @@
 <app-page>
   <div class="page-title">Deployment Logs</div>
   <div class="page-content">
-    @if((deployment$ | async) === 'failed') { deployment does not exist } @else if ((deployment$ | async) !== 'failed')
-    {
-    <h1>Logs for Deployment {{ deploymentId$ | async }}</h1>
+    @if ((deployment$ | async) === 'failed') {
+      deployment does not exist
+    } @else if ((deployment$ | async) !== 'failed') {
+      <h1>Logs for Deployment {{ deploymentId$ | async }}</h1>
 
-    @if(availableLogFiles$ | async; as logFiles) { @if(logFiles === 'failed') {
-    <span>There are no log files for deployment {{ deploymentId$ | async }}</span>
-    } @if (logFiles !== FAIL && logFiles.length > 0) {
-    <div class="card mt-3 h-100">
-      <app-deployment-logs-selector
-        [logFiles]="logFiles"
-        [selected]="currentDeploymentLog$ | async"
-        (fileSelected)="this.selectFile($event)"
-      ></app-deployment-logs-selector>
-      <app-deployment-log-content [content]="selectedDeploymentLogContent$ | async"></app-deployment-log-content>
-    </div>
-    } } }
+      @if (availableLogFiles$ | async; as logFiles) {
+        @if (logFiles === 'failed') {
+          <span>There are no log files for deployment {{ deploymentId$ | async }}</span>
+        }
+        @if (logFiles !== FAIL && logFiles.length > 0) {
+          <div class="card mt-3 h-100">
+            <app-deployment-logs-selector
+              [logFiles]="logFiles"
+              [selected]="currentDeploymentLog$ | async"
+              (fileSelected)="this.selectFile($event)"
+            ></app-deployment-logs-selector>
+            <app-deployment-log-content [content]="selectedDeploymentLogContent$ | async"></app-deployment-log-content>
+          </div>
+        }
+      }
+    }
   </div>
 </app-page>

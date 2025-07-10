@@ -8,4 +8,6 @@ export interface Resource {
   defaultRelease: Release;
   releases: Release[];
   defaultResourceId?: number;
+  resourceGroupId?: number;
+  resourceTypeId?: number;
 }

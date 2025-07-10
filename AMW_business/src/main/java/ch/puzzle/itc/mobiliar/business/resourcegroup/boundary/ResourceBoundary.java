@@ -399,4 +399,22 @@ public class ResourceBoundary {
         return resourceEntity;
     }
 
+
+    @HasPermission(permission = Permission.RESOURCE, action = Action.READ)
+    public ResourceEntity getResource(Integer id) throws NotFoundException {
+        ResourceEntity entity = resourceRepository.loadWithResourceGroupAndRelatedResourcesForId(id);
+        if (entity != null) {
+            return entity;
+        } else throw new NotFoundException("Resource with id " + id + " not found");
+    }
+
+
+    @HasPermission(permission = Permission.RESOURCETYPE, action = Action.READ)
+    public ResourceTypeEntity getResourceType(Integer id) throws NotFoundException {
+        try {
+            return resourceTypeRepository.getResourceType(id);
+        } catch (NoResultException e) {
+            throw new NotFoundException("ResourceType with id " + id + " not found");
+        }
+    }
 }

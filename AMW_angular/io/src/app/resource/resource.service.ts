@@ -18,6 +18,7 @@ interface Named {
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
+  private resourceId$: Subject<number> = new Subject<number>();
 
   private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
     switchMap((resourceType: ResourceType) => {
@@ -27,7 +28,23 @@ export class ResourceService extends BaseService {
     shareReplay(1),
   );
 
+  private resourceById$: Observable<Resource> = this.resourceId$.pipe(
+    switchMap((id: number) => this.getResource(id)),
+    shareReplay(1),
+  );
+
+  private releasesForResourceGroupByResourceId$: Observable<Release[]> = this.resourceId$.pipe(
+    switchMap((resourceId: number) => {
+      return this.getReleasesForResource(resourceId);
+    }),
+    shareReplay(1),
+  );
+
   resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
+  releasesForResourceGroup = toSignal(this.releasesForResourceGroupByResourceId$, {
+    initialValue: [] as Release[],
+  });
+  resource = toSignal(this.resourceById$, { initialValue: null });
 
   constructor(private http: HttpClient) {
     super();
@@ -37,6 +54,10 @@ export class ResourceService extends BaseService {
     this.resourceType$.next(resourcesType);
   }
 
+  setIdForResource(id: number) {
+    this.resourceId$.next(id);
+  }
+
   getAll(): Observable<Resource[]> {
     return this.http
       .get<Resource[]>(`${this.getBaseUrl()}/resources`, {
@@ -44,6 +65,17 @@ export class ResourceService extends BaseService {
       })
       .pipe(
         map((resources) => resources.map(toResource)),
+        catchError(this.handleError),
+      );
+  }
+
+  getResource(resourceId: number): Observable<Resource> {
+    return this.http
+      .get<Resource>(`${this.getBaseUrl()}/resources/${resourceId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((resource) => toResource(resource)),
         catchError(this.handleError),
       );
   }
@@ -175,6 +207,12 @@ export class ResourceService extends BaseService {
         map((apps) => apps.map(toAppWithVersion)),
         catchError(this.handleError),
       );
+  }
+
+  getReleasesForResource(resourceId: number): Observable<Release[]> {
+    return this.http
+      .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`)
+      .pipe(catchError(this.handleError));
   }
 }
 

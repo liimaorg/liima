@@ -29,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
@@ -233,7 +234,7 @@ public class EditFunctionView implements Serializable {
     /**
      * Sets the revision id to which we want compare the actual function
      */
-    public void setCompareRevisionId(Integer compareRevisionId) {
+    public void setCompareRevisionId(Integer compareRevisionId) throws NotFoundException {
         if (compareRevisionId != null && compareRevisionId > 0) {
             for (RevisionInformation r : revisionInformations) {
                 if (r.getRevision().intValue() == compareRevisionId) {

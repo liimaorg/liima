@@ -9,9 +9,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-release-edit',
-    templateUrl: './release-edit.component.html',
-    imports: [DatePickerComponent, FormsModule, ModalHeaderComponent, ButtonComponent]
+  selector: 'app-release-edit',
+  templateUrl: './release-edit.component.html',
+  imports: [DatePickerComponent, FormsModule, ModalHeaderComponent, ButtonComponent],
 })
 export class ReleaseEditComponent implements OnInit {
   @Input() release: Release;

@@ -6,63 +6,64 @@
       <div class="col ps-3">
         <h5 class="mb-3">Resource types</h5>
         @if (permissions().canViewResourceTypes) {
-        <ul class="nav flex-column">
-          @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
-          <li class="nav-item">
-            <a
-              class="nav-link ps-0"
-              [ngClass]="{ active: selection === resourceType }"
-              style="display: inline-block"
-              (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
-              >{{ resourceType.name }}</a
-            >
-          </li>
-          }
-        </ul>
-        <hr />
-        @if (permissions().canCreateResourceTypes) {
-        <div>
-          <app-button [variant]="'primary'" (click)="addResourceType()">
-            <app-icon icon="plus-circle"></app-icon> New Resource Type
-          </app-button>
-        </div>
-        } }
-        <ul class="nav flex-column">
-          @for (resourceType of rootResourceTypes(); track resourceType.name) {
-          <li class="nav-item">
-            <a
-              class="nav-link ps-0"
-              [ngClass]="{ active: selection === resourceType }"
-              style="display: inline-block"
-              (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
-            >
-              @if (resourceType.hasChildren) {
-              <span style="margin-left: -1.3rem">
-                @if (isExpanded(resourceType)) {
-                <app-icon icon="dash"></app-icon>
-                } @else {
-                <app-icon icon="plus"></app-icon>
-                }
-              </span>
-              }
-              {{ resourceType.name }}
-            </a>
-            @if (resourceType.hasChildren && isExpanded(resourceType) ) {
-            <ul class="nav flex-column ps-3">
-              @for (child of resourceType.children; track child.name) {
+          <ul class="nav flex-column">
+            @for (resourceType of predefinedResourceTypes(); track resourceType.name) {
               <li class="nav-item">
                 <a
                   class="nav-link ps-0"
-                  [ngClass]="{ active: selection === child }"
+                  [ngClass]="{ active: selection === resourceType }"
                   style="display: inline-block"
-                  (click)="toggleChildrenAndOrLoadResourcesList(child)"
-                  >{{ child.name }}</a
+                  (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
+                  >{{ resourceType.name }}</a
                 >
               </li>
-              }
-            </ul>
             }
-          </li>
+          </ul>
+          <hr />
+          @if (permissions().canCreateResourceTypes) {
+            <div>
+              <app-button [variant]="'primary'" (click)="addResourceType()">
+                <app-icon icon="plus-circle"></app-icon> New Resource Type
+              </app-button>
+            </div>
+          }
+        }
+        <ul class="nav flex-column">
+          @for (resourceType of rootResourceTypes(); track resourceType.name) {
+            <li class="nav-item">
+              <a
+                class="nav-link ps-0"
+                [ngClass]="{ active: selection === resourceType }"
+                style="display: inline-block"
+                (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
+              >
+                @if (resourceType.hasChildren) {
+                  <span style="margin-left: -1.3rem">
+                    @if (isExpanded(resourceType)) {
+                      <app-icon icon="dash"></app-icon>
+                    } @else {
+                      <app-icon icon="plus"></app-icon>
+                    }
+                  </span>
+                }
+                {{ resourceType.name }}
+              </a>
+              @if (resourceType.hasChildren && isExpanded(resourceType)) {
+                <ul class="nav flex-column ps-3">
+                  @for (child of resourceType.children; track child.name) {
+                    <li class="nav-item">
+                      <a
+                        class="nav-link ps-0"
+                        [ngClass]="{ active: selection === child }"
+                        style="display: inline-block"
+                        (click)="toggleChildrenAndOrLoadResourcesList(child)"
+                        >{{ child.name }}</a
+                      >
+                    </li>
+                  }
+                </ul>
+              }
+            </li>
           }
         </ul>
       </div>

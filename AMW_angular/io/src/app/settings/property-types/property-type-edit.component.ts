@@ -9,9 +9,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-property-type-edit',
-    templateUrl: './property-type-edit.component.html',
-    imports: [IconComponent, FormsModule, ModalHeaderComponent, ButtonComponent]
+  selector: 'app-property-type-edit',
+  templateUrl: './property-type-edit.component.html',
+  imports: [IconComponent, FormsModule, ModalHeaderComponent, ButtonComponent],
 })
 export class PropertyTypeEditComponent {
   @Input() propertyType: PropertyType;

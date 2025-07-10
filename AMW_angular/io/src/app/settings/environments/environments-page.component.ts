@@ -13,10 +13,10 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-    selector: 'app-environments-page',
-    imports: [IconComponent, ButtonComponent, TableComponent],
-    templateUrl: './environments-page.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-environments-page',
+  imports: [IconComponent, ButtonComponent, TableComponent],
+  templateUrl: './environments-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnvironmentsPageComponent {
   private authService = inject(AuthService);

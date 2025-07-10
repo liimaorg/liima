@@ -7,10 +7,10 @@ import { AuthService } from '../../../auth/auth.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
 
 @Component({
-    selector: 'app-environment-edit',
-    imports: [FormsModule, ModalHeaderComponent, ButtonComponent],
-    templateUrl: './environment-edit.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-environment-edit',
+  imports: [FormsModule, ModalHeaderComponent, ButtonComponent],
+  templateUrl: './environment-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnvironmentEditComponent {
   private authService = inject(AuthService);

@@ -23,17 +23,11 @@ function failed(): Observable<Failed> {
 }
 
 @Component({
-    selector: 'app-logs',
-    styleUrls: ['./deployment-logs.component.scss'],
-    templateUrl: './deployment-logs.component.html',
-    encapsulation: ViewEncapsulation.None,
-    imports: [
-        FormsModule,
-        AsyncPipe,
-        PageComponent,
-        DeploymentLogContentComponent,
-        DeploymentLogFileSelectorComponent,
-    ]
+  selector: 'app-logs',
+  styleUrls: ['./deployment-logs.component.scss'],
+  templateUrl: './deployment-logs.component.html',
+  encapsulation: ViewEncapsulation.None,
+  imports: [FormsModule, AsyncPipe, PageComponent, DeploymentLogContentComponent, DeploymentLogFileSelectorComponent],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
   constructor(

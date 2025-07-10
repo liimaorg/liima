@@ -14,16 +14,16 @@
         pattern="^[a-zA-Z0-9_\-]+$"
       />
       @if (!isValid() && resourceType.name.length > 0) {
-      <div class="invalid-feedback">
-        The name must not contain any other than alphanumerical and "_" / "-" characters.
-      </div>
+        <div class="invalid-feedback">
+          The name must not contain any other than alphanumerical and "_" / "-" characters.
+        </div>
       }
     </div>
     <div class="mb-3">
       <label for="selectParentType" class="form-label">Parent Resource Type (optional)</label>
       <ng-select id="selectParentType" [(ngModel)]="parentId" placeholder="Select Resource Type">
         @for (resourceType of rootResourceTypes(); track resourceType.name) {
-        <ng-option [value]="resourceType.id">{{ resourceType.name }}</ng-option>
+          <ng-option [value]="resourceType.id">{{ resourceType.name }}</ng-option>
         }
       </ng-select>
     </div>

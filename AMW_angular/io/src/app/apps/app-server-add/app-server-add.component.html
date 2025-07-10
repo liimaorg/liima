@@ -10,7 +10,7 @@
       <label class="form-label">Release</label>
       <ng-select id="selectRelease" [(ngModel)]="appServer.release" placeholder="Select release">
         @for (release of releases(); track release.id) {
-        <ng-option [value]="release">{{ release.name }}</ng-option>
+          <ng-option [value]="release">{{ release.name }}</ng-option>
         }
       </ng-select>
     </div>

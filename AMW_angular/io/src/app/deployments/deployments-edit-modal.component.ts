@@ -8,9 +8,9 @@ import { ModalHeaderComponent } from '../shared/modal-header/modal-header.compon
 import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
-    selector: 'app-deployments-edit-modal',
-    templateUrl: './deployments-edit-modal.component.html',
-    imports: [FormsModule, DateTimePickerComponent, ModalHeaderComponent, ButtonComponent]
+  selector: 'app-deployments-edit-modal',
+  templateUrl: './deployments-edit-modal.component.html',
+  imports: [FormsModule, DateTimePickerComponent, ModalHeaderComponent, ButtonComponent],
 })
 export class DeploymentsEditModalComponent {
   @Input() deployments: Deployment[] = [];

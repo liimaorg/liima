@@ -10,10 +10,10 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-auditview-table',
-    templateUrl: './auditview-table.component.html',
-    styleUrls: ['./auditview-table.component.scss'],
-    imports: [FormsModule, SortableHeader, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe]
+  selector: 'app-auditview-table',
+  templateUrl: './auditview-table.component.html',
+  styleUrls: ['./auditview-table.component.scss'],
+  imports: [FormsModule, SortableHeader, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
 })
 export class AuditviewTableComponent implements OnChanges {
   @Input() auditlogEntries;

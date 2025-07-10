@@ -8,9 +8,9 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { ButtonComponent } from '../../shared/button/button.component';
 
 @Component({
-    selector: 'app-release-delete',
-    imports: [KeyValuePipe, FormsModule, ModalHeaderComponent, ButtonComponent],
-    templateUrl: './release-delete.component.html'
+  selector: 'app-release-delete',
+  imports: [KeyValuePipe, FormsModule, ModalHeaderComponent, ButtonComponent],
+  templateUrl: './release-delete.component.html',
 })
 export class ReleaseDeleteComponent implements OnInit {
   @Input() release: Release;

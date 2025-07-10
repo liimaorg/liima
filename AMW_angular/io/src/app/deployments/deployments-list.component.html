@@ -1,170 +1,162 @@
 <div class="table-responsive">
   @if (deployments.length > 0) {
-  <table id="deployment-list" class="table table-sm">
-    <thead>
-      <tr>
-        <th class="has-checkbox">
-          <input type="checkbox" (click)="switchAllDeployments()" />
-          <span class="link" (click)="reSort('d.trackingId')"
-            >&nbsp;Tracking id @if (sortCol === 'd.trackingId') {
-
-            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-
-            }
-          </span>
-        </th>
-        <th>
-          <span class="link" (click)="reSort('d.deploymentState')"
-            >State @if (sortCol === 'd.deploymentState') {
-
-            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-
-            }
-          </span>
-        </th>
-        <th>
-          <span class="link" (click)="reSort('d.resourceGroup.name')"
-            >App server @if (sortCol === 'd.resourceGroup.name') {
-
-            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-
-            }
-          </span>
-        </th>
-        <th>
-          <span class="link" (click)="reSort('d.release.installationInProductionAt')"
-            >Release @if (sortCol === 'd.release.installationInProductionAt') {
-
-            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-
-            }
-          </span>
-        </th>
-        <th>
-          <span class="link" (click)="reSort('d.context.name')"
-            >Env @if (sortCol === 'd.context.name') {
-
-            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-
-            }
-          </span>
-        </th>
-        <th>
-          <span class="link" (click)="reSort('d.deploymentDate')"
-            >Deployment date @if (sortCol === 'd.deploymentDate') {
-
-            <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
-
-            }
-          </span>
-        </th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (deployment of deployments; track deployment) {
-      <tr class="deploy-{{ deployment.state }}">
-        <td class="has-checkbox">
-          <input type="checkbox" [(ngModel)]="deployment.selected" />
-          {{ deployment.trackingId }}
-        </td>
-        <td>
-          <app-icon
-            class="cursor-pointer"
-            icon="info-circle"
-            title="Show details about this deployment"
-            (click)="showDetails(deploymentDetails, deployment.id)"
-          ></app-icon>
-          <span class="state">{{ deployment.reason ? failureReason[deployment.reason] : deployment.state }}</span>
-        </td>
-        <td>
-          <span class="link" (click)="appServerLink(deployment.resourceId)">{{ deployment.appServerName }}</span>
-          <ul class="nob">
-            @for (appWithVersion of deployment.appsWithVersion; track appWithVersion) {
-            <li class="link" (click)="appLink(appWithVersion.applicationId)">
-              {{ appWithVersion.applicationName }} ({{ appWithVersion.version }})
-            </li>
-            }
-          </ul>
-        </td>
-        <td>{{ deployment.releaseName }}</td>
-        <td>
-          <strong
-            >{{ deployment.environmentName }} @if (deployment.environmentNameAlias) { ({{
-              deployment.environmentNameAlias
-            }}) }
-          </strong>
-        </td>
-        <td>
-          @if (deployment.actions.editPossible) { @if (deployment.deploymentDelayed) {
-          <app-icon icon="hourglass-split"></app-icon>
-          }
-          <span
-            class="pointer"
-            (click)="showDateChange(deploymentDateChange, deployment.id)"
-            title="change the deployment date"
-          >
-            <span [attr.class]="deployment.deploymentDelayed ? 'align-text-top delayed' : 'align-text-top action'">{{
-              deployment.deploymentDate | date: dateFormat
-            }}</span>
-          </span>
-
-          } @if (!deployment.actions.editPossible) { @if (deployment.deploymentDelayed) {
-          <app-icon icon="hourglass-split"></app-icon>
-          }
-          <span [attr.class]="deployment.deploymentDelayed ? 'align-text-top delayed' : 'align-text-top action'">{{
-            deployment.deploymentDate | date: dateFormat
-          }}</span>
-
-          }
-        </td>
-        <td>
-          @if (deployment.actions.confirmPossible) {
-
-          <span class="text-success cursor-pointer" (click)="showConfirm(deploymentConfirmation, deployment.id)">
-            <app-icon icon="check-circle"></app-icon>
-            <span class="ms-1">confirm</span>
-          </span>
-          <br />
-
-          } @if (deployment.actions.rejectPossible) {
-
-          <span class="text-danger cursor-pointer" (click)="showReject(deploymentRejection, deployment.id)">
-            <app-icon icon="x-circle"></app-icon>
-            <span class="ms-1">reject</span>
-          </span>
-          <br />
-
-          } @if (deployment.actions.cancelPossible) {
-
-          <span (click)="showCancel(deploymentCancelation, deployment.id)" class="cursor-pointer">
-            <app-icon icon="slash-circle"></app-icon>
-            <span class="ms-1">cancel</span>
-          </span>
-          <br />
-
-          } @if (deployment.actions.redeployPossible) {
-
-          <a class="action" href="#/deployment/{{ deployment.id }}">
-            <app-icon icon="arrow-clockwise"></app-icon>
-            <span class="ms-1">redeploy</span>
-          </a>
-          <br />
-
-          } @if (deployment.actions.hasLogFiles) {
-
-          <a [routerLink]="['/deployments', deployment.id, 'logs']" class="cursor-pointer">
-            <app-icon icon="journal-text"></app-icon>
-            <span class="ms-1">logs</span>
-          </a>
-          <br />
-
-          }
-        </td>
-      </tr>
-      }
-    </tbody>
-  </table>
+    <table id="deployment-list" class="table table-sm">
+      <thead>
+        <tr>
+          <th class="has-checkbox">
+            <input type="checkbox" (click)="switchAllDeployments()" />
+            <span class="link" (click)="reSort('d.trackingId')"
+              >&nbsp;Tracking id
+              @if (sortCol === 'd.trackingId') {
+                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              }
+            </span>
+          </th>
+          <th>
+            <span class="link" (click)="reSort('d.deploymentState')"
+              >State
+              @if (sortCol === 'd.deploymentState') {
+                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              }
+            </span>
+          </th>
+          <th>
+            <span class="link" (click)="reSort('d.resourceGroup.name')"
+              >App server
+              @if (sortCol === 'd.resourceGroup.name') {
+                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              }
+            </span>
+          </th>
+          <th>
+            <span class="link" (click)="reSort('d.release.installationInProductionAt')"
+              >Release
+              @if (sortCol === 'd.release.installationInProductionAt') {
+                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              }
+            </span>
+          </th>
+          <th>
+            <span class="link" (click)="reSort('d.context.name')"
+              >Env
+              @if (sortCol === 'd.context.name') {
+                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              }
+            </span>
+          </th>
+          <th>
+            <span class="link" (click)="reSort('d.deploymentDate')"
+              >Deployment date
+              @if (sortCol === 'd.deploymentDate') {
+                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              }
+            </span>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (deployment of deployments; track deployment) {
+          <tr class="deploy-{{ deployment.state }}">
+            <td class="has-checkbox">
+              <input type="checkbox" [(ngModel)]="deployment.selected" />
+              {{ deployment.trackingId }}
+            </td>
+            <td>
+              <app-icon
+                class="cursor-pointer"
+                icon="info-circle"
+                title="Show details about this deployment"
+                (click)="showDetails(deploymentDetails, deployment.id)"
+              ></app-icon>
+              <span class="state">{{ deployment.reason ? failureReason[deployment.reason] : deployment.state }}</span>
+            </td>
+            <td>
+              <span class="link" (click)="appServerLink(deployment.resourceId)">{{ deployment.appServerName }}</span>
+              <ul class="nob">
+                @for (appWithVersion of deployment.appsWithVersion; track appWithVersion) {
+                  <li class="link" (click)="appLink(appWithVersion.applicationId)">
+                    {{ appWithVersion.applicationName }} ({{ appWithVersion.version }})
+                  </li>
+                }
+              </ul>
+            </td>
+            <td>{{ deployment.releaseName }}</td>
+            <td>
+              <strong
+                >{{ deployment.environmentName }}
+                @if (deployment.environmentNameAlias) {
+                  ({{ deployment.environmentNameAlias }})
+                }
+              </strong>
+            </td>
+            <td>
+              @if (deployment.actions.editPossible) {
+                @if (deployment.deploymentDelayed) {
+                  <app-icon icon="hourglass-split"></app-icon>
+                }
+                <span
+                  class="pointer"
+                  (click)="showDateChange(deploymentDateChange, deployment.id)"
+                  title="change the deployment date"
+                >
+                  <span
+                    [attr.class]="deployment.deploymentDelayed ? 'align-text-top delayed' : 'align-text-top action'"
+                    >{{ deployment.deploymentDate | date: dateFormat }}</span
+                  >
+                </span>
+              }
+              @if (!deployment.actions.editPossible) {
+                @if (deployment.deploymentDelayed) {
+                  <app-icon icon="hourglass-split"></app-icon>
+                }
+                <span
+                  [attr.class]="deployment.deploymentDelayed ? 'align-text-top delayed' : 'align-text-top action'"
+                  >{{ deployment.deploymentDate | date: dateFormat }}</span
+                >
+              }
+            </td>
+            <td>
+              @if (deployment.actions.confirmPossible) {
+                <span class="text-success cursor-pointer" (click)="showConfirm(deploymentConfirmation, deployment.id)">
+                  <app-icon icon="check-circle"></app-icon>
+                  <span class="ms-1">confirm</span>
+                </span>
+                <br />
+              }
+              @if (deployment.actions.rejectPossible) {
+                <span class="text-danger cursor-pointer" (click)="showReject(deploymentRejection, deployment.id)">
+                  <app-icon icon="x-circle"></app-icon>
+                  <span class="ms-1">reject</span>
+                </span>
+                <br />
+              }
+              @if (deployment.actions.cancelPossible) {
+                <span (click)="showCancel(deploymentCancelation, deployment.id)" class="cursor-pointer">
+                  <app-icon icon="slash-circle"></app-icon>
+                  <span class="ms-1">cancel</span>
+                </span>
+                <br />
+              }
+              @if (deployment.actions.redeployPossible) {
+                <a class="action" href="#/deployment/{{ deployment.id }}">
+                  <app-icon icon="arrow-clockwise"></app-icon>
+                  <span class="ms-1">redeploy</span>
+                </a>
+                <br />
+              }
+              @if (deployment.actions.hasLogFiles) {
+                <a [routerLink]="['/deployments', deployment.id, 'logs']" class="cursor-pointer">
+                  <app-icon icon="journal-text"></app-icon>
+                  <span class="ms-1">logs</span>
+                </a>
+                <br />
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
   }
 </div>
 
@@ -187,53 +179,43 @@
       created at: {{ deployment.deploymentJobCreationDate | date: dateFormat }}
     </p>
     @if (deployment.confirmUser && deployment.state !== 'rejected') {
-
-    <p>
-      confirmed by: {{ deployment.confirmUser }}<br />
-      confirmed at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
-    </p>
-
-    } @if (deployment.confirmUser && deployment.state === 'rejected') {
-
-    <p>
-      rejected by: {{ deployment.confirmUser }}<br />
-      rejected at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
-    </p>
-
-    } @if (deployment.deploymentDelayed) {
-
-    <h6>deployment job delayed</h6>
-    <p>planed deployment date: {{ deployment.deploymentDate | date: dateFormat }}</p>
-
-    } @if (deployment.cancelUser) {
-
-    <h6>deployment job canceled</h6>
-    <p>
-      canceled by: {{ deployment.cancelUser }}<br />
-      canceled at: {{ deployment.deploymentCancelDate | date: dateFormat }}
-    </p>
-
-    } @if (deployment.deploymentParameters.length > 0) {
-
-    <h6>deployment parameter</h6>
-    <p>
-      @for (param of deployment.deploymentParameters; track param) {
-
-      {{ param.key }}: {{ param.value }}<br />
-
-      }
-    </p>
-
-    } @if (deployment.reason) {
-
-    <h6>failure reason</h6>
-    <p>{{ failureReason[deployment.reason] }}</p>
-
-    } @if (deployment.statusMessage) {
-
-    <h6>state message</h6>
-    <pre class="bg-light border p-1 rounded pre-scrollable"><code>{{ deployment.statusMessage }}</code></pre>
-
+      <p>
+        confirmed by: {{ deployment.confirmUser }}<br />
+        confirmed at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
+      </p>
+    }
+    @if (deployment.confirmUser && deployment.state === 'rejected') {
+      <p>
+        rejected by: {{ deployment.confirmUser }}<br />
+        rejected at: {{ deployment.deploymentConfirmationDate | date: dateFormat }}
+      </p>
+    }
+    @if (deployment.deploymentDelayed) {
+      <h6>deployment job delayed</h6>
+      <p>planed deployment date: {{ deployment.deploymentDate | date: dateFormat }}</p>
+    }
+    @if (deployment.cancelUser) {
+      <h6>deployment job canceled</h6>
+      <p>
+        canceled by: {{ deployment.cancelUser }}<br />
+        canceled at: {{ deployment.deploymentCancelDate | date: dateFormat }}
+      </p>
+    }
+    @if (deployment.deploymentParameters.length > 0) {
+      <h6>deployment parameter</h6>
+      <p>
+        @for (param of deployment.deploymentParameters; track param) {
+          {{ param.key }}: {{ param.value }}<br />
+        }
+      </p>
+    }
+    @if (deployment.reason) {
+      <h6>failure reason</h6>
+      <p>{{ failureReason[deployment.reason] }}</p>
+    }
+    @if (deployment.statusMessage) {
+      <h6>state message</h6>
+      <pre class="bg-light border p-1 rounded pre-scrollable"><code>{{ deployment.statusMessage }}</code></pre>
     }
   </div>
 </ng-template>

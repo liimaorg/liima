@@ -6,48 +6,44 @@
       <div class="col-sm-9">
         <select id="selectEditAction" ngbAutoFocus class="form-select input-sm" [(ngModel)]="selectedEditAction">
           @for (editAction of editActions; track editAction) {
-          <option [ngValue]="editAction">{{ editAction }}</option>
+            <option [ngValue]="editAction">{{ editAction }}</option>
           }
         </select>
       </div>
     </div>
     @if (selectedEditAction === 'Change date' || selectedEditAction === 'Confirm') {
-
-    <label for="datetimepicker" class="col-sm-2 form-label">Date</label>
-    <div class="input-group mb-3">
-      <div class="col-sm-9">
-        <div class="input-group date">
-          <app-date-time-picker [(ngModel)]="deploymentDate" name="dateDeployment" id="datetimepicker" class="w-100">
-          </app-date-time-picker>
+      <label for="datetimepicker" class="col-sm-2 form-label">Date</label>
+      <div class="input-group mb-3">
+        <div class="col-sm-9">
+          <div class="input-group date">
+            <app-date-time-picker [(ngModel)]="deploymentDate" name="dateDeployment" id="datetimepicker" class="w-100">
+            </app-date-time-picker>
+          </div>
         </div>
       </div>
-    </div>
-
     }
 
     <!-- Confirm Options -->
     @if (selectedEditAction === 'Confirm' && confirmationAttributes) {
+      <div class="form-check">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          id="email"
+          [(ngModel)]="confirmationAttributes.sendEmailWhenDeployed"
+        />
+        <label for="email">send an email when deployed</label>
+      </div>
 
-    <div class="form-check">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        id="email"
-        [(ngModel)]="confirmationAttributes.sendEmailWhenDeployed"
-      />
-      <label for="email">send an email when deployed</label>
-    </div>
-
-    <div class="form-check">
-      <input
-        type="checkbox"
-        class="form-check-input"
-        id="simulate"
-        [(ngModel)]="confirmationAttributes.simulateBeforeDeployment"
-      />
-      <label for="simulate">simulate before deployment</label>
-    </div>
-
+      <div class="form-check">
+        <input
+          type="checkbox"
+          class="form-check-input"
+          id="simulate"
+          [(ngModel)]="confirmationAttributes.simulateBeforeDeployment"
+        />
+        <label for="simulate">simulate before deployment</label>
+      </div>
     }
   </span>
 </div>

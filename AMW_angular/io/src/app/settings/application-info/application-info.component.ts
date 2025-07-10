@@ -7,9 +7,9 @@ import { AppConfiguration } from '../../setting/app-configuration';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 
 @Component({
-    selector: 'app-application-info',
-    imports: [LoadingIndicatorComponent, TableComponent],
-    templateUrl: './application-info.component.html'
+  selector: 'app-application-info',
+  imports: [LoadingIndicatorComponent, TableComponent],
+  templateUrl: './application-info.component.html',
 })
 export class ApplicationInfoComponent {
   private settingService = inject(SettingService);
