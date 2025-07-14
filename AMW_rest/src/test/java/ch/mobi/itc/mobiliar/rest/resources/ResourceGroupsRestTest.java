@@ -125,7 +125,7 @@ public class ResourceGroupsRestTest {
         when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
 
         // when
-        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName);
+        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName, null);
 
         // then
         assertTrue(resourcesResult.isEmpty());
@@ -142,7 +142,7 @@ public class ResourceGroupsRestTest {
         when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
 
         // when
-        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName);
+        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName, null);
 
         // then
         Assert.assertFalse(resourcesResult.isEmpty());
@@ -160,7 +160,7 @@ public class ResourceGroupsRestTest {
         when(resourceGroupLocatorMock.getResourceGroups()).thenReturn(resourceGroupEntities);
 
         // when
-        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName);
+        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName, null);
 
         // then
         Assert.assertFalse(resourcesResult.isEmpty());
@@ -177,7 +177,7 @@ public class ResourceGroupsRestTest {
         when(resourceGroupLocatorMock.getGroupsForType(typeName, true, true)).thenReturn(new ArrayList<ResourceGroupEntity>());
 
         // when
-        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName);
+        List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName, null);
 
         // then
         assertTrue(resourcesResult.isEmpty());
