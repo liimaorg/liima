@@ -33,8 +33,8 @@ interface TargetPlatformModel {
     ModalHeaderComponent,
     DiffEditorComponent,
     RevisionCompareComponent,
-    FullscreenToggleComponent,
-  ],
+    FullscreenToggleComponent
+  ]
 })
 export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
@@ -44,9 +44,10 @@ export class ResourceTemplateEditComponent implements OnInit {
 
   private templatesService = inject(ResourceTemplatesService);
   allSelectableTargetPlatforms: Signal<string[]> = toSignal(this.templatesService.getAllTargetPlatforms(), {
-    initialValue: [],
+    initialValue: []
   });
 
+  public wrapLinesEnabled: false;
   public revisions: RevisionInformation[] = [];
   public revision: ResourceTemplate;
   public selectedRevisionName: string;
@@ -58,10 +59,11 @@ export class ResourceTemplateEditComponent implements OnInit {
   });
   public diffValue = {
     original: '',
-    modified: '',
+    modified: ''
   };
 
-  constructor(public activeModal: NgbActiveModal) {}
+  constructor(public activeModal: NgbActiveModal) {
+  }
 
   ngOnInit(): void {
     if (this.template && this.template.id) {
@@ -93,7 +95,7 @@ export class ResourceTemplateEditComponent implements OnInit {
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.template.targetPlatforms.includes(name),
+        selected: this.template.targetPlatforms.includes(name)
       };
     });
   }
@@ -103,7 +105,7 @@ export class ResourceTemplateEditComponent implements OnInit {
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.revision.targetPlatforms.includes(name),
+        selected: this.revision.targetPlatforms.includes(name)
       };
     });
   }
