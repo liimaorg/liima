@@ -4,11 +4,11 @@ import { Component, Input } from '@angular/core';
   selector: 'app-loading-indicator',
   template: `
     @if (isLoading) {
-    <div class="d-flex justify-content-center align-items-center overlay">
-      <div class="spinner-border text-light" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div class="d-flex justify-content-center align-items-center overlay">
+        <div class="spinner-border text-light" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
       </div>
-    </div>
     }
     <div class=""></div>
   `,

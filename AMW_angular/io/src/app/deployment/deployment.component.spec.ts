@@ -21,9 +21,9 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { Component, signal } from '@angular/core';
 
 @Component({
-    template: '',
-    imports: [FormsModule, RouterTestingModule],
-    providers: [provideHttpClientTesting()]
+  template: '',
+  imports: [FormsModule, RouterTestingModule],
+  providers: [provideHttpClientTesting()],
 })
 class DummyComponent {}
 

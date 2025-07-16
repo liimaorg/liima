@@ -9,7 +9,7 @@
       <label class="form-label">Release</label>
       <ng-select id="selectRelease" [(ngModel)]="app.appReleaseId" placeholder="Select release">
         @for (release of releases(); track release.id) {
-        <ng-option [value]="release.id">{{ release.name }}</ng-option>
+          <ng-option [value]="release.id">{{ release.name }}</ng-option>
         }
       </ng-select>
     </div>
@@ -17,7 +17,7 @@
       <label class="form-label">Applicationserver</label>
       <ng-select id="selectAppServer" [(ngModel)]="appServerGroup" placeholder="Select applicationserver">
         @for (appServer of appServerGroups(); track appServer.id) {
-        <ng-option [value]="appServer">{{ appServer.name }}</ng-option>
+          <ng-option [value]="appServer">{{ appServer.name }}</ng-option>
         }
       </ng-select>
     </div>
@@ -29,9 +29,11 @@
         [disabled]="hasInvalidGroup()"
         placeholder="Select AS release"
       >
-        @if (appServerGroup && appServerGroup.releases) { @for (release of appServerGroup.releases; track release.id) {
-        <ng-option [value]="release">{{ release.release }}</ng-option>
-        } }
+        @if (appServerGroup && appServerGroup.releases) {
+          @for (release of appServerGroup.releases; track release.id) {
+            <ng-option [value]="release">{{ release.release }}</ng-option>
+          }
+        }
       </ng-select>
     </div>
   </div>

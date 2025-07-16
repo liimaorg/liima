@@ -8,10 +8,10 @@ import { Release } from '../../settings/releases/release';
 import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
-    selector: 'app-resource-add',
-    imports: [FormsModule, ModalHeaderComponent, ButtonComponent, NgSelectModule],
-    templateUrl: './resource-add.component.html',
-    changeDetection: ChangeDetectionStrategy.OnPush
+  selector: 'app-resource-add',
+  imports: [FormsModule, ModalHeaderComponent, ButtonComponent, NgSelectModule],
+  templateUrl: './resource-add.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourceAddComponent {
   activeModal = inject(NgbActiveModal);
@@ -27,7 +27,6 @@ export class ResourceAddComponent {
   }
 
   save() {
-    let forms: NodeListOf<Element> = document.querySelectorAll('.needs-validation');
     if (this.isValidForm()) {
       const resourceToAdd = {
         name: this.resourceName,
@@ -36,8 +35,6 @@ export class ResourceAddComponent {
       };
       this.saveResource.emit(resourceToAdd);
       this.activeModal.close();
-    } else {
-      forms[0].classList.add('was-validated');
     }
   }
 

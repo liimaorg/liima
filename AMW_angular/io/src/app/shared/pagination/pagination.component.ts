@@ -2,9 +2,9 @@ import { Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-pagination',
-    templateUrl: './pagination.component.html',
-    imports: [FormsModule]
+  selector: 'app-pagination',
+  templateUrl: './pagination.component.html',
+  imports: [FormsModule],
 })
 export class PaginationComponent {
   currentPage = input.required<number>();

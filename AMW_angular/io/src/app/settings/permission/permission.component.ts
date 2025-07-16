@@ -61,7 +61,15 @@ export class PermissionComponent implements OnInit {
   };
   resourceGroups: Resource[] = [];
   resourceTypes: ResourceType[] = [
-    { id: null, name: null, hasChildren: false, children: [], isApplication: false, isDefaultResourceType: false },
+    {
+      id: null,
+      name: null,
+      hasChildren: false,
+      hasParent: false,
+      children: [],
+      isApplication: false,
+      isDefaultResourceType: false,
+    },
   ];
 
   restrictionType: string = 'role';

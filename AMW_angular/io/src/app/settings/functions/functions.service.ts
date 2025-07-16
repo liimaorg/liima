@@ -5,7 +5,7 @@ import { AppFunction } from './appFunction';
 import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { shareReplay, switchMap } from 'rxjs/operators';
-import { RevisionInformation } from './revisionInformation';
+import { RevisionInformation } from '../../shared/model/revisionInformation';
 
 @Injectable({ providedIn: 'root' })
 export class FunctionsService extends BaseService {

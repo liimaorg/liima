@@ -1,0 +1,9 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Templates'"
+  [actionName]="'New Template'"
+  [canAction]="permissions().canAdd"
+  [lists]="templatesData()"
+  (tileAction)="addTemplate()"
+  (listAction)="doListAction($event)"
+></app-tile-component>

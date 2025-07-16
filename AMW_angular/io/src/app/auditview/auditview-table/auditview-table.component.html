@@ -26,33 +26,33 @@
   </thead>
   <tbody>
     @for (entry of auditlogEntries$ | async; track entry) {
-    <tr>
-      <td>{{ entry.timestamp | date: dateFormat }}</td>
-      <td>
-        <ngb-highlight [result]="entry.relation" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="entry.type" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="entry.name" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="entry.editContextName" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="entry.mode" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="entry.oldValue" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="entry.value | newlineFilter" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-      <td>
-        <ngb-highlight [result]="entry.username | newlineFilter" [term]="service.searchTerm"></ngb-highlight>
-      </td>
-    </tr>
+      <tr>
+        <td>{{ entry.timestamp | date: dateFormat }}</td>
+        <td>
+          <ngb-highlight [result]="entry.relation" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="entry.type" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="entry.name" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="entry.editContextName" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="entry.mode" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="entry.oldValue" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="entry.value | newlineFilter" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+        <td>
+          <ngb-highlight [result]="entry.username | newlineFilter" [term]="service.searchTerm"></ngb-highlight>
+        </td>
+      </tr>
     }
   </tbody>
 </table>

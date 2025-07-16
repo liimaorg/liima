@@ -27,13 +27,13 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -49,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -97,9 +98,6 @@ public class ResourceGroupsRest {
 
     @Inject
     private ResourceRelationService resourceRelationService;
-
-    @Inject
-    PropertyEditor propertyEditor;
 
     @GET
     @ApiOperation(value = "Get resource groups", notes = "Returns the available resource groups")
@@ -161,7 +159,6 @@ public class ResourceGroupsRest {
         }).collect(Collectors.toList());
     }
 
-
     @Path("/{resourceGroupName}")
     @GET
     @ApiOperation(value = "Get a resource group")
@@ -206,13 +203,13 @@ public class ResourceGroupsRest {
     @POST
     @ApiOperation(value = "Add a Resource")
     public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) throws ValidationException, NotFoundException, ElementAlreadyExistsException {
-        if(StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim()))
+        if (StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim()))
             throw new ValidationException("Resource name must not be null or blank");
 
-        if(StringUtils.isEmpty(request.getReleaseName()) || StringUtils.isEmpty(request.getReleaseName().trim()))
+        if (StringUtils.isEmpty(request.getReleaseName()) || StringUtils.isEmpty(request.getReleaseName().trim()))
             throw new ValidationException("Release name must not be null or blank");
 
-        if(!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getName()))
+        if (!NameChecker.isValidAlphanumericWithUnderscoreHyphenName(request.getName()))
             throw new ValidationException(NameChecker.getErrorTextForInvalidResourceName(
                     (request.getType() != null) ? request.getType() : null, request.getName()));
 
@@ -340,7 +337,7 @@ public class ResourceGroupsRest {
     @DELETE
     @ApiOperation(value = "Delete a specific resource release")
     public Response deleteResourceRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                                            @PathParam("releaseId") Integer releaseId) throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+                                          @PathParam("releaseId") Integer releaseId) throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupIdAndRelease(resourceGroupId, releaseId);
         if (resource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
@@ -401,4 +398,24 @@ public class ResourceGroupsRest {
         return Response.ok(mostRelevant).build();
     }
 
+    @Path("/resourceGroups/releases/{resourceId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get all releases related to a specific resource")
+    public Response getReleasesForResource(@PathParam("resourceId") Integer resourceId) {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        ResourceGroupEntity groupEntity = resourceGroupLocator.getResourceGroupById(resource.getResourceGroup().getId());
+        if (groupEntity == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto("Resource group not found")).build();
+        }
+        ResourceGroup resourceGroup = ResourceGroup.createByResource(groupEntity);
+        LinkedHashMap<String, Integer> releaseMap = resourceGroup.getReleaseToResourceMap();
+        List<ReleaseDTO> releases = releaseMap.entrySet().stream()
+                .map(entry -> new ReleaseDTO(entry.getValue(), entry.getKey()))
+                .collect(Collectors.toList());
+        return Response.ok(releases).build();
+    }
 }

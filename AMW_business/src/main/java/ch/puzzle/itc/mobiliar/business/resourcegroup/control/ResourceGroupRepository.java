@@ -59,8 +59,11 @@ public class ResourceGroupRepository {
     }
 
     public ResourceGroupEntity getResourceGroupById(Integer groupId){
-        return entityManager.createQuery("select r from ResourceGroupEntity r where r.id=:groupId", ResourceGroupEntity.class).setParameter(
-                "groupId", groupId).getSingleResult();
+        return entityManager.createQuery(
+                        "SELECT r FROM ResourceGroupEntity r LEFT JOIN FETCH r.resources WHERE r.id=:groupId",
+                        ResourceGroupEntity.class)
+                .setParameter("groupId", groupId)
+                .getSingleResult();
     }
 
     public List<ResourceGroupEntity> getResourceGroupsOrderedByName(Collection<Integer> resourceGroupIds){

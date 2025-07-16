@@ -5,9 +5,9 @@ import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.
 import { ButtonComponent } from '../../../shared/button/button.component';
 
 @Component({
-    selector: 'app-environment-delete',
-    templateUrl: './environment-delete.component.html',
-    imports: [ModalHeaderComponent, ButtonComponent]
+  selector: 'app-environment-delete',
+  templateUrl: './environment-delete.component.html',
+  imports: [ModalHeaderComponent, ButtonComponent],
 })
 export class EnvironmentDeleteComponent {
   activeModal = inject(NgbActiveModal);

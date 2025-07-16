@@ -19,6 +19,7 @@ describe('ResourceTypeDeleteComponent', () => {
       id: 1258,
       name: 'Keystore',
       hasChildren: false,
+      hasParent: false,
       children: [],
       isApplication: false,
       isDefaultResourceType: false,

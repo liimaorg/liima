@@ -29,18 +29,18 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-deployment',
-    templateUrl: './deployment.component.html',
-    imports: [
-        LoadingIndicatorComponent,
-        NotificationComponent,
-        NgSelectModule,
-        FormsModule,
-        DateTimePickerComponent,
-        IconComponent,
-        PageComponent,
-        ButtonComponent,
-    ]
+  selector: 'app-deployment',
+  templateUrl: './deployment.component.html',
+  imports: [
+    LoadingIndicatorComponent,
+    NotificationComponent,
+    NgSelectModule,
+    FormsModule,
+    DateTimePickerComponent,
+    IconComponent,
+    PageComponent,
+    ButtonComponent,
+  ],
 })
 export class DeploymentComponent implements OnInit, AfterViewInit {
   // from url

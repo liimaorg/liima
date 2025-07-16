@@ -9,7 +9,7 @@ import { ButtonComponent } from '../../shared/button/button.component';
   selector: 'app-apps-filter',
   imports: [FormsModule, NgSelectModule, ButtonComponent],
   templateUrl: './apps-filter.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsFilterComponent implements OnChanges {
   releases = input.required<Release[]>();

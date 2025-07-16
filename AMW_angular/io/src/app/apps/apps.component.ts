@@ -33,7 +33,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     ButtonComponent,
   ],
   templateUrl: './apps.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsComponent implements OnInit, OnDestroy {
   public appsService = inject(AppsService);
@@ -60,8 +60,8 @@ export class AppsComponent implements OnInit, OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canCreateApp: this.authService.hasResourcePermission('RESOURCE', 'CREATE', 'APPLICATION'),
-        canCreateAppServer: this.authService.hasResourcePermission('RESOURCE', 'CREATE', 'APPLICATIONSERVER'),
+        canCreateApp: this.authService.hasResourceTypePermission('RESOURCE', 'CREATE', 'APPLICATION'),
+        canCreateAppServer: this.authService.hasResourceTypePermission('RESOURCE', 'CREATE', 'APPLICATIONSERVER'),
         canViewAppList: this.authService.hasPermission('APP_AND_APPSERVER_LIST', 'READ'),
       };
     } else {

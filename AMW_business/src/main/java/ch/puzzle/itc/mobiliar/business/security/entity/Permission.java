@@ -62,6 +62,7 @@ public enum Permission {
     APP_AND_APPSERVER_LIST("The Applications and Applicatioservers list. Path-> Apps", true),
     ROLES_AND_PERMISSIONS_TAB("Roles and Permissions tab. Path: Settings", true),
     BACK_TO_RES_LIST("Back to resource list. You can find this button in all resource and resource type-instance screen", true),
+    ANGULAR_EDIT_RESOURCE("Display links to the Angular edit resource screen", true), // TODO: remove after migration
 
     // ROLES
     DELETE_ROLE("Delete Role. Path: Settings -> select Roles and Permissions tab", true),

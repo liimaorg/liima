@@ -1,0 +1,45 @@
+<databaseChangeLog logicalFilePath="liquibase/changesets/data/addPermission_addAdminPermissionsOnCreatedResource.xml"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="ypp" id="add_angular_edit_resource_permission.xml">
+
+        <comment>Add permission for Angular Edit Resource</comment>
+
+        <!-- Looks like the last update didn't update the sequence, update it before -->
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <insert tableName="TAMW_permission">
+            <column name="id" valueComputed="(SELECT NEXT_VAL FROM SAMW_SEQUENCES WHERE SEQ_NAME = 'permissionId')" />
+            <column name="VALUE" value="ANGULAR_EDIT_RESOURCE"></column>
+            <column name="v" valueNumeric="0" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER"
+                    valueComputed="(SELECT NEXT_VAL+1 FROM SAMW_SEQUENCES WHERE SEQ_NAME='permissionId')" />
+            <where>SEQ_NAME='permissionId'</where>
+        </update>
+
+        <insert tableName="TAMW_restriction">
+            <column name="id" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <column name="permission_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_permission WHERE value = 'ANGULAR_EDIT_RESOURCE')" />
+            <column name="role_id" type="INTEGER" valueComputed="(SELECT id FROM TAMW_role WHERE name = 'config_admin')" />
+            <column name="action" value="ALL" />
+            <column name="v" type="INTEGER" valueNumeric="0" />
+        </insert>
+
+        <update tableName="SAMW_SEQUENCES">
+            <column name="NEXT_VAL" type="INTEGER" valueComputed="(SELECT MAX(id)+1 FROM TAMW_restriction)" />
+            <where>SEQ_NAME='restrictionId'</where>
+        </update>
+
+    </changeSet>
+
+</databaseChangeLog>

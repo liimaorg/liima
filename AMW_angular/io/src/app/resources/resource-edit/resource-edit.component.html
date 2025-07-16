@@ -1,0 +1,34 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title d-flex">
+    <div class="resource-name">Edit {{ this.resource()?.name }}</div>
+    <div ngbDropdown>
+      <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+        {{ selectedRelease()?.name }}
+      </app-button>
+
+      <ul ngbDropdownMenu>
+        @for (release of releases(); track release) {
+          <li ngbDropdownItem>
+            <a class="dropdown-item" (click)="loadResourceFromRelease(release.id)">{{ release.name }}</a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-content">
+    @if (this.resource()?.name && !permissions().canEditResource) {
+      <div class="container">
+        <span class="text-warning-2">Not Authorized! You are not allowed to edit resources.</span>
+      </div>
+    } @else if (id() === 0) {
+      <div class="container">
+        <span>Please provide the resource id to edit a resource.</span>
+      </div>
+    } @else {
+      <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
+      <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
+    }
+  </div>
+</app-page>

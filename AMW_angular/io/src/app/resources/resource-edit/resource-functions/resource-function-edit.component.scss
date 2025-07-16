@@ -1,0 +1,11 @@
+app-button.dropdown-toggle:after {
+  display: none;
+}
+
+.badge-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-items: center;
+  flex-wrap: wrap;
+}

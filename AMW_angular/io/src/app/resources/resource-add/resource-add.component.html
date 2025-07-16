@@ -8,12 +8,16 @@
         class="form-control"
         id="resourceName"
         [(ngModel)]="resourceName"
+        [class.is-invalid]="!isValidForm() && resourceName && resourceName.length > 0"
+        [class.is-valid]="isValidForm() && resourceName && resourceName.length > 0"
         required
         pattern="^[a-zA-Z0-9_\-]+$"
       />
-      <div class="invalid-feedback">
-        The name must not contain any other than alphanumerical and "_" / "-" characters.
-      </div>
+      @if (!isValidForm() && resourceName && resourceName.length > 0) {
+        <div class="invalid-feedback">
+          The name must not contain any other than alphanumerical and "_" / "-" characters.
+        </div>
+      }
     </div>
     <div class="mb-3">
       <label class="form-label">Release</label>
@@ -24,13 +28,13 @@
         (change)="setSelectedRelease($event)"
       >
         @for (release of releases; track release.id) {
-        <ng-option [value]="release.name">{{ release.name }}</ng-option>
+          <ng-option [value]="release.name">{{ release.name }}</ng-option>
         }
       </ng-select>
     </div>
   </div>
   <div class="modal-footer">
     <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
-    <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="save()">Save </app-button>
+    <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="save()">Save</app-button>
   </div>
 </div>

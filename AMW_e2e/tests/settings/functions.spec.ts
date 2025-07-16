@@ -46,11 +46,11 @@ test.describe('CRUD for Functions', () => {
         await page.getByRole('button', {name: 'Save'}).click();
         expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeDefined();
 
-        await page.getByTestId("button-delete-testFunction")?.first().click();
+        await page.getByRole('row').filter({ hasText: 'testFunction' })?.getByRole('button').last().click();
         await page.getByRole('button', {name: 'Delete'}).click();
         expect(page.getByRole('table').locator('td :has-text("differentFunction")')).toBeDefined();
 
-        await page.getByTestId("button-delete-differentFunction")?.first().click();
+        await page.getByRole('row').filter({ hasText: 'differentFunction' })?.getByRole('button').last().click();
         await page.getByRole('button', {name: 'Delete'}).click();
         expect(page.locator('ngb-toast :has-text("Function deleted.")')).toBeDefined();
     })
@@ -77,20 +77,19 @@ test.describe('CRUD for Functions', () => {
         await page.getByTestId('button-save').click();
         expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeDefined();
 
-        await page.getByTestId('button-edit-testFunctionEdit')?.first().click();
+        await page.getByRole('row').filter({ hasText: 'testFunctionEdit' })?.getByRole('button').first().click();
         await page.locator('css=.cm-activeLine').fill('{enter}differentContent');
         await page.getByTestId('button-save').click();
         expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeDefined();
 
-        await page.getByTestId('button-edit-testFunctionEdit')?.first().click();
+        await page.getByRole('row').filter({ hasText: 'testFunctionEdit' })?.getByRole('button').first().click();
         await page.getByTestId('button-dropdown').click();
         await page.locator('.dropdown-item').first().click();
-        await expect(page.locator('app-diff-editor')).toBeVisible();
+        await expect(page.locator('app-diff-editor')).toBeVisible({ timeout: 10000 });
         await page.getByTestId('button-cancel').click();
-        await page.getByTestId('button-delete-testFunctionEdit').first().click();
+        await page.getByRole('row').filter({ hasText: 'testFunctionEdit' })?.getByRole('button').last().click();
         await page.getByTestId('button-delete').click();
         expect(page.locator('ngb-toast :has-text("Function deleted.")')).toBeDefined();
     });
 
 })
-

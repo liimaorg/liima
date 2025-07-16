@@ -7,16 +7,16 @@
       <div class="invalid-feedback">Please enter a name</div>
     </div>
     @if (!isDomain()) {
-    <div class="mb-3">
-      <label for="nameAlias" class="form-label">Alias</label>
-      <input type="text" class="form-control" id="nameAlias" [(ngModel)]="environment.nameAlias" />
-    </div>
+      <div class="mb-3">
+        <label for="nameAlias" class="form-label">Alias</label>
+        <input type="text" class="form-control" id="nameAlias" [(ngModel)]="environment.nameAlias" />
+      </div>
     }
   </div>
   <div class="modal-footer">
     <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
     @if (permissions().canSave) {
-    <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="save()">Save </app-button>
+      <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="save()">Save </app-button>
     }
   </div>
 </div>

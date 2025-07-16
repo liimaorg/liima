@@ -34,11 +34,11 @@ test.describe('PropertyTypes -CRUD', () => {
         await page.getByTestId('button-save').click();
         expect(page.locator('ngb-toast :has-text("Property type already exists.")')).toBeDefined();
 
-        await page.getByTestId('button-edit-test-property-type').click();
+        await page.getByRole('row').filter({ hasText: 'test-property-type' }).getByRole('button').first().click();
         await page.locator('#encrypted').click();
         await page.getByTestId('button-save').click();
         await expect(page.getByText(/Property type saved\./).first()).toBeVisible();
-        await page.getByTestId('button-delete-test-property-type').click();
+        await page.getByRole('row').filter({ hasText: 'test-property-type' }).getByRole('button').last().click();
         await page.getByTestId('button-delete').click();
         expect(page.locator('ngb-toast :has-text("Property type deleted.")')).toBeDefined();
     });

@@ -15,9 +15,9 @@ import { ButtonComponent } from '../../shared/button/button.component';
 import { TableColumnType, TableComponent } from '../../shared/table/table.component';
 
 @Component({
-    selector: 'app-property-types',
-    imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
-    templateUrl: './property-types.component.html'
+  selector: 'app-property-types',
+  imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
+  templateUrl: './property-types.component.html',
 })
 export class PropertyTypesComponent implements OnDestroy {
   private authService = inject(AuthService);
