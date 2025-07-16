@@ -8,8 +8,12 @@ export function provideGlobalErrorHandler(): Provider[] {
 @Injectable({ providedIn: 'root' })
 export class GlobalErrorHandler implements ErrorHandler {
   toastService = inject(ToastService);
-  handleError(error: { message: string }): void {
-    console.error('Global Error Handler: ' + error);
+  handleError(error: Error): void {
+    if (error.stack) {
+      console.error('GlobalErrorHandler: ' + error.stack);
+    } else {
+      console.error('GlobalErrorHandler: ' + error.message);
+    }
     this.toastService.error(error.message);
   }
 }

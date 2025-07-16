@@ -9,5 +9,4 @@ import { App } from '../app';
 })
 export class AppsListComponent {
   apps = input.required<App[]>();
-  even = input.required<boolean>();
 }

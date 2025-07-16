@@ -16,7 +16,8 @@ describe('AppsFilterComponent', () => {
     fixture = TestBed.createComponent(AppsFilterComponent);
     component = fixture.componentInstance;
     component.releases = signal<Release[]>([]) as unknown as InputSignal<Release[]>;
-    component.upcoming = signal<number>(0) as unknown as InputSignal<number>;
+    component.releaseId = signal<number>(0) as unknown as InputSignal<number>;
+    component.filter = signal<string>('') as unknown as InputSignal<string>;
     fixture.detectChanges();
   });
 

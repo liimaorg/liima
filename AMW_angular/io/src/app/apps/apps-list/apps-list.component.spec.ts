@@ -17,7 +17,6 @@ describe('AppsListComponent', () => {
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
     componentRef.setInput('apps', []);
-    componentRef.setInput('even', true);
     fixture.detectChanges();
   });
 

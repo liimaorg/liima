@@ -10,7 +10,6 @@ export interface TableColumnType<T = any> {
   key: keyof T;
   columnTitle: string;
   cellType?: TableCellType;
-  iconMapping?: { value: any; icon: string }[];
   urlKey?: keyof T;
   nameKey?: keyof T;
 }
@@ -29,7 +28,6 @@ export interface EntryActionOutput {
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
-  standalone: true,
   imports: [ButtonComponent, IconComponent, DatePipe],
 })
 export class TableComponent<T> {
@@ -40,6 +38,7 @@ export class TableComponent<T> {
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
   canNavigate = input<boolean>(false);
+  fixed = input<boolean>(false);
   hasAction = computed(() => this.canEdit() || this.canDelete() || this.canNavigate());
   edit = output<EntryActionOutput>();
   delete = output<EntryActionOutput>();
@@ -51,8 +50,9 @@ export class TableComponent<T> {
     return this.headers().length + (this.hasAction() ? 1 : 0);
   }
 
-  getIcon(cellValue: any, header: TableColumnType): string | undefined {
-    const mapping = header.iconMapping?.find((m) => m.value === cellValue);
-    return mapping?.icon;
+  get tableClass() {
+    let base = 'table table-sm table-striped w-100';
+    if (this.fixed()) base += ' table-fixed';
+    return base;
   }
 }

@@ -110,9 +110,10 @@
     <!--1.17.31-->
     <include file="changesets/data/config_admin_add_template_restriction.xml" relativeToChangelogFile="true"/>
 
-    <!--1.17.37-->
+    <!--1.18.0-->
     <include file="changesets/model/removeFavorites/removeFavorites.xml" relativeToChangelogFile="true"/>
     <include file="changesets/data/removeShakedownAndTesting.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/removeTesting/removeShakedownAndTesting.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/refactoring/#876_add_unique_constraint_for_release_name.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
