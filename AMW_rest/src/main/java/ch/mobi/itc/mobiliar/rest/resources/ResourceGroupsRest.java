@@ -102,7 +102,18 @@ public class ResourceGroupsRest {
     @GET
     @ApiOperation(value = "Get resource groups", notes = "Returns the available resource groups")
     public List<ResourceGroupDTO> getResources(
-            @ApiParam(value = "a resource type, the list should be filtered by") @QueryParam("type") String type) {
+            @ApiParam(value = "a resource type name, the list should be filtered by") @QueryParam("type") String type,
+            @ApiParam(value = "a resource type id, the list should be filtered by") @QueryParam("typeId") Integer typeId) {
+        if (type != null && typeId != null) {
+            throw new BadRequestException("You cannot filter by both type and typeId at the same");
+        };
+        if (typeId != null) {
+            return getResourceGroupsByResourceTypeId(typeId);
+        }
+        return getResources(type);
+    }
+
+    private List<ResourceGroupDTO> getResources(String type) {
         List<ResourceGroupDTO> result = new ArrayList<>();
         List<ResourceGroupEntity> resourceGroups;
         if (type != null) {
@@ -121,10 +132,7 @@ public class ResourceGroupsRest {
         return result;
     }
 
-    @GET
-    @ApiOperation(value = "Get resource groups by resource type id")
-    public List<ResourceGroupDTO> getResourceGroupsByResourceTypeId(
-            @ApiParam(value = "a resource type id, the list should be filtered by") @QueryParam("typeId") Integer typeId) {
+    private List<ResourceGroupDTO> getResourceGroupsByResourceTypeId(Integer typeId) {
         List<ResourceGroupEntity> resourceGroups;
         if (typeId != null) {
             resourceGroups = resourceGroupLocator.getGroupsForType(typeId, true, true);

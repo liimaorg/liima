@@ -20,7 +20,7 @@ export class RestrictionListComponent {
       return {
         id: res.id,
         permissionName: res.permission.name,
-        permissionGlobal: res.permission.old,
+        permissionGlobal: res.permission.old ? 'check' : null,
         action: res.action,
         contextName: res.contextName,
         resourceGroupName: this.getGroupName(res.resourceGroupId),
@@ -29,6 +29,37 @@ export class RestrictionListComponent {
       };
     }),
   );
+  restrictionsHeader = computed(() => [
+    {
+      key: 'permissionName',
+      columnTitle: 'Permission',
+    },
+    {
+      key: 'permissionGlobal',
+      columnTitle: 'Global',
+      cellType: 'icon',
+    },
+    {
+      key: 'action',
+      columnTitle: 'Action',
+    },
+    {
+      key: 'contextName',
+      columnTitle: 'Environment',
+    },
+    {
+      key: 'resourceGroupName',
+      columnTitle: 'Res. Group',
+    },
+    {
+      key: 'resourceTypeName',
+      columnTitle: 'Res. Type',
+    },
+    {
+      key: 'resourceTypePermission',
+      columnTitle: 'Res. Type Cat.',
+    },
+  ]);
 
   removeRestriction(id: number) {
     this.deleteRestriction.emit(id);
@@ -46,52 +77,5 @@ export class RestrictionListComponent {
       }
     }
     return null;
-  }
-
-  restrictionsHeader(): TableColumnType<{
-    id: number;
-    permissionName: string;
-    permissionGlobal: boolean;
-    action: string;
-    contextName: string;
-    resourceGroupName: number;
-    resourceTypeName: string;
-    resourceTypePermission: string;
-  }>[] {
-    return [
-      {
-        key: 'permissionName',
-        columnTitle: 'Permission',
-      },
-      {
-        key: 'permissionGlobal',
-        columnTitle: 'Global',
-        cellType: 'icon',
-        iconMapping: [
-          { value: true, icon: 'check' },
-          { value: false, icon: null },
-        ],
-      },
-      {
-        key: 'action',
-        columnTitle: 'Action',
-      },
-      {
-        key: 'contextName',
-        columnTitle: 'Environment',
-      },
-      {
-        key: 'resourceGroupName',
-        columnTitle: 'Res. Group',
-      },
-      {
-        key: 'resourceTypeName',
-        columnTitle: 'Res. Type',
-      },
-      {
-        key: 'resourceTypePermission',
-        columnTitle: 'Res. Type Cat.',
-      },
-    ];
   }
 }

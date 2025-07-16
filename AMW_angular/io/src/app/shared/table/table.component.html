@@ -1,6 +1,6 @@
 <div class="table-responsive">
-  <table class="table table-sm table-fixed w-100">
-    <thead class="table-light">
+  <table [class]="tableClass">
+    <thead>
       <tr>
         @for (header of headers(); track header) {
           <th scope="col">{{ header.columnTitle }}</th>
@@ -29,7 +29,7 @@
               }
               @case ('icon') {
                 <td>
-                  <app-icon icon="{{ this.getIcon(row[header.key], header) }}"></app-icon>
+                  <app-icon [icon]="row[header.key]"></app-icon>
                 </td>
               }
               @case ('link') {
@@ -37,7 +37,7 @@
                   @if (!row[header.urlKey] || row[header.urlKey] === '') {
                     {{ row[header.key] }}
                   } @else {
-                    <a href="{{ row[header.urlKey] }}">{{ row[header.key] }}</a>
+                    <a [href]="row[header.urlKey]">{{ row[header.key] }}</a>
                   }
                 </td>
               }
@@ -52,6 +52,7 @@
             <td class="text-end">
               @if (canEdit() && !row[readonlyFlag()]) {
                 <app-button
+                  title="Edit"
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'me-4 p-0'"
@@ -72,6 +73,7 @@
               }
               @if (canDelete() && !row[readonlyFlag()]) {
                 <app-button
+                  title="Delete"
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'p-0 link-danger'"

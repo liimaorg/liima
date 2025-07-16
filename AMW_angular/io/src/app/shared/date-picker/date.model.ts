@@ -4,12 +4,16 @@ import { DATE_FORMAT, ISO_FORMAT } from 'src/app/core/amw-constants';
 
 export interface NgbDateTimeStruct extends NgbDateStruct, NgbTimeStruct {}
 
+// NOTE: Be careful how dates are parsed and constructed!
+// Dates should always be handled in UTC. If dates are parsed or constructed in local time (e.g., UTC+2),
+// a date can become the previous day when interpreted as UTC. E.g. 1753999200000
+//   Your time zone: Friday, 1 August 2025 00:00:00 GMT+02:00 DST
+//   GMT: Thursday, 31 July 2025 22:00:00
+// => Can be stored as 31 July 2025 in the database!
 export class DateModel implements NgbDateStruct {
   year: number;
   month: number;
   day: number;
-
-  timeZoneOffset: number;
 
   public constructor(init?: Partial<DateModel>) {
     Object.assign(this, init);
@@ -26,7 +30,6 @@ export class DateModel implements NgbDateStruct {
       // getDate is the day of month
       // getDay is the day of the week
       day: date.getDate(),
-      timeZoneOffset: date.getTimezoneOffset(),
     });
   }
 
@@ -41,7 +44,7 @@ export class DateModel implements NgbDateStruct {
   }
 
   public static fromEpoch(epoch: number) {
-    const date = datefns.toDate(epoch);
+    const date = new Date(epoch);
     return this.fromDate(date);
   }
 
@@ -61,11 +64,7 @@ export class DateModel implements NgbDateStruct {
   }
 
   public toEpoch(): number {
-    const date = datefns.toDate(this.thisToDate());
-    if (!datefns.isValid(date)) {
-      return null;
-    }
-    return date.getTime();
+    return Date.UTC(this.year, this.month - 1, this.day);
   }
 
   public toJSON(): string {

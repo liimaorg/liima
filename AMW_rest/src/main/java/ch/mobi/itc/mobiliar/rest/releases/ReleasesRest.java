@@ -32,6 +32,7 @@ import io.swagger.annotations.ApiParam;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
@@ -101,11 +102,11 @@ public class ReleasesRest {
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
-        if (releaseLocator.create(request)) {
-            return Response.status(CREATED).build();
-        } else {
-            return Response.status(BAD_REQUEST).build();
-        }
+        try {
+            releaseLocator.getReleaseByName(request.getName());
+            return Response.status(CONFLICT).entity(new ExceptionDto("Release with name " + request.getName() + " already exists")).build();
+        } catch (NoResultException e) {}
+        return Response.status(CREATED).entity(request).build();
     }
 
     @PUT
@@ -115,6 +116,7 @@ public class ReleasesRest {
     @ApiOperation(value = "Update a release")
     public Response updateRelease(@ApiParam("Release ID") @PathParam("id") Integer id, ReleaseEntity request) throws NotFoundException, ConcurrentModificationException {
         releaseLocator.getReleaseById(id);
+        request.setId(id);
         if (releaseLocator.update(request)) {
             return Response.status(OK).build();
         } else {

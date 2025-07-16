@@ -84,7 +84,7 @@ export class ResourcesListComponent {
     return [
       {
         key: 'name',
-        columnTitle: 'Release name',
+        columnTitle: 'Resource name',
       },
       {
         key: 'defaultRelease',

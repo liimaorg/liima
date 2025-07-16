@@ -20,8 +20,18 @@
 
 package ch.puzzle.itc.mobiliar.business.releasing.control;
 
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,13 +41,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
-
-import static org.junit.Assert.*;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService}
@@ -54,18 +59,18 @@ public class ReleaseMgmtPersistenceServiceTest {
 
 	@InjectMocks
 	ReleaseMgmtPersistenceService service;
-	private ReleaseEntity releaseEntity;
 
 	@Before
 	public void before() {
 		MockitoAnnotations.openMocks(this);
-		releaseEntity = new ReleaseEntity();
 	}
 
 	@Test
 	public void test_getById() {
 		// given
+		ReleaseEntity releaseEntity = new ReleaseEntity();
 		releaseEntity.setId(1);
+		releaseEntity.setName("test_getById");
 		service.saveReleaseEntity(releaseEntity);
 
 		// when
@@ -78,8 +83,7 @@ public class ReleaseMgmtPersistenceServiceTest {
 	@Test
 	public void test_findByName() {
 		// given
-		releaseEntity.setName("RL-13.04");
-		service.saveReleaseEntity(releaseEntity);
+		service.saveReleaseEntity(createRL("RL-13.04", null));
 
 		// when
 		ReleaseEntity release = service.findByName("RL-13.04");
@@ -92,8 +96,7 @@ public class ReleaseMgmtPersistenceServiceTest {
 	@Test
 	public void test_findByEmptyName() {
 		// given
-		releaseEntity.setName("RL-13.04");
-		service.saveReleaseEntity(releaseEntity);
+		service.saveReleaseEntity(createRL("RL-13.04", null));
 
 		// when
 		ReleaseEntity release1 = service.findByName("");
@@ -107,9 +110,9 @@ public class ReleaseMgmtPersistenceServiceTest {
 	@Test
 	public void test_loadAllReleaseEntities() {
 		// given
-		service.saveReleaseEntity(releaseEntity);
-		service.saveReleaseEntity(new ReleaseEntity());
-		service.saveReleaseEntity(new ReleaseEntity());
+		service.saveReleaseEntity(createRL("test_loadAllReleaseEntities_1", null));
+		service.saveReleaseEntity(createRL("test_loadAllReleaseEntities_2", null));
+		service.saveReleaseEntity(createRL("test_loadAllReleaseEntities_3", null));
 
 		// when
 		List<ReleaseEntity> releases = service.loadReleaseEntities(0, 10, false);
@@ -123,9 +126,9 @@ public class ReleaseMgmtPersistenceServiceTest {
 	@Test
 	public void test_deleteReleaseEntity() {
 		// given
-		service.saveReleaseEntity(releaseEntity);
-		service.saveReleaseEntity(new ReleaseEntity());
-		service.saveReleaseEntity(new ReleaseEntity());
+		service.saveReleaseEntity(createRL("test_deleteReleaseEntity_1", null));
+		service.saveReleaseEntity(createRL("test_deleteReleaseEntity_2", null));
+		service.saveReleaseEntity(createRL("test_deleteReleaseEntity_3", null));
 
 		assertEquals(3, service.loadReleaseEntities(0, 10, false).size());
 
@@ -142,9 +145,9 @@ public class ReleaseMgmtPersistenceServiceTest {
 	public void test_count() {
 		// given
 		assertEquals(0, service.count());
-		service.saveReleaseEntity(releaseEntity);
-		service.saveReleaseEntity(new ReleaseEntity());
-		service.saveReleaseEntity(new ReleaseEntity());
+		service.saveReleaseEntity(createRL("test_count_1", null));
+		service.saveReleaseEntity(createRL("test_count_2", null));
+		service.saveReleaseEntity(createRL("test_count_3", null));
 
 		assertEquals(3, service.loadReleaseEntities(0, 10, false).size());
 
@@ -157,20 +160,17 @@ public class ReleaseMgmtPersistenceServiceTest {
 	
 	@Test
 	public void test_getDefaultRelease() {
-		releaseEntity.setInstallationInProductionAt(DateUtils.addDays(new Date(), -2));
-		ReleaseEntity secondEntity = new ReleaseEntity();
-		secondEntity.setInstallationInProductionAt(DateUtils.addDays(new Date(), 2));
-		
+		ReleaseEntity firsEntity = createRL("test_getDefaultRelease_1", DateUtils.addDays(new Date(), -2));
+		ReleaseEntity secondEntity = createRL("test_getDefaultRelease_2", DateUtils.addDays(new Date(), 2));
 		
 		service.saveReleaseEntity(secondEntity);
-		service.saveReleaseEntity(releaseEntity);
+		service.saveReleaseEntity(firsEntity);
 		
 		// when
 		ReleaseEntity release = service.getDefaultRelease();
 
 		// then
-		assertEquals(releaseEntity, release);
+		assertEquals(firsEntity, release);
 	}
-
 
 }
