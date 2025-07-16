@@ -38,7 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
@@ -94,9 +93,6 @@ public class ResourceGroupsRest {
     private ResourceDependencyResolverService resourceDependencyResolverService;
 
     @Inject
-    private PermissionBoundary permissionBoundary;
-
-    @Inject
     private ResourceTemplatesRest resourceTemplatesRest;
 
     @Inject
@@ -108,7 +104,18 @@ public class ResourceGroupsRest {
     @GET
     @ApiOperation(value = "Get resource groups", notes = "Returns the available resource groups")
     public List<ResourceGroupDTO> getResources(
-            @ApiParam(value = "a resource type, the list should be filtered by") @QueryParam("type") String type) {
+            @ApiParam(value = "a resource type name, the list should be filtered by") @QueryParam("type") String type,
+            @ApiParam(value = "a resource type id, the list should be filtered by") @QueryParam("typeId") Integer typeId) {
+        if (type != null && typeId != null) {
+            throw new BadRequestException("You cannot filter by both type and typeId at the same");
+        };
+        if (typeId != null) {
+            return getResourceGroupsByResourceTypeId(typeId);
+        }
+        return getResources(type);
+    }
+
+    private List<ResourceGroupDTO> getResources(String type) {
         List<ResourceGroupDTO> result = new ArrayList<>();
         List<ResourceGroupEntity> resourceGroups;
         if (type != null) {
@@ -127,10 +134,7 @@ public class ResourceGroupsRest {
         return result;
     }
 
-    @GET
-    @ApiOperation(value = "Get resource groups by resource type id")
-    public List<ResourceGroupDTO> getResourceGroupsByResourceTypeId(
-            @ApiParam(value = "a resource type id, the list should be filtered by") @QueryParam("typeId") Integer typeId) {
+    private List<ResourceGroupDTO> getResourceGroupsByResourceTypeId(Integer typeId) {
         List<ResourceGroupEntity> resourceGroups;
         if (typeId != null) {
             resourceGroups = resourceGroupLocator.getGroupsForType(typeId, true, true);
