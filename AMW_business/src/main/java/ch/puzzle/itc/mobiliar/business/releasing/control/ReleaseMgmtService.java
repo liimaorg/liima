@@ -26,8 +26,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
@@ -37,7 +35,6 @@ import javax.persistence.TypedQuery;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
 
 @Stateless
 public class ReleaseMgmtService {
