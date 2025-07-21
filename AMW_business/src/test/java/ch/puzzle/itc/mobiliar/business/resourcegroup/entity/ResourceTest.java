@@ -133,7 +133,7 @@ public class ResourceTest {
 	public void canAddResourceRelationTwice() throws ElementAlreadyExistsException{
 		ResourceRelationTypeEntity resRelationType = new ResourceRelationTypeEntity();
 		master.addConsumedResourceRelation(secondSlave, resRelationType, null, ForeignableOwner.AMW);
-		assertEquals(master.getConsumedRelation(secondSlave).getResourceRelationType(), resRelationType);
+		assertEquals(resRelationType, master.getConsumedRelation(secondSlave).getResourceRelationType());
 		master.addConsumedResourceRelation(secondSlave, resRelationType, null, ForeignableOwner.AMW);
 	}
 	

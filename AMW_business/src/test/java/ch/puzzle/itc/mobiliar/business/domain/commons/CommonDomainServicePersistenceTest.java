@@ -20,6 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
+import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
+
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
@@ -60,17 +62,17 @@ public class CommonDomainServicePersistenceTest {
 	@Test
 	public void test_getUniqueResourceByName() {
 		// given
-		ReleaseEntity release = new ReleaseEntity();
-		entityManager.persist(release);
+		ReleaseEntity release1 = createRL("test_getUniqueResourceByName_1", null);
+		entityManager.persist(release1);
 		ResourceTypeEntity type1 = new ResourceTypeEntity();
 		type1.setName("type1");
 		entityManager.persist(type1);
 		ResourceEntity resource = ResourceFactory.createNewResource("foo");
-		resource.setRelease(release);
+		resource.setRelease(release1);
 		resource.setResourceType(type1);
 		entityManager.persist(resource);
 
-		ReleaseEntity release2 = new ReleaseEntity();
+		ReleaseEntity release2 = createRL("test_getUniqueResourceByName_2", null);
 		entityManager.persist(release2);
 		ResourceEntity resource2 = ResourceFactory.createNewResource(resource.getResourceGroup());
 		resource2.setResourceType(type1);
@@ -79,11 +81,11 @@ public class CommonDomainServicePersistenceTest {
 
 		ResourceEntity resource3 = ResourceFactory.createNewResource("bar");
 		resource3.setResourceType(type1);
-		resource3.setRelease(release);
+		resource3.setRelease(release1);
 		entityManager.persist(resource3);
 
 		// when
-		ResourceEntity result = service.getUniqueResourceByNameAndTypeAndReleaseId("foo", "type1", release.getId());
+		ResourceEntity result = service.getUniqueResourceByNameAndTypeAndReleaseId("foo", "type1", release1.getId());
 
 		// then
 		assertNotNull(result);
@@ -95,7 +97,7 @@ public class CommonDomainServicePersistenceTest {
 	@Test
 	public void test_getUniqueResourceByName_releaseNotExists() {
 		// given
-		ReleaseEntity release = new ReleaseEntity();
+		ReleaseEntity release = createRL("test_getUniqueResourceByName_releaseNotExists", null);
 		entityManager.persist(release);
 		ResourceTypeEntity type1 = new ResourceTypeEntity();
 		type1.setName("type1");
@@ -115,7 +117,7 @@ public class CommonDomainServicePersistenceTest {
 	@Test
 	public void test_getUniqueResourceByName_nameNotExists() {
 		// given
-		ReleaseEntity release = new ReleaseEntity();
+		ReleaseEntity release = createRL("test_getUniqueResourceByName_nameNotExists", null);
 		entityManager.persist(release);
 		ResourceTypeEntity type1 = new ResourceTypeEntity();
 		type1.setName("type1");
@@ -135,7 +137,7 @@ public class CommonDomainServicePersistenceTest {
 	@Test
 	public void test_getUniqueResourceByName_typNotExists() {
 		// given
-		ReleaseEntity release = new ReleaseEntity();
+		ReleaseEntity release = createRL("test_getUniqueResourceByName_typNotExists", null);
 		entityManager.persist(release);
 		ResourceTypeEntity type1 = new ResourceTypeEntity();
 		type1.setName("type1");
@@ -155,7 +157,7 @@ public class CommonDomainServicePersistenceTest {
 	@Test
 	public void test_getUniqueResourceByNameWithoutReleaseId_typNotExists() {
 		// given
-		ReleaseEntity release = new ReleaseEntity();
+		ReleaseEntity release = createRL("test_getUniqueResourceByNameWithoutReleaseId_typNotExists", null);
 		entityManager.persist(release);
 		ResourceTypeEntity type1 = new ResourceTypeEntity();
 		type1.setName("type1");

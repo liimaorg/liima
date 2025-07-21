@@ -1,22 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AppsListComponent } from './apps-list-component';
+import { FullscreenToggleComponent } from './fullscreen-toggle.component';
 import { ComponentRef } from '@angular/core';
 
-describe('AppsListComponent', () => {
-  let component: AppsListComponent;
-  let componentRef: ComponentRef<AppsListComponent>;
-  let fixture: ComponentFixture<AppsListComponent>;
+describe('FullscreenToggleComponent', () => {
+  let component: FullscreenToggleComponent;
+  let componentRef: ComponentRef<FullscreenToggleComponent>;
+  let fixture: ComponentFixture<FullscreenToggleComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppsListComponent],
+      imports: [FullscreenToggleComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppsListComponent);
+    fixture = TestBed.createComponent(FullscreenToggleComponent);
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
-    componentRef.setInput('apps', []);
     fixture.detectChanges();
   });
 

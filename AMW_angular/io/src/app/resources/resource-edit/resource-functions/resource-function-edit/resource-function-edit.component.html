@@ -42,33 +42,10 @@
           <label class="form-label">Function content</label>
         </div>
         <div class="d-flex">
-          @if (revisions.length > 0) {
-            <div class="d-flex me-1">
-              <label class="align-self-center me-1">Compare with history</label>
-              <div ngbDropdown>
-                <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-                  {{ selectedRevisionName || 'Select Revision' }}
-                </app-button>
-
-                <ul ngbDropdownMenu>
-                  @for (revision of revisions.slice().reverse(); track revision) {
-                    <li ngbDropdownItem>
-                      <a
-                        class="dropdown-item"
-                        (click)="selectRevision(function.id, revision.revision, revision.displayName)"
-                        >{{ revision.displayName }}</a
-                      >
-                    </li>
-                  }
-                </ul>
-              </div>
-            </div>
-          }
-          <div class="col-1">
-            <app-button [variant]="'light'" (click)="toggleFullscreen()">
-              <app-icon [icon]="toggleFullscreenIcon"></app-icon>
-            </app-button>
-          </div>
+          <app-revision-compare
+            [revisions]="revisions"
+            (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"></app-revision-compare>
+          <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
         </div>
       </div>
       @if (!revision) {

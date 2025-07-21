@@ -1,6 +1,6 @@
 import { BaseService } from '../base/base.service';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
-import { inject, Injectable, Signal } from '@angular/core';
+import { inject, Injectable, signal, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Server } from './server';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -12,6 +12,7 @@ import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filte
 export class ServersService extends BaseService {
   private http = inject(HttpClient);
   private serversUrl = `${this.getBaseUrl()}/servers`;
+  public serverFilter = signal<ServerFilter>(null);
   private serverFilter$: Subject<ServerFilter> = new Subject<ServerFilter>();
   private servers$: Observable<Server[]> = this.serverFilter$.pipe(
     switchMap((filter: ServerFilter) => this.getServers(filter)),
@@ -59,6 +60,7 @@ export class ServersService extends BaseService {
   }
 
   setServerFilter(filter: ServerFilter) {
+    this.serverFilter.set(filter);
     this.serverFilter$.next(filter);
   }
 }

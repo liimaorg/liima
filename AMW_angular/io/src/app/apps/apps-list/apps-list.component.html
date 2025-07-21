@@ -1,8 +1,8 @@
 @if (apps() && apps().length > 0) {
   <table class="table table-sm mb-0">
     <tbody>
-      @for (app of apps(); track app) {
-        <tr [class.table-light]="!even()">
+      @for (app of apps(); track app.id) {
+        <tr>
           <td>
             <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ app.id }}">{{ app.name }}</a>
           </td>

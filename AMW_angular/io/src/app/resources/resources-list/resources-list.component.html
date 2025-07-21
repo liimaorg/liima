@@ -6,25 +6,27 @@
           <h2>
             {{ resourceType().name }}
             <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&resTypId={{ resourceType().id }}">
-              <app-button [variant]="'link'">
+              <app-button title="Edit" [variant]="'link'">
                 <app-icon icon="pencil"></app-icon>
               </app-button>
             </a>
-            <a
+            @if (permissions().canUseAngularEditResource) {
+              <a
               [routerLink]="['/resourceType/edit']"
               [queryParams]="{ ctx: 1, id: resourceType().id, selectedResourceTypeId: resourceType().id }"
             >
-              <app-button [variant]="'link'">
-                <app-icon icon="rocket-takeoff"></app-icon>
-              </app-button>
-            </a>
+                <app-button [variant]="'link'">
+                  <app-icon icon="rocket-takeoff"></app-icon>
+                </app-button>
+              </a>
+            }
             @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
-              <app-button [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
+              <app-button title="Delete" [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
                 <app-icon icon="trash"></app-icon>
               </app-button>
             }
           </h2>
-          @if (permissions().canCreateResource && !resourceType().isApplication) {
+          @if (permissions().canCreateResource) {
             <app-button [variant]="'primary'" (click)="addResource()" [additionalClasses]="'float-end'">
               <app-icon icon="plus-circle"></app-icon>
               New Resource
@@ -39,7 +41,7 @@
           [data]="resourceGroupListTableData()"
           [canDelete]="false"
           [canEdit]="permissions().canReadResources"
-          [canNavigate]="permissions().canReadResources"
+          [canNavigate]="permissions().canUseAngularEditResource"
           (edit)="openEditResourcePage($event.id)"
           (navigate)="openMigratedResourcePage($event.id)"
         >

@@ -20,10 +20,51 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 
+import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.control.DeploymentNotificationService;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.*;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.ComparatorFilterOption;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.CustomFilter;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes;
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonFilterService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.Sort;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -36,30 +77,10 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
+import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.logging.Logger;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.*;
 
 @RunWith(PersistenceTestRunner.class)
 public class DeploymentBoundaryPersistenceTest {
@@ -752,18 +773,12 @@ public class DeploymentBoundaryPersistenceTest {
 	public void test_getFilteredDeployments_sortByRelease() {
 		// given
 		Calendar cal = new GregorianCalendar();
-		ReleaseEntity releaseA = new ReleaseEntity();
-		releaseA.setName("releaseA");
 		cal.set(2014, Calendar.JANUARY, 1);
-		releaseA.setInstallationInProductionAt(cal.getTime());
-		ReleaseEntity releaseC = new ReleaseEntity();
-		releaseA.setName("releaseC");
+		ReleaseEntity releaseA = createRL("releaseA", cal.getTime());
 		cal.set(2014, Calendar.JULY, 1);
-		releaseC.setInstallationInProductionAt(cal.getTime());
-		ReleaseEntity releaseB = new ReleaseEntity();
-		releaseA.setName("releaseB");
+		ReleaseEntity releaseC = createRL("releaseC", cal.getTime());
 		cal.set(2014, Calendar.OCTOBER, 1);
-		releaseB.setInstallationInProductionAt(cal.getTime());
+		ReleaseEntity releaseB = createRL("releaseB", cal.getTime());
 		entityManager.persist(releaseA);
 		entityManager.persist(releaseC);
 		entityManager.persist(releaseB);
@@ -816,17 +831,12 @@ public class DeploymentBoundaryPersistenceTest {
 	public void test_getFilteredDeployments_filterByRelease() {
 		// given
 		Calendar cal = new GregorianCalendar();
-		ReleaseEntity releaseA = new ReleaseEntity();
-		releaseA.setName("releaseA");
 		cal.set(2014, Calendar.JANUARY, 1);
-		releaseA.setInstallationInProductionAt(cal.getTime());
-		ReleaseEntity releaseC = new ReleaseEntity();
-		releaseA.setName("releaseC");
+		ReleaseEntity releaseA = createRL("releaseA", cal.getTime());
 		cal.set(2014, Calendar.JULY, 1);
-		releaseC.setInstallationInProductionAt(cal.getTime());
-		ReleaseEntity releaseB = new ReleaseEntity();
-		releaseA.setName("releaseB");
+		ReleaseEntity releaseC = createRL("releaseC", cal.getTime());
 		cal.set(2014, Calendar.OCTOBER, 1);
+		ReleaseEntity releaseB = createRL("releaseB", cal.getTime());
 		releaseB.setInstallationInProductionAt(cal.getTime());
 		entityManager.persist(releaseA);
 		entityManager.persist(releaseC);
@@ -998,7 +1008,8 @@ public class DeploymentBoundaryPersistenceTest {
 	}
 
 	@Test
-	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestOfEveryResourceGroupAndContext() throws AMWException {
+	public void getEssentialListOfLastDeploymentsForAppServerAndContext_shouldReturnLatestOfEveryResourceGroupAndContext()
+			throws AMWException {
 		// given
 		LocalDateTime now = LocalDateTime.now();
 		ResourceEntity resourceA = ResourceFactory.createNewResource();
@@ -1072,7 +1083,8 @@ public class DeploymentBoundaryPersistenceTest {
 		entityManager.persist(resource);
 		Set<ResourceEntity> resources = new HashSet<>();
 		resources.add(resource);
-		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources,
+				false);
 		entityManager.persist(group);
 
 		ContextEntity contextA = new ContextEntity();
@@ -1111,7 +1123,8 @@ public class DeploymentBoundaryPersistenceTest {
 		persistDeploymentEntityForTest(d3);
 
 		List<CustomFilter> filters = new LinkedList<>();
-		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV)
+				.build();
 		filters.add(lastDeploymentJobFilter);
 		CustomFilter stateFilter = CustomFilter.builder(DeploymentFilterTypes.DEPLOYMENT_STATE).build();
 		stateFilter.setValue(DeploymentState.success.getDisplayName());
@@ -1123,7 +1136,8 @@ public class DeploymentBoundaryPersistenceTest {
 
 		// when sorting by release ascending
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, Sort.SortingDirectionType.ASC);
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, filters,
+				colToSort, Sort.SortingDirectionType.ASC);
 
 		// then
 		assertNotNull(result1);
@@ -1134,7 +1148,8 @@ public class DeploymentBoundaryPersistenceTest {
 		assertThat(it.next().getRelease(), is(release2));
 
 		// when sorting by release descending
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, Sort.SortingDirectionType.DESC);
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0, 10, filters,
+				colToSort, Sort.SortingDirectionType.DESC);
 
 		// then
 		assertNotNull(result2);
@@ -1159,7 +1174,8 @@ public class DeploymentBoundaryPersistenceTest {
 		entityManager.persist(resource);
 		Set<ResourceEntity> resources = new HashSet<>();
 		resources.add(resource);
-		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources,
+				false);
 		entityManager.persist(group);
 
 		ContextEntity contextA = new ContextEntity();
@@ -1198,7 +1214,8 @@ public class DeploymentBoundaryPersistenceTest {
 		persistDeploymentEntityForTest(d3);
 
 		List<CustomFilter> filters = new LinkedList<>();
-		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV)
+				.build();
 		filters.add(lastDeploymentJobFilter);
 		CustomFilter stateFilter = CustomFilter.builder(DeploymentFilterTypes.DEPLOYMENT_STATE).build();
 		stateFilter.setValue(DeploymentState.failed.getDisplayName());
@@ -1210,7 +1227,8 @@ public class DeploymentBoundaryPersistenceTest {
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
 
 		// when
-		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, Sort.SortingDirectionType.ASC);
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(0, 10, filters,
+				colToSort, Sort.SortingDirectionType.ASC);
 
 		// then
 		assertNotNull(result);
@@ -1234,7 +1252,8 @@ public class DeploymentBoundaryPersistenceTest {
 		entityManager.persist(resource);
 		Set<ResourceEntity> resources = new HashSet<>();
 		resources.add(resource);
-		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources,
+				false);
 		entityManager.persist(group);
 
 		ContextEntity contextA = new ContextEntity();
@@ -1274,7 +1293,8 @@ public class DeploymentBoundaryPersistenceTest {
 		persistDeploymentEntityForTest(d3);
 
 		List<CustomFilter> filters = new LinkedList<>();
-		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV)
+				.build();
 		filters.add(lastDeploymentJobFilter);
 		CustomFilter stateFilter = CustomFilter.builder(DeploymentFilterTypes.DEPLOYMENT_STATE).build();
 		stateFilter.setValue(DeploymentState.failed.getDisplayName());
@@ -1286,7 +1306,8 @@ public class DeploymentBoundaryPersistenceTest {
 		String colToSort = DeploymentFilterTypes.RELEASE.getFilterTabColumnName();
 
 		// when
-		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, Sort.SortingDirectionType.ASC);
+		Tuple<Set<DeploymentEntity>, Integer> result = deploymentBoundary.getFilteredDeployments(0, 10, filters,
+				colToSort, Sort.SortingDirectionType.ASC);
 
 		// then
 		assertNotNull(result);
@@ -1310,7 +1331,8 @@ public class DeploymentBoundaryPersistenceTest {
 		entityManager.persist(resource);
 		Set<ResourceEntity> resources = new HashSet<>();
 		resources.add(resource);
-		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources, false);
+		ResourceGroupEntity group = new ResourceGroupEntityBuilder().buildResourceGroupEntity("TestGroup", resources,
+				false);
 		entityManager.persist(group);
 
 		ContextEntity contextA = new ContextEntity();
@@ -1353,7 +1375,8 @@ public class DeploymentBoundaryPersistenceTest {
 		persistDeploymentEntityForTest(d3);
 
 		List<CustomFilter> filters = new LinkedList<>();
-		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV).build();
+		CustomFilter lastDeploymentJobFilter = CustomFilter.builder(DeploymentFilterTypes.LASTDEPLOYJOBFORASENV)
+				.build();
 		filters.add(lastDeploymentJobFilter);
 		CustomFilter appServerFilter = CustomFilter.builder(DeploymentFilterTypes.APPSERVER_NAME).build();
 		appServerFilter.setValue(group.getName());
@@ -1361,7 +1384,8 @@ public class DeploymentBoundaryPersistenceTest {
 
 		// when sorted by tracking id asc
 		String colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, filters, colToSort, Sort.SortingDirectionType.ASC);
+		Tuple<Set<DeploymentEntity>, Integer> result1 = deploymentBoundary.getFilteredDeployments(0, 10, filters,
+				colToSort, Sort.SortingDirectionType.ASC);
 
 		// then
 		assertNotNull(result1);
@@ -1379,7 +1403,8 @@ public class DeploymentBoundaryPersistenceTest {
 
 		// when sorted by tracking id desc
 		colToSort = DeploymentFilterTypes.TRACKING_ID.getFilterTabColumnName();
-		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments( 0, 10, filters, colToSort, Sort.SortingDirectionType.DESC);
+		Tuple<Set<DeploymentEntity>, Integer> result2 = deploymentBoundary.getFilteredDeployments(0, 10, filters,
+				colToSort, Sort.SortingDirectionType.DESC);
 
 		// then
 		assertNotNull(result2);

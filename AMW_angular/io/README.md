@@ -51,7 +51,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 # Icons
 
-The project uses bootstrap 4 and [bootstrap icons](https://icons.getbootstrap.com/).
+The project uses bootstrap and [bootstrap icons](https://icons.getbootstrap.com/).
 You can use any icon from the boostrap icon set with the custom `<app-icon>` component:
 
 ```

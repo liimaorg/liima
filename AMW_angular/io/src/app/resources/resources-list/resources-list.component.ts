@@ -47,12 +47,16 @@ export class ResourcesListComponent {
         canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
         canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE'),
         canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE'),
+        // TODO: remove after migration
+        canUseAngularEditResource: this.authService.hasPermission('RESOURCE', 'READ') && this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL'),
+
       };
     } else {
       return {
         canReadResources: false,
         canCreateResource: false,
         canDeleteResourceType: false,
+        canUseAngularEditResource: false,
       };
     }
   });
@@ -84,7 +88,7 @@ export class ResourcesListComponent {
     return [
       {
         key: 'name',
-        columnTitle: 'Release name',
+        columnTitle: 'Resource name',
       },
       {
         key: 'defaultRelease',

@@ -1,3 +1,97 @@
+# v1.18.2
+* feat: turn servers and apps filters into form so enter works [#881](https://github.com/liimaorg/liima/pull/881)
+* fix: improve performance of permissions table by mapping icon directly in datasource [#882](https://github.com/liimaorg/liima/pull/882)
+
+# v1.18.1
+* fix(restriction-list): use signals for restrictionsHeader to prevent unnecessary rerenders [#880](https://github.com/liimaorg/liima/pull/880)
+
+# v1.18.0
+* All screens except for Resource and Resource type edit where migrated to Angular.
+* Various updates of dependencies.
+
+## BREAKING CHANGEs
+* Favorites and Shakedown Test where removed from Liima.
+
+## Pull Requests
+* UI improvements [#876](https://github.com/liimaorg/liima/pull/876)
+* chore(deps): bump com.fasterxml.jackson.core:jackson-core from 2.12.6 to 2.15.0 [#873](https://github.com/liimaorg/liima/pull/873)
+* fix: JSF set empty string relation name instead of null, add check [#872](https://github.com/liimaorg/liima/pull/872)
+* fix: redirect to angular page when last release of res is deleted [#868](https://github.com/liimaorg/liima/pull/868)
+* fix: don't show appserver select on redeploy, group together @ifs [#867](https://github.com/liimaorg/liima/pull/867)
+* chore(deps): bump webpack-dev-server and @angular-devkit/build-angular in /AMW_angular/io [#866](https://github.com/liimaorg/liima/pull/866)
+* chore(deps-dev): bump axios from 1.7.4 to 1.9.0 in /AMW_e2e [#865](https://github.com/liimaorg/liima/pull/865)
+* {hostName} will be replaced in server url, fix js config lookup [#864](https://github.com/liimaorg/liima/pull/864)
+* Remove duplicate Applicationserver label in Redeployments [#863](https://github.com/liimaorg/liima/pull/863)
+* replace cypress with playwright for e2e-tests [#862](https://github.com/liimaorg/liima/pull/862)
+* Ensure UI update after permissions deletion [#861](https://github.com/liimaorg/liima/pull/861)
+* Prevent initial loading of servers [#860](https://github.com/liimaorg/liima/pull/860)
+* chore(deps): bump tar-fs from 3.0.8 to 3.0.9 in /AMW_angular/io [#859](https://github.com/liimaorg/liima/pull/859)
+* chore(deps): bump koa from 2.15.3 to 2.16.1 in /AMW_angular/io [#857](https://github.com/liimaorg/liima/pull/857)
+* Update angular, bootstrap and other js deps [#856](https://github.com/liimaorg/liima/pull/856)
+* chore(deps): bump @babel/runtime and @angular-devkit/build-angular in /AMW_angular/io [#853](https://github.com/liimaorg/liima/pull/853)
+* fix: final review changes [#850](https://github.com/liimaorg/liima/pull/850)
+* fix: appServer-dropdown when creating apps [#844](https://github.com/liimaorg/liima/pull/844)
+* fix: apps release link on apps page [#842](https://github.com/liimaorg/liima/pull/842)
+* feat: improve ui, make app table more consistent with the others [#841](https://github.com/liimaorg/liima/pull/841)
+* Bugfix/1077 apps page reload pagination [#840](https://github.com/liimaorg/liima/pull/840)
+* Refactor/app page [#839](https://github.com/liimaorg/liima/pull/839)
+* Feature/1070 table component [#838](https://github.com/liimaorg/liima/pull/838)
+* Servers page fix: host urls [#837](https://github.com/liimaorg/liima/pull/837)
+* Refactor/1089 use signals for settings releases [#836](https://github.com/liimaorg/liima/pull/836)
+* Settings page fixes: release dates, save new functions [#835](https://github.com/liimaorg/liima/pull/835)
+* Apps and Servers page fixes: add table filters to url [#834](https://github.com/liimaorg/liima/pull/834)
+* Apps page fix: loading spinner [#833](https://github.com/liimaorg/liima/pull/833)
+* Apps and Deployment page fixes: list Applicationservers, display toast errors [#831](https://github.com/liimaorg/liima/pull/831)
+* Settings page fixes: tab naming, environments page selection [#830](https://github.com/liimaorg/liima/pull/830)
+* Resources page fixes [#829](https://github.com/liimaorg/liima/pull/829)
+* Angular: make tables more similar, fix some UI bugs [#827](https://github.com/liimaorg/liima/pull/827)
+* update js deps [#817](https://github.com/liimaorg/liima/pull/817)
+* Development [#813](https://github.com/liimaorg/liima/pull/813)
+* fix: adjust navigation and delete unused code [#812](https://github.com/liimaorg/liima/pull/812)
+* fix: links and add sorting for runtimes [#811](https://github.com/liimaorg/liima/pull/811)
+* fix: small issues on apps-page [#810](https://github.com/liimaorg/liima/pull/810)
+* Feat/1049 styling resource page [#809](https://github.com/liimaorg/liima/pull/809)
+* Feat/1045 tile component [#808](https://github.com/liimaorg/liima/pull/808)
+* Feat/1046 dummy page [#807](https://github.com/liimaorg/liima/pull/807)
+* Feat/1039 fix resource navigation links [#806](https://github.com/liimaorg/liima/pull/806)
+* feat: add loading component when searching servers with the filter [#805](https://github.com/liimaorg/liima/pull/805)
+* feature: Create new resourcetype [#804](https://github.com/liimaorg/liima/pull/804)
+* Feature/943 delete resource type [#803](https://github.com/liimaorg/liima/pull/803)
+* Feature/942 add new resource [#802](https://github.com/liimaorg/liima/pull/802)
+* Feature/1031 add input field when adding new env [#801](https://github.com/liimaorg/liima/pull/801)
+* feat: new ui settings-environment (show alias of env) [#800](https://github.com/liimaorg/liima/pull/800)
+* feat: change routing from settings [#799](https://github.com/liimaorg/liima/pull/799)
+* Feature/940 resources listview [#798](https://github.com/liimaorg/liima/pull/798)
+* Fix/apps page [#797](https://github.com/liimaorg/liima/pull/797)
+* refactor: remove inital server load [#796](https://github.com/liimaorg/liima/pull/796)
+* refactor: align styling for servers page #1035 [#795](https://github.com/liimaorg/liima/pull/795)
+* chore: update to Mockito to 4.11.0 [#794](https://github.com/liimaorg/liima/pull/794)
+* Feature/1004 servers implement filter search [#793](https://github.com/liimaorg/liima/pull/793)
+* chore(deps): bump org.hibernate.validator:hibernate-validator from 6.1.5.Final to 6.2.0.Final [#792](https://github.com/liimaorg/liima/pull/792)
+* Feature/1022 codemirror v6 [#791](https://github.com/liimaorg/liima/pull/791)
+* chore: remove sideeffect from permissions compution #789 [#790](https://github.com/liimaorg/liima/pull/790)
+* Fix/permissions signal [#789](https://github.com/liimaorg/liima/pull/789)
+* feature: Resources page with routing and list of resource types [#788](https://github.com/liimaorg/liima/pull/788)
+* Tidying application-info component [#787](https://github.com/liimaorg/liima/pull/787)
+* feat: set preselected release to upcoming release in app-filter [#786](https://github.com/liimaorg/liima/pull/786)
+* Button component [#785](https://github.com/liimaorg/liima/pull/785)
+* Feature/796: add functionality to environments page with new ui [#784](https://github.com/liimaorg/liima/pull/784)
+* Modal-header component [#783](https://github.com/liimaorg/liima/pull/783)
+* Show list of servers [#782](https://github.com/liimaorg/liima/pull/782)
+* feat: add environments page with new ui without functionality [#781](https://github.com/liimaorg/liima/pull/781)
+* new servers page with routing [#780](https://github.com/liimaorg/liima/pull/780)
+* chore(deps): bump cookie, socket.io and express in /AMW_angular/io [#779](https://github.com/liimaorg/liima/pull/779)
+* Screen Apps [#778](https://github.com/liimaorg/liima/pull/778)
+* Run Test Suites for Development Branch [#776](https://github.com/liimaorg/liima/pull/776)
+* chore(deps): bump commons-io:commons-io from 2.7 to 2.14.0 in /AMW_business [#775](https://github.com/liimaorg/liima/pull/775)
+* Feature/769 angular functions [#774](https://github.com/liimaorg/liima/pull/774)
+* Remove ShakedownTest and Testing [#770](https://github.com/liimaorg/liima/pull/770)
+* fix: permission handling in components [#768](https://github.com/liimaorg/liima/pull/768)
+* Remove My favorites [#766](https://github.com/liimaorg/liima/pull/766)
+* Feature/740 angular property types [#765](https://github.com/liimaorg/liima/pull/765)
+* Angular signals [#763](https://github.com/liimaorg/liima/pull/763)
+* Remove karma and fix vunerabilities [#762](https://github.com/liimaorg/liima/pull/762)
+
 # v1.17.36
 * Fix: Permissions can be changed by unprivileged users: https://github.com/liimaorg/liima/security/advisories/GHSA-cghr-2r42-868j
 * Update JavaScript dependencies
@@ -14,7 +108,6 @@
 * Angular: create ToastContainer Component [#744](https://github.com/liimaorg/liima/issues/744)
 * Limit deployment log file size to 10MB [#413](https://github.com/liimaorg/liima/issues/413)
 * Node and js version update, GH action updates [#741](https://github.com/liimaorg/liima/pull/741)
-* Update Java Script dependencies
 
 # v1.17.34
 * Angular Cleanup and Consolidation [#723](https://github.com/liimaorg/liima/pull/723)

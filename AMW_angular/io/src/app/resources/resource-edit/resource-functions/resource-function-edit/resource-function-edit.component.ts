@@ -1,16 +1,17 @@
-import { Component, EventEmitter, inject, Input, Output, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
-import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { ResourceFunctionsService } from '../../../services/resource-functions.service';
-import { RevisionInformation } from '../../../../shared/model/revisionInformation';
-import { ModalHeaderComponent } from '../../../../shared/modal-header/modal-header.component';
-import { IconComponent } from '../../../../shared/icon/icon.component';
-import { ButtonComponent } from '../../../../shared/button/button.component';
-import { CodeEditorComponent } from '../../../../shared/codemirror/code-editor.component';
-import { DiffEditorComponent } from '../../../../shared/codemirror/diff-editor.component';
-import { ResourceFunction } from '../../../models/resource-function';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ResourceFunction } from 'src/app/resources/models/resource-function';
+import { ResourceFunctionsService } from 'src/app/resources/services/resource-functions.service';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
+import { CodeEditorComponent } from 'src/app/shared/codemirror/code-editor.component';
+import { DiffEditorComponent } from 'src/app/shared/codemirror/diff-editor.component';
+import { FullscreenToggleComponent } from 'src/app/shared/fullscreen-toggle/fullscreen-toggle.component';
+import { IconComponent } from 'src/app/shared/icon/icon.component';
+import { ModalHeaderComponent } from 'src/app/shared/modal-header/modal-header.component';
+import { RevisionInformation } from 'src/app/shared/model/revisionInformation';
+import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revision-compare.component';
 
 @Component({
   selector: 'app-resource-function-edit',
@@ -28,6 +29,8 @@ import { ResourceFunction } from '../../../models/resource-function';
     ButtonComponent,
     ModalHeaderComponent,
     IconComponent,
+    RevisionCompareComponent,
+    FullscreenToggleComponent,
   ],
 })
 export class ResourceFunctionEditComponent implements OnInit {
@@ -41,8 +44,6 @@ export class ResourceFunctionEditComponent implements OnInit {
   public revisions: RevisionInformation[] = [];
   public revision: ResourceFunction;
   public selectedRevisionName: string;
-  public isFullscreen = false;
-  public toggleFullscreenIcon = 'arrows-fullscreen';
   public newMik: string = '';
   public diffValue = {
     original: '',
@@ -78,18 +79,22 @@ export class ResourceFunctionEditComponent implements OnInit {
     });
   }
 
-  selectRevision(functionId: number, revisionId: number, displayName: string): void {
-    this.functionsService.getFunctionByIdAndRevision(functionId, revisionId).subscribe((revision) => {
-      this.revision = revision;
-      this.selectedRevisionName = displayName;
-      this.diffValue = { original: this.function.content, modified: this.revision.content };
-    });
+  selectRevision(revisionId: number, displayName: string): void {
+    if (revisionId && displayName) {
+      this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
+        this.revision = revision;
+        this.selectedRevisionName = displayName;
+        this.diffValue = { original: this.function.content, modified: this.revision.content };
+      });
+    } else {
+      //reset selected revision
+      this.revision = null;
+      this.selectedRevisionName = null;
+    }
   }
 
-  toggleFullscreen() {
-    this.isFullscreen = !this.isFullscreen;
-    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-    this.activeModal.update({ fullscreen: this.isFullscreen });
+  toggleFullscreen(isFullscreen: boolean) {
+    this.activeModal.update({ fullscreen: isFullscreen });
   }
 
   addMik() {

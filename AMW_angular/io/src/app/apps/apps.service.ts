@@ -12,7 +12,7 @@ export class AppsService extends BaseService {
   private http = inject(HttpClient);
   private appsUrl = `${this.getBaseUrl()}/apps`;
 
-  private reload$ = new Subject<AppServer[]>();
+  private reload$ = new Subject<void>();
 
   filter = signal<string>(null);
   releaseId: WritableSignal<number | undefined> = signal(undefined);
@@ -28,7 +28,7 @@ export class AppsService extends BaseService {
   }
 
   refreshData() {
-    this.reload$.next([]);
+    this.reload$.next();
   }
 
   private getApps(filter: string, releaseId: number | undefined) {
@@ -38,7 +38,6 @@ export class AppsService extends BaseService {
     if (filter !== undefined && filter !== null && filter !== '') {
       urlParams += `appServerName=${filter}&`;
     }
-
     return this.http
       .get<AppServer[]>(`${this.appsUrl}?${urlParams}releaseId=${releaseId}`, {
         headers: this.getHeaders(),

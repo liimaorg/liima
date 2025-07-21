@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal, Signal } from '@angular/core';
-import { BehaviorSubject, skip, Subject, take } from 'rxjs';
+import { BehaviorSubject, Subject, take } from 'rxjs';
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { IconComponent } from '../shared/icon/icon.component';
 import { PageComponent } from '../layout/page/page.component';
@@ -14,7 +14,7 @@ import { AppServer } from './app-server';
 import { AppsServersListComponent } from './apps-servers-list/apps-servers-list.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
 import { ResourceService } from '../resources/services/resource.service';
 import { AppCreate } from './app-create';
@@ -36,7 +36,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppsComponent implements OnInit, OnDestroy {
-  private appsService = inject(AppsService);
+  public appsService = inject(AppsService);
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private releaseService = inject(ReleasesService); // getCount -> getReleases(0, count)
@@ -46,18 +46,15 @@ export class AppsComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  upcomingRelease: Signal<Release> = toSignal(this.releaseService.getUpcomingRelease());
-
   releases: Signal<Release[]> = toSignal(this.releaseService.getReleases(0, 50), { initialValue: [] as Release[] });
   appServerResourceType$ = this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER');
   appServerGroups = this.resourceService.resourceGroupListForType;
-  appServers = this.appsService.apps;
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
 
   showLoader = signal(false);
   isLoading = computed(() => {
-    return this.appServers() === undefined || this.appServers() === null || this.showLoader();
+    return this.appsService.apps() === undefined || this.appsService.apps() === null || this.showLoader();
   });
 
   permissions = computed(() => {
@@ -72,15 +69,6 @@ export class AppsComponent implements OnInit, OnDestroy {
     }
   });
 
-  constructor() {
-    toObservable(this.upcomingRelease)
-      .pipe(takeUntil(this.destroy$), skip(1), take(1))
-      .subscribe((release) => {
-        this.appsService.releaseId.set(release.id);
-        this.appsService.refreshData();
-      });
-  }
-
   ngOnInit(): void {
     this.appServerResourceType$.pipe(takeUntil(this.destroy$)).subscribe((asResourceType) => {
       this.resourceService.setTypeForResourceGroupList(asResourceType);
@@ -91,11 +79,20 @@ export class AppsComponent implements OnInit, OnDestroy {
     });
 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      if (params.filter) {
-        this.appsService.filter.set(params.filter);
-      }
       if (params.releaseId) {
-        this.appsService.releaseId.set(Number(params.releaseId));
+        this.appsService.releaseId.set(params.releaseId ? Number(params.releaseId) : 0);
+      }
+      if (params.filter) {
+        this.appsService.filter.set(params.filter ?? null);
+      }
+      if (this.appsService.releaseId()) {
+        this.appsService.refreshData();
+      }
+      else {
+        this.releaseService.getUpcomingRelease().pipe(take(1)).subscribe((release: Release) => {
+          this.appsService.releaseId.set(release.id);
+          this.appsService.refreshData();
+        });
       }
     });
   }

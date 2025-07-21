@@ -20,6 +20,29 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
+import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.logging.Logger;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -43,26 +66,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotDeletableException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.logging.Logger;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(PersistenceTestRunner.class)
 public class ResourceBoundaryPersistenceTest {
@@ -116,11 +119,9 @@ public class ResourceBoundaryPersistenceTest {
         ResourceTypeEntity appType = new ResourceTypeEntity();
         appType.setName("application");
         entityManager.persist(appType);
-        ReleaseEntity release1 = new ReleaseEntity();
-        release1.setName("release1");
+        ReleaseEntity release1 = createRL("release1", null);
         entityManager.persist(release1);
-        ReleaseEntity release2 = new ReleaseEntity();
-        release1.setName("release2");
+        ReleaseEntity release2 = createRL("release2", null);
         entityManager.persist(release2);
 
         when(releaseService.getById(release1.getId())).thenReturn(release1);
@@ -165,8 +166,7 @@ public class ResourceBoundaryPersistenceTest {
         as.setResourceType(asType);
         as.setName("test");
 
-        ReleaseEntity release1 = new ReleaseEntity();
-        release1.setName("release1");
+        ReleaseEntity release1 = createRL("release1", null);
         entityManager.persist(release1);
 
         when(releaseService.getById(release1.getId())).thenReturn(release1);
@@ -186,8 +186,7 @@ public class ResourceBoundaryPersistenceTest {
         ResourceTypeEntity appType = new ResourceTypeEntity();
         appType.setName("application");
         entityManager.persist(appType);
-        ReleaseEntity release1 = new ReleaseEntity();
-        release1.setName("release1");
+        ReleaseEntity release1 = createRL("release1", null);
         entityManager.persist(release1);
 
         when(releaseService.getById(release1.getId())).thenReturn(release1);

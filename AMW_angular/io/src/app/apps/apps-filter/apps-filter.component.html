@@ -1,8 +1,8 @@
-<div class="container pb-2">
+<form #appsFilterForm="ngForm" (ngSubmit)="search()" class="container pb-2">
   <div class="row justify-content-between align-items-end">
     <div class="col-sm-4">
-      <label for="appName" class="form-label">Application/AS name</label>
-      <input class="form-control" id="appName" type="text" [(ngModel)]="appName" />
+      <label for="filter" class="form-label">Application/AS name</label>
+      <input class="form-control" id="filter" type="text" [(ngModel)]="filterValue" name="filterValue" />
     </div>
     <div class="col-sm-2">
       <label class="form-label">Release</label>
@@ -10,7 +10,8 @@
         id="selectRelease"
         [clearable]="false"
         [ngModel]="selection().selected()"
-        (change)="selection().selected.set($event)"
+        (ngModelChange)="selection().selected.set($event)"
+        name="release"
       >
         @for (release of selection().releases; track release.id) {
           <ng-option [value]="release.id">{{ release.name }}</ng-option>
@@ -18,7 +19,7 @@
       </ng-select>
     </div>
     <div class="col-sm">
-      <app-button [variant]="'primary'" [additionalClasses]="'float-start'" (click)="search()">Search</app-button>
+      <app-button [variant]="'primary'" [additionalClasses]="'float-start'" type="submit">Search</app-button>
     </div>
   </div>
-</div>
+</form>

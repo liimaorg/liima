@@ -1,27 +1,18 @@
-import {
-  Component,
-  computed,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, computed, EventEmitter, inject, Input, OnInit, Output, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { CommonModule } from '@angular/common';
-import { ModalHeaderComponent } from '../../../../shared/modal-header/modal-header.component';
-import { IconComponent } from '../../../../shared/icon/icon.component';
-import { ButtonComponent } from '../../../../shared/button/button.component';
-import { CodeEditorComponent } from '../../../../shared/codemirror/code-editor.component';
-import { ResourceTemplate } from '../../../models/resource-template';
-import { ResourceTemplatesService } from '../../../services/resource-templates.service';
-import { RevisionInformation } from '../../../../shared/model/revisionInformation';
-import { DiffEditorComponent } from '../../../../shared/codemirror/diff-editor.component';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ResourceTemplate } from 'src/app/resources/models/resource-template';
+import { ResourceTemplatesService } from 'src/app/resources/services/resource-templates.service';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
+import { CodeEditorComponent } from 'src/app/shared/codemirror/code-editor.component';
+import { DiffEditorComponent } from 'src/app/shared/codemirror/diff-editor.component';
+import { FullscreenToggleComponent } from 'src/app/shared/fullscreen-toggle/fullscreen-toggle.component';
+import { ModalHeaderComponent } from 'src/app/shared/modal-header/modal-header.component';
+import { RevisionInformation } from 'src/app/shared/model/revisionInformation';
+import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revision-compare.component';
+
 
 interface TargetPlatformModel {
   name: string;
@@ -37,14 +28,14 @@ interface TargetPlatformModel {
     CodeEditorComponent,
     FormsModule,
     CommonModule,
-    IconComponent,
     NgbDropdownModule,
     ModalHeaderComponent,
     ButtonComponent,
     ModalHeaderComponent,
-    IconComponent,
     DiffEditorComponent,
-  ],
+    RevisionCompareComponent,
+    FullscreenToggleComponent
+  ]
 })
 export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
@@ -54,29 +45,26 @@ export class ResourceTemplateEditComponent implements OnInit {
 
   private templatesService = inject(ResourceTemplatesService);
   allSelectableTargetPlatforms: Signal<string[]> = toSignal(this.templatesService.getAllTargetPlatforms(), {
-    initialValue: [],
+    initialValue: []
   });
 
+  public wrapLinesEnabled: false;
   public revisions: RevisionInformation[] = [];
   public revision: ResourceTemplate;
-  public selectedRevisionName: WritableSignal<string> = signal(null);
-  public isFullscreen = false;
-  public toggleFullscreenIcon = 'arrows-fullscreen';
+  public selectedRevisionName: string;
   public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
     return this.loadTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
   });
   public revisionTargetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
-    return this.loadRevisionTargetPlatformModelsForTemplate(
-      this.allSelectableTargetPlatforms(),
-      this.selectedRevisionName(),
-    );
+    return this.loadRevisionTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
   });
   public diffValue = {
     original: '',
-    modified: '',
+    modified: ''
   };
 
-  constructor(public activeModal: NgbActiveModal) {}
+  constructor(public activeModal: NgbActiveModal) {
+  }
 
   ngOnInit(): void {
     if (this.template && this.template.id) {
@@ -100,27 +88,25 @@ export class ResourceTemplateEditComponent implements OnInit {
     }
   }
 
-  toggleFullscreen() {
-    this.isFullscreen = !this.isFullscreen;
-    this.toggleFullscreenIcon = this.isFullscreen ? 'fullscreen-exit' : 'arrows-fullscreen';
-    this.activeModal.update({ fullscreen: this.isFullscreen });
+  toggleFullscreen(isFullscreen: boolean) {
+    this.activeModal.update({ fullscreen: isFullscreen });
   }
 
   loadTargetPlatformModelsForTemplate(allTargetPlatforms: string[]): TargetPlatformModel[] {
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.template.targetPlatforms.includes(name),
+        selected: this.template.targetPlatforms.includes(name)
       };
     });
   }
 
-  private loadRevisionTargetPlatformModelsForTemplate(allTargetPlatforms: string[], s: string): TargetPlatformModel[] {
+  private loadRevisionTargetPlatformModelsForTemplate(allTargetPlatforms: string[]): TargetPlatformModel[] {
     if (!this.revision) return;
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.revision.targetPlatforms.includes(name),
+        selected: this.revision.targetPlatforms.includes(name)
       };
     });
   }
@@ -140,12 +126,18 @@ export class ResourceTemplateEditComponent implements OnInit {
     });
   }
 
-  selectRevision(templateId: number, revisionId: number, displayName: string): void {
-    this.templatesService.getTemplateByIdAndRevision(templateId, revisionId).subscribe((revision) => {
-      this.revision = revision;
-      this.selectedRevisionName.update((value) => displayName);
-      this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
-    });
+  selectRevision(revisionId: number, displayName: string): void {
+    if (revisionId && displayName) {
+      this.templatesService.getTemplateByIdAndRevision(this.template.id, revisionId).subscribe((revision) => {
+        this.revision = revision;
+        this.selectedRevisionName = displayName;
+        this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
+      });
+    } else {
+      //reset selected revision
+      this.revision = null;
+      this.selectedRevisionName = null;
+    }
   }
 
   isValidForm(): boolean {
@@ -158,7 +150,9 @@ export class ResourceTemplateEditComponent implements OnInit {
   }
 
   isValidTargetPath() {
-    const REGEXP_FILE_PATH_PATTERN = /^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s][^/\\]*[^\s]$|^$/;
-    return this.template ? REGEXP_FILE_PATH_PATTERN.test(this.template.targetPath) : false;
+    const REGEXP_FILE_PATH_PATTERN = /^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s].*[^\s]$|^$/;
+    return this.template && this.template.targetPath && this.template.targetPath.trim() !== ''
+      ? REGEXP_FILE_PATH_PATTERN.test(this.template.targetPath)
+      : false;
   }
 }
