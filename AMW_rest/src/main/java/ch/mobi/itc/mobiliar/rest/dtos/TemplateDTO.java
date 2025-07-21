@@ -44,6 +44,8 @@ public class TemplateDTO {
     private String targetPath;
     private Set<String> targetPlatforms;
     private String fileContent;
+    private String sourceType;
+    private Long version;
 
     public TemplateDTO(TemplateDescriptorEntity template){
         this.id = template.getId();
@@ -57,5 +59,7 @@ public class TemplateDTO {
             }
         }
         this.fileContent = template.getFileContent();
+        this.sourceType = template.getSourceType() != null ? template.getSourceType().name() : null;
+        this.version = template.getV();
     }
 }

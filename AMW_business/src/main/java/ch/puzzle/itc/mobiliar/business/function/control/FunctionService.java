@@ -20,32 +20,41 @@
 
 package ch.puzzle.itc.mobiliar.business.function.control;
 
+import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import org.hibernate.Hibernate;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.util.*;
 
 public class FunctionService {
 
-	@Inject
-	FunctionRepository functionRepository;
+    @Inject
+    FunctionRepository functionRepository;
 
-	@Inject
-	ResourceRepository resourceRepository;
+    @Inject
+    ResourceRepository resourceRepository;
 
+    @Inject
+    EntityManager entityManager;
     /**
      * Returns all (overwritable) functions, which are defined on all parent resource types of the given resource instance - except the functions which are already defined on the given resource instance.
      */
     public List<AmwFunctionEntity> getAllOverwritableSupertypeFunctions(ResourceEntity resourceEntity) {
         Map<String, AmwFunctionEntity> allSuperTypeFunctions = getAllTypeAndSuperTypeFunctions(resourceEntity.getResourceType());
 
-        for(AmwFunctionEntity overwrittenFunction : resourceEntity.getFunctions()){
-            if (allSuperTypeFunctions.containsKey(overwrittenFunction.getName())){
+        for (AmwFunctionEntity overwrittenFunction : resourceEntity.getFunctions()) {
+            if (allSuperTypeFunctions.containsKey(overwrittenFunction.getName())) {
                 allSuperTypeFunctions.remove(overwrittenFunction.getName());
             }
         }
@@ -60,12 +69,12 @@ public class FunctionService {
 
         Map<String, AmwFunctionEntity> allSuperTypeFunctions = new LinkedHashMap<>();
 
-        if (!resourceTypeEntity.isRootResourceType()){
+        if (!resourceTypeEntity.isRootResourceType()) {
             allSuperTypeFunctions = getAllTypeAndSuperTypeFunctions(resourceTypeEntity.getParentResourceType());
         }
 
-        for(AmwFunctionEntity overwrittenFunction : resourceTypeEntity.getFunctions()){
-            if (allSuperTypeFunctions.containsKey(overwrittenFunction.getName())){
+        for (AmwFunctionEntity overwrittenFunction : resourceTypeEntity.getFunctions()) {
+            if (allSuperTypeFunctions.containsKey(overwrittenFunction.getName())) {
                 allSuperTypeFunctions.remove(overwrittenFunction.getName());
             }
         }
@@ -73,7 +82,7 @@ public class FunctionService {
         return new ArrayList<>(allSuperTypeFunctions.values());
     }
 
-    private Map<String, AmwFunctionEntity> getAllTypeAndSuperTypeFunctions(ResourceTypeEntity resourceTypeEntity){
+    private Map<String, AmwFunctionEntity> getAllTypeAndSuperTypeFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> superTypeFunctions = new LinkedHashMap<>();
         if (resourceTypeEntity != null) {
             for (AmwFunctionEntity function : resourceTypeEntity.getFunctions()) {
@@ -92,53 +101,53 @@ public class FunctionService {
         return superTypeFunctions;
     }
 
-	/**
-	 * Get all relevant functions for the given resource:
-	 * <ul>
-	 * <li>All functions of the resource</li>
-	 * <li>Functions of the parent resourceTypes if not overwritten by the resource itself</li>
-	 * </ul>
-	 * @param resource
-	 * @return a list of AmwFunctions
-	 */
-	public List<AmwFunctionEntity> getAllFunctionsForResource(ResourceEntity resource) {
-		Objects.requireNonNull(resource, "Resource Entity must not be null");
+    /**
+     * Get all relevant functions for the given resource:
+     * <ul>
+     * <li>All functions of the resource</li>
+     * <li>Functions of the parent resourceTypes if not overwritten by the resource itself</li>
+     * </ul>
+     * @param resource
+     * @return a list of AmwFunctions
+     */
+    public List<AmwFunctionEntity> getAllFunctionsForResource(ResourceEntity resource) {
+        Objects.requireNonNull(resource, "Resource Entity must not be null");
 
-		ResourceEntity resourceWithFctAndMiks = resourceRepository.loadWithFunctionsAndMiksForId(resource.getId());
-		List<AmwFunctionEntity> allFunctions = new ArrayList<>(resourceWithFctAndMiks.getFunctions());
-		allFunctions.addAll(getAllOverwritableSupertypeFunctions(resourceWithFctAndMiks));
+        ResourceEntity resourceWithFctAndMiks = resourceRepository.loadWithFunctionsAndMiksForId(resource.getId());
+        List<AmwFunctionEntity> allFunctions = new ArrayList<>(resourceWithFctAndMiks.getFunctions());
+        allFunctions.addAll(getAllOverwritableSupertypeFunctions(resourceWithFctAndMiks));
 
-		return allFunctions;
-	}
+        return allFunctions;
+    }
 
-	/**
-	 * Find the function for the given mik
-	 * @param functions
-	 * @param mik
-	 * @return AmwFunctionEntity
-	 */
-	public AmwFunctionEntity getAMWFunctionForMIK(List<AmwFunctionEntity> functions, String mik) {
-		for (AmwFunctionEntity function : functions) {
-			for (String mikName : function.getMikNames()) {
-				if (mikName.equals(mik)) {
-					return function;
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Find the function for the given mik
+     * @param functions
+     * @param mik
+     * @return AmwFunctionEntity
+     */
+    public AmwFunctionEntity getAMWFunctionForMIK(List<AmwFunctionEntity> functions, String mik) {
+        for (AmwFunctionEntity function : functions) {
+            for (String mikName : function.getMikNames()) {
+                if (mikName.equals(mik)) {
+                    return function;
+                }
+            }
+        }
+        return null;
+    }
 
-	public void saveFunctionWithMiks(AmwFunctionEntity amwFunction, Set<String> functionMikNames) {
-		if (amwFunction != null) {
-			Set<MikEntity> miks = new HashSet<>();
-			for (String mikName : functionMikNames) {
-				miks.add(new MikEntity(mikName, amwFunction));
-			}
+    public void saveFunctionWithMiks(AmwFunctionEntity amwFunction, Set<String> functionMikNames) {
+        if (amwFunction != null) {
+            Set<MikEntity> miks = new HashSet<>();
+            for (String mikName : functionMikNames) {
+                miks.add(new MikEntity(mikName, amwFunction));
+            }
 
-			amwFunction.setMiks(miks);
-			functionRepository.persistOrMergeFunction(amwFunction);
-		}
-	}
+            amwFunction.setMiks(miks);
+            functionRepository.persistOrMergeFunction(amwFunction);
+        }
+    }
 
     /**
      * Find all functions within the namespace (scope of function name uniques: RootResourceType -> subResourceType -> ResourceInstance) for given name
@@ -164,7 +173,7 @@ public class FunctionService {
         List<AmwFunctionEntity> allFunctions = new ArrayList<>();
 
         Map<String, AmwFunctionEntity> allSuperTypeFunctions = getAllTypeAndSuperTypeFunctions(resourceType);
-        if (allSuperTypeFunctions.containsKey(name)){
+        if (allSuperTypeFunctions.containsKey(name)) {
             allFunctions.add(allSuperTypeFunctions.get(name));
         }
 
@@ -187,7 +196,7 @@ public class FunctionService {
         List<AmwFunctionEntity> allFunctions = new ArrayList<>();
 
         Map<String, AmwFunctionEntity> allSubTypesAndResourcesFunctions = getAllSubTypeAndResourceFunctions(resourceType);
-        if (allSubTypesAndResourcesFunctions.containsKey(name)){
+        if (allSubTypesAndResourcesFunctions.containsKey(name)) {
             allFunctions.add(allSubTypesAndResourcesFunctions.get(name));
         }
 
@@ -205,9 +214,8 @@ public class FunctionService {
     }
 
 
-    private Map<String, AmwFunctionEntity> getAllSubTypeAndResourceFunctions(ResourceTypeEntity resourceTypeEntity){
+    private Map<String, AmwFunctionEntity> getAllSubTypeAndResourceFunctions(ResourceTypeEntity resourceTypeEntity) {
         Map<String, AmwFunctionEntity> subTypeFunctions = new LinkedHashMap<>();
-
 
         for (ResourceEntity resource : resourceTypeEntity.getResources()) {
             for (AmwFunctionEntity function : resource.getFunctions()) {
@@ -232,31 +240,31 @@ public class FunctionService {
         return overwritingFunction;
     }
 
-	public AmwFunctionEntity overwriteResourceTypeFunction(String functionBody, AmwFunctionEntity functionToOverwrite, ResourceTypeEntity resourceType) {
-        if (resourceType.isRootResourceType() || isAlreadyOverwrittenInResourceType(functionToOverwrite, resourceType)){
+    public AmwFunctionEntity overwriteResourceTypeFunction(String functionBody, AmwFunctionEntity functionToOverwrite, ResourceTypeEntity resourceType) {
+        if (resourceType.isRootResourceType() || isAlreadyOverwrittenInResourceType(functionToOverwrite, resourceType)) {
             throw new RuntimeException("Can not overwrite resource type function!");
         }
         AmwFunctionEntity overwritingFunction = null;
         if (functionToOverwrite.isOverwrittenBySubTypeOrResourceFunction()) {
-			for (AmwFunctionEntity oldOverwritingFunction : functionToOverwrite.getOverwritingChildFunction()) {
-				if (isOverwrittenInSubTypeOrResource(resourceType, oldOverwritingFunction) && hasSameParentResourceType(resourceType, oldOverwritingFunction)) {
+            for (AmwFunctionEntity oldOverwritingFunction : functionToOverwrite.getOverwritingChildFunction()) {
+                if (isOverwrittenInSubTypeOrResource(resourceType, oldOverwritingFunction) && hasSameParentResourceType(resourceType, oldOverwritingFunction)) {
                     overwritingFunction = replaceOverwriting(functionBody, functionToOverwrite, oldOverwritingFunction);
                     break;
-				}
-			}
+                }
+            }
 
-		}
+        }
         if (overwritingFunction == null) {
             overwritingFunction = overwriteFunction(functionBody, functionToOverwrite);
         }
 
         overwritingFunction.setResourceType(resourceType);
         return overwritingFunction;
-	}
+    }
 
     private boolean isAlreadyOverwrittenInResourceType(AmwFunctionEntity functionToOverwrite, ResourceTypeEntity resourceType) {
-        for (AmwFunctionEntity overwritingFunction : functionToOverwrite.getOverwritingChildFunction()){
-            if (overwritingFunction.isDefinedOnResourceType() && overwritingFunction.getResourceType().equals(resourceType)){
+        for (AmwFunctionEntity overwritingFunction : functionToOverwrite.getOverwritingChildFunction()) {
+            if (overwritingFunction.isDefinedOnResourceType() && overwritingFunction.getResourceType().equals(resourceType)) {
                 return true;
             }
         }
@@ -268,10 +276,10 @@ public class FunctionService {
 
         List<ResourceTypeEntity> allSubResourceTypes = getAllSubResourceTypes(resourceType);
 
-        if (oldOverwritingFunction.isDefinedOnResourceType()){
-           isSubType = allSubResourceTypes.contains(oldOverwritingFunction.getResourceType());
+        if (oldOverwritingFunction.isDefinedOnResourceType()) {
+            isSubType = allSubResourceTypes.contains(oldOverwritingFunction.getResourceType());
         }
-        if (oldOverwritingFunction.isDefinedOnResource()){
+        if (oldOverwritingFunction.isDefinedOnResource()) {
             ResourceTypeEntity resourceTypeOfFunctionResource = oldOverwritingFunction.getResource().getResourceType();
             isSubType = allSubResourceTypes.contains(resourceTypeOfFunctionResource) || resourceType.equals(resourceTypeOfFunctionResource);
         }
@@ -279,10 +287,10 @@ public class FunctionService {
         return isSubType;
     }
 
-    private List<ResourceTypeEntity> getAllParentResourceTypes(ResourceTypeEntity resourceType){
+    private List<ResourceTypeEntity> getAllParentResourceTypes(ResourceTypeEntity resourceType) {
         List<ResourceTypeEntity> allParentResourceTypes = new ArrayList<>();
 
-        if (!resourceType.isRootResourceType()){
+        if (!resourceType.isRootResourceType()) {
             allParentResourceTypes.add(resourceType.getParentResourceType());
             allParentResourceTypes.addAll(getAllParentResourceTypes(resourceType.getParentResourceType()));
         }
@@ -290,10 +298,10 @@ public class FunctionService {
         return allParentResourceTypes;
     }
 
-    private List<ResourceTypeEntity> getAllSubResourceTypes(ResourceTypeEntity resourceType){
+    private List<ResourceTypeEntity> getAllSubResourceTypes(ResourceTypeEntity resourceType) {
         List<ResourceTypeEntity> allSubResourceTypes = new ArrayList<>();
 
-        for (ResourceTypeEntity subResourceType : resourceType.getChildrenResourceTypes()){
+        for (ResourceTypeEntity subResourceType : resourceType.getChildrenResourceTypes()) {
             allSubResourceTypes.add(subResourceType);
             allSubResourceTypes.addAll(getAllSubResourceTypes(subResourceType));
         }
@@ -323,23 +331,49 @@ public class FunctionService {
     }
 
 
-	private AmwFunctionEntity overwriteFunction(String functionBody, AmwFunctionEntity functionToOverwrite) {
-		AmwFunctionEntity overwritingFunction = new AmwFunctionEntity();
-		overwritingFunction.setName(functionToOverwrite.getName());
-		overwritingFunction.setImplementation(functionBody);
-		overwritingFunction.overwrite(functionToOverwrite);
-		saveFunctionWithMiks(overwritingFunction, functionToOverwrite.getMikNames());
-		return overwritingFunction;
-	}
+    private AmwFunctionEntity overwriteFunction(String functionBody, AmwFunctionEntity functionToOverwrite) {
+        AmwFunctionEntity overwritingFunction = new AmwFunctionEntity();
+        overwritingFunction.setName(functionToOverwrite.getName());
+        overwritingFunction.setImplementation(functionBody);
+        overwritingFunction.overwrite(functionToOverwrite);
+        saveFunctionWithMiks(overwritingFunction, functionToOverwrite.getMikNames());
+        return overwritingFunction;
+    }
 
-	/**
-	 * Delete function and removes dependencies in overridden parent functions
-	 */
-	public void deleteFunction(AmwFunctionEntity functionToDelete) {
-		if (functionToDelete.isOverwritingResourceTypeFunction()) {
-			functionToDelete.resetOverwriting();
-		}
+    /**
+     * Delete function and removes dependencies in overridden parent functions
+     */
+    public void deleteFunction(AmwFunctionEntity functionToDelete) {
+        if (functionToDelete.isOverwritingResourceTypeFunction()) {
+            functionToDelete.resetOverwriting();
+        }
 
-		functionRepository.remove(functionToDelete);
-	}
+        functionRepository.remove(functionToDelete);
+    }
+
+
+    public AmwFunctionEntity getFunctionRevision(int functionId, Number revisionId) throws NotFoundException {
+        AmwFunctionEntity function = AuditReaderFactory.get(entityManager).find(
+                AmwFunctionEntity.class, functionId, revisionId);
+        Hibernate.initialize(function.getMikNames());
+        if (function == null) {
+            throw new NotFoundException("No function with id " + functionId + " and revision id " + revisionId + " found");
+        }
+        return function;
+    }
+
+    public List<RevisionInformation> getRevisions(Integer functionId) {
+        List<RevisionInformation> result = new ArrayList<>();
+        if (functionId != null) {
+            AuditReader reader = AuditReaderFactory.get(entityManager);
+            List<Number> list = reader.getRevisions(AmwFunctionEntity.class, functionId);
+            for (Number rev : list) {
+                Date date = reader.getRevisionDate(rev);
+                MyRevisionEntity myRev = entityManager.find(MyRevisionEntity.class, rev);
+                result.add(new RevisionInformation(rev, date, myRev.getUsername()));
+            }
+            Collections.sort(result);
+        }
+        return result;
+    }
 }

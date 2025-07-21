@@ -1,8 +1,8 @@
 @if (errorMessage) {
-<div class="alert alert-warning alert-dismissible" role="alert">
-  <span [innerHTML]="errorMessage"></span>
-  <app-button [variant]="'close'" (click)="cancel()"></app-button>
-</div>
+  <div class="alert alert-warning alert-dismissible" role="alert">
+    <span [innerHTML]="errorMessage"></span>
+    <app-button [variant]="'close'" (click)="cancel()"></app-button>
+  </div>
 }
 <div class="input-group me-2">
   <input
@@ -41,8 +41,8 @@
 <!-- workaround to make the datetimepicker actually work -->
 <div class="d-none">
   @if (false) {
-  <div></div>
+    <div></div>
   } @else {
-  <div calenderContent></div>
+    <div calenderContent></div>
   }
 </div>

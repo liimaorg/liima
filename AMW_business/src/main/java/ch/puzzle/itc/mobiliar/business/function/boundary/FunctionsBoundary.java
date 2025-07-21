@@ -26,7 +26,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionRepository;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
@@ -42,9 +41,6 @@ import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
 
 @Stateless
 public class FunctionsBoundary {
@@ -121,28 +117,15 @@ public class FunctionsBoundary {
     /**
      * Returns a AmwFunctionEntity identified by its id and revision id
      */
-    public AmwFunctionEntity getFunctionByIdAndRevision(Integer functionId, Number revisionId) {
-        AmwFunctionEntity amwFunctionEntity = AuditReaderFactory.get(entityManager).find(
-                AmwFunctionEntity.class, functionId, revisionId);
-        return amwFunctionEntity;
+    public AmwFunctionEntity getFunctionByIdAndRevision(Integer functionId, Number revisionId) throws NotFoundException {
+        return functionService.getFunctionRevision(functionId, revisionId);
     }
 
     /**
      * Returns all RevisionInformation for the specified function id
      */
     public List<RevisionInformation> getFunctionRevisions(Integer functionId) {
-        List<RevisionInformation> result = new ArrayList<>();
-        if (functionId != null) {
-            AuditReader reader = AuditReaderFactory.get(entityManager);
-            List<Number> list = reader.getRevisions(AmwFunctionEntity.class, functionId);
-            for (Number rev : list) {
-                Date date = reader.getRevisionDate(rev);
-                MyRevisionEntity myRev = entityManager.find(MyRevisionEntity.class, rev);
-                result.add(new RevisionInformation(rev, date, myRev.getUsername()));
-            }
-            Collections.sort(result);
-        }
-        return result;
+        return functionService.getRevisions(functionId);
     }
 
     public void deleteFunction(Integer selectedFunctionIdToBeRemoved) throws ValidationException, NotFoundException {
@@ -168,7 +151,6 @@ public class FunctionsBoundary {
         }
 
     }
-
     /**
      * Creates a new Function for a Resource with miks
      */

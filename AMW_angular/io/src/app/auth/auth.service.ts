@@ -7,6 +7,14 @@ import { Restriction } from '../settings/permission/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DefaultResourceType } from './defaultResourceType';
 
+export enum Action {
+  READ = 'READ',
+  CREATE = 'CREATE',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
+  ALL = 'ALL',
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
   private http = inject(HttpClient);
@@ -42,17 +50,33 @@ export class AuthService extends BaseService {
 
   hasPermission(permissionName: string, action: string): boolean {
     return (
-      this.getActionsForPermission(permissionName).find((value) => value === 'ALL' || value === action) !== undefined
+      this.getActionsForPermission(permissionName).find((value) => value === Action.ALL || value === action) !==
+      undefined
     );
   }
 
-  hasResourcePermission(permissionName: string, action: string, resourceType: string): boolean {
+  hasResourceGroupPermission(permissionName: string, action: string, resourceGroupId: number): boolean {
     return (
       this.restrictions()
         .filter((entry) => entry.permission.name === permissionName)
-        .filter((entry) => entry.resourceTypeName === resourceType || this.isDefaultType(entry, resourceType))
+        .filter((entry) => entry.resourceGroupId === resourceGroupId || entry.resourceGroupId === null)
         .map((entry) => entry.action)
-        .find((entry) => entry === 'ALL' || entry === action) !== undefined
+        .find((entry) => entry === Action.ALL || entry === action) !== undefined
+    );
+  }
+
+  hasResourceTypePermission(permissionName: string, action: string, resourceTypeName: string): boolean {
+    return (
+      this.restrictions()
+        .filter((entry) => entry.permission.name === permissionName)
+        .filter(
+          (entry) =>
+            entry.resourceTypeName === resourceTypeName ||
+            this.isDefaultType(entry, resourceTypeName) ||
+            entry.resourceTypeName === null,
+        )
+        .map((entry) => entry.action)
+        .find((entry) => entry === Action.ALL || entry === action) !== undefined
     );
   }
 
@@ -67,6 +91,6 @@ export class AuthService extends BaseService {
 // usage example: actions.some(isAllowed("CREATE"))
 export function isAllowed(role: string) {
   return (action: string) => {
-    return action === 'ALL' || action === role;
+    return action === Action.ALL || action === role;
   };
 }

@@ -7,7 +7,7 @@ import { TableComponent, TableColumnType } from '../../shared/table/table.compon
 @Component({
   selector: 'app-restriction-list',
   templateUrl: './restriction-list.component.html',
-  imports: [TableComponent]
+  imports: [TableComponent],
 })
 export class RestrictionListComponent {
   delegationMode = input.required<boolean>();

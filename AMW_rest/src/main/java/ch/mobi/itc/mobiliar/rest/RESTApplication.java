@@ -79,6 +79,7 @@ public class RESTApplication extends Application {
         resources.add(PropertyTypesRest.class);
         resources.add(FunctionsRest.class);
         resources.add(ServersRest.class);
+        resources.add(ResourceFunctionsRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
@@ -101,6 +102,8 @@ public class RESTApplication extends Application {
         resources.add(ConstraintViolationExceptionMapper.class);
         resources.add(ConcurrentModificationExceptionMapper.class);
         resources.add(ElementAlreadyExistsExceptionMapper.class);
+        resources.add(TemplateNotDeletableExceptionMapper.class);
+        resources.add(OptimisticLockExceptionMapper.class);
 
         // health
         resources.add(HealthCheck.class);

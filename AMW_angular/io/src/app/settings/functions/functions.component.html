@@ -15,7 +15,6 @@
       <app-table
         [entityName]="'functions'"
         [headers]="functionsTableHeader()"
-        [dataCyNameKey]="'name'"
         [data]="functions()"
         [canDelete]="permissions().canManage"
         [canEdit]="permissions().canView"

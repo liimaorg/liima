@@ -30,16 +30,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import io.swagger.models.auth.In;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @XmlRootElement(name = "release")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class ResourceDTO {
     private Integer id; // Release id
+    private String name;
+    private Integer resourceTypeId;
+    private Integer resourceGroupId;
     private String release;
+
     private List<ResourceRelationDTO> relations;
     private List<PropertyDTO> properties;
     private List<ResourceTagDTO> resourceTags;
@@ -76,5 +83,15 @@ public class ResourceDTO {
                 this.resourceTags.add(new ResourceTagDTO(resourceTagEntity));
             }
         }
+    }
+
+    public ResourceDTO(ResourceEntity resource) {
+        this.id = resource.getId();
+        this.resourceGroupId = resource.getResourceGroup().getId();
+        this.resourceTypeId = resource.getResourceType().getId();
+        this.name = resource.getName();
+        this.release = resource.getRelease().getName();
+
+
     }
 }

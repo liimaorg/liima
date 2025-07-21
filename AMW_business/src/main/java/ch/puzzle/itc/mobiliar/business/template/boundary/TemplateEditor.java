@@ -235,7 +235,12 @@ public class TemplateEditor {
 
     void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws ValidationException, AMWException {
         validateTemplate(template);
-        freemarkerValidator.validateFreemarkerSyntax(template.getFileContent());
+        try {
+            freemarkerValidator.validateFreemarkerSyntax(template.getFileContent());
+        }
+        catch (AMWException e) {
+            throw new ValidationException(e.getMessage(), e);
+        }
         hasContext = entityManager.find(hasContext.getClass(), hasContext.getId());
         auditService.storeIdInThreadLocalForAuditLog(hasContext);
         if (hasTemplateWithSameName(template, hasContext)) {

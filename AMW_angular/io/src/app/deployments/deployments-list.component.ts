@@ -16,18 +16,18 @@ import { ModalHeaderComponent } from '../shared/modal-header/modal-header.compon
 import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
-    selector: 'app-deployments-list',
-    templateUrl: './deployments-list.component.html',
-    imports: [
-        SortableIconComponent,
-        FormsModule,
-        IconComponent,
-        RouterLink,
-        DateTimePickerComponent,
-        DatePipe,
-        ModalHeaderComponent,
-        ButtonComponent,
-    ]
+  selector: 'app-deployments-list',
+  templateUrl: './deployments-list.component.html',
+  imports: [
+    SortableIconComponent,
+    FormsModule,
+    IconComponent,
+    RouterLink,
+    DateTimePickerComponent,
+    DatePipe,
+    ModalHeaderComponent,
+    ButtonComponent,
+  ],
 })
 export class DeploymentsListComponent {
   @Input() deployments: Deployment[] = [];

@@ -5,6 +5,7 @@ import { Resource } from '../../resource/resource';
 import { ResourceType } from '../../resource/resource-type';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ResourcesListComponent', () => {
   let component: ResourcesListComponent;
@@ -14,17 +15,22 @@ describe('ResourcesListComponent', () => {
     id: 1,
     name: 'type',
     hasChildren: false,
+    hasParent: false,
     children: [],
     isApplication: false,
     isDefaultResourceType: false,
   };
-
+  const mockRoute: any = { snapshot: {} };
   const resourceGroupsOfResourceType: Resource[] = [];
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ResourcesListComponent],
-      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        { provide: ActivatedRoute, useValue: mockRoute },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResourcesListComponent);

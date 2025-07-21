@@ -2,123 +2,119 @@
   <div class="card-header">{{ getTitle() }}</div>
   <div class="card-body">
     @if (permissions.length > 0) {
-    <div class="form-group row">
-      <label for="selectPermissions" class="col-sm-3 text-end fw-bold">Permission</label>
-      <div class="col-sm-9">
-        <ng-select
-          id="selectPermissions"
-          [items]="permissions"
-          bindLabel="longName"
-          bindValue="name"
-          placeholder=""
-          multiple="true"
-          [(ngModel)]="selectedPermissionNames"
-          (change)="defineAvailableOptions()"
-        >
-        </ng-select>
+      <div class="form-group row">
+        <label for="selectPermissions" class="col-sm-3 text-end fw-bold">Permission</label>
+        <div class="col-sm-9">
+          <ng-select
+            id="selectPermissions"
+            [items]="permissions"
+            bindLabel="longName"
+            bindValue="name"
+            placeholder=""
+            multiple="true"
+            [(ngModel)]="selectedPermissionNames"
+            (change)="defineAvailableOptions()"
+          >
+          </ng-select>
+        </div>
       </div>
-    </div>
-    } @if (selectedPermissionNames.length > 0 && !onlyGlobal) {
-
-    <div class="form-group row">
-      <label class="col-sm-3 text-end fw-bold">Action</label>
-      <div class="col-sm-9">
-        @for (action of getAvailableActions(); track action) {
-
-        <label class="checkbox-inline me-3"
-          ><input
-            type="checkbox"
-            [attr.disabled]="action.disabled ? '' : null"
-            [(ngModel)]="action.selected"
-            (change)="checkAvailableEnvironments()"
-          />&nbsp;{{ action.name }}</label
-        >
-
-        }
-      </div>
-    </div>
-
-    @if (hasSelectedActions()) {
-
-    <div class="form-group row">
-      <label class="col-sm-3 text-end fw-bold">Environment</label>
-      <div class="col-sm-9">
-        @for (group of getEnvironmentGroups(); track group) {
-
-        <h5 class="environments-title">{{ group }}:</h5>
-        @for (env of groupedEnvironments[group]; track env) {
-
-        <label class="checkbox-inline me-3"
-          ><input
-            type="checkbox"
-            [attr.disabled]="env.disabled ? '' : null"
-            [(ngModel)]="env.selected"
-            (change)="checkUnique(env)"
-          />&nbsp;{{ env.name }}</label
-        >
-
-        } }
-      </div>
-    </div>
-
-    @if (getAvailableResourceTypePermissions().length > 0 && isResourceTypePermissionAssignable()) {
-    <div class="form-group row">
-      <label for="selectRTP" class="col-sm-3 text-end fw-bold">Resource Type Categories</label>
-      <div class="col-sm-9">
-        <select
-          id="selectRTP"
-          class="form-control input-sm"
-          [(ngModel)]="selectedResourceTypePermission"
-          [attr.disabled]="getAvailableResourceTypePermissions().length === 1 ? '' : null"
-          (change)="clearTypeAndGroup()"
-        >
-          @for (rtp of getAvailableResourceTypePermissions(); track rtp) {
-          <option [ngValue]="rtp">{{ rtp }}</option>
+    }
+    @if (selectedPermissionNames.length > 0 && !onlyGlobal) {
+      <div class="form-group row">
+        <label class="col-sm-3 text-end fw-bold">Action</label>
+        <div class="col-sm-9">
+          @for (action of getAvailableActions(); track action) {
+            <label class="checkbox-inline me-3"
+              ><input
+                type="checkbox"
+                [attr.disabled]="action.disabled ? '' : null"
+                [(ngModel)]="action.selected"
+                (change)="checkAvailableEnvironments()"
+              />&nbsp;{{ action.name }}</label
+            >
           }
-        </select>
+        </div>
       </div>
-    </div>
-    } @if (getAvailableResourceTypes().length > 0 && isResourceTypeAssignable()) {
-    <div class="form-group row">
-      <label for="selectResourceTypes" class="col-sm-3 text-end fw-bold">Resource Type</label>
-      <div class="col-sm-9">
-        <ng-select
-          id="selectResourceTypes"
-          [items]="getAvailableResourceTypes()"
-          bindLabel="name"
-          bindValue="name"
-          placeholder=""
-          multiple="true"
-          [(ngModel)]="selectedResourceTypeNames"
-        >
-        </ng-select>
-      </div>
-    </div>
-    } @if (getAvailableResourceGroups().length > 0 && isResourceGroupAssignable()) {
-    <div class="form-group row">
-      <label for="selectResourceGroup" class="col-sm-3 text-end fw-bold">Resource Group</label>
-      <div class="col-sm-9">
-        @if (getAvailableResourceGroups().length > 1) {
 
-        <ng-select
-          id="selectResourceGroup"
-          [items]="getAvailableResourceGroups()"
-          bindLabel="name"
-          bindValue="name"
-          placeholder=""
-          multiple="true"
-          [(ngModel)]="selectedResourceGroupNames"
-        >
-        </ng-select>
+      @if (hasSelectedActions()) {
+        <div class="form-group row">
+          <label class="col-sm-3 text-end fw-bold">Environment</label>
+          <div class="col-sm-9">
+            @for (group of getEnvironmentGroups(); track group) {
+              <h5 class="environments-title">{{ group }}:</h5>
+              @for (env of groupedEnvironments[group]; track env) {
+                <label class="checkbox-inline me-3"
+                  ><input
+                    type="checkbox"
+                    [attr.disabled]="env.disabled ? '' : null"
+                    [(ngModel)]="env.selected"
+                    (change)="checkUnique(env)"
+                  />&nbsp;{{ env.name }}</label
+                >
+              }
+            }
+          </div>
+        </div>
 
-        } @if (getAvailableResourceGroups().length === 1) {
-
-        <input id="selectResourceGroup" type="text" disabled [(ngModel)]="selectedResourceGroupNames" />
-
+        @if (getAvailableResourceTypePermissions().length > 0 && isResourceTypePermissionAssignable()) {
+          <div class="form-group row">
+            <label for="selectRTP" class="col-sm-3 text-end fw-bold">Resource Type Categories</label>
+            <div class="col-sm-9">
+              <select
+                id="selectRTP"
+                class="form-control input-sm"
+                [(ngModel)]="selectedResourceTypePermission"
+                [attr.disabled]="getAvailableResourceTypePermissions().length === 1 ? '' : null"
+                (change)="clearTypeAndGroup()"
+              >
+                @for (rtp of getAvailableResourceTypePermissions(); track rtp) {
+                  <option [ngValue]="rtp">{{ rtp }}</option>
+                }
+              </select>
+            </div>
+          </div>
         }
-      </div>
-    </div>
-    } } }
+        @if (getAvailableResourceTypes().length > 0 && isResourceTypeAssignable()) {
+          <div class="form-group row">
+            <label for="selectResourceTypes" class="col-sm-3 text-end fw-bold">Resource Type</label>
+            <div class="col-sm-9">
+              <ng-select
+                id="selectResourceTypes"
+                [items]="getAvailableResourceTypes()"
+                bindLabel="name"
+                bindValue="name"
+                placeholder=""
+                multiple="true"
+                [(ngModel)]="selectedResourceTypeNames"
+              >
+              </ng-select>
+            </div>
+          </div>
+        }
+        @if (getAvailableResourceGroups().length > 0 && isResourceGroupAssignable()) {
+          <div class="form-group row">
+            <label for="selectResourceGroup" class="col-sm-3 text-end fw-bold">Resource Group</label>
+            <div class="col-sm-9">
+              @if (getAvailableResourceGroups().length > 1) {
+                <ng-select
+                  id="selectResourceGroup"
+                  [items]="getAvailableResourceGroups()"
+                  bindLabel="name"
+                  bindValue="name"
+                  placeholder=""
+                  multiple="true"
+                  [(ngModel)]="selectedResourceGroupNames"
+                >
+                </ng-select>
+              }
+              @if (getAvailableResourceGroups().length === 1) {
+                <input id="selectResourceGroup" type="text" disabled [(ngModel)]="selectedResourceGroupNames" />
+              }
+            </div>
+          </div>
+        }
+      }
+    }
 
     <div class="form-group row">
       <label class="col-sm-3 text-end fw-bold"></label>

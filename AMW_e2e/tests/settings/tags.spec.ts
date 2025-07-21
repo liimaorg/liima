@@ -29,9 +29,9 @@ test.describe('Tags -CRUD', () => {
         await page.locator('#tagName').fill('other-tag');
         await page.getByTestId('button-add').click();
         await expect(page.locator('#tagName')).toBeEmpty();
-        await page.getByTestId('button-delete-other-tag').click();
+        await page.getByRole('row').filter({ hasText: 'other-tag' }).getByRole('button').last().click();
         await expect(page.getByText(/Tag deleted/).first()).toBeVisible();
-        await page.getByTestId('button-delete-test-tag').click();
+        await page.getByRole('row').filter({ hasText: 'test-tag' }).getByRole('button').last().click();
         expect(page.locator('ngb-toast :has-text("Tag deleted.")')).toBeDefined();
     });
 });
