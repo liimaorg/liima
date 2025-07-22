@@ -3,12 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
 import { AMW_LOGOUT_URL } from './core/amw-constants';
-import { AsyncPipe } from '@angular/common';
 import { NavigationComponent } from './navigation/navigation.component';
 import { ToastContainerComponent } from './shared/elements/toast/toast-container.component';
 
 @Component({
-  selector: 'app',
+  selector: 'app-root',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',

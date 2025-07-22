@@ -13,7 +13,7 @@
               id="selectRole"
               placeholder="Select role"
               [items]="roleNames"
-              [clearable]=false
+              [clearable]="false"
               [(ngModel)]="selectedRoleName"
               (ngModelChange)="onChangeRole()"
             >

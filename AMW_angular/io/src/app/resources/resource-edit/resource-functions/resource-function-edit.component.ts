@@ -12,7 +12,7 @@ import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.comp
 import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
 import { ResourceFunction } from '../../resource-function';
 import { RevisionCompareComponent } from '../../../shared/revision-compare/revision-compare.component';
-import { FullscreenToggleComponent } from "../../../shared/fullscreen-toggle/fullscreen-toggle.component";
+import { FullscreenToggleComponent } from '../../../shared/fullscreen-toggle/fullscreen-toggle.component';
 
 @Component({
   selector: 'app-resource-function-edit',

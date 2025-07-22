@@ -48,8 +48,9 @@ export class ResourcesListComponent {
         canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE'),
         canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE'),
         // TODO: remove after migration
-        canUseAngularEditResource: this.authService.hasPermission('RESOURCE', 'READ') && this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL'),
-
+        canUseAngularEditResource:
+          this.authService.hasPermission('RESOURCE', 'READ') &&
+          this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL'),
       };
     } else {
       return {

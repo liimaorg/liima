@@ -18,7 +18,12 @@
               </a>
             }
             @if (permissions().canDeleteResourceType && !resourceType().isDefaultResourceType) {
-              <app-button title="Delete" [variant]="'link'" [additionalClasses]="'link-danger'" (click)="deleteResourceType()">
+              <app-button
+                title="Delete"
+                [variant]="'link'"
+                [additionalClasses]="'link-danger'"
+                (click)="deleteResourceType()"
+              >
                 <app-icon icon="trash"></app-icon>
               </app-button>
             }

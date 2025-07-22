@@ -11,7 +11,7 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -52,7 +52,7 @@ export interface DiffEditorModel {
     }
   `,
   host: {
-    class: 'diff-editor'
+    class: 'diff-editor',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,9 +60,9 @@ export interface DiffEditorModel {
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => DiffEditorComponent),
-      multi: true
-    }
-  ]
+      multi: true,
+    },
+  ],
 })
 export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, ControlValueAccessor {
   /**
@@ -151,13 +151,10 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
   /** Whether the editor wraps lines. */
   @Input({ transform: booleanAttribute }) lineWrapping = false;
 
-  private _onChange: (value: DiffEditorModel) => void = () => {
-  };
-  private _onTouched: () => void = () => {
-  };
+  private _onChange: (value: DiffEditorModel) => void = () => {};
+  private _onTouched: () => void = () => {};
 
-  constructor(private _elementRef: ElementRef<Element>) {
-  }
+  constructor(private _elementRef: ElementRef<Element>) {}
 
   /** The merge view instance. */
   mergeView?: MergeView;
@@ -230,8 +227,8 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
           this._editableConf.of([]),
           this._lineWrappingConf.of(this.lineWrapping ? EditorView.lineWrapping : []),
           this.setup === 'basic' ? basicSetup : this.setup === 'minimal' ? minimalSetup : [],
-          ...this.originalExtensions
-        ]
+          ...this.originalExtensions,
+        ],
       },
       b: {
         doc: this.modifiedValue,
@@ -240,8 +237,8 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
           this._editableConf.of([]),
           this._lineWrappingConf.of(this.lineWrapping ? EditorView.lineWrapping : []),
           this.setup === 'basic' ? basicSetup : this.setup === 'minimal' ? minimalSetup : [],
-          ...this.modifiedExtensions
-        ]
+          ...this.modifiedExtensions,
+        ],
       },
       orientation: this.orientation,
       revertControls: this.revertControls,
@@ -249,7 +246,7 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
       highlightChanges: this.highlightChanges,
       gutter: this.gutter,
       collapseUnchanged: this.collapseUnchanged,
-      diffConfig: this.diffConfig
+      diffConfig: this.diffConfig,
     });
 
     this.mergeView?.a.contentDOM.addEventListener('focus', () => {
@@ -300,14 +297,14 @@ export class DiffEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
   /** Sets diff-editor's value. */
   setValue(editor: 'a' | 'b', value: string) {
     this.mergeView?.[editor].dispatch({
-      changes: { from: 0, to: this.mergeView[editor].state.doc.length, insert: value }
+      changes: { from: 0, to: this.mergeView[editor].state.doc.length, insert: value },
     });
   }
 
   /** Sets diff-editor's editable state. */
   setEditable(editor: 'a' | 'b', value: boolean) {
     this.mergeView?.[editor].dispatch({
-      effects: this._editableConf.reconfigure(EditorView.editable.of(value))
+      effects: this._editableConf.reconfigure(EditorView.editable.of(value)),
     });
   }
 
