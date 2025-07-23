@@ -55,7 +55,7 @@
     "@typescript-eslint/eslint-plugin": "8.29.1",
     "@typescript-eslint/parser": "8.29.1",
     "@web/test-runner": "^0.20.0",
-    "eslint": "9.24.0",
+    "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.6",
     "git-format-staged": "^3.1.1",
