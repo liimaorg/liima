@@ -4,9 +4,11 @@
 * chore: bump form-data from 4.0.2 to 4.0.4 in /AMW_e2e [#889](https://github.com/liimaorg/liima/pull/889)
 * fix: fix the check if release already exists and actually create it [#888](https://github.com/liimaorg/liima/pull/888)
 * chore: bump on-headers and compression in /AMW_angular/io [#887](https://github.com/liimaorg/liima/pull/887)
-* Merge development into master [#886](https://github.com/liimaorg/liima/pull/886)
 * fix: ResourceGroupsRest get resource with type id shadowing get resource with type name [#885](https://github.com/liimaorg/liima/pull/885)
 * chore: bump org.apache.commons:commons-lang3 from 3.10 to 3.18.0 [#884](https://github.com/liimaorg/liima/pull/884)
+
+Work continues on the edit resource screen. It is currently hidden behind a feature toggle only active for config_admins. Permission name is `ANGULAR_EDIT_RESOURCE`.
+* Merge development into master [#886](https://github.com/liimaorg/liima/pull/886)
 * feat: wrap line [#879](https://github.com/liimaorg/liima/pull/879)
 * Link to migrated resource edit pages in table component [#877](https://github.com/liimaorg/liima/pull/877)
 * Remove dataCyNameKey from table component [#874](https://github.com/liimaorg/liima/pull/874)
