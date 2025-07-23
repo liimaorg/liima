@@ -53,7 +53,7 @@ public class ReleaseLocator {
     ReleaseMgmtPersistenceService persistenceService;
 
     public ReleaseEntity getReleaseByName(String name) {
-        return releaseRepository.getReleaseByName(name);
+        return persistenceService.findByName(name);
     }
 
     @HasPermission(permission = Permission.RELEASE, action = READ)
@@ -96,7 +96,6 @@ public class ReleaseLocator {
      */
     @HasPermission(permission = Permission.RELEASE, action = READ)
     public List<ReleaseEntity> loadAllReleases(boolean sortDesc) {
-
         return persistenceService.loadAllReleaseEntities(sortDesc);
     }
 

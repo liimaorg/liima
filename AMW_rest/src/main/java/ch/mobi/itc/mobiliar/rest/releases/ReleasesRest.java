@@ -30,6 +30,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -102,10 +103,11 @@ public class ReleasesRest {
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
         }
-        try {
-            releaseLocator.getReleaseByName(request.getName());
+        ReleaseEntity existingRelease = releaseLocator.getReleaseByName(request.getName());
+        if (existingRelease != null) {
             return Response.status(CONFLICT).entity(new ExceptionDto("Release with name " + request.getName() + " already exists")).build();
-        } catch (NoResultException e) {}
+        }
+        releaseLocator.create(request);
         return Response.status(CREATED).entity(request).build();
     }
 
