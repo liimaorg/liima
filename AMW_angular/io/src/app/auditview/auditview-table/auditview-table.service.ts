@@ -6,12 +6,6 @@ import { AuditLogEntry } from '../auditview-entry';
 import { SortDirection } from './sortable.directive';
 import { DATE_TIME_FORMAT } from '../../core/amw-constants';
 
-interface State {
-  searchTerm: string;
-  sortColumn: string;
-  sortDirection: SortDirection;
-}
-
 function sort(entries: AuditLogEntry[], column: string, direction: string): AuditLogEntry[] {
   if (direction === '') {
     return entries;

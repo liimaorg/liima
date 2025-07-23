@@ -75,7 +75,9 @@ export class AppsComponent implements OnInit, OnDestroy {
     });
 
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
-      msg !== '' ? this.toastService.error(msg) : null;
+      if (msg !== '') {
+        this.toastService.error(msg);
+      }
     });
 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {

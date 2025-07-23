@@ -174,14 +174,15 @@ export class DeploymentsComponent implements OnInit {
           val: filter.val,
         } as DeploymentFilter);
         if (filter.type === 'DateType') {
-          if (!filter.val) {
+          if (!filter.val || !(filter.val instanceof DateTimeModel)) {
             this.errorMessage = 'Invalid date';
+          } else {
+            this.filtersForBackend.push({
+              name: filter.name,
+              comp: filter.comp,
+              val: filter.val.toEpoch().toString(),
+            } as DeploymentFilter);
           }
-          this.filtersForBackend.push({
-            name: filter.name,
-            comp: filter.comp,
-            val: filter.val.toEpoch().toString(),
-          } as DeploymentFilter);
         } else {
           this.filtersForBackend.push({
             name: filter.name,
@@ -503,7 +504,7 @@ export class DeploymentsComponent implements OnInit {
 
   // parse string from json back to DateTimeModel
   private parseDateTime(filter: DeploymentFilter) {
-    if (filter.type === 'DateType') {
+    if (filter.type === 'DateType' && typeof filter.val === 'string') {
       filter.val = DateTimeModel.fromLocalString(filter.val);
     }
   }

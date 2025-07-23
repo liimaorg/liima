@@ -7,7 +7,7 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { ToastContainerComponent } from './shared/elements/toast/toast-container.component';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',

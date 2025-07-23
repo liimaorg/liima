@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { AuditviewService } from './auditview.service';
 import { ResourceService } from '../resource/resource.service';
 import { AuditLogEntry } from './auditview-entry';
@@ -31,11 +31,11 @@ export class AuditviewComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.activatedRoute.queryParams.subscribe((param: any) => {
+    this.activatedRoute.queryParams.subscribe((param: Params) => {
       if (param['resourceId']) {
         try {
           this.resourceId = JSON.parse(param['resourceId']);
-        } catch (e) {
+        } catch {
           this.errorMessage = 'Error parsing resourceId';
         }
       }
