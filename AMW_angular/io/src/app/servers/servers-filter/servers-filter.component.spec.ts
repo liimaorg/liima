@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ServersFilterComponent } from './servers-filter.component';
 import { InputSignal, signal } from '@angular/core';
 import { Environment } from '../../deployment/environment';
-import { Resource } from '../../resource/resource';
+import { Resource } from '../../resources/models/resource';
 
 describe('ServersFilterComponent', () => {
   let component: ServersFilterComponent;

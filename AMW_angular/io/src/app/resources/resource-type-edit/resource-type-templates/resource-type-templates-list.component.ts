@@ -5,13 +5,13 @@ import { TileComponent } from '../../../shared/tile/tile.component';
 import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
 import { Action, AuthService } from '../../../auth/auth.service';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
-import { ResourceTemplate } from '../../../resource/resource-template';
-import { ResourceType } from '../../../resource/resource-type';
+import { ResourceTemplatesService } from '../../services/resource-templates.service';
+import { ResourceTemplate } from '../../models/resource-template';
+import { ResourceType } from '../../models/resource-type';
 import { takeUntil } from 'rxjs/operators';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
-import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete.component';
-import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit.component';
+import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete/resource-template-delete.component';
+import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 

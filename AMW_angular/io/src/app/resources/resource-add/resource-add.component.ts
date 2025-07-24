@@ -3,7 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { ResourceType } from '../../resource/resource-type';
+import { ResourceType } from '../models/resource-type';
 import { Release } from '../../settings/releases/release';
 import { NgSelectModule } from '@ng-select/ng-select';
 

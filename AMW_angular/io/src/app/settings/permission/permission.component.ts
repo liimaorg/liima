@@ -6,10 +6,10 @@ import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from './permission';
 import * as _ from 'lodash';
 import { Environment } from 'src/app/deployment/environment';
-import { Resource } from 'src/app/resource/resource';
-import { ResourceType } from '../../resource/resource-type';
+import { Resource } from 'src/app/resources/models/resource';
+import { ResourceType } from '../../resources/models/resource-type';
 import { EnvironmentService } from '../../deployment/environment.service';
-import { ResourceService } from 'src/app/resource/resource.service';
+import { ResourceService } from 'src/app/resources/services/resource.service';
 import { Location } from '@angular/common';
 import { RestrictionListComponent } from './restriction-list.component';
 import { RestrictionAddComponent } from './restriction-add.component';
@@ -27,7 +27,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { ResourceTypesService } from '../../resource/resource-types.service';
+import { ResourceTypesService } from '../../resources/services/resource-types.service';
 
 @Component({
   selector: 'app-permission',
