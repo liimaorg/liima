@@ -199,10 +199,11 @@ public class ResourceGroupsRest {
      * Creates a new resource and returns its location.
      *
      * @param request containing a ResourceReleaseDTO
+     * @throws AMWException
      */
     @POST
     @ApiOperation(value = "Add a Resource")
-    public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) throws ValidationException, NotFoundException, ElementAlreadyExistsException {
+    public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) throws AMWException {
         if (StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim()))
             throw new ValidationException("Resource name must not be null or blank");
 

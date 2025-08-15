@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.common.ApplicationCreatorDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.common.ReleaseSelectionDataProvider;
@@ -176,7 +177,7 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 		resourceReleaseSelector.setSelectedReleaseId(null);
 	}
 
-	public void createResource() {
+	public void createResource() throws AMWException {
 		createResourceAction();
 	}
 
@@ -206,7 +207,7 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 		}
 	}
 
-	protected void createResourceAction() {
+	protected void createResourceAction() throws AMWException {
 		if (createResourceController.createResource(getNewResourceName(), getSelectEditResourceTypeComp()
 				.getSelectedResourceType().getEntity(), resourceReleaseSelector
 				.getSelectedRelease())) {
