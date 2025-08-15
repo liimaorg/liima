@@ -31,7 +31,6 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.EJBException;
@@ -55,17 +54,15 @@ public class CreateResourceController {
     @Inject
     private PermissionBoundary permissionBoundary;
 
-    @Inject
-    private UserSettings userSettings;
-
     /**
      * @param newResourceName
      * @param resourceType
      * @param release
      * @return @return true if application was successful created, false otherwise
+     * @throws AMWException
      */
     public boolean createResource(String newResourceName, ResourceTypeEntity resourceType
-                                  , ReleaseEntity release) {
+                                  , ReleaseEntity release) throws AMWException {
         boolean isSuccessful = false;
         String errorMessage = null;
         try {
@@ -128,8 +125,9 @@ public class CreateResourceController {
      * @param releaseForApp
      * @param releaseForAs
      * @return true if application was successful created, false otherwise
+     * @throws AMWException
      */
-    public boolean createAppAndAppServer(String appName, Integer appServerGroup, ReleaseEntity releaseForApp, Integer releaseForAs) {
+    public boolean createAppAndAppServer(String appName, Integer appServerGroup, ReleaseEntity releaseForApp, Integer releaseForAs) throws AMWException {
         Application app = null;
         boolean isSuccessful = false;
         String message;

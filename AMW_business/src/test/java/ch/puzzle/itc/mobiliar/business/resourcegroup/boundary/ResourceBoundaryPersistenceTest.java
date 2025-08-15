@@ -61,10 +61,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotDeletableException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
 
 @RunWith(PersistenceTestRunner.class)
@@ -113,8 +111,7 @@ public class ResourceBoundaryPersistenceTest {
     }
 
     @Test
-    public void test_createNewResourceByName() throws ElementAlreadyExistsException, ResourceTypeNotFoundException,
-            ResourceNotFoundException {
+    public void test_createNewResourceByName() throws AMWException {
         // given
         ResourceTypeEntity appType = new ResourceTypeEntity();
         appType.setName("application");
@@ -148,8 +145,7 @@ public class ResourceBoundaryPersistenceTest {
     }
 
     @Test(expected = ElementAlreadyExistsException.class)
-    public void creationOfNewResourceWithSameNameAsAnExistingOfDifferentTypeShouldFail() throws ElementAlreadyExistsException,
-            ResourceTypeNotFoundException, ResourceNotFoundException {
+    public void creationOfNewResourceWithSameNameAsAnExistingOfDifferentTypeShouldFail() throws AMWException {
         // given
         ResourceTypeEntity appType = new ResourceTypeEntity();
         appType.setName("application");
@@ -180,8 +176,7 @@ public class ResourceBoundaryPersistenceTest {
     }
 
     @Test
-    public void shouldDeleteRestrictionsWhenDeletingResource() throws ElementAlreadyExistsException, ResourceTypeNotFoundException,
-            ResourceNotFoundException, ResourceNotDeletableException, ForeignableOwnerViolationException {
+    public void shouldDeleteRestrictionsWhenDeletingResource() throws ForeignableOwnerViolationException, AMWException {
         // given
         ResourceTypeEntity appType = new ResourceTypeEntity();
         appType.setName("application");

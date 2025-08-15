@@ -75,6 +75,7 @@ export class RestrictionListComponent {
       if (resource) {
         return resource['name'];
       }
+      return 'UNKNOWN'; // can happen if resource or permission cache isn't up to date
     }
     return null;
   }
