@@ -11,6 +11,7 @@ import { ServersFilterComponent } from './servers-filter/servers-filter.componen
 import { EnvironmentService } from '../deployment/environment.service';
 import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filter';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-servers-page',
@@ -87,8 +88,8 @@ export class ServersPageComponent implements OnInit {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canReadAppServer: this.authService.hasResourceTypePermission('RESOURCE', 'CREATE', 'APPLICATION'),
-        canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
+        canReadAppServer: this.authService.hasPermission('RESOURCE', Action.CREATE, 'APPLICATION'),
+        canReadResources: this.authService.hasPermission('RESOURCE', Action.READ),
       };
     } else {
       return {

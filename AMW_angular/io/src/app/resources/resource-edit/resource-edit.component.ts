@@ -12,6 +12,7 @@ import { ResourceTemplatesListComponent } from './resource-templates/resource-te
 import { Release } from '../../resource/release';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
+import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-resource-edit',
@@ -51,7 +52,7 @@ export class ResourceEditComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
+        canEditResource: this.authService.hasPermission('RESOURCE', Action.READ),
       };
     } else {
       return { canEditResource: false };

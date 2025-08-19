@@ -3,17 +3,9 @@ import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
-import { Restriction } from '../settings/permission/restriction';
+import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DefaultResourceType } from './defaultResourceType';
-
-export enum Action {
-  READ = 'READ',
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  ALL = 'ALL',
-}
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -21,7 +13,7 @@ export class AuthService extends BaseService {
   private reload$ = new Subject<Restriction[]>();
   private restrictions$ = this.reload$.pipe(
     startWith(null),
-    switchMap(() => this.getRestrictions()),
+    switchMap(() => this.getOwnRestrictions()),
     shareReplay(1),
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
@@ -34,7 +26,7 @@ export class AuthService extends BaseService {
     this.reload$.next([]);
   }
 
-  private getRestrictions(): Observable<Restriction[]> {
+  private getOwnRestrictions(): Observable<Restriction[]> {
     return this.http
       .get<Restriction[]>(`${this.getBaseUrl()}/permissions/restrictions/ownRestrictions/`, {
         headers: this.getHeaders(),
@@ -48,42 +40,22 @@ export class AuthService extends BaseService {
       .map((entry) => entry.action);
   }
 
-  hasPermission(permissionName: string, action: string): boolean {
-    return (
-      this.getActionsForPermission(permissionName).find((value) => value === Action.ALL || value === action) !==
-      undefined
-    );
-  }
-
-  hasResourceGroupPermission(permissionName: string, action: string, resourceGroupId: number): boolean {
+  hasPermission(permissionName: string, action: Action, resourceTypeName: string = null, resourceGroupId: number = null): boolean {
     return (
       this.restrictions()
-        .filter((entry) => entry.permission.name === permissionName)
-        .filter((entry) => entry.resourceGroupId === resourceGroupId || entry.resourceGroupId === null)
-        .map((entry) => entry.action)
-        .find((entry) => entry === Action.ALL || entry === action) !== undefined
-    );
-  }
-
-  hasResourceTypePermission(permissionName: string, action: string, resourceTypeName: string): boolean {
-    return (
-      this.restrictions()
-        .filter((entry) => entry.permission.name === permissionName)
-        .filter(
-          (entry) =>
-            entry.resourceTypeName === resourceTypeName ||
-            this.isDefaultType(entry, resourceTypeName) ||
-            entry.resourceTypeName === null,
+      .filter((entry) => entry.permission.name === permissionName)
+      .filter(
+        (entry) =>
+          entry.resourceTypePermission === ResourceTypeCategory.ANY ||
+          (entry.resourceTypePermission === ResourceTypeCategory.DEFAULT_ONLY &&
+            Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
+          (entry.resourceTypePermission === ResourceTypeCategory.NON_DEFAULT_ONLY &&
+            !Object.keys(DefaultResourceType).includes(resourceTypeName)),
         )
-        .map((entry) => entry.action)
-        .find((entry) => entry === Action.ALL || entry === action) !== undefined
+      .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
+      .filter((entry) => entry.resourceGroupId === null || entry.resourceGroupId === resourceGroupId)
+      .find((entry) => entry.action === Action.ALL || entry.action === action) !== undefined
     );
-  }
-
-  private isDefaultType(entry: Restriction, resourceType: string) {
-    if (entry.resourceTypeName === null && entry.resourceTypePermission === 'DEFAULT_ONLY') {
-      return Object.keys(DefaultResourceType).find((key) => key === resourceType);
-    } else return false;
   }
 }
 
