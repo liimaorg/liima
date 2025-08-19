@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
@@ -6,6 +6,8 @@ import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DefaultResourceType } from './defaultResourceType';
+import { EnvironmentService } from '../deployment/environment.service';
+import { Environment } from '../deployment/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
@@ -17,6 +19,13 @@ export class AuthService extends BaseService {
     shareReplay(1),
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
+  private environmentsService = inject(EnvironmentService);
+  environments: Signal<{ [name: string] : Environment; }> = computed(() => {
+    return this.environmentsService.contexts().reduce((acc, env) => {
+      acc[env.name] = env;
+      return acc;
+    }, {});
+  })
 
   constructor() {
     super();
@@ -40,7 +49,7 @@ export class AuthService extends BaseService {
       .map((entry) => entry.action);
   }
 
-  hasPermission(permissionName: string, action: Action, resourceTypeName: string = null, resourceGroupId: number = null): boolean {
+  hasPermission(permissionName: string, action: Action, resourceTypeName: string = null, resourceGroupId: number = null, context: string = null): boolean {
     return (
       this.restrictions()
       .filter((entry) => entry.permission.name === permissionName)
@@ -54,8 +63,22 @@ export class AuthService extends BaseService {
         )
       .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
       .filter((entry) => entry.resourceGroupId === null || entry.resourceGroupId === resourceGroupId)
+      .filter((entry) => this.hasContextPermission(entry, context))
       .find((entry) => entry.action === Action.ALL || entry.action === action) !== undefined
     );
+  }
+
+  private hasContextPermission(entry: Restriction, context: string): boolean {
+    if (context === null || entry.contextName === null || entry.contextName === 'GLOBAL') {
+      return true;
+    }
+    if (entry.contextName === context) {
+      return true;
+    }
+    // only three levels possible, GLOBAL and env has already been checked
+    if (entry.contextName === this.environments()[context].parentName) {
+      return true;
+    }
   }
 }
 

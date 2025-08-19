@@ -2,20 +2,35 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { provideHttpClient } from '@angular/common/http';
-import { Action } from 'src/app/auth/restriction';
+import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
+import { EnvironmentService } from '../deployment/environment.service';
+import { signal } from '@angular/core';
+import { Environment } from '../deployment/environment';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let httpTestingController: HttpTestingController;
   let API_URL: string;
+  let environmentService: EnvironmentService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [AuthService, provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        AuthService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: EnvironmentService,
+          useValue: {
+            contexts: signal<Environment[]>([]),
+          },
+        },
+      ],
     });
     authService = TestBed.inject(AuthService);
     httpTestingController = TestBed.inject(HttpTestingController);
+    environmentService = TestBed.inject(EnvironmentService);
     API_URL = `${authService.getBaseUrl()}/permissions/restrictions/ownRestrictions/`;
   });
 
@@ -365,6 +380,110 @@ describe('AuthService', () => {
           },
         ]);
         expect(authService.hasPermission(permissionName, Action[action], defaultTypeName, resourceGroupId)).toBeFalse();
+      });
+    });
+
+    describe('with context permissions', () => {
+      const permissionName = 'RESOURCE';
+      const action = 'UPDATE';
+      const resourceTypeName = 'MyResourceType';
+      const resourceGroupId = 123;
+      const baseRestriction: Omit<Restriction, 'contextName' | 'action' | 'permission'> = {
+        id: null,
+        roleName: null,
+        userName: null,
+        resourceTypeName: null,
+        resourceGroupId: null,
+        resourceTypePermission: ResourceTypeCategory.ANY,
+      };
+
+      beforeEach(() => {
+        // Setup mock environments
+        const mockEnvironments: Environment[] = [
+          { id: 1, name: 'DEV', parentName: 'GLOBAL', parentId: null, nameAlias: null, selected: false, disabled: false },
+          { id: 2, name: 'TEST', parentName: 'GLOBAL', parentId: null, nameAlias: null, selected: false, disabled: false },
+          { id: 3, name: 'PROD', parentName: 'GLOBAL', parentId: null, nameAlias: null, selected: false, disabled: false },
+          { id: 4, name: 'D', parentName: 'DEV', parentId: null, nameAlias: null, selected: false, disabled: false },
+        ];
+        (environmentService.contexts as any).set(mockEnvironments);
+      });
+
+      it('should return true if context is null', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([
+          { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' },
+        ]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, null),
+        ).toBeTrue();
+      });
+
+      it('should return true if restriction contextName is null', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: null }]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, 'DEV'),
+        ).toBeTrue();
+      });
+
+      it('should return true if restriction contextName is GLOBAL', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([
+          { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'GLOBAL' },
+        ]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, 'DEV'),
+        ).toBeTrue();
+      });
+
+      it('should return true if restriction contextName is GLOBAL with sub-context', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([
+          { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'GLOBAL' },
+        ]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, 'B'),
+        ).toBeTrue();
+      });
+
+      it('should return true if contextName matches', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([
+          { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' },
+        ]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, 'DEV'),
+        ).toBeTrue();
+      });
+
+      it('should return true if restriction contextName is a parent of the context', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([
+          { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' },
+        ]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, 'D'),
+        ).toBeTrue();
+      });
+
+      it('should return false if context does not match', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([
+          { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'PROD' },
+        ]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, 'DEV'),
+        ).toBeFalse();
+      });
+
+      it('should return false if context is a parent of restriction context', () => {
+        const req = httpTestingController.expectOne(API_URL);
+        req.flush([
+          { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'D' },
+        ]);
+        expect(
+          authService.hasPermission(permissionName, Action[action], resourceTypeName, resourceGroupId, 'DEV'),
+        ).toBeFalse();
       });
     });
   });
