@@ -1,14 +1,14 @@
-import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
-import { Restriction } from './restriction';
-import { Permission } from './permission';
-import * as _ from 'lodash';
-import { Resource } from '../../resource/resource';
-import { Environment } from '../../deployment/environment';
-import { ResourceType } from '../../resource/resource-type';
-import { IconComponent } from '../../shared/icon/icon.component';
-import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import * as _ from 'lodash';
+import { Permission } from 'src/app/auth/permission';
+import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
+import { Environment } from '../../deployment/environment';
+import { Resource } from '../../resource/resource';
+import { ResourceType } from '../../resource/resource-type';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-restriction-edit',
@@ -16,8 +16,8 @@ import { ButtonComponent } from '../../shared/button/button.component';
   imports: [FormsModule, NgClass, IconComponent, ButtonComponent],
 })
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
-  actions: string[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];
-  resourceTypePermissions: string[] = ['ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY'];
+  actions: Action[] = [Action.ALL, Action.CREATE, Action.DELETE, Action.READ, Action.UPDATE];
+  resourceTypePermissions: ResourceTypeCategory[] = [ResourceTypeCategory.ANY, ResourceTypeCategory.DEFAULT_ONLY, ResourceTypeCategory.NON_DEFAULT_ONLY];
   resourceGroup: Resource = {} as Resource;
 
   @Input() restriction: Restriction;
@@ -93,7 +93,7 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   }
 
   clearTypeAndGroup() {
-    if (this.restriction.resourceTypePermission !== 'ANY') {
+    if (this.restriction.resourceTypePermission !== ResourceTypeCategory.ANY) {
       this.restriction.resourceTypeName = null;
       this.restriction.resourceGroupId = null;
       this.resourceGroup = {} as Resource;
@@ -106,11 +106,11 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
         ...this.permissions.find((permission) => permission.name === this.restriction.permission.name),
       };
       if (this.restriction.permission.old) {
-        this.restriction.action = 'ALL';
+        this.restriction.action = Action.ALL;
         this.restriction.contextName = null;
         this.restriction.resourceGroupId = null;
         this.restriction.resourceTypeName = null;
-        this.restriction.resourceTypePermission = 'ANY';
+        this.restriction.resourceTypePermission = ResourceTypeCategory.ANY;
       } else if (this.delegationMode) {
         this.populateSimilarRestrictions();
         this.resetRestrictionForDelegation();
@@ -213,10 +213,10 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   }
 
   private extractAvailableActions(): string[] {
-    let actions: string[] = [];
+    let actions: Action[] = [];
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
-        if (restriction.action === 'ALL') {
+        if (restriction.action === Action.ALL) {
           actions = this.actions;
         } else if (actions.indexOf(restriction.action) < 0) {
           actions.push(restriction.action);

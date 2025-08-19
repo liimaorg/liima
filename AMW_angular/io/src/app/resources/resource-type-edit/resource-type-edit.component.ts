@@ -9,6 +9,7 @@ import { ResourceType } from '../../resource/resource-type';
 import { ResourceTypesService } from '../../resource/resource-types.service';
 import { ResourceTypeFunctionsListComponent } from './resource-type-functions/resource-type-functions-list.component';
 import { ResourceTypeTemplatesListComponent } from './resource-type-templates/resource-type-templates-list.component';
+import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-resource-type-edit',
@@ -40,7 +41,7 @@ export class ResourceTypeEditComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', 'READ'),
+        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', Action.READ),
       };
     } else {
       return { canEditResourceType: false };

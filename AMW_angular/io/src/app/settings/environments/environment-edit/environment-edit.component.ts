@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { AuthService } from '../../../auth/auth.service';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-environment-edit',
@@ -21,7 +22,7 @@ export class EnvironmentEditComponent {
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      return { canSave: this.authService.hasPermission('SAVE_SETTINGS_ENV', 'ALL') };
+      return { canSave: this.authService.hasPermission('SAVE_SETTINGS_ENV', Action.ALL) };
     } else {
       return { canSave: false };
     }

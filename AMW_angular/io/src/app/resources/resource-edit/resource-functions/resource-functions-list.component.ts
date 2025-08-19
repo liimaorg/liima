@@ -4,16 +4,17 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { TileComponent } from '../../../shared/tile/tile.component';
 
-import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
-import { Action, AuthService } from '../../../auth/auth.service';
-import { Resource } from '../../../resource/resource';
-import { ResourceFunctionsService } from '../../resource-functions.service';
-import { ResourceFunction } from '../../resource-function';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ResourceFunctionEditComponent } from './resource-function-edit.component';
+import { Action } from 'src/app/auth/restriction';
+import { AuthService } from '../../../auth/auth.service';
+import { Resource } from '../../../resource/resource';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
+import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
+import { ResourceFunction } from '../../resource-function';
+import { ResourceFunctionsService } from '../../resource-functions.service';
 import { ResourceFunctionDeleteComponent } from './resource-function-delete.component';
+import { ResourceFunctionEditComponent } from './resource-function-edit.component';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
@@ -50,15 +51,16 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
         canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canAdd:
           this.contextId() === 1 &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.CREATE, this.resource().resourceGroupId),
-        canEdit: this.authService.hasResourceGroupPermission(
+          this.authService.hasPermission(RESOURCE_PERM, Action.CREATE, this.resource().type, this.resource().resourceGroupId),
+        canEdit: this.authService.hasPermission(
           RESOURCE_PERM,
           Action.UPDATE,
+          this.resource().type,
           this.resource().resourceGroupId,
         ),
         canDelete:
           this.contextId() === 1 &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.DELETE, this.resource().resourceGroupId),
+          this.authService.hasPermission(RESOURCE_PERM, Action.DELETE, this.resource().type, this.resource().resourceGroupId),
       };
     } else {
       return {

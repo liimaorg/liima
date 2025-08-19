@@ -1,8 +1,8 @@
 import { Component, computed, input, output } from '@angular/core';
-import { Restriction } from './restriction';
 import * as _ from 'lodash';
+import { Restriction } from 'src/app/auth/restriction';
 import { Resource } from '../../resource/resource';
-import { TableComponent, TableColumnType } from '../../shared/table/table.component';
+import { TableComponent } from '../../shared/table/table.component';
 
 @Component({
   selector: 'app-restriction-list',

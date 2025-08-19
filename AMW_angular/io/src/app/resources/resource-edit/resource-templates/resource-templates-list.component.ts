@@ -1,16 +1,17 @@
 import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { TileComponent } from '../../../shared/tile/tile.component';
-import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
-import { Action, AuthService } from '../../../auth/auth.service';
-import { Resource } from '../../../resource/resource';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
-import { ResourceTemplate } from '../../../resource/resource-template';
-import { ResourceTemplateDeleteComponent } from './resource-template-delete.component';
 import { takeUntil } from 'rxjs/operators';
+import { Action } from 'src/app/auth/restriction';
+import { AuthService } from '../../../auth/auth.service';
+import { Resource } from '../../../resource/resource';
+import { ResourceTemplate } from '../../../resource/resource-template';
+import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
+import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
+import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
+import { TileComponent } from '../../../shared/tile/tile.component';
+import { ResourceTemplateDeleteComponent } from './resource-template-delete.component';
 import { ResourceTemplateEditComponent } from './resource-template-edit.component';
 
 const RESOURCE_PERM = 'RESOURCE_TEMPLATE';
@@ -48,13 +49,13 @@ export class ResourceTemplatesListComponent implements OnDestroy {
         canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.CREATE, this.resource().resourceGroupId),
+          this.authService.hasPermission(RESOURCE_PERM, Action.CREATE, this.resource().type, this.resource().resourceGroupId),
         canEdit:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.UPDATE, this.resource().resourceGroupId),
+          this.authService.hasPermission(RESOURCE_PERM, Action.UPDATE, this.resource().type, this.resource().resourceGroupId),
         canDelete:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceGroupPermission(RESOURCE_PERM, Action.DELETE, this.resource().resourceGroupId),
+          this.authService.hasPermission(RESOURCE_PERM, Action.DELETE, this.resource().type, this.resource().resourceGroupId),
       };
     } else {
       return {

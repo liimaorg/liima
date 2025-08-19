@@ -11,6 +11,7 @@ import { EnvironmentDeleteComponent } from './environment-delete/environment-del
 import { AuthService } from '../../auth/auth.service';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
+import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-environments-page',
@@ -38,9 +39,9 @@ export class EnvironmentsPageComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canAdd: this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', 'ALL'),
-        canDelete: this.authService.hasPermission('REMOVE_ENV_OR_DOM', 'ALL'),
-        canEdit: this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', 'ALL'),
+        canAdd: this.authService.hasPermission('ADD_NEW_ENV_OR_DOM', Action.ALL),
+        canDelete: this.authService.hasPermission('REMOVE_ENV_OR_DOM', Action.ALL),
+        canEdit: this.authService.hasPermission('EDIT_ENV_OR_DOM_NAME', Action.ALL),
       };
     } else {
       return {

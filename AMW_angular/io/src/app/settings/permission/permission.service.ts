@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { mergeMap, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Permission } from './permission';
-import { Restriction } from './restriction';
+import { Permission } from 'src/app/auth/permission';
+import { Restriction } from 'src/app/auth/restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { BaseService } from 'src/app/base/base.service';
 
