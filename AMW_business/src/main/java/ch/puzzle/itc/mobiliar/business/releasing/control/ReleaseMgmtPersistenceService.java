@@ -98,24 +98,26 @@ public class ReleaseMgmtPersistenceService {
 
 	/**
 	 * @param releaseName
-	 * @return the release with the given name or null if it does not exist
+	 * @return the release with the given name ignoring case or null if it does not exist
 	 */
 	public ReleaseEntity findByName(String releaseName) {
-		ReleaseEntity release = null;
+		if (releaseName == null) {
+			return null;
+		}
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ReleaseEntity> q = cb.createQuery(ReleaseEntity.class);
 		Root<ReleaseEntity> r = q.from(ReleaseEntity.class);
-		Predicate resNamePred = cb.equal(r.get("name"), releaseName);
+		Predicate resNamePred = cb.equal(cb.lower(r.get("name")), releaseName.toLowerCase());
 
-		q.where(cb.and(resNamePred));
+		q.where(resNamePred);
 
 		try {
-			release = entityManager.createQuery(q).getSingleResult();
+			return entityManager.createQuery(q).getSingleResult();
 		}
 		catch (NoResultException e) {
 			// do nothing
 		}
-		return release;
+		return null;
 	}
 
 	/**

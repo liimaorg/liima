@@ -79,8 +79,10 @@ public class ResourceLocator {
 	public ResourceEntity getResourceByGroupNameAndRelease(String name, String releaseName)
 			throws ValidationException {
 		ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
-
 		ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
+        if (release == null) {
+            return null;
+        }
         try {
             return resourceRepository.getResourceByNameAndRelease(name, release);
         }
@@ -99,10 +101,12 @@ public class ResourceLocator {
     public ReleaseEntity getExactOrClosestPastReleaseByGroupNameAndRelease(String name, String releaseName)
             throws ValidationException {
         ValidationHelper.validateNotNullOrEmptyChecked(name, releaseName);
-
         ReleaseEntity release = releaseLocator.getReleaseByName(releaseName);
-        ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupByName(name);
+        if (release == null) {
+            return null;
+        }
         try {
+            ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupByName(name);
             return resourceDependencyResolverService.findExactOrClosestPastRelease(resGroup.getReleases(),
                     release.getInstallationInProductionAt());
         }
@@ -120,8 +124,8 @@ public class ResourceLocator {
     public ResourceEntity getExactOrClosestPastReleaseByGroupIdAndReleaseId(@NotNull Integer groupId, @NotNull Integer releaseId) throws NotFoundException {
 
         ReleaseEntity release = releaseLocator.getReleaseById(releaseId);
-        ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupById(groupId);
         try {
+            ResourceGroupEntity resGroup = resourceGroupRepository.getResourceGroupById(groupId);
             release = resourceDependencyResolverService.findExactOrClosestPastRelease(resGroup.getReleases(),
                     release.getInstallationInProductionAt());
         }
