@@ -1,14 +1,14 @@
-import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
-import { Restriction } from './restriction';
-import { Permission } from './permission';
-import * as _ from 'lodash';
-import { Resource } from '../../resource/resource';
-import { Environment } from '../../deployment/environment';
-import { ResourceType } from '../../resource/resource-type';
-import { IconComponent } from '../../shared/icon/icon.component';
-import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
+import { AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import * as _ from 'lodash';
+import { Permission } from 'src/app/auth/permission';
+import { Action, Restriction, ResourceTypeCategory } from 'src/app/auth/restriction';
+import { Environment } from '../../deployment/environment';
+import { Resource } from '../../resource/resource';
+import { ResourceType } from '../../resource/resource-type';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-restriction-edit',
@@ -16,8 +16,8 @@ import { ButtonComponent } from '../../shared/button/button.component';
   imports: [FormsModule, NgClass, IconComponent, ButtonComponent],
 })
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
-  actions: string[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];
-  resourceTypePermissions: string[] = ['ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY'];
+  actions: Action[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];
+  resourceTypePermissions: ResourceTypeCategory[] = ['ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY'];
   resourceGroup: Resource = {} as Resource;
 
   @Input() restriction: Restriction;
@@ -213,7 +213,7 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   }
 
   private extractAvailableActions(): string[] {
-    let actions: string[] = [];
+    let actions: Action[] = [];
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
         if (restriction.action === 'ALL') {

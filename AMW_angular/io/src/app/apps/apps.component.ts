@@ -60,8 +60,8 @@ export class AppsComponent implements OnInit, OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canCreateApp: this.authService.hasResourceTypePermission('RESOURCE', 'CREATE', 'APPLICATION'),
-        canCreateAppServer: this.authService.hasResourceTypePermission('RESOURCE', 'CREATE', 'APPLICATIONSERVER'),
+        canCreateApp: this.authService.hasPermission('RESOURCE', 'CREATE', 'APPLICATION'),
+        canCreateAppServer: this.authService.hasPermission('RESOURCE', 'CREATE', 'APPLICATIONSERVER'),
         canViewAppList: this.authService.hasPermission('APP_AND_APPSERVER_LIST', 'READ'),
       };
     } else {

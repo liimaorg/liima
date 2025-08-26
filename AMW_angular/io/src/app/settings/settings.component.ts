@@ -14,7 +14,7 @@ export class SettingsComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canViewSettings: this.authService.hasPermission('SETTING_PANEL_LIST', 'ALL'),
+        canViewSettings: this.authService.hasPermission('SETTING_PANEL_LIST', 'READ'),
         canViewPermissionsTab: this.authService.hasPermission('ROLES_AND_PERMISSIONS_TAB', 'ALL'),
         canViewAppInfo: this.authService.hasPermission('RELEASE', 'READ'),
       };

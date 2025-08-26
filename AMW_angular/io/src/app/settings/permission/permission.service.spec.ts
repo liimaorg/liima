@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { PermissionService } from './permission.service';
-import { Restriction } from './restriction';
+import { Restriction } from 'src/app/auth/restriction';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PermissionService', () => {
   let service: PermissionService;

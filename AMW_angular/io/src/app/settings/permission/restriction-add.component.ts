@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { Action } from './action';
-import { Restriction } from './restriction';
+import { Restriction } from 'src/app/auth/restriction';
 import { RestrictionsCreation } from './restrictions-creation';
-import { Permission } from './permission';
+import { Permission } from 'src/app/auth/permission';
 import * as _ from 'lodash';
 import { Environment } from 'src/app/deployment/environment';
 import { Resource } from 'src/app/resource/resource';
