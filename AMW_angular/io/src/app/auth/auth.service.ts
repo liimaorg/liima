@@ -3,7 +3,7 @@ import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
-import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
+import { Action, Restriction } from 'src/app/auth/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DefaultResourceType } from './defaultResourceType';
 import { EnvironmentService } from '../deployment/environment.service';
@@ -12,6 +12,7 @@ import { Environment } from '../deployment/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
   private http = inject(HttpClient);
+  private environmentsService = inject(EnvironmentService);
   private reload$ = new Subject<Restriction[]>();
   private restrictions$ = this.reload$.pipe(
     startWith(null),
@@ -19,7 +20,6 @@ export class AuthService extends BaseService {
     shareReplay(1),
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
-  private environmentsService = inject(EnvironmentService);
   environments: Signal<{ [name: string] : Environment; }> = computed(() => {
     return this.environmentsService.contexts().reduce((acc, env) => {
       acc[env.name] = env;
@@ -55,16 +55,16 @@ export class AuthService extends BaseService {
       .filter((entry) => entry.permission.name === permissionName)
       .filter(
         (entry) =>
-          entry.resourceTypePermission === ResourceTypeCategory.ANY ||
-          (entry.resourceTypePermission === ResourceTypeCategory.DEFAULT_ONLY &&
+          entry.resourceTypePermission === 'ANY' ||
+          (entry.resourceTypePermission === 'DEFAULT_ONLY' &&
             Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
-          (entry.resourceTypePermission === ResourceTypeCategory.NON_DEFAULT_ONLY &&
+          (entry.resourceTypePermission === 'NON_DEFAULT_ONLY' &&
             !Object.keys(DefaultResourceType).includes(resourceTypeName)),
         )
       .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
       .filter((entry) => entry.resourceGroupId === null || entry.resourceGroupId === resourceGroupId)
       .filter((entry) => this.hasContextPermission(entry, context))
-      .find((entry) => entry.action === Action.ALL || entry.action === action) !== undefined
+      .find((entry) => entry.action === 'ALL' || entry.action === action) !== undefined
     );
   }
 
@@ -86,6 +86,6 @@ export class AuthService extends BaseService {
 // usage example: actions.some(isAllowed("CREATE"))
 export function isAllowed(role: string) {
   return (action: string) => {
-    return action === Action.ALL || action === role;
+    return action === 'ALL' || action === role;
   };
 }

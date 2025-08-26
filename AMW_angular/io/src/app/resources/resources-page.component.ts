@@ -27,7 +27,6 @@ import { Release } from '../settings/releases/release';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-resources-page',
@@ -59,8 +58,8 @@ export class ResourcesPageComponent implements OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canViewResourceTypes: this.authService.hasPermission('RES_TYPE_LIST_TAB', Action.ALL),
-        canCreateResourceTypes: this.authService.hasPermission('RESOURCETYPE', Action.CREATE),
+        canViewResourceTypes: this.authService.hasPermission('RES_TYPE_LIST_TAB', 'ALL'),
+        canCreateResourceTypes: this.authService.hasPermission('RESOURCETYPE', 'CREATE'),
       };
     } else {
       return { canViewResourceTypes: false, canCreateResourceTypes: false };

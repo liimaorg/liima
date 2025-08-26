@@ -13,7 +13,6 @@ import { ResourceTypeDeleteComponent } from '../resource-type-delete/resource-ty
 import { RouterLink } from '@angular/router';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
 import { Router } from '@angular/router';
-import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-resources-list',
@@ -45,12 +44,12 @@ export class ResourcesListComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canReadResources: this.authService.hasPermission('RESOURCE', Action.READ, this.resourceType().name),
-        canCreateResource: this.authService.hasPermission('RESOURCE', Action.CREATE, this.resourceType().name),
-        canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', Action.DELETE, this.resourceType().name),
+        canReadResources: this.authService.hasPermission('RESOURCE', 'READ', this.resourceType().name),
+        canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE', this.resourceType().name),
+        canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE', this.resourceType().name),
         // TODO: remove after migration
-        canUseAngularEditResource: this.authService.hasPermission('RESOURCE', Action.READ, this.resourceType().name)
-          && this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', Action.ALL, this.resourceType().name),
+        canUseAngularEditResource: this.authService.hasPermission('RESOURCE', 'READ', this.resourceType().name)
+          && this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL', this.resourceType().name),
 
       };
     } else {

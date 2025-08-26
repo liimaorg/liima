@@ -11,7 +11,6 @@ import { FunctionEditComponent } from './function-edit.component';
 import { FunctionDeleteComponent } from './function-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
-import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-functions',
@@ -32,8 +31,8 @@ export class FunctionsComponent implements OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canManage: this.authService.hasPermission('MANAGE_GLOBAL_FUNCTIONS', Action.ALL),
-        canView: this.authService.hasPermission('VIEW_GLOBAL_FUNCTIONS', Action.ALL),
+        canManage: this.authService.hasPermission('MANAGE_GLOBAL_FUNCTIONS', 'ALL'),
+        canView: this.authService.hasPermission('VIEW_GLOBAL_FUNCTIONS', 'ALL'),
       };
     } else {
       return {

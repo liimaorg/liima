@@ -14,7 +14,6 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
-import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-releases',
@@ -68,9 +67,9 @@ export class ReleasesComponent implements OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canCreate: this.authService.hasPermission('RELEASE', Action.CREATE),
-        canEdit: this.authService.hasPermission('RELEASE', Action.UPDATE),
-        canDelete: this.authService.hasPermission('RELEASE', Action.DELETE),
+        canCreate: this.authService.hasPermission('RELEASE', 'CREATE'),
+        canEdit: this.authService.hasPermission('RELEASE', 'UPDATE'),
+        canDelete: this.authService.hasPermission('RELEASE', 'DELETE'),
       };
     } else {
       return {

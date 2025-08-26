@@ -6,7 +6,6 @@ import { TileComponent } from '../../../shared/tile/tile.component';
 
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Action } from 'src/app/auth/restriction';
 import { AuthService } from '../../../auth/auth.service';
 import { ResourceType } from '../../../resource/resource-type';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
@@ -46,15 +45,15 @@ export class ResourceTypeFunctionsListComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resourceType()) {
       return {
-        canShowInstanceFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
-        canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
+        canShowInstanceFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
+        canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
           this.contextId() === 1 &&
-          this.authService.hasPermission(RESOURCETYPE_PERM, Action.CREATE, this.resourceType().name),
-        canEdit: this.authService.hasPermission(RESOURCETYPE_PERM, Action.UPDATE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'CREATE', this.resourceType().name),
+        canEdit: this.authService.hasPermission(RESOURCETYPE_PERM, 'UPDATE', this.resourceType().name),
         canDelete:
           this.contextId() === 1 &&
-          this.authService.hasPermission(RESOURCETYPE_PERM, Action.DELETE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'DELETE', this.resourceType().name),
       };
     } else {
       return {

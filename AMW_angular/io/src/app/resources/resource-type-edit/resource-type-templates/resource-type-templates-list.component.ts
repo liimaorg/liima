@@ -2,7 +2,6 @@ import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Action } from 'src/app/auth/restriction';
 import { AuthService } from '../../../auth/auth.service';
 import { ResourceTemplate } from '../../../resource/resource-template';
 import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
@@ -44,16 +43,16 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resourceType()) {
       return {
-        canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
+        canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCETYPE_PERM, Action.CREATE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'CREATE', this.resourceType().name),
         canEdit:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCETYPE_PERM, Action.UPDATE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'UPDATE', this.resourceType().name),
         canDelete:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCETYPE_PERM, Action.DELETE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'DELETE', this.resourceType().name),
       };
     } else {
       return {

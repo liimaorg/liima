@@ -13,7 +13,6 @@ import { Subject } from 'rxjs';
 import { PropertyTypeDeleteComponent } from './property-type-delete.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { TableColumnType, TableComponent } from '../../shared/table/table.component';
-import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-property-types',
@@ -64,12 +63,12 @@ export class PropertyTypesComponent implements OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canAdd: this.authService.hasPermission('ADD_PROPTYPE', Action.ALL),
-        canDelete: this.authService.hasPermission('DELETE_PROPTYPE', Action.ALL),
-        canDisplay: this.authService.hasPermission('PROP_TYPE_NAME_VALUE', Action.ALL),
-        canEditName: this.authService.hasPermission('EDIT_PROP_TYPE_NAME', Action.ALL),
-        canEditValidation: this.authService.hasPermission('EDIT_PROP_TYPE_VALIDATION', Action.ALL),
-        canSave: this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', Action.ALL),
+        canAdd: this.authService.hasPermission('ADD_PROPTYPE', 'ALL'),
+        canDelete: this.authService.hasPermission('DELETE_PROPTYPE', 'ALL'),
+        canDisplay: this.authService.hasPermission('PROP_TYPE_NAME_VALUE', 'ALL'),
+        canEditName: this.authService.hasPermission('EDIT_PROP_TYPE_NAME', 'ALL'),
+        canEditValidation: this.authService.hasPermission('EDIT_PROP_TYPE_VALIDATION', 'ALL'),
+        canSave: this.authService.hasPermission('SAVE_SETTINGS_PROPTYPE', 'ALL'),
       };
     } else {
       return {

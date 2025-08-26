@@ -3,7 +3,7 @@ import { RestrictionEditComponent } from './restriction-edit.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { Environment } from '../../deployment/environment';
 import { Resource } from '../../resource/resource';
-import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
+import { Restriction } from 'src/app/auth/restriction';
 import { Permission } from 'src/app/auth/permission';
 
 describe('RestrictionEditComponent', () => {
@@ -315,11 +315,11 @@ describe('RestrictionEditComponent', () => {
       restrictionComponent.resourceGroups = [{ id: 1 } as Resource, { id: 9 } as Resource, { id: 10 } as Resource];
       // should match parent Dev
       restrictionComponent.restriction = {
-        action: Action.CREATE,
+        action: 'CREATE',
         contextName: 'B',
         resourceGroupId: 9,
         resourceTypeName: null,
-        resourceTypePermission:  ResourceTypeCategory.ANY,
+        resourceTypePermission:  'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       restrictionComponent.similarRestrictions = [
@@ -354,11 +354,11 @@ describe('RestrictionEditComponent', () => {
       // given
       restrictionComponent.resourceGroups = [{ id: 1 } as Resource, { id: 9 } as Resource, { id: 10 } as Resource];
       restrictionComponent.restriction = {
-        action: Action.CREATE,
+        action: 'CREATE',
         contextName: 'T',
         resourceGroupId: 9,
         resourceTypeName: null,
-        resourceTypePermission: ResourceTypeCategory.ANY,
+        resourceTypePermission: 'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       // when
@@ -374,11 +374,11 @@ describe('RestrictionEditComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.restriction = {
-        action: Action.CREATE,
+        action: 'CREATE',
         contextName: 'T',
         resourceGroupId: 9,
         resourceTypeName: null,
-        resourceTypePermission: ResourceTypeCategory.ANY,
+        resourceTypePermission: 'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       restrictionComponent.similarRestrictions = [
@@ -412,11 +412,11 @@ describe('RestrictionEditComponent', () => {
       // given
       restrictionComponent.delegationMode = true;
       restrictionComponent.restriction = {
-        action: Action.CREATE,
+        action: 'CREATE',
         contextName: 'T',
         resourceGroupId: 9,
         resourceTypeName: null,
-        resourceTypePermission: ResourceTypeCategory.ANY,
+        resourceTypePermission: 'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       restrictionComponent.similarRestrictions = [
@@ -489,11 +489,11 @@ describe('RestrictionEditComponent', () => {
         },
       ];
       restrictionComponent.restriction = {
-        action: Action.CREATE,
+        action: 'CREATE',
         contextName: 'T',
         resourceGroupId: null,
         resourceTypeName: 'APP',
-        resourceTypePermission: ResourceTypeCategory.ANY,
+        resourceTypePermission: 'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       restrictionComponent.similarRestrictions = [
@@ -557,11 +557,11 @@ describe('RestrictionEditComponent', () => {
         },
       ];
       restrictionComponent.restriction = {
-        action: Action.CREATE,
+        action: 'CREATE',
         contextName: 'T',
         resourceGroupId: null,
         resourceTypeName: 'APP',
-        resourceTypePermission: ResourceTypeCategory.ANY,
+        resourceTypePermission: 'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       restrictionComponent.similarRestrictions = [
@@ -624,11 +624,11 @@ describe('RestrictionEditComponent', () => {
         },
       ];
       restrictionComponent.restriction = {
-        action: Action.CREATE,
+        action: 'CREATE',
         contextName: 'T',
         resourceGroupId: null,
         resourceTypeName: 'APP',
-        resourceTypePermission: ResourceTypeCategory.ANY,
+        resourceTypePermission: 'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       restrictionComponent.similarRestrictions = [

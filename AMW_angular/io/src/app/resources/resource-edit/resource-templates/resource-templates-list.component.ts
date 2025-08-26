@@ -2,7 +2,6 @@ import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Action } from 'src/app/auth/restriction';
 import { AuthService } from '../../../auth/auth.service';
 import { Resource } from '../../../resource/resource';
 import { ResourceTemplate } from '../../../resource/resource-template';
@@ -45,17 +44,17 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resource()) {
       return {
-        canShowInstanceTemplates: this.authService.hasPermission(RESOURCE_PERM, Action.READ),
-        canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
+        canShowInstanceTemplates: this.authService.hasPermission(RESOURCE_PERM, 'READ'),
+        canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCE_PERM, Action.CREATE, this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(RESOURCE_PERM, 'CREATE', this.resource().type, this.resource().resourceGroupId),
         canEdit:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCE_PERM, Action.UPDATE, this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(RESOURCE_PERM, 'UPDATE', this.resource().type, this.resource().resourceGroupId),
         canDelete:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCE_PERM, Action.DELETE, this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(RESOURCE_PERM, 'DELETE', this.resource().type, this.resource().resourceGroupId),
       };
     } else {
       return {

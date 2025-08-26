@@ -21,7 +21,6 @@ import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
 import { ResourceTypesService } from '../resource/resource-types.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Action } from 'src/app/auth/restriction';
 
 @Component({
   selector: 'app-apps',
@@ -61,9 +60,9 @@ export class AppsComponent implements OnInit, OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canCreateApp: this.authService.hasPermission('RESOURCE', Action.CREATE, 'APPLICATION'),
-        canCreateAppServer: this.authService.hasPermission('RESOURCE', Action.CREATE, 'APPLICATIONSERVER'),
-        canViewAppList: this.authService.hasPermission('APP_AND_APPSERVER_LIST', Action.READ),
+        canCreateApp: this.authService.hasPermission('RESOURCE', 'CREATE', 'APPLICATION'),
+        canCreateAppServer: this.authService.hasPermission('RESOURCE', 'CREATE', 'APPLICATIONSERVER'),
+        canViewAppList: this.authService.hasPermission('APP_AND_APPSERVER_LIST', 'READ'),
       };
     } else {
       return { canCreateApp: false, canCreateAppServer: false, canViewAppList: false };

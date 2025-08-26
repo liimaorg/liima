@@ -1,18 +1,8 @@
 import { Permission } from './permission';
 
-export enum Action {
-  READ = 'READ',
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  ALL = 'ALL',
-}
+export type Action = 'READ' | 'CREATE' | 'UPDATE' | 'DELETE' | 'ALL';
 
-export enum ResourceTypeCategory {
-  DEFAULT_ONLY = 'DEFAULT_ONLY',
-  NON_DEFAULT_ONLY = 'NON_DEFAULT_ONLY',
-  ANY = 'ANY'
-}
+export type ResourceTypeCategory = 'DEFAULT_ONLY' | 'NON_DEFAULT_ONLY' | 'ANY';
 
 export interface Restriction {
   id: number;
