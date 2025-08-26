@@ -211,7 +211,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceCreation() throws ElementAlreadyExistsException, ValidationException, NotFoundException {
+    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceCreation() throws AMWException {
         // given
         ResourceTypeEntity resType = new ResourceTypeEntity();
         resType.setName("APP");
