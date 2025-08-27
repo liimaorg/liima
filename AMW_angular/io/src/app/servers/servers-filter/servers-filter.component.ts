@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output, OnChanges, SimpleCha
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Environment } from '../../deployment/environment';
-import { Resource } from '../../resource/resource';
+import { Resource } from '../../resources/models/resource';
 import { ServerFilter } from './server-filter';
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, OperatorFunction } from 'rxjs';

@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ResourceTemplateEditComponent } from './resource-template-edit.component';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ComponentRef } from '@angular/core';
-import { ResourceTemplate } from '../../../resource/resource-template';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ResourceTemplate } from 'src/app/resources/models/resource-template';
+import { ResourceTemplateEditComponent } from './resource-template-edit.component';
 
 describe('ResourceTemplateEditComponent', () => {
   let component: ResourceTemplateEditComponent;

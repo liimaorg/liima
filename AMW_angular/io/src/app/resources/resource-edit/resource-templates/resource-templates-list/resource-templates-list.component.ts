@@ -2,16 +2,17 @@ import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AuthService } from '../../../auth/auth.service';
-import { Resource } from '../../../resource/resource';
-import { ResourceTemplate } from '../../../resource/resource-template';
-import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { ToastService } from '../../../shared/elements/toast/toast.service';
-import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
-import { TileComponent } from '../../../shared/tile/tile.component';
-import { ResourceTemplateDeleteComponent } from './resource-template-delete.component';
-import { ResourceTemplateEditComponent } from './resource-template-edit.component';
+
+import { AuthService } from 'src/app/auth/auth.service';
+import { Resource } from 'src/app/resources/models/resource';
+import { ResourceTemplate } from 'src/app/resources/models/resource-template';
+import { ResourceTemplatesService } from 'src/app/resources/services/resource-templates.service';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { EntryAction, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
+import { ResourceTemplateEditComponent } from '../resource-template-edit/resource-template-edit.component';
+import { ResourceTemplateDeleteComponent } from '../resource-template-delete/resource-template-delete.component';
 
 const RESOURCE_PERM = 'RESOURCE_TEMPLATE';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';

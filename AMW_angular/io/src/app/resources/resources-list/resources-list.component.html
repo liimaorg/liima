@@ -11,7 +11,10 @@
               </app-button>
             </a>
             @if (permissions().canUseAngularEditResource) {
-              <a [routerLink]="['/resourceType/edit']" [queryParams]="{ ctx: 1, id: resourceType().id }">
+              <a
+              [routerLink]="['/resourceType/edit']"
+              [queryParams]="{ ctx: 1, id: resourceType().id, selectedResourceTypeId: resourceType().id }"
+            >
                 <app-button [variant]="'link'">
                   <app-icon icon="rocket-takeoff"></app-icon>
                 </app-button>

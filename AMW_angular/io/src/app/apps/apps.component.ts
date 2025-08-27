@@ -16,10 +16,10 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add/app-server-add.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AppAddComponent } from './app-add/app-add.component';
-import { ResourceService } from '../resource/resource.service';
+import { ResourceService } from '../resources/services/resource.service';
 import { AppCreate } from './app-create';
 import { ButtonComponent } from '../shared/button/button.component';
-import { ResourceTypesService } from '../resource/resource-types.service';
+import { ResourceTypesService } from '../resources/services/resource-types.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({

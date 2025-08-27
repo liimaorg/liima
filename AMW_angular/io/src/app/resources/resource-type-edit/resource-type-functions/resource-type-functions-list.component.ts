@@ -1,19 +1,17 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { EntryAction, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
+import { ResourceFunction } from '../../models/resource-function';
+import { ResourceType } from '../../models/resource-type';
+import { ResourceFunctionDeleteComponent } from '../../resource-edit/resource-functions/resource-function-delete/resource-function-delete.component';
+import { ResourceFunctionEditComponent } from '../../resource-edit/resource-functions/resource-function-edit/resource-function-edit.component';
+import { ResourceFunctionsService } from '../../services/resource-functions.service';
 
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { TileComponent } from '../../../shared/tile/tile.component';
-
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { AuthService } from '../../../auth/auth.service';
-import { ResourceType } from '../../../resource/resource-type';
-import { ToastService } from '../../../shared/elements/toast/toast.service';
-import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
-import { ResourceFunctionDeleteComponent } from '../../resource-edit/resource-functions/resource-function-delete.component';
-import { ResourceFunctionEditComponent } from '../../resource-edit/resource-functions/resource-function-edit.component';
-import { ResourceFunction } from '../../resource-function';
-import { ResourceFunctionsService } from '../../resource-functions.service';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 

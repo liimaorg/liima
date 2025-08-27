@@ -1,6 +1,6 @@
 import { Component, computed, inject, input, output } from '@angular/core';
-import { Resource } from '../../resource/resource';
-import { ResourceType } from '../../resource/resource-type';
+import { Resource } from '../models/resource';
+import { ResourceType } from '../models/resource-type';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -105,12 +105,14 @@ export class ResourcesListComponent {
     window.location.href = dynamicUrl;
   }
 
+  // TODO: Rename this to openEditResourcePage once resource edit pages are fully implemented
   openMigratedResourcePage(id: number) {
     const resource = this.resourceGroupList().find((res) => res.id === id);
     this.router.navigate(['/resource/edit'], {
       queryParams: {
         ctx: 1,
         id: resource.defaultResourceId ? resource.defaultResourceId : resource.id,
+        selectedResourceTypeId: this.resourceType().id,
       },
     });
   }

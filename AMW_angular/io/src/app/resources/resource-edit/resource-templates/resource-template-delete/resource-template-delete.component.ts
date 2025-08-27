@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
+import { ModalHeaderComponent } from '../../../../shared/modal-header/modal-header.component';
+import { ButtonComponent } from '../../../../shared/button/button.component';
 
 @Component({
   selector: 'app-resource-template-delete',

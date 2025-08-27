@@ -1,19 +1,18 @@
 import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { TileComponent } from '../../../shared/tile/tile.component';
-
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AuthService } from '../../../auth/auth.service';
-import { Resource } from '../../../resource/resource';
-import { ToastService } from '../../../shared/elements/toast/toast.service';
-import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
-import { ResourceFunction } from '../../resource-function';
-import { ResourceFunctionsService } from '../../resource-functions.service';
-import { ResourceFunctionDeleteComponent } from './resource-function-delete.component';
-import { ResourceFunctionEditComponent } from './resource-function-edit.component';
+import { AuthService } from 'src/app/auth/auth.service';
+import { Resource } from 'src/app/resources/models/resource';
+import { ResourceFunction } from 'src/app/resources/models/resource-function';
+import { ResourceFunctionsService } from 'src/app/resources/services/resource-functions.service';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { EntryAction, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
+import { ResourceFunctionDeleteComponent } from './../resource-function-delete/resource-function-delete.component';
+import { ResourceFunctionEditComponent } from './../resource-function-edit/resource-function-edit.component';
 
 const RESOURCE_PERM = 'RESOURCE_AMWFUNCTION';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';

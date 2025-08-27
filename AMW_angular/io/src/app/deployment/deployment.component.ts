@@ -1,11 +1,11 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { ResourceService } from '../resource/resource.service';
-import { ResourceTag } from '../resource/resource-tag';
-import { Resource } from '../resource/resource';
-import { Release } from '../resource/release';
-import { Relation } from '../resource/relation';
+import { ResourceService } from '../resources/services/resource.service';
+import { ResourceTag } from '../resources/models/resource-tag';
+import { Resource } from '../resources/models/resource';
+import { Release } from '../resources/models/release';
+import { Relation } from '../resources/models/relation';
 import { Deployment } from './deployment';
 import { DeploymentParameter } from './deployment-parameter';
 import { DeploymentService } from './deployment.service';
@@ -24,7 +24,7 @@ import { NotificationComponent } from '../shared/elements/notification/notificat
 import { LoadingIndicatorComponent } from '../shared/elements/loading-indicator.component';
 import { PageComponent } from '../layout/page/page.component';
 import { ButtonComponent } from '../shared/button/button.component';
-import { ResourceTypesService } from '../resource/resource-types.service';
+import { ResourceTypesService } from '../resources/services/resource-types.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs/operators';
 

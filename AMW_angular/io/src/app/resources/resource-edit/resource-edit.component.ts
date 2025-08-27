@@ -4,12 +4,12 @@ import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ResourceService } from '../../resource/resource.service';
-import { Resource } from '../../resource/resource';
+import { ResourceService } from '../services/resource.service';
+import { Resource } from '../models/resource';
 import { AuthService } from '../../auth/auth.service';
-import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list.component';
-import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list.component';
-import { Release } from '../../resource/release';
+import { ResourceFunctionsListComponent } from './resource-functions/resource-functions-list/resource-functions-list.component';
+import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list/resource-templates-list.component';
+import { Release } from '../models/release';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 

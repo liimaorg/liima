@@ -1,17 +1,18 @@
 import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { AuthService } from '../../../auth/auth.service';
-import { ResourceTemplate } from '../../../resource/resource-template';
-import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
-import { ResourceType } from '../../../resource/resource-type';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { ToastService } from '../../../shared/elements/toast/toast.service';
-import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
-import { TileComponent } from '../../../shared/tile/tile.component';
-import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete.component';
-import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit.component';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
+import { EntryAction } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { ResourceTemplate } from '../../models/resource-template';
+import { ResourceType } from '../../models/resource-type';
+import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete/resource-template-delete.component';
+import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
+import { ResourceTemplatesService } from '../../services/resource-templates.service';
+
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 

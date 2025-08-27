@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ResourceFunctionEditComponent } from './resource-function-edit.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { ResourceFunctionsService } from '../../resource-functions.service';
+import { ResourceFunctionsService } from '../../../services/resource-functions.service';
 
 describe('FunctionEditComponent', () => {
   let component: ResourceFunctionEditComponent;

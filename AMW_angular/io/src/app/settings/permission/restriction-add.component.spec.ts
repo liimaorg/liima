@@ -4,7 +4,7 @@ import { Permission } from 'src/app/auth/permission';
 import { RestrictionAddComponent } from './restriction-add.component';
 import { Restriction } from 'src/app/auth/restriction';
 import * as _ from 'lodash';
-import { Resource } from '../../resource/resource';
+import { Resource } from '../../resources/models/resource';
 import { Environment } from '../../deployment/environment';
 
 describe('RestrictionAddComponent', () => {

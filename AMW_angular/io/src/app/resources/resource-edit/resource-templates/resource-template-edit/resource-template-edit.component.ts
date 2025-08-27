@@ -1,17 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { Component, computed, EventEmitter, inject, Input, OnInit, Output, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
-import { CommonModule } from '@angular/common';
-import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { CodeEditorComponent } from '../../../shared/codemirror/code-editor.component';
-import { ResourceTemplate } from '../../../resource/resource-template';
-import { ResourceTemplatesService } from '../../../resource/resource-templates.service';
-import { RevisionInformation } from '../../../shared/model/revisionInformation';
-import { DiffEditorComponent } from '../../../shared/codemirror/diff-editor.component';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { RevisionCompareComponent } from '../../../shared/revision-compare/revision-compare.component';
-import { FullscreenToggleComponent } from '../../../shared/fullscreen-toggle/fullscreen-toggle.component';
+import { ResourceTemplate } from 'src/app/resources/models/resource-template';
+import { ResourceTemplatesService } from 'src/app/resources/services/resource-templates.service';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
+import { CodeEditorComponent } from 'src/app/shared/codemirror/code-editor.component';
+import { DiffEditorComponent } from 'src/app/shared/codemirror/diff-editor.component';
+import { FullscreenToggleComponent } from 'src/app/shared/fullscreen-toggle/fullscreen-toggle.component';
+import { ModalHeaderComponent } from 'src/app/shared/modal-header/modal-header.component';
+import { RevisionInformation } from 'src/app/shared/model/revisionInformation';
+import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revision-compare.component';
+
 
 interface TargetPlatformModel {
   name: string;

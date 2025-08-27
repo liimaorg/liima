@@ -3,12 +3,13 @@ import { AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, Input, On
 import { FormsModule } from '@angular/forms';
 import * as _ from 'lodash';
 import { Permission } from 'src/app/auth/permission';
-import { Action, Restriction, ResourceTypeCategory } from 'src/app/auth/restriction';
-import { Environment } from '../../deployment/environment';
-import { Resource } from '../../resource/resource';
-import { ResourceType } from '../../resource/resource-type';
-import { ButtonComponent } from '../../shared/button/button.component';
-import { IconComponent } from '../../shared/icon/icon.component';
+import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
+import { Environment } from 'src/app/deployment/environment';
+import { Resource } from 'src/app/resources/models/resource';
+import { ResourceType } from 'src/app/resources/models/resource-type';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
+import { IconComponent } from 'src/app/shared/icon/icon.component';
+
 
 @Component({
   selector: 'app-restriction-edit',

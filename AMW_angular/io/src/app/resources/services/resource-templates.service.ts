@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ResourceTemplate } from './resource-template';
+import { ResourceTemplate } from '../models/resource-template';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
-import { BaseService } from '../base/base.service';
+import { BaseService } from '../../base/base.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RevisionInformation } from '../shared/model/revisionInformation';
+import { RevisionInformation } from '../../shared/model/revisionInformation';
 @Injectable({ providedIn: 'root' })
 export class ResourceTemplatesService extends BaseService {
   private templates$: Subject<number> = new Subject<number>();
