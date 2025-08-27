@@ -4,7 +4,6 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject } from 'rxjs';
 import { Permission } from 'src/app/auth/permission';
 import { PermissionComponent } from './permission.component';
@@ -41,7 +40,6 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       imports: [
         CommonModule,
         FormsModule,
-        RouterTestingModule.withRoutes([]),
         NgbModule,
         PermissionComponent,
         RestrictionEditComponent,
@@ -436,7 +434,6 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       imports: [
         CommonModule,
         FormsModule,
-        RouterTestingModule.withRoutes([]),
         NgbModule,
         PermissionComponent,
         RestrictionEditComponent,
@@ -539,7 +536,6 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
       imports: [
         CommonModule,
         FormsModule,
-        RouterTestingModule.withRoutes([]),
         NgbModule,
         PermissionComponent,
         RestrictionEditComponent,

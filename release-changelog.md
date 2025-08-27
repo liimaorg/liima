@@ -1,3 +1,9 @@
+# v1.18.4
+* resources -> New Resource doesn't check permission correctly [#893](https://github.com/liimaorg/liima/issues/893) 
+* ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE doesn't work anymore [#892](https://github.com/liimaorg/liima/issues/892)
+* release of /AMW_rest/resources/resources/<name>/lte/<release> is now case sensitive [#891](https://github.com/liimaorg/liima/issues/891)
+* feature: return to selected resource type [#878](https://github.com/liimaorg/liima/pull/878)
+* Update Angular and JavaScript deps [#897](https://github.com/liimaorg/liima/issues/897)
 
 # v1.18.3
 * extend test database with more example data [#890](https://github.com/liimaorg/liima/pull/890)

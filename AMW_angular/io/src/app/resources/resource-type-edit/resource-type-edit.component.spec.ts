@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ResourceTypeEditComponent } from './resource-type-edit.component';
 import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
-import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ResourceEditPageComponent', () => {
   let component: ResourceTypeEditComponent;
@@ -18,7 +17,7 @@ describe('ResourceEditPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResourceTypeEditComponent, RouterTestingModule.withRoutes([])],
+      imports: [ResourceTypeEditComponent],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),

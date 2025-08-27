@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, computed, EventEmitter, inject, Input, OnInit, Output, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +27,6 @@ interface TargetPlatformModel {
   imports: [
     CodeEditorComponent,
     FormsModule,
-    CommonModule,
     NgbDropdownModule,
     ModalHeaderComponent,
     ButtonComponent,
@@ -35,7 +34,7 @@ interface TargetPlatformModel {
     DiffEditorComponent,
     RevisionCompareComponent,
     FullscreenToggleComponent
-  ]
+]
 })
 export class ResourceTemplateEditComponent implements OnInit {
   @Input() template: ResourceTemplate;
