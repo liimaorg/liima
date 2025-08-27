@@ -22,11 +22,6 @@ export class PropertyTypeEditComponent {
   title = 'property type';
   newTag: string = '';
 
-  constructor() {
-    const activeModal = this.activeModal;
-    this.activeModal = activeModal;
-  }
-
   getTitle(): string {
     return this.propertyType.id ? `Edit ${this.title}` : `Add ${this.title}`;
   }

@@ -43,15 +43,10 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
 
   ngControl: NgControl;
 
-  constructor() {
-    const config = this.config;
-
-    config.autoClose = 'outside';
-    config.placement = 'auto';
-  }
-
   ngOnInit(): void {
     this.ngControl = this.inj.get(NgControl);
+    this.config.autoClose = 'outside';
+    this.config.placement = 'auto';
   }
 
   writeValue(newModel: DateModel) {

@@ -1,33 +1,34 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { PermissionService } from './permission.service';
-import { Restriction } from 'src/app/auth/restriction';
-import { RestrictionsCreation } from './restrictions-creation';
-import { Permission } from 'src/app/auth/permission';
-import * as _ from 'lodash';
-import { Environment } from 'src/app/deployment/environment';
-import { Resource } from 'src/app/resources/models/resource';
-import { ResourceType } from '../../resources/models/resource-type';
-import { EnvironmentService } from '../../deployment/environment.service';
-import { ResourceService } from 'src/app/resources/services/resource.service';
 import { Location } from '@angular/common';
-import { RestrictionListComponent } from './restriction-list.component';
-import { RestrictionAddComponent } from './restriction-add.component';
-import { RestrictionEditComponent } from './restriction-edit.component';
-import { IconComponent } from '../../shared/icon/icon.component';
-import { NgSelectModule } from '@ng-select/ng-select';
+import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import {
   NgbNav,
-  NgbNavItem,
-  NgbNavLinkButton,
-  NgbNavLinkBase,
   NgbNavContent,
+  NgbNavItem,
+  NgbNavLinkBase,
+  NgbNavLinkButton,
   NgbNavOutlet,
 } from '@ng-bootstrap/ng-bootstrap';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
-import { ButtonComponent } from '../../shared/button/button.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import * as _ from 'lodash';
+import { Subscription } from 'rxjs';
+import { Permission } from 'src/app/auth/permission';
+import { Restriction } from 'src/app/auth/restriction';
+import { Environment } from 'src/app/deployment/environment';
+import { Resource } from 'src/app/resources/models/resource';
+import { ResourceService } from 'src/app/resources/services/resource.service';
+import { EnvironmentService } from '../../deployment/environment.service';
+import { ResourceType } from '../../resources/models/resource-type';
 import { ResourceTypesService } from '../../resources/services/resource-types.service';
+import { ButtonComponent } from '../../shared/button/button.component';
+import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
+import { IconComponent } from '../../shared/icon/icon.component';
+import { PermissionService } from './permission.service';
+import { RestrictionAddComponent } from './restriction-add.component';
+import { RestrictionEditComponent } from './restriction-edit.component';
+import { RestrictionListComponent } from './restriction-list.component';
+import { RestrictionsCreation } from './restrictions-creation';
 
 @Component({
   selector: 'app-permission',
@@ -49,7 +50,7 @@ import { ResourceTypesService } from '../../resources/services/resource-types.se
     ButtonComponent,
   ],
 })
-export class PermissionComponent implements OnInit {
+export class PermissionComponent implements OnInit, OnDestroy {
   private permissionService = inject(PermissionService);
   private environmentService = inject(EnvironmentService);
   private resourceService = inject(ResourceService);
@@ -98,9 +99,10 @@ export class PermissionComponent implements OnInit {
   errorMessage: string = null;
   successMessage: string = null;
   isLoading: boolean = false;
+  private routeSub?: Subscription;
 
-  constructor() {
-    this.activatedRoute.params.subscribe((param: any) => {
+  ngOnInit() {
+    this.routeSub = this.activatedRoute.params.subscribe((param) => {
       if (param['actingUser']) {
         this.delegationMode = true;
         this.restrictionType = 'user';
@@ -114,12 +116,14 @@ export class PermissionComponent implements OnInit {
         this.onChangeType(this.restrictionType);
       }
     });
-  }
 
-  ngOnInit() {
     this.getAllEnvironments();
     this.getAllResourceGroups();
     this.getAllResourceTypes();
+  }
+
+  ngOnDestroy() {
+    this.routeSub?.unsubscribe();
   }
 
   onChangeRole() {

@@ -21,12 +21,6 @@ export class ReleaseDeleteComponent implements OnInit {
 
   hasResources: boolean = false;
 
-  constructor() {
-    const activeModal = this.activeModal;
-
-    this.activeModal = activeModal;
-  }
-
   ngOnInit(): void {
     if (this.resources.size > 0) {
       this.hasResources = true;

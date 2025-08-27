@@ -8,7 +8,7 @@
   <input
     [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'"
     class="form-control"
-    (blur)="inputBlur($event)"
+    (blur)="inputBlur()"
     [ngModel]="dateString"
     (change)="onDateStringChange($event)"
     [disabled]="disabled"

@@ -48,8 +48,6 @@ export class AuditviewTableService {
 
   private _loading$ = new BehaviorSubject<boolean>(true);
 
-  private _result$: Observable<AuditLogEntry[]>;
-
   private searchTerm$ = new BehaviorSubject<string>('');
   private sortColumn$ = new BehaviorSubject<string>('timestamp');
   private sortDirection$ = new BehaviorSubject<SortDirection>('');
@@ -57,16 +55,14 @@ export class AuditviewTableService {
 
   private _search$ = combineLatest([this.searchTerm$, this.sortColumn$, this.sortDirection$, this.auditlogEntries$]);
 
-  constructor() {
-    this._result$ = this._search$.pipe(
-      tap(() => this._loading$.next(true)),
-      debounceTime(200),
-      map(([searchTerm, sortColumn, sortDirection, auditlogEntries]) => {
-        return this._search(searchTerm, sortColumn, sortDirection, auditlogEntries);
-      }),
-      tap(() => this._loading$.next(false)),
-    );
-  }
+  private _result$ = this._search$.pipe(
+    tap(() => this._loading$.next(true)),
+    debounceTime(200),
+    map(([searchTerm, sortColumn, sortDirection, auditlogEntries]) =>
+      this._search(searchTerm, sortColumn, sortDirection, auditlogEntries),
+    ),
+    tap(() => this._loading$.next(false)),
+  );
 
   get result$() {
     return this._result$;

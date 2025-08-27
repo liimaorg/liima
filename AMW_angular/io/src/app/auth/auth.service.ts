@@ -27,10 +27,6 @@ export class AuthService extends BaseService {
     }, {});
   });
 
-  constructor() {
-    super();
-  }
-
   refreshData() {
     this.reload$.next([]);
   }

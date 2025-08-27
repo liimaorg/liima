@@ -16,12 +16,6 @@ export class PropertyTypeDeleteComponent {
   @Input() propertyType: PropertyType;
   @Output() deletePropertyType: EventEmitter<PropertyType> = new EventEmitter<PropertyType>();
 
-  constructor() {
-    const activeModal = this.activeModal;
-
-    this.activeModal = activeModal;
-  }
-
   getTitle(): string {
     return 'Remove property type';
   }

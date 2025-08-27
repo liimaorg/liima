@@ -22,12 +22,6 @@ export class ReleaseEditComponent implements OnInit {
   dateFormat = DATE_FORMAT;
   installationDate: DateModel = null;
 
-  constructor() {
-    const activeModal = this.activeModal;
-
-    this.activeModal = activeModal;
-  }
-
   ngOnInit(): void {
     if (this.release) {
       this.installationDate = DateModel.fromEpoch(this.release.installationInProductionAt);
