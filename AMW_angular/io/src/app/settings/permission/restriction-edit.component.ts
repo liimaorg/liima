@@ -10,7 +10,6 @@ import { ResourceType } from 'src/app/resources/models/resource-type';
 import { ButtonComponent } from 'src/app/shared/button/button.component';
 import { IconComponent } from 'src/app/shared/icon/icon.component';
 
-
 @Component({
   selector: 'app-restriction-edit',
   templateUrl: './restriction-edit.component.html',

@@ -20,12 +20,12 @@ export class AuthService extends BaseService {
     shareReplay(1),
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
-  environments: Signal<{ [name: string] : Environment; }> = computed(() => {
+  environments: Signal<{ [name: string]: Environment }> = computed(() => {
     return this.environmentsService.contexts().reduce((acc, env) => {
       acc[env.name] = env;
       return acc;
     }, {});
-  })
+  });
 
   constructor() {
     super();
@@ -49,22 +49,28 @@ export class AuthService extends BaseService {
       .map((entry) => entry.action);
   }
 
-  hasPermission(permissionName: string, action: Action, resourceTypeName: string = null, resourceGroupId: number = null, context: string = null): boolean {
+  hasPermission(
+    permissionName: string,
+    action: Action,
+    resourceTypeName: string = null,
+    resourceGroupId: number = null,
+    context: string = null,
+  ): boolean {
     return (
       this.restrictions()
-      .filter((entry) => entry.permission.name === permissionName)
-      .filter(
-        (entry) =>
-          entry.resourceTypePermission === 'ANY' ||
-          (entry.resourceTypePermission === 'DEFAULT_ONLY' &&
-            Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
-          (entry.resourceTypePermission === 'NON_DEFAULT_ONLY' &&
-            !Object.keys(DefaultResourceType).includes(resourceTypeName)),
+        .filter((entry) => entry.permission.name === permissionName)
+        .filter(
+          (entry) =>
+            entry.resourceTypePermission === 'ANY' ||
+            (entry.resourceTypePermission === 'DEFAULT_ONLY' &&
+              Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
+            (entry.resourceTypePermission === 'NON_DEFAULT_ONLY' &&
+              !Object.keys(DefaultResourceType).includes(resourceTypeName)),
         )
-      .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
-      .filter((entry) => entry.resourceGroupId === null || entry.resourceGroupId === resourceGroupId)
-      .filter((entry) => this.hasContextPermission(entry, context))
-      .find((entry) => entry.action === 'ALL' || entry.action === action) !== undefined
+        .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
+        .filter((entry) => entry.resourceGroupId === null || entry.resourceGroupId === resourceGroupId)
+        .filter((entry) => this.hasContextPermission(entry, context))
+        .find((entry) => entry.action === 'ALL' || entry.action === action) !== undefined
     );
   }
 

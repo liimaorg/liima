@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, input, OnChanges, output, signal, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  OnChanges,
+  output,
+  signal,
+  SimpleChanges,
+} from '@angular/core';
 
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Release } from '../../settings/releases/release';
@@ -39,5 +48,4 @@ export class AppsFilterComponent implements OnChanges {
   search() {
     this.filterEvent.emit({ filter: this.filterValue(), releaseId: this.selectedReleaseId() });
   }
-
 }
