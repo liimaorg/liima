@@ -87,7 +87,7 @@ export class ServersPageComponent implements OnInit {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canReadAppServer: this.authService.hasResourceTypePermission('RESOURCE', 'CREATE', 'APPLICATION'),
+        canReadAppServer: this.authService.hasPermission('RESOURCE', 'CREATE', 'APPLICATION'),
         canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
       };
     } else {

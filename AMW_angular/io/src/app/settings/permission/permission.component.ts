@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PermissionService } from './permission.service';
-import { Restriction } from './restriction';
+import { Restriction } from 'src/app/auth/restriction';
 import { RestrictionsCreation } from './restrictions-creation';
-import { Permission } from './permission';
+import { Permission } from 'src/app/auth/permission';
 import * as _ from 'lodash';
 import { Environment } from 'src/app/deployment/environment';
 import { Resource } from 'src/app/resources/models/resource';

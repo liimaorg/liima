@@ -3,7 +3,6 @@ import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicat
 import { BehaviorSubject, Subject } from 'rxjs';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
-import { DATE_FORMAT } from '../../core/amw-constants';
 import { ReleaseEditComponent } from './release-edit.component';
 import { Release } from './release';
 import { ReleasesService } from './releases.service';

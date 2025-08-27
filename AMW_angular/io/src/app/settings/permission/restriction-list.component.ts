@@ -1,8 +1,8 @@
 import { Component, computed, input, output } from '@angular/core';
-import { Restriction } from './restriction';
 import * as _ from 'lodash';
-import { Resource } from '../../resources/models/resource';
-import { TableComponent, TableColumnType } from '../../shared/table/table.component';
+import { Restriction } from 'src/app/auth/restriction';
+import { Resource } from 'src/app/resources/models/resource';
+import { TableComponent } from 'src/app/shared/table/table.component';
 
 @Component({
   selector: 'app-restriction-list',
@@ -75,6 +75,7 @@ export class RestrictionListComponent {
       if (resource) {
         return resource['name'];
       }
+      return 'UNKNOWN'; // can happen if resource or permission cache isn't up to date
     }
     return null;
   }

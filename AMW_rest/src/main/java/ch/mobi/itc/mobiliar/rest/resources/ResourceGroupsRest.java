@@ -187,8 +187,11 @@ public class ResourceGroupsRest {
     public ResourceDTO getExactOrClosestPastRelease(@PathParam("resourceGroupName") String resourceGroupName,
                                                     @PathParam("releaseName") String releaseName,
                                                     @QueryParam("env") @DefaultValue("Global") String environment,
-                                                    @QueryParam("type") String resourceType) throws ValidationException, ResourceNotFoundException {
+                                                    @QueryParam("type") String resourceType) throws ValidationException, NotFoundException {
         ReleaseEntity release = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
+        if (release == null) {
+            throw new NotFoundException("Release or resource not found");
+        }
         return new ResourceDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
                 release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, release.getName()));
@@ -199,10 +202,11 @@ public class ResourceGroupsRest {
      * Creates a new resource and returns its location.
      *
      * @param request containing a ResourceReleaseDTO
+     * @throws AMWException
      */
     @POST
     @ApiOperation(value = "Add a Resource")
-    public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) throws ValidationException, NotFoundException, ElementAlreadyExistsException {
+    public Response addResource(@ApiParam("Add a Resource") ResourceReleaseDTO request) throws AMWException {
         if (StringUtils.isEmpty(request.getName()) || StringUtils.isEmpty(request.getName().trim()))
             throw new ValidationException("Resource name must not be null or blank");
 

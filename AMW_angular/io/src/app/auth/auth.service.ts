@@ -1,30 +1,31 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
-import { Restriction } from '../settings/permission/restriction';
+import { Action, Restriction } from 'src/app/auth/restriction';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DefaultResourceType } from './defaultResourceType';
-
-export enum Action {
-  READ = 'READ',
-  CREATE = 'CREATE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  ALL = 'ALL',
-}
+import { EnvironmentService } from '../deployment/environment.service';
+import { Environment } from '../deployment/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService {
   private http = inject(HttpClient);
+  private environmentsService = inject(EnvironmentService);
   private reload$ = new Subject<Restriction[]>();
   private restrictions$ = this.reload$.pipe(
     startWith(null),
-    switchMap(() => this.getRestrictions()),
+    switchMap(() => this.getOwnRestrictions()),
     shareReplay(1),
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
+  environments: Signal<{ [name: string] : Environment; }> = computed(() => {
+    return this.environmentsService.contexts().reduce((acc, env) => {
+      acc[env.name] = env;
+      return acc;
+    }, {});
+  })
 
   constructor() {
     super();
@@ -34,7 +35,7 @@ export class AuthService extends BaseService {
     this.reload$.next([]);
   }
 
-  private getRestrictions(): Observable<Restriction[]> {
+  private getOwnRestrictions(): Observable<Restriction[]> {
     return this.http
       .get<Restriction[]>(`${this.getBaseUrl()}/permissions/restrictions/ownRestrictions/`, {
         headers: this.getHeaders(),
@@ -48,42 +49,36 @@ export class AuthService extends BaseService {
       .map((entry) => entry.action);
   }
 
-  hasPermission(permissionName: string, action: string): boolean {
-    return (
-      this.getActionsForPermission(permissionName).find((value) => value === Action.ALL || value === action) !==
-      undefined
-    );
-  }
-
-  hasResourceGroupPermission(permissionName: string, action: string, resourceGroupId: number): boolean {
+  hasPermission(permissionName: string, action: Action, resourceTypeName: string = null, resourceGroupId: number = null, context: string = null): boolean {
     return (
       this.restrictions()
-        .filter((entry) => entry.permission.name === permissionName)
-        .filter((entry) => entry.resourceGroupId === resourceGroupId || entry.resourceGroupId === null)
-        .map((entry) => entry.action)
-        .find((entry) => entry === Action.ALL || entry === action) !== undefined
-    );
-  }
-
-  hasResourceTypePermission(permissionName: string, action: string, resourceTypeName: string): boolean {
-    return (
-      this.restrictions()
-        .filter((entry) => entry.permission.name === permissionName)
-        .filter(
-          (entry) =>
-            entry.resourceTypeName === resourceTypeName ||
-            this.isDefaultType(entry, resourceTypeName) ||
-            entry.resourceTypeName === null,
+      .filter((entry) => entry.permission.name === permissionName)
+      .filter(
+        (entry) =>
+          entry.resourceTypePermission === 'ANY' ||
+          (entry.resourceTypePermission === 'DEFAULT_ONLY' &&
+            Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
+          (entry.resourceTypePermission === 'NON_DEFAULT_ONLY' &&
+            !Object.keys(DefaultResourceType).includes(resourceTypeName)),
         )
-        .map((entry) => entry.action)
-        .find((entry) => entry === Action.ALL || entry === action) !== undefined
+      .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
+      .filter((entry) => entry.resourceGroupId === null || entry.resourceGroupId === resourceGroupId)
+      .filter((entry) => this.hasContextPermission(entry, context))
+      .find((entry) => entry.action === 'ALL' || entry.action === action) !== undefined
     );
   }
 
-  private isDefaultType(entry: Restriction, resourceType: string) {
-    if (entry.resourceTypeName === null && entry.resourceTypePermission === 'DEFAULT_ONLY') {
-      return Object.keys(DefaultResourceType).find((key) => key === resourceType);
-    } else return false;
+  private hasContextPermission(entry: Restriction, context: string): boolean {
+    if (context === null || entry.contextName === null || entry.contextName === 'GLOBAL') {
+      return true;
+    }
+    if (entry.contextName === context) {
+      return true;
+    }
+    // only three levels possible, GLOBAL and env has already been checked
+    if (entry.contextName === this.environments()[context].parentName) {
+      return true;
+    }
   }
 }
 
@@ -91,6 +86,6 @@ export class AuthService extends BaseService {
 // usage example: actions.some(isAllowed("CREATE"))
 export function isAllowed(role: string) {
   return (action: string) => {
-    return action === Action.ALL || action === role;
+    return action === 'ALL' || action === role;
   };
 }

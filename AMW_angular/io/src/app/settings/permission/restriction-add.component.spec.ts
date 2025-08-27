@@ -1,8 +1,8 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
-import { Permission } from './permission';
+import { Permission } from 'src/app/auth/permission';
 import { RestrictionAddComponent } from './restriction-add.component';
-import { Restriction } from './restriction';
+import { Restriction } from 'src/app/auth/restriction';
 import * as _ from 'lodash';
 import { Resource } from '../../resources/models/resource';
 import { Environment } from '../../deployment/environment';

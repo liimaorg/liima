@@ -1,17 +1,18 @@
 import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { TileComponent } from '../../../shared/tile/tile.component';
-import { EntryAction, TileListEntryOutput } from '../../../shared/tile/tile-list/tile-list.component';
-import { Action, AuthService } from '../../../auth/auth.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { ResourceTemplatesService } from '../../services/resource-templates.service';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
+import { EntryAction } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { ResourceTemplate } from '../../models/resource-template';
 import { ResourceType } from '../../models/resource-type';
-import { takeUntil } from 'rxjs/operators';
-import { ToastService } from '../../../shared/elements/toast/toast.service';
 import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-templates/resource-template-delete/resource-template-delete.component';
 import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
+import { ResourceTemplatesService } from '../../services/resource-templates.service';
+
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 
@@ -43,16 +44,16 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resourceType()) {
       return {
-        canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, Action.READ),
+        canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.CREATE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'CREATE', this.resourceType().name),
         canEdit:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.UPDATE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'UPDATE', this.resourceType().name),
         canDelete:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasResourceTypePermission(RESOURCETYPE_PERM, Action.DELETE, this.resourceType().name),
+          this.authService.hasPermission(RESOURCETYPE_PERM, 'DELETE', this.resourceType().name),
       };
     } else {
       return {

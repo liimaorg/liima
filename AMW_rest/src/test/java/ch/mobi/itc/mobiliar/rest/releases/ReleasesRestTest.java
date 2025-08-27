@@ -103,4 +103,31 @@ public class ReleasesRestTest {
         assertEquals("Release with name existingRelease already exists", exceptionDto.getMessage());
     }
 
+    @Test
+    public void addRelease_shouldReturnBadRequest_whenIdIsNotNull() {
+        ReleaseEntity request = new ReleaseEntity();
+        request.setId(1); // Id is not null
+
+        Response response = releasesRest.addRelease(request);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        ExceptionDto exceptionDto = (ExceptionDto) response.getEntity();
+        assertEquals("Id must be null", exceptionDto.getMessage());
+    }
+
+    @Test
+    public void addRelease_shouldReturnCreated_whenReleaseIsNewAndIdIsNull() {
+        ReleaseEntity request = new ReleaseEntity();
+        request.setName("newRelease");
+        request.setId(null);
+        when(releaseLocator.getReleaseByName("newRelease")).thenReturn(null);
+
+        Response response = releasesRest.addRelease(request);
+
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        assertEquals(request, response.getEntity());
+        // Verify that create was called
+        org.mockito.Mockito.verify(releaseLocator).create(request);
+    }
+
 }

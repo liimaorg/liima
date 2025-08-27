@@ -44,11 +44,12 @@ export class ResourcesListComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
-        canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE'),
-        canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE'),
+        canReadResources: this.authService.hasPermission('RESOURCE', 'READ', this.resourceType().name),
+        canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE', this.resourceType().name),
+        canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE', this.resourceType().name),
         // TODO: remove after migration
-        canUseAngularEditResource: this.authService.hasPermission('RESOURCE', 'READ') && this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL'),
+        canUseAngularEditResource: this.authService.hasPermission('RESOURCE', 'READ', this.resourceType().name)
+          && this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL', this.resourceType().name),
 
       };
     } else {
@@ -99,9 +100,8 @@ export class ResourcesListComponent {
 
   openEditResourcePage(id: number) {
     const resource = this.resourceGroupList().find((res) => res.id === id);
-    const dynamicUrl = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${
-      resource.defaultResourceId ? resource.defaultResourceId : resource.id
-    }`;
+    const dynamicUrl = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${resource.defaultResourceId ? resource.defaultResourceId : resource.id
+      }`;
     window.location.href = dynamicUrl;
   }
 
