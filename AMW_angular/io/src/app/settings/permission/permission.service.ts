@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { mergeMap, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -9,9 +9,7 @@ import { BaseService } from 'src/app/base/base.service';
 
 @Injectable({ providedIn: 'root' })
 export class PermissionService extends BaseService {
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   getAllRoleNames(): Observable<string[]> {
     return this.http

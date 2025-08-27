@@ -59,7 +59,6 @@ describe(ServersPageComponent.name, () => {
     });
 
     it('should return undefined if configuration is undefined', () => {
-      // @ts-ignore
       mockConfigurationSignal.set(undefined);
       fixture.detectChanges();
       expect(component.linkToHostUrl()).toBeUndefined();

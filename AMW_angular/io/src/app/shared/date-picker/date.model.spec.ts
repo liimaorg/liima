@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { DatePickerComponent } from './date-picker.component';
 import { DateModel } from './date.model';
-import * as datefns from 'date-fns';
 
 describe('DateModel', () => {
   it('should convert dates correctly', () => {

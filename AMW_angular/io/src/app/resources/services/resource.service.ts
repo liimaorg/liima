@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
@@ -17,6 +17,8 @@ interface Named {
 
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
+  private http = inject(HttpClient);
+
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
   private resourceId$: Subject<number> = new Subject<number>();
 
@@ -45,10 +47,6 @@ export class ResourceService extends BaseService {
     initialValue: [] as Release[],
   });
   resource = toSignal(this.resourceById$, { initialValue: null });
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   setTypeForResourceGroupList(resourcesType: ResourceType) {
     this.resourceType$.next(resourcesType);

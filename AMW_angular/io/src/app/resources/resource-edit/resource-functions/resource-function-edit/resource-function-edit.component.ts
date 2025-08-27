@@ -32,6 +32,8 @@ import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revisi
   ],
 })
 export class ResourceFunctionEditComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() function: ResourceFunction;
   @Input() canEdit: boolean;
   @Input() isOverwrite: boolean;
@@ -47,8 +49,6 @@ export class ResourceFunctionEditComponent implements OnInit {
     original: '',
     modified: '',
   };
-
-  constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     if (this.function && this.function.id) {

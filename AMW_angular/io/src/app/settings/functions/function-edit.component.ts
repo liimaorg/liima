@@ -29,6 +29,8 @@ import { FullscreenToggleComponent } from '../../shared/fullscreen-toggle/fullsc
   ],
 })
 export class FunctionEditComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() function: AppFunction;
   @Input() canManage: boolean;
   @Output() saveFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();
@@ -42,8 +44,6 @@ export class FunctionEditComponent implements OnInit {
     original: '',
     modified: '',
   };
-
-  constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     if (this.function && this.function.id) {

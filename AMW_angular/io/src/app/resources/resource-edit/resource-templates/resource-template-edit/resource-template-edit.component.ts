@@ -35,6 +35,8 @@ interface TargetPlatformModel {
   ],
 })
 export class ResourceTemplateEditComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() template: ResourceTemplate;
   @Input() canAddOrEdit: boolean;
 
@@ -59,8 +61,6 @@ export class ResourceTemplateEditComponent implements OnInit {
     original: '',
     modified: '',
   };
-
-  constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     if (this.template && this.template.id) {

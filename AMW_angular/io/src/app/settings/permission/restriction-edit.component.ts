@@ -1,5 +1,14 @@
 import { NgClass } from '@angular/common';
-import { AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as _ from 'lodash';
 import { Permission } from 'src/app/auth/permission';
@@ -16,6 +25,8 @@ import { IconComponent } from 'src/app/shared/icon/icon.component';
   imports: [FormsModule, NgClass, IconComponent, ButtonComponent],
 })
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
+  private cdRef = inject(ChangeDetectorRef);
+
   actions: Action[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];
   resourceTypePermissions: ResourceTypeCategory[] = ['ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY'];
   resourceGroup: Resource = {} as Resource;
@@ -33,8 +44,6 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   similarRestrictions: Restriction[] = [];
 
   availableEnvironments: string[] = [];
-
-  constructor(private cdRef: ChangeDetectorRef) {}
 
   ngAfterViewChecked() {
     // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"

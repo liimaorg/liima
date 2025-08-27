@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PermissionService } from './permission.service';
 import { Restriction } from 'src/app/auth/restriction';
@@ -50,6 +50,13 @@ import { ResourceTypesService } from '../../resources/services/resource-types.se
   ],
 })
 export class PermissionComponent implements OnInit {
+  private permissionService = inject(PermissionService);
+  private environmentService = inject(EnvironmentService);
+  private resourceService = inject(ResourceService);
+  private resourceTypesService = inject(ResourceTypesService);
+  private activatedRoute = inject(ActivatedRoute);
+  private location = inject(Location);
+
   // loaded only once
   roleNames: string[] = [];
   userNames: string[] = [];
@@ -92,14 +99,7 @@ export class PermissionComponent implements OnInit {
   successMessage: string = null;
   isLoading: boolean = false;
 
-  constructor(
-    private permissionService: PermissionService,
-    private environmentService: EnvironmentService,
-    private resourceService: ResourceService,
-    private resourceTypesService: ResourceTypesService,
-    private activatedRoute: ActivatedRoute,
-    private location: Location,
-  ) {
+  constructor() {
     this.activatedRoute.params.subscribe((param: any) => {
       if (param['actingUser']) {
         this.delegationMode = true;

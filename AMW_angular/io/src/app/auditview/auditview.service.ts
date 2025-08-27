@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { BaseService } from '../base/base.service';
@@ -9,9 +9,7 @@ import { AuditLogEntry } from './auditview-entry';
   providedIn: 'root',
 })
 export class AuditviewService extends BaseService {
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   getAuditLogForResource(resourceId: number): Observable<AuditLogEntry[]> {
     return this.http

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Release } from './release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,13 +13,17 @@ import { ButtonComponent } from '../../shared/button/button.component';
   templateUrl: './release-delete.component.html',
 })
 export class ReleaseDeleteComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() release: Release;
   @Input() resources: Map<string, ResourceEntity[]>;
   @Output() deleteRelease: EventEmitter<Release> = new EventEmitter<Release>();
 
   hasResources: boolean = false;
 
-  constructor(public activeModal: NgbActiveModal) {
+  constructor() {
+    const activeModal = this.activeModal;
+
     this.activeModal = activeModal;
   }
 

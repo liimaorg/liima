@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, Signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Signal, inject } from '@angular/core';
 import { Release } from '../../settings/releases/release';
 import { AppServer } from '../app-server';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,14 +13,12 @@ import { ButtonComponent } from '../../shared/button/button.component';
   templateUrl: './app-server-add.component.html',
 })
 export class AppServerAddComponent {
+  activeModal = inject(NgbActiveModal);
+
   @Input() releases: Signal<Release[]>;
   @Output() saveAppServer: EventEmitter<AppServer> = new EventEmitter<AppServer>();
 
   appServer: AppServer = { name: '', apps: [], deletable: false, id: null, runtimeName: '', release: null };
-
-  constructor(public activeModal: NgbActiveModal) {
-    this.activeModal = activeModal;
-  }
 
   hasInvalidFields(): boolean {
     return this.appServer.name === '' || this.appServer.release?.id == null;

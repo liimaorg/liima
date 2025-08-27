@@ -1,9 +1,8 @@
-import { Component, ViewEncapsulation, OnInit } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
 import { AMW_LOGOUT_URL } from './core/amw-constants';
-import { AsyncPipe } from '@angular/common';
 import { NavigationComponent } from './navigation/navigation.component';
 import { ToastContainerComponent } from './shared/elements/toast/toast-container.component';
 
@@ -15,9 +14,9 @@ import { ToastContainerComponent } from './shared/elements/toast/toast-container
   imports: [RouterOutlet, NavigationComponent, ToastContainerComponent],
 })
 export class AppComponent implements OnInit {
-  logoutUrl: string;
+  private settingService = inject(SettingService);
 
-  constructor(private settingService: SettingService) {}
+  logoutUrl: string;
 
   ngOnInit(): void {
     this.settingService.getAllAppSettings().subscribe((r) => this.configureSettings(r));

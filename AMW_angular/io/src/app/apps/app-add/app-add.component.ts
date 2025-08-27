@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, Signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Release } from '../../settings/releases/release';
@@ -15,6 +15,8 @@ import { ButtonComponent } from '../../shared/button/button.component';
   templateUrl: './app-add.component.html',
 })
 export class AppAddComponent {
+  activeModal = inject(NgbActiveModal);
+
   @Input() releases: Signal<Release[]>;
   @Input() appServerGroups: Signal<Resource[]>;
   @Output() saveApp: EventEmitter<AppCreate> = new EventEmitter<AppCreate>();
@@ -22,10 +24,6 @@ export class AppAddComponent {
   app: AppCreate = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
   appServerGroup: Resource;
   appServerRelease: Rel;
-
-  constructor(public activeModal: NgbActiveModal) {
-    this.activeModal = activeModal;
-  }
 
   hasInvalidGroup(): boolean {
     const isInvalid =

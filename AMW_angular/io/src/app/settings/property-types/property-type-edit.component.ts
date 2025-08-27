@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,13 +14,16 @@ import { ButtonComponent } from '../../shared/button/button.component';
   imports: [IconComponent, FormsModule, ModalHeaderComponent, ButtonComponent],
 })
 export class PropertyTypeEditComponent {
+  activeModal = inject(NgbActiveModal);
+
   @Input() propertyType: PropertyType;
   @Output() savePropertyType: EventEmitter<PropertyType> = new EventEmitter<PropertyType>();
 
   title = 'property type';
   newTag: string = '';
 
-  constructor(public activeModal: NgbActiveModal) {
+  constructor() {
+    const activeModal = this.activeModal;
     this.activeModal = activeModal;
   }
 
@@ -39,7 +42,7 @@ export class PropertyTypeEditComponent {
     try {
       ''.match(this.propertyType.validationRegex);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }

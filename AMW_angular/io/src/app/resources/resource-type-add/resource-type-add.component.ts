@@ -14,13 +14,13 @@ import { NgSelectModule } from '@ng-select/ng-select';
   templateUrl: './resource-type-add.component.html',
 })
 export class ResourceTypeAddComponent {
+  activeModal = inject(NgbActiveModal);
+
   @Input() resourceType: ResourceType;
   @Output() saveResourceType: EventEmitter<ResourceTypeRequest> = new EventEmitter<ResourceTypeRequest>();
   private resourceTypesService = inject(ResourceTypesService);
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
   parentId: number;
-
-  constructor(public activeModal: NgbActiveModal) {}
 
   cancel() {
     this.activeModal.close();
