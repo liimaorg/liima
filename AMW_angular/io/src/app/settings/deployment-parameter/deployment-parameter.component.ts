@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -13,7 +13,7 @@ type Key = { id: number; name: string };
 
 @Component({
   selector: 'app-deployment-parameter',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent, TableComponent],
+  imports: [ReactiveFormsModule, FormsModule, IconComponent, ButtonComponent, TableComponent],
   templateUrl: './deployment-parameter.component.html',
   styleUrl: './deployment-parameter.component.scss',
 })

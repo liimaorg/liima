@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
@@ -22,7 +22,6 @@ import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revisi
     CodeEditorComponent,
     DiffEditorComponent,
     FormsModule,
-    CommonModule,
     IconComponent,
     NgbDropdownModule,
     ModalHeaderComponent,
@@ -30,8 +29,8 @@ import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revisi
     ModalHeaderComponent,
     IconComponent,
     RevisionCompareComponent,
-    FullscreenToggleComponent,
-  ],
+    FullscreenToggleComponent
+],
 })
 export class ResourceFunctionEditComponent implements OnInit {
   @Input() function: ResourceFunction;

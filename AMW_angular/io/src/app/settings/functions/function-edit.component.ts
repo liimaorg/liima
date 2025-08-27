@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject, Input, Output, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { CommonModule } from '@angular/common';
+
 import { AppFunction } from './appFunction';
 import { FunctionsService } from './functions.service';
 import { RevisionInformation } from '../../shared/model/revisionInformation';
@@ -21,13 +21,12 @@ import { FullscreenToggleComponent } from "../../shared/fullscreen-toggle/fullsc
     CodeEditorComponent,
     DiffEditorComponent,
     FormsModule,
-    CommonModule,
     NgbDropdownModule,
     ModalHeaderComponent,
     ButtonComponent,
     RevisionCompareComponent,
-    FullscreenToggleComponent,
-  ],
+    FullscreenToggleComponent
+],
 })
 export class FunctionEditComponent implements OnInit {
   @Input() function: AppFunction;

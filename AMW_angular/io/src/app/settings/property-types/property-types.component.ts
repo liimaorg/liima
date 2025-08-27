@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnDestroy, Signal, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../../auth/auth.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -16,7 +16,7 @@ import { TableColumnType, TableComponent } from '../../shared/table/table.compon
 
 @Component({
   selector: 'app-property-types',
-  imports: [CommonModule, IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
+  imports: [IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
   templateUrl: './property-types.component.html',
 })
 export class PropertyTypesComponent implements OnDestroy {
