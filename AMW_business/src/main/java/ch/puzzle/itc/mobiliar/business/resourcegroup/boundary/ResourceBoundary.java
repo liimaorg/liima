@@ -106,7 +106,7 @@ public class ResourceBoundary {
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
-        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, release.getId(), true);
+        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, release.getId(), false);
     }
 
     /**
@@ -165,7 +165,7 @@ public class ResourceBoundary {
                 resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
                 log.info("Created new Resource " + newResourceName + " and group in Release " + release.getName());
             } else {
-                String message = "A " + anotherGroup.getResourceType().getName() + " with the same name: " + newResourceName + " already exists.";
+                String message = "A " + anotherGroup.getResourceType().getName() + " with the name " + newResourceName + " already exists.";
                 log.info(message);
                 throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
             }
@@ -183,13 +183,13 @@ public class ResourceBoundary {
                 log.info("Created new Resource " + newResourceName + " for existing group in Release " + release.getName());
             } else {
                 // if resource with given name, type and release already exists throw an exeption
-                String message = "The " + type.getName() + " with name: " + newResourceName + " already exists in release " + release.getName();
+                String message = "The " + type.getName() + " with name " + newResourceName + " already exists in release " + release.getName();
                 log.info(message);
                 throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
             }
         } else {
             // if it is not allowed to create a new release for existing throw an exception
-            String message = "The " + type.getName() + " with name: " + newResourceName + " already exists.";
+            String message = "The " + type.getName() + " with name " + newResourceName + " already exists.";
             log.info(message);
             throw new ElementAlreadyExistsException(message, Resource.class, newResourceName);
         }

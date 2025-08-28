@@ -50,9 +50,11 @@ import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
+import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -96,6 +98,12 @@ public class ResourceBoundaryPersistenceTest {
     @Mock
     PermissionBoundary permissionBoundary;
 
+    @Mock
+    ReleaseLocator releaseLocator;
+
+    @Mock
+    ResourceTypeRepository resourceTypeRepository;
+
     @InjectMocks
     ResourceBoundary resourceBoundary;
 
@@ -129,19 +137,59 @@ public class ResourceBoundaryPersistenceTest {
         // when
         when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId())).thenReturn(null);
         when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(null);
-        Resource r1 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1", appType.getId(),
+        Resource r1 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1",
+                appType.getId(),
                 release1.getId());
 
         // then
         assertNotNull(r1);
 
         // when
-        when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId())).thenReturn(r1.getEntity().getResourceGroup());
+        when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId()))
+                .thenReturn(r1.getEntity().getResourceGroup());
         when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(r1.getEntity().getResourceGroup());
         exception.expect(ElementAlreadyExistsException.class);
-        Resource r2 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1", appType.getId(),
+        Resource r2 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1",
+                appType.getId(),
                 release2.getId());
         assertNull(r2);
+    }
+
+    @Test
+    public void test_createNewResourceByNameStrings() throws AMWException {
+        // given
+        ResourceTypeEntity appType = new ResourceTypeEntity();
+        appType.setName("application");
+        entityManager.persist(appType);
+        ReleaseEntity release1 = createRL("release1", null);
+        entityManager.persist(release1);
+        ReleaseEntity release2 = createRL("release2", null);
+        entityManager.persist(release2);
+
+        when(resourceTypeRepository.getByName(appType.getName())).thenReturn(appType);
+        when(commonService.getResourceTypeEntityById(appType.getId())).thenReturn(appType);
+        when(releaseLocator.getReleaseByName(release1.getName())).thenReturn(release1);
+        when(releaseLocator.getReleaseByName(release2.getName())).thenReturn(release2);
+        when(releaseService.getById(release1.getId())).thenReturn(release1);
+        when(releaseService.getById(release2.getId())).thenReturn(release2);
+        when(permissionBoundary.canCreateResourceInstance(appType)).thenReturn(Boolean.TRUE);
+
+        // first creation
+        when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId())).thenReturn(null);
+        when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(null);
+        Resource r1 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1",
+                appType.getName(),
+                release1.getName());
+        assertNotNull(r1);
+
+        // attempt duplicate creation in different release should fail because
+        // canCreateReleaseOfExisting is false
+        when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId()))
+                .thenReturn(r1.getEntity().getResourceGroup());
+        when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(r1.getEntity().getResourceGroup());
+        exception.expect(ElementAlreadyExistsException.class);
+        resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1", appType.getName(),
+                release2.getName());
     }
 
     @Test(expected = ElementAlreadyExistsException.class)
@@ -168,11 +216,13 @@ public class ResourceBoundaryPersistenceTest {
         when(releaseService.getById(release1.getId())).thenReturn(release1);
         when(commonService.getResourceTypeEntityById(asType.getId())).thenReturn(asType);
         when(permissionBoundary.canCreateResourceInstance(asType)).thenReturn(Boolean.TRUE);
-        when(resourceGroupRepository.loadUniqueGroupByNameAndType(as.getName(), as.getResourceType().getId())).thenReturn(null);
+        when(resourceGroupRepository.loadUniqueGroupByNameAndType(as.getName(), as.getResourceType().getId()))
+                .thenReturn(null);
         when(resourceGroupRepository.getResourceGroupByName(as.getName())).thenReturn(app);
 
         // when // then
-        resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "test", asType.getId(), release1.getId());
+        resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "test", asType.getId(),
+                release1.getId());
     }
 
     @Test
@@ -189,12 +239,15 @@ public class ResourceBoundaryPersistenceTest {
         when(permissionBoundary.canCreateResourceInstance(appType)).thenReturn(Boolean.TRUE);
         when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId())).thenReturn(null);
         when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(null);
-        Resource r1 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1", appType.getId(),
+        Resource r1 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1",
+                appType.getId(),
                 release1.getId());
         when(commonService.getResourceEntityById(r1.getId())).thenReturn(r1.getEntity());
-        when(permissionBoundary.hasPermission(any(Permission.class), ArgumentMatchers.<ContextEntity>any(), any(Action.class),
+        when(permissionBoundary.hasPermission(any(Permission.class), ArgumentMatchers.<ContextEntity>any(),
+                any(Action.class),
                 any(ResourceEntity.class), any(ResourceTypeEntity.class))).thenReturn(true);
-        when(resourceGroupRepository.find(r1.getEntity().getResourceGroup().getId())).thenReturn(r1.getEntity().getResourceGroup());
+        when(resourceGroupRepository.find(r1.getEntity().getResourceGroup().getId()))
+                .thenReturn(r1.getEntity().getResourceGroup());
 
         // when
         resourceBoundary.removeResource(ForeignableOwner.AMW, r1.getId());
