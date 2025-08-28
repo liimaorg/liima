@@ -18,10 +18,6 @@ export class PropertyTypesService extends BaseService {
   );
   propertyTypes = toSignal(this.propertyTypes$, { initialValue: [] as PropertyType[] });
 
-  constructor() {
-    super();
-  }
-
   private fetchPropertyTypes(): Observable<PropertyType[]> {
     return this.http.get<PropertyType[]>(this.url).pipe(catchError(this.handleError));
   }

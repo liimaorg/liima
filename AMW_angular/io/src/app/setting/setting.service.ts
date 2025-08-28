@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppConfiguration } from './app-configuration';
@@ -8,9 +8,7 @@ import { AppInformation } from './app-information';
 
 @Injectable({ providedIn: 'root' })
 export class SettingService extends BaseService {
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   getAllAppSettings(): Observable<AppConfiguration[]> {
     return this.http

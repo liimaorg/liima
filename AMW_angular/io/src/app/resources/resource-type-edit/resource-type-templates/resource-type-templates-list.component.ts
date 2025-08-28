@@ -13,7 +13,6 @@ import { ResourceTemplateDeleteComponent } from '../../resource-edit/resource-te
 import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
 import { ResourceTemplatesService } from '../../services/resource-templates.service';
 
-
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 
 @Component({

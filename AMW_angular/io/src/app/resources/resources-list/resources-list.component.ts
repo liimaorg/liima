@@ -48,9 +48,9 @@ export class ResourcesListComponent {
         canCreateResource: this.authService.hasPermission('RESOURCE', 'CREATE', this.resourceType().name),
         canDeleteResourceType: this.authService.hasPermission('RESOURCETYPE', 'DELETE', this.resourceType().name),
         // TODO: remove after migration
-        canUseAngularEditResource: this.authService.hasPermission('RESOURCE', 'READ', this.resourceType().name)
-          && this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL', this.resourceType().name),
-
+        canUseAngularEditResource:
+          this.authService.hasPermission('RESOURCE', 'READ', this.resourceType().name) &&
+          this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL', this.resourceType().name),
       };
     } else {
       return {
@@ -100,8 +100,9 @@ export class ResourcesListComponent {
 
   openEditResourcePage(id: number) {
     const resource = this.resourceGroupList().find((res) => res.id === id);
-    const dynamicUrl = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${resource.defaultResourceId ? resource.defaultResourceId : resource.id
-      }`;
+    const dynamicUrl = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${
+      resource.defaultResourceId ? resource.defaultResourceId : resource.id
+    }`;
     window.location.href = dynamicUrl;
   }
 

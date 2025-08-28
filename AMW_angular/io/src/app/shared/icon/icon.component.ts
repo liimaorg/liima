@@ -13,7 +13,6 @@ export class IconComponent implements OnChanges {
   icon: string;
 
   iconPath: string;
-  constructor() {}
 
   ngOnChanges(): void {
     this.iconPath = 'bootstrap-icons.svg#' + this.icon;

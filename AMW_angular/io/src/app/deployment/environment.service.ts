@@ -1,4 +1,4 @@
-import { Injectable, Signal } from '@angular/core';
+import { Injectable, Signal, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
@@ -8,6 +8,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class EnvironmentService extends BaseService {
+  private http = inject(HttpClient);
+
   private reload$ = new Subject<Environment[]>();
   private reloadedContexts = this.reload$.pipe(
     startWith(null),
@@ -21,10 +23,6 @@ export class EnvironmentService extends BaseService {
   );
   contexts: Signal<Environment[]> = toSignal(this.reloadedContexts, { initialValue: [] as Environment[] });
   envs: Signal<Environment[]> = toSignal(this.reloadedEnvs, { initialValue: [] as Environment[] });
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   getAll(): Observable<Environment[]> {
     return this.getEnvironments(false);

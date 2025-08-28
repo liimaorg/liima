@@ -397,7 +397,6 @@ describe('DeploymentComponent (redeployment)', () => {
   let component: DeploymentComponent;
   let fixture: ComponentFixture<DeploymentComponent>;
   let resourceService: ResourceService;
-  let environmentService: EnvironmentService;
   let deploymentService: DeploymentService;
 
   const mockRoute: any = { snapshot: {} };
@@ -422,7 +421,6 @@ describe('DeploymentComponent (redeployment)', () => {
     component = fixture.componentInstance;
 
     resourceService = TestBed.inject(ResourceService);
-    environmentService = TestBed.inject(EnvironmentService);
     deploymentService = TestBed.inject(DeploymentService);
   });
 

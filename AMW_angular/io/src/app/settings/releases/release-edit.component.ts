@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Release } from './release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -14,15 +14,13 @@ import { ButtonComponent } from '../../shared/button/button.component';
   imports: [DatePickerComponent, FormsModule, ModalHeaderComponent, ButtonComponent],
 })
 export class ReleaseEditComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() release: Release;
   @Output() saveRelease: EventEmitter<Release> = new EventEmitter<Release>();
 
   dateFormat = DATE_FORMAT;
   installationDate: DateModel = null;
-
-  constructor(public activeModal: NgbActiveModal) {
-    this.activeModal = activeModal;
-  }
 
   ngOnInit(): void {
     if (this.release) {

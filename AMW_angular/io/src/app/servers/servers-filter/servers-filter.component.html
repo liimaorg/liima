@@ -2,8 +2,14 @@
   <div class="row g-2 mb-2">
     <div class="col-md-3">
       <label for="appServer" class="form-label">AppServer</label>
-      <input type="text" class="form-control" id="appServer" [ngbTypeahead]="search" [(ngModel)]="filter.appServer"
-        name="appServer" />
+      <input
+        type="text"
+        class="form-control"
+        id="appServer"
+        [ngbTypeahead]="search"
+        [(ngModel)]="filter.appServer"
+        name="appServer"
+      />
     </div>
     <div class="col-md-3">
       <label class="form-label">Runtime</label>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { AppFunction } from './appFunction';
@@ -9,6 +9,8 @@ import { RevisionInformation } from '../../shared/model/revisionInformation';
 
 @Injectable({ providedIn: 'root' })
 export class FunctionsService extends BaseService {
+  private http = inject(HttpClient);
+
   private reload$ = new Subject<AppFunction[]>();
   private function$ = this.reload$.pipe(
     startWith(null),
@@ -16,10 +18,6 @@ export class FunctionsService extends BaseService {
     shareReplay(1),
   );
   functions = toSignal(this.function$, { initialValue: [] as AppFunction[] });
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   getAllFunctions(): Observable<AppFunction[]> {
     return this.http.get<AppFunction[]>(`${this.getBaseUrl()}/settings/functions`);

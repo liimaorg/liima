@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
@@ -13,6 +13,8 @@ import { ButtonComponent } from '../shared/button/button.component';
   imports: [FormsModule, DateTimePickerComponent, ModalHeaderComponent, ButtonComponent],
 })
 export class DeploymentsEditModalComponent {
+  activeModal = inject(NgbActiveModal);
+
   @Input() deployments: Deployment[] = [];
 
   @Output() errorMessage: EventEmitter<string> = new EventEmitter<string>();
@@ -21,15 +23,10 @@ export class DeploymentsEditModalComponent {
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
 
-  confirmationAttributes: Deployment;
+  confirmationAttributes = {} as Deployment;
   deploymentDate: DateTimeModel;
   selectedEditAction: string;
   editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
-
-  constructor(public activeModal: NgbActiveModal) {
-    this.confirmationAttributes = {} as Deployment;
-    this.activeModal = activeModal;
-  }
 
   doEdit() {
     switch (this.selectedEditAction) {

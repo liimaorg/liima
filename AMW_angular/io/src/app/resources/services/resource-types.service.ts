@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -9,6 +9,8 @@ import { ResourceTypeRequest } from '../models/resource-type-request';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceTypesService extends BaseService {
+  private http = inject(HttpClient);
+
   private reload$ = new Subject<ResourceType[]>();
   private resourceTypeId$: Subject<number> = new Subject<number>();
   private predefinedResourceTypes$ = this.getPredefinedResourceTypes();
@@ -27,10 +29,6 @@ export class ResourceTypesService extends BaseService {
   predefinedResourceTypes = toSignal(this.predefinedResourceTypes$, { initialValue: [] as ResourceType[] });
   rootResourceTypes = toSignal(this.rootResourceTypes$, { initialValue: [] as ResourceType[] });
   resourceType = toSignal(this.resourceTypeById$, { initialValue: null });
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   setIdForResourceType(id: number) {
     this.resourceTypeId$.next(id);

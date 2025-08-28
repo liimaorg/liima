@@ -44,7 +44,8 @@
         <div class="d-flex">
           <app-revision-compare
             [revisions]="revisions"
-            (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"></app-revision-compare>
+            (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"
+          ></app-revision-compare>
           <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
         </div>
       </div>

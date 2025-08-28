@@ -1,4 +1,13 @@
-import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  ChangeDetectorRef,
+  AfterViewChecked,
+  inject,
+} from '@angular/core';
 import { Action } from './action';
 import { Restriction } from 'src/app/auth/restriction';
 import { RestrictionsCreation } from './restrictions-creation';
@@ -18,6 +27,8 @@ import { ButtonComponent } from '../../shared/button/button.component';
   imports: [NgSelectModule, FormsModule, IconComponent, ButtonComponent],
 })
 export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
+  private cdRef = inject(ChangeDetectorRef);
+
   actions: Action[] = [
     { name: 'ALL' } as Action,
     { name: 'CREATE' } as Action,
@@ -49,8 +60,6 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   availableEnvironments: string[] = [];
 
   onlyGlobal: boolean = true;
-
-  constructor(private cdRef: ChangeDetectorRef) {}
 
   ngAfterViewChecked() {
     // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from './toast.service';
 
@@ -61,5 +61,5 @@ import { ToastService } from './toast.service';
   `,
 })
 export class ToastContainerComponent {
-  constructor(public toastService: ToastService) {}
+  toastService = inject(ToastService);
 }

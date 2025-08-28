@@ -23,10 +23,6 @@ export class AppsService extends BaseService {
   );
   apps = toSignal(this.apps$, { initialValue: null as AppServer[] });
 
-  constructor() {
-    super();
-  }
-
   refreshData() {
     this.reload$.next();
   }

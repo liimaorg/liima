@@ -12,7 +12,6 @@ import { ResourceFunctionDeleteComponent } from '../../resource-edit/resource-fu
 import { ResourceFunctionEditComponent } from '../../resource-edit/resource-functions/resource-function-edit/resource-function-edit.component';
 import { ResourceFunctionsService } from '../../services/resource-functions.service';
 
-
 const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 
 @Component({

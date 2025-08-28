@@ -10,6 +10,4 @@ import { DeploymentService } from '../../deployment/deployment.service';
   providers: [EnvironmentService, DeploymentService],
   imports: [RouterOutlet],
 })
-export class DeploymentContainerComponent {
-  constructor() {}
-}
+export class DeploymentContainerComponent {}

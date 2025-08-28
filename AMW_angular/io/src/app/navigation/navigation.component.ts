@@ -61,5 +61,4 @@ export class NavigationComponent {
   @Input()
   logoutUrl: string;
   public isMenuCollapsed = true;
-  constructor() {}
 }

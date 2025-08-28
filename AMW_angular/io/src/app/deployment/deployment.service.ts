@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -11,9 +11,7 @@ import { BaseService } from '../base/base.service';
 
 @Injectable({ providedIn: 'root' })
 export class DeploymentService extends BaseService {
-  constructor(private http: HttpClient) {
-    super();
-  }
+  private http = inject(HttpClient);
 
   getFilteredDeployments(
     filterString: string,

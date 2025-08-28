@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resources/services/resource.service';
@@ -30,6 +30,9 @@ import { ButtonComponent } from '../shared/button/button.component';
   ],
 })
 export class DeploymentsListComponent {
+  private resourceService = inject(ResourceService);
+  private modalService = inject(NgbModal);
+
   @Input() deployments: Deployment[] = [];
   @Input() sortCol: string;
   @Input() sortDirection: 'ASC';
@@ -58,11 +61,6 @@ export class DeploymentsListComponent {
     UNEXPECTED_ERROR: 'unexpected error',
     RUNTIME_ERROR: 'runtime error',
   };
-
-  constructor(
-    private resourceService: ResourceService,
-    private modalService: NgbModal,
-  ) {}
 
   showDetails(content, deploymentId: number) {
     this.deployment = _.find(this.deployments, ['id', deploymentId]);

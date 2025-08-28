@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, forwardRef, ViewChild, AfterViewInit, Injector } from '@angular/core';
+import { Component, OnInit, Input, forwardRef, ViewChild, AfterViewInit, Injector, inject } from '@angular/core';
 import {
   NgbTimeStruct,
   NgbPopoverConfig,
@@ -30,6 +30,9 @@ import { ButtonComponent } from '../button/button.component';
   imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, NgbTimepicker, ButtonComponent],
 })
 export class DateTimePickerComponent implements ControlValueAccessor, OnInit, AfterViewInit {
+  private config = inject(NgbPopoverConfig);
+  private inj = inject(Injector);
+
   @Input()
   dateStringFormat = DATE_TIME_FORMAT;
   @Input()
@@ -57,15 +60,9 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
 
   ngControl: NgControl;
 
-  constructor(
-    private config: NgbPopoverConfig,
-    private inj: Injector,
-  ) {
-    config.autoClose = 'outside';
-    config.placement = 'auto';
-  }
-
   ngOnInit(): void {
+    this.config.autoClose = 'outside';
+    this.config.placement = 'auto';
     this.ngControl = this.inj.get(NgControl);
   }
 
@@ -145,7 +142,7 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
     this.onChange(this.datetime);
   }
 
-  inputBlur($event) {
+  inputBlur() {
     this.onTouched();
   }
 

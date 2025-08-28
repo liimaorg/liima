@@ -26,7 +26,7 @@ export class ServersFilterComponent implements OnChanges {
     runtimeName: 'All',
     appServer: null,
     host: null,
-    node: null
+    node: null,
   };
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -37,7 +37,7 @@ export class ServersFilterComponent implements OnChanges {
         runtimeName: input.runtimeName ?? 'All',
         appServer: input.appServer ?? null,
         host: input.host ?? null,
-        node: input.node ?? null
+        node: input.node ?? null,
       };
     }
   }
@@ -65,7 +65,7 @@ export class ServersFilterComponent implements OnChanges {
       runtimeName: 'All',
       appServer: null,
       host: null,
-      node: null
+      node: null,
     };
   }
 }

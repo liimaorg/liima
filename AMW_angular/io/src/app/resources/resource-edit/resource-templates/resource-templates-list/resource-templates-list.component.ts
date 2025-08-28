@@ -49,13 +49,28 @@ export class ResourceTemplatesListComponent implements OnDestroy {
         canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCE_PERM, 'CREATE', this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(
+            RESOURCE_PERM,
+            'CREATE',
+            this.resource().type,
+            this.resource().resourceGroupId,
+          ),
         canEdit:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCE_PERM, 'UPDATE', this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(
+            RESOURCE_PERM,
+            'UPDATE',
+            this.resource().type,
+            this.resource().resourceGroupId,
+          ),
         canDelete:
           (this.contextId() === 1 || this.contextId === null) &&
-          this.authService.hasPermission(RESOURCE_PERM, 'DELETE', this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(
+            RESOURCE_PERM,
+            'DELETE',
+            this.resource().type,
+            this.resource().resourceGroupId,
+          ),
       };
     } else {
       return {

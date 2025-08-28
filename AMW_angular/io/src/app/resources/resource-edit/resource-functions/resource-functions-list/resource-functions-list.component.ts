@@ -49,7 +49,12 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
         canShowSuperTypeFunctions: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
           this.contextId() === 1 &&
-          this.authService.hasPermission(RESOURCE_PERM, 'CREATE', this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(
+            RESOURCE_PERM,
+            'CREATE',
+            this.resource().type,
+            this.resource().resourceGroupId,
+          ),
         canEdit: this.authService.hasPermission(
           RESOURCE_PERM,
           'UPDATE',
@@ -58,7 +63,12 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
         ),
         canDelete:
           this.contextId() === 1 &&
-          this.authService.hasPermission(RESOURCE_PERM, 'DELETE', this.resource().type, this.resource().resourceGroupId),
+          this.authService.hasPermission(
+            RESOURCE_PERM,
+            'DELETE',
+            this.resource().type,
+            this.resource().resourceGroupId,
+          ),
       };
     } else {
       return {

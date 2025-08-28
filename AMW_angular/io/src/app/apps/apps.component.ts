@@ -87,12 +87,14 @@ export class AppsComponent implements OnInit, OnDestroy {
       }
       if (this.appsService.releaseId()) {
         this.appsService.refreshData();
-      }
-      else {
-        this.releaseService.getUpcomingRelease().pipe(take(1)).subscribe((release: Release) => {
-          this.appsService.releaseId.set(release.id);
-          this.appsService.refreshData();
-        });
+      } else {
+        this.releaseService
+          .getUpcomingRelease()
+          .pipe(take(1))
+          .subscribe((release: Release) => {
+            this.appsService.releaseId.set(release.id);
+            this.appsService.refreshData();
+          });
       }
     });
   }

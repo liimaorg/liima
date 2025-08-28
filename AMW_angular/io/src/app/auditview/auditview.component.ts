@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuditviewService } from './auditview.service';
 import { ResourceService } from '../resources/services/resource.service';
@@ -17,6 +17,10 @@ import { PageComponent } from '../layout/page/page.component';
   imports: [LoadingIndicatorComponent, NotificationComponent, AuditviewTableComponent, PageComponent],
 })
 export class AuditviewComponent implements OnInit {
+  private auditViewService = inject(AuditviewService);
+  private resourceService = inject(ResourceService);
+  private activatedRoute = inject(ActivatedRoute);
+
   name: string;
   auditLogEntries: AuditLogEntry[] = [];
   errorMessage: string;
@@ -24,18 +28,12 @@ export class AuditviewComponent implements OnInit {
   resourceId: number;
   isLoading: boolean = true;
 
-  constructor(
-    private auditViewService: AuditviewService,
-    private resourceService: ResourceService,
-    private activatedRoute: ActivatedRoute,
-  ) {}
-
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: any) => {
       if (param['resourceId']) {
         try {
           this.resourceId = JSON.parse(param['resourceId']);
-        } catch (e) {
+        } catch {
           this.errorMessage = 'Error parsing resourceId';
         }
       }

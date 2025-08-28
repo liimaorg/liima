@@ -1,4 +1,3 @@
-
 import { Component, computed, EventEmitter, inject, Input, OnInit, Output, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +11,6 @@ import { FullscreenToggleComponent } from 'src/app/shared/fullscreen-toggle/full
 import { ModalHeaderComponent } from 'src/app/shared/modal-header/modal-header.component';
 import { RevisionInformation } from 'src/app/shared/model/revisionInformation';
 import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revision-compare.component';
-
 
 interface TargetPlatformModel {
   name: string;
@@ -33,10 +31,12 @@ interface TargetPlatformModel {
     ModalHeaderComponent,
     DiffEditorComponent,
     RevisionCompareComponent,
-    FullscreenToggleComponent
-]
+    FullscreenToggleComponent,
+  ],
 })
 export class ResourceTemplateEditComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() template: ResourceTemplate;
   @Input() canAddOrEdit: boolean;
 
@@ -44,7 +44,7 @@ export class ResourceTemplateEditComponent implements OnInit {
 
   private templatesService = inject(ResourceTemplatesService);
   allSelectableTargetPlatforms: Signal<string[]> = toSignal(this.templatesService.getAllTargetPlatforms(), {
-    initialValue: []
+    initialValue: [],
   });
 
   public wrapLinesEnabled: false;
@@ -59,11 +59,8 @@ export class ResourceTemplateEditComponent implements OnInit {
   });
   public diffValue = {
     original: '',
-    modified: ''
+    modified: '',
   };
-
-  constructor(public activeModal: NgbActiveModal) {
-  }
 
   ngOnInit(): void {
     if (this.template && this.template.id) {
@@ -95,7 +92,7 @@ export class ResourceTemplateEditComponent implements OnInit {
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.template.targetPlatforms.includes(name)
+        selected: this.template.targetPlatforms.includes(name),
       };
     });
   }
@@ -105,7 +102,7 @@ export class ResourceTemplateEditComponent implements OnInit {
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.revision.targetPlatforms.includes(name)
+        selected: this.revision.targetPlatforms.includes(name),
       };
     });
   }

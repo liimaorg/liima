@@ -1,60 +1,74 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { defer } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { DeploymentLog } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
 
-/** Create async observable that emits-once and completes
- *  after a JS engine turn */
-export function asyncData<T>(data: T) {
-  return defer(() => Promise.resolve(data));
-}
-
-/**
- * Create async observable error that errors
- * after a JS engine turn
- */
-export function asyncError<T>(errorObject: any) {
-  return defer(() => Promise.reject(errorObject));
-}
-
-describe('DeploymentLogService', () => {
+describe('DeploymentLogsService', () => {
   let service: DeploymentLogsService;
-  let httpClientSpy: { get: jasmine.Spy };
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
-    httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    service = new DeploymentLogsService(httpClientSpy as any);
+    TestBed.configureTestingModule({
+      providers: [DeploymentLogsService, provideHttpClient(), provideHttpClientTesting()],
+    });
+    service = TestBed.inject(DeploymentLogsService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('should return expected deployment logs', () => {
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('returns expected deployment logs', () => {
     const expectedDeploymentLogs: DeploymentLog[] = [
       { id: 1, filename: 'log1.log' },
       { id: 1, filename: 'log2.log' },
     ];
 
-    httpClientSpy.get.and.returnValue(asyncData(expectedDeploymentLogs));
-
+    let actual: DeploymentLog[] | undefined;
     service.getLogFileMetaData(1).subscribe({
-      next: (deploymentLogs) =>
-        expect(deploymentLogs).withContext('expected deploymentLogs').toEqual(expectedDeploymentLogs),
+      next: (logs) => (actual = logs),
       error: fail,
     });
 
-    expect(httpClientSpy.get.calls.count()).withContext('called once').toBe(1);
+    const req = httpMock.expectOne('/AMW_rest/resources/deployments/1/logs');
+    expect(req.request.method).toBe('GET');
+    req.flush(expectedDeploymentLogs);
+
+    expect(actual).toEqual(expectedDeploymentLogs);
   });
 
-  it('should handle 404', () => {
-    const errorResponse = new HttpErrorResponse({
-      error: { message: 'no deployment logs found' },
-      status: 404,
-      statusText: 'Not Found',
-    });
-
-    httpClientSpy.get.and.returnValue(asyncError(errorResponse));
-
+  it('handles 404 error and maps message', () => {
+    let actualError: any;
     service.getLogFileMetaData(1).subscribe({
-      next: (_) => fail('expected an error, not a list of deploymentLogs'),
-      error: (error) => expect(error).toContain('no deployment logs found'),
+      next: () => fail('expected error'),
+      error: (e) => (actualError = e),
     });
+
+    const req = httpMock.expectOne('/AMW_rest/resources/deployments/1/logs');
+    expect(req.request.method).toBe('GET');
+    req.flush(
+      { message: 'no deployment logs found' },
+      {
+        status: 404,
+        statusText: 'Not Found',
+      },
+    );
+
+    expect(actualError).toContain('no deployment logs found');
+  });
+
+  it('getLogFileContent calls correct url', () => {
+    const deploymentLog: DeploymentLog = { id: 5, filename: 'output.log' };
+    let actual: DeploymentLog | undefined;
+    service.getLogFileContent(deploymentLog).subscribe({
+      next: (log) => (actual = log),
+      error: fail,
+    });
+    const req = httpMock.expectOne('/AMW_rest/resources/deployments/5/logs/output.log');
+    expect(req.request.method).toBe('GET');
+    req.flush(deploymentLog);
+    expect(actual).toEqual(deploymentLog);
   });
 });

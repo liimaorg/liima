@@ -319,7 +319,7 @@ describe('RestrictionEditComponent', () => {
         contextName: 'B',
         resourceGroupId: 9,
         resourceTypeName: null,
-        resourceTypePermission:  'ANY',
+        resourceTypePermission: 'ANY',
         permission: { name: 'NEO' } as Permission,
       } as Restriction;
       restrictionComponent.similarRestrictions = [
