@@ -30,9 +30,9 @@ import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -48,7 +48,7 @@ import static javax.ws.rs.core.Response.Status.*;
 
 @Stateless
 @Path("/permissions/restrictions")
-@Api(value = "/permissions/restrictions", description = "Managing permissions")
+@Tag(name = "/permissions/restrictions", description = "Managing permissions")
 public class RestrictionsRest {
 
     @Inject
@@ -61,8 +61,8 @@ public class RestrictionsRest {
      * @return the new RestrictionDTO
      **/
     @POST
-    @ApiOperation(value = "Add a Restriction")
-    public Response addRestriction(@ApiParam("Add a Restriction, either a role- or a userName must be set") RestrictionDTO request,
+    @Operation(summary = "Add a Restriction")
+    public Response addRestriction(@Parameter(description = "Add a Restriction, either a role- or a userName must be set") RestrictionDTO request,
                                    @QueryParam("delegation") boolean delegation, @DefaultValue("true") @QueryParam("reload") boolean reload) {
         Integer id;
         if (request.getId() != null) {
@@ -91,8 +91,8 @@ public class RestrictionsRest {
      */
     @POST
     @Path("/multi/")
-    @ApiOperation(value = "Add a multiple Restrictions")
-    public Response addRestriction(@ApiParam("Add multiple Restrictions, either a role- or one or more userNames must be set") RestrictionsCreationDTO request,
+    @Operation(summary = "Add a multiple Restrictions")
+    public Response addRestriction(@Parameter(description = "Add multiple Restrictions, either a role- or one or more userNames must be set") RestrictionsCreationDTO request,
                                    @QueryParam("delegation") boolean delegation, @DefaultValue("true") @QueryParam("reload") boolean reload) {
         if (request.getPermissionNames().isEmpty()) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("At least one Permission is required")).build();
@@ -116,8 +116,8 @@ public class RestrictionsRest {
     @GET
     @Path("/{id : \\d+}")
     // support digit only
-    @ApiOperation(value = "Get Restriction by id")
-    public Response getRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id) {
+    @Operation(summary = "Get Restriction by id")
+    public Response getRestriction(@Parameter(description = "Restriction ID") @PathParam("id") Integer id) {
         final RestrictionEntity restriction = permissionBoundary.findRestriction(id);
         if (restriction == null) {
             return Response.status(NOT_FOUND).build();
@@ -132,7 +132,7 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/")
-    @ApiOperation(value = "Get all Restrictions")
+    @Operation(summary = "Get all Restrictions")
     public Response getAllRestriction() {
         return restrictionsToResponse(permissionBoundary.findAllRestrictions());
     }
@@ -145,8 +145,8 @@ public class RestrictionsRest {
     @Path("/{id : \\d+}")
     // support digit only
     @Produces("application/json")
-    @ApiOperation(value = "Update a Restriction")
-    public Response updateRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id, RestrictionDTO request,
+    @Operation(summary = "Update a Restriction")
+    public Response updateRestriction(@Parameter(description = "Restriction ID") @PathParam("id") Integer id, RestrictionDTO request,
                                       @DefaultValue("true") @QueryParam("reload") boolean reload) {
         boolean success;
         try {
@@ -169,8 +169,8 @@ public class RestrictionsRest {
     @DELETE
     @Path("/{id : \\d+}")
     // support digit only
-    @ApiOperation(value = "Remove a Restriction")
-    public Response deleteRestriction(@ApiParam("Restriction ID") @PathParam("id") Integer id,
+    @Operation(summary = "Remove a Restriction")
+    public Response deleteRestriction(@Parameter(description = "Restriction ID") @PathParam("id") Integer id,
                                       @DefaultValue("true") @QueryParam("reload") boolean reload) {
         try {
             permissionBoundary.removeRestriction(id, reload);
@@ -187,7 +187,7 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/roles/")
-    @ApiOperation(value = "Get all Roles with restrictions")
+    @Operation(summary = "Get all Roles with restrictions")
     public Response getAllRoles() {
         final Map<String, List<ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO>> allRoles = permissionBoundary.getAllPermissions();
         Map<String, List<RestrictionDTO>> rolesMap = new HashMap<>(allRoles.size());
@@ -211,8 +211,8 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/roles/{roleName}")
-    @ApiOperation(value = "Get all Restrictions assigned to a specific Role")
-    public Response getRoleRestriction(@ApiParam("RoleName") @PathParam("roleName") String roleName) {
+    @Operation(summary = "Get all Restrictions assigned to a specific Role")
+    public Response getRoleRestriction(@Parameter(description = "RoleName") @PathParam("roleName") String roleName) {
         return restrictionsToResponse(permissionBoundary.getRestrictionsByRoleName(roleName));
     }
 
@@ -222,8 +222,8 @@ public class RestrictionsRest {
      */
     @DELETE
     @Path("/roles/{roleName}")
-    @ApiOperation(value = "Removes a role with all it's permissions")
-    public Response deleteRole(@ApiParam("RoleName") @PathParam("roleName") String roleName, @DefaultValue("true") @QueryParam("reload") boolean reload) {
+    @Operation(summary = "Removes a role with all it's permissions")
+    public Response deleteRole(@Parameter(description = "RoleName") @PathParam("roleName") String roleName, @DefaultValue("true") @QueryParam("reload") boolean reload) {
         permissionBoundary.deleteRole(roleName, reload);
         return Response.status(OK).build();
     }
@@ -235,7 +235,7 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/roleNames/")
-    @ApiOperation(value = "Get all available RoleNames")
+    @Operation(summary = "Get all available RoleNames")
     public Response getRoleNames() {
         final List<RoleEntity> roles = permissionBoundary.getAllRoles();
         List<String> roleNameList = new ArrayList<>(roles.size());
@@ -252,7 +252,7 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/userRestrictionNames/")
-    @ApiOperation(value = "Get all available userRestrictionNames")
+    @Operation(summary = "Get all available userRestrictionNames")
     public Response getUserNames() {
         return Response.status(OK).entity(permissionBoundary.getAllUserRestrictionNames()).build();
     }
@@ -264,7 +264,7 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/permissionEnumValues/")
-    @ApiOperation(value = "Get all available PermissionEnum values")
+    @Operation(summary = "Get all available PermissionEnum values")
     public Response getPermissionEnumValues() {
         final List<PermissionEntity> permissions = permissionBoundary.getAllAvailablePermissions();
         List<PermissionDTO> permissionNameList = new ArrayList<>(permissions.size());
@@ -281,7 +281,7 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/users/")
-    @ApiOperation(value = "Get all UserRestriction with their Restrictions")
+    @Operation(summary = "Get all UserRestriction with their Restrictions")
     public Response getAllUsers() {
         final List<RestrictionEntity> allUserRestrictions = permissionBoundary.getAllUserRestriction();
         Map<String, List<RestrictionDTO>> usersMap = new HashMap<>(allUserRestrictions.size());
@@ -303,8 +303,8 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/users/{userName}")
-    @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
-    public Response getUserRestriction(@ApiParam("UserName") @PathParam("userName") String userName) {
+    @Operation(summary = "Get all Restrictions assigned to a specific UserRestriction")
+    public Response getUserRestriction(@Parameter(description = "UserName") @PathParam("userName") String userName) {
         return restrictionsToResponse(permissionBoundary.getRestrictionsByUserName(userName));
     }
 
@@ -315,7 +315,7 @@ public class RestrictionsRest {
      */
     @GET
     @Path("/ownRestrictions/")
-    @ApiOperation(value = "Get all Restrictions assigned to a specific UserRestriction")
+    @Operation(summary = "Get all Restrictions assigned to a specific UserRestriction")
     public Response getCallerRestrictions() {
         return restrictionsToResponse(permissionBoundary.getAllCallerRestrictions());
     }
@@ -333,7 +333,7 @@ public class RestrictionsRest {
      */
     @POST
     @Path("/reload")
-    @ApiOperation(value = "Reload the permission cache")
+    @Operation(summary = "Reload the permission cache")
     public Response reloadCache() {
         permissionBoundary.reloadCache();
         return Response.status(OK).build();

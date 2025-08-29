@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.properties;
+package ch.mobi.itc.mobiliar.rest.settings;
 
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyTagDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyTypeDTO;
@@ -9,9 +9,9 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -32,7 +32,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @Stateless
 @Path("/settings/propertyTypes")
-@Api(value = "/settings/propertyTypes")
+@Tag(name = "/settings/propertyTypes")
 @Consumes(APPLICATION_JSON)
 @Produces({APPLICATION_JSON})
 public class PropertyTypesRest {
@@ -41,7 +41,7 @@ public class PropertyTypesRest {
     private PropertyTypeService propertyTypeService;
 
     @GET
-    @ApiOperation(value = "Get all property types")
+    @Operation(summary = "Get all property types")
     public Response getAllPropertyTypes() {
 
         List<PropertyTypeEntity> propertyTypes = propertyTypeService.loadAll();
@@ -54,7 +54,7 @@ public class PropertyTypesRest {
     }
 
     @POST
-    @ApiOperation(value = "Add a property type")
+    @Operation(summary = "Add a property type")
     public Response addPropertyType(@NotNull(message = "Property type must not be null.") @Valid PropertyTypeDTO request) throws ValidationException {
         if (request.getId() != null) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Id must be null")).build();
@@ -72,8 +72,8 @@ public class PropertyTypesRest {
     @Path("/{id : \\d+}")
     // support digit only
     @Produces("application/json")
-    @ApiOperation(value = "Update a property type")
-    public Response updatePropertyType(@ApiParam("Property type ID")
+    @Operation(summary = "Update a property type")
+    public Response updatePropertyType(@Parameter(description = "Property type ID")
                                        @PathParam("id") Integer id, PropertyTypeDTO request)
             throws NotFoundException, ValidationException {
         if (request == null) {
@@ -90,8 +90,8 @@ public class PropertyTypesRest {
     @DELETE
     @Path("/{id : \\d+}")
     // support digit only
-    @ApiOperation(value = "Remove a property type")
-    public Response deletePropertyType(@ApiParam("Property type ID") @PathParam("id") Integer id)
+    @Operation(summary = "Remove a property type")
+    public Response deletePropertyType(@Parameter(description = "Property type ID") @PathParam("id") Integer id)
             throws NotFoundException, ValidationException {
         propertyTypeService.deleteById(id);
 

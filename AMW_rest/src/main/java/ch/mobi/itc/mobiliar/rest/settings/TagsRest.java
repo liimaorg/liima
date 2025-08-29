@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.tags.boundary;
+package ch.mobi.itc.mobiliar.rest.settings;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TagDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.AddTagUseCase;
@@ -7,8 +7,8 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.RemoveTagUseCase;
 import ch.puzzle.itc.mobiliar.business.property.boundary.TagCommand;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 @Stateless
 @Path("/settings/tags")
-@Api(value = "/settings/tags")
+@Tag(name = "/settings/tags")
 @Consumes(APPLICATION_JSON)
 @Produces({APPLICATION_JSON})
 public class TagsRest {
@@ -38,13 +38,13 @@ public class TagsRest {
     private RemoveTagUseCase removeTagUseCase;
 
     @GET
-    @ApiOperation(value = "Gets all tags")
+    @Operation(summary = "Gets all tags")
     public Response getAllTags() {
         return Response.status(OK).entity(listTagsUseCase.get()).build();
     }
 
     @POST
-    @ApiOperation(value = "Adds one tag")
+    @Operation(summary = "Adds one tag")
     public Response addOneTag(
             @NotNull(message = "Tag must not be null.") TagDTO tagDTO) throws ValidationException {
 
@@ -59,7 +59,7 @@ public class TagsRest {
 
     @DELETE
     @Path("/{id}")
-    @ApiOperation(value = "Deletes one tag")
+    @Operation(summary = "Deletes one tag")
     public Response deleteOneTag(@PathParam("id") int id) {
         removeTagUseCase.removeTag(id);
         return Response.status(OK).build();

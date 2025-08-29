@@ -35,10 +35,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -50,7 +49,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/properties")
-@Api(value = "/resources/{resourceGroupName}/{releaseName}/properties", description = "Resource properties")
+@Tag(name = "/resources/{resourceGroupName}/{releaseName}/properties", description = "Resource properties")
 public class ResourcePropertiesRest {
 
     @PathParam("resourceGroupName")
@@ -69,7 +68,7 @@ public class ResourcePropertiesRest {
     ContextLocator contextLocator;
 
     @GET
-    @ApiOperation(value = "Get all properties for a resource in a specific release")
+    @Operation(summary = "Get all properties for a resource in a specific release")
     public Response getResourceProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         List<PropertyDTO> resourceProperties = getResourceProperties(resourceGroupName, releaseName, environment);
         if (resourceProperties.isEmpty()) {
@@ -94,7 +93,7 @@ public class ResourcePropertiesRest {
 
     @Path("/{propertyName}")
     @GET
-    @ApiOperation(value = "Get the property including its value for a resource in a specific release")
+    @Operation(summary = "Get the property including its value for a resource in a specific release")
     public Response getResourcePropertyValueForEnvironment(@PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         if (resource != null) {
@@ -113,15 +112,15 @@ public class ResourcePropertiesRest {
     @Path("/{propertyName}")
     @PUT
     @Consumes("text/plain")
-    @ApiOperation(value = "Set the value of an existing property on a resource in a specific release")
-    public Response updateResourceProperty(@ApiParam("the new value of the property") String value, @PathParam("propertyName") String propertyName,  @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
+    @Operation(summary = "Set the value of an existing property on a resource in a specific release")
+    public Response updateResourceProperty(@Parameter(description = "the new value of the property") String value, @PathParam("propertyName") String propertyName,  @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
         propertyEditor.setPropertyValueOnResourceForContext(resourceGroupName, releaseName, environment, propertyName, value);
         return Response.status(Response.Status.OK).build();
     }
 
     @Path("/{propertyName}")
     @DELETE
-    @ApiOperation(value = "Reset the value of the given property in the specified context to null")
+    @Operation(summary = "Reset the value of the given property in the specified context to null")
     public Response resetResourceProperty(@PathParam("propertyName") String propertyName,  @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
         propertyEditor.resetPropertyValueOnResourceForContext(resourceGroupName, releaseName, environment, propertyName);
         return Response.status(Response.Status.OK).build();

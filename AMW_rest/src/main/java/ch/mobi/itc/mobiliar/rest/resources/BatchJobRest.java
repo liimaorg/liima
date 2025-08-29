@@ -45,13 +45,13 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RequestScoped
 @Path("/resources")
-@Api(value = "/resources", description = "BatchJobs")
+@Tag(name = "/resources", description = "BatchJobs")
 public class BatchJobRest {
 
     private static final String DB2 = "DB2";
@@ -75,9 +75,9 @@ public class BatchJobRest {
     @Path("batchjobResources/{appName}")
     @Produces("application/json")
     @GET
-    @ApiOperation(value = "Get batch job resources (only db2, oracle, ws, rest and file) of an app", notes = "Returns the consumed batchJob resources for this app")
+    @Operation(summary = "Get batch job resources (only db2, oracle, ws, rest and file) of an app", description = "Returns the consumed batchJob resources for this app")
     public List<BatchResourceDTO> getBatchJobResources(
-            @ApiParam(value = "return resources for this app") @PathParam("appName") String app)
+            @Parameter(description = "return resources for this app") @PathParam("appName") String app)
             throws ValidationException {
         if (app == null || app.isEmpty()) {
             throw new ValidationException("App must not be empty");
@@ -134,15 +134,15 @@ public class BatchJobRest {
     @Path("resource/{envName}/{resourceTypeId : \\d+}")
     @Produces("application/json")
     @GET
-    @ApiOperation(value = "Get batch job inventory", notes = "Returns the available batch applications and their related resources (only db2, oracle, ws, rest and file)")
+    @Operation(summary = "Get batch job inventory", description = "Returns the available batch applications and their related resources (only db2, oracle, ws, rest and file)")
     public BatchJobInventoryDTO getBatchJobInventar(
-            @ApiParam(value = "return batch job inventory") @PathParam("envName") String env,
-            @ApiParam(value = "id of the BatchJob resource type") @PathParam("resourceTypeId") int resourceType,
-            @ApiParam(value = "Filter by Applicationname or -part") @QueryParam("app") String appFilter,
-            @ApiParam(value = "Filter by Resource or -part") @QueryParam("job") String jobFilter,
-            @ApiParam(value = "Filter by Release") @QueryParam("rel") String relFilter,
-            @ApiParam(value = "Filter by consumed DB type") @QueryParam("db") String dbFilter,
-            @ApiParam(value = "Filter by consumed WS name or part") @QueryParam("ws") String wsFilter) {
+            @Parameter(description = "return batch job inventory") @PathParam("envName") String env,
+            @Parameter(description = "id of the BatchJob resource type") @PathParam("resourceTypeId") int resourceType,
+            @Parameter(description = "Filter by Applicationname or -part") @QueryParam("app") String appFilter,
+            @Parameter(description = "Filter by Resource or -part") @QueryParam("job") String jobFilter,
+            @Parameter(description = "Filter by Release") @QueryParam("rel") String relFilter,
+            @Parameter(description = "Filter by consumed DB type") @QueryParam("db") String dbFilter,
+            @Parameter(description = "Filter by consumed WS name or part") @QueryParam("ws") String wsFilter) {
         BatchJobInventoryDTO inventory = new BatchJobInventoryDTO();
 
         // Applications und ihre Resourcen lesen

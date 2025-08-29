@@ -1,5 +1,6 @@
 package ch.mobi.itc.mobiliar.rest.Analyze;
 
+import ch.mobi.itc.mobiliar.rest.analyze.TestGenerationRest;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationResult;

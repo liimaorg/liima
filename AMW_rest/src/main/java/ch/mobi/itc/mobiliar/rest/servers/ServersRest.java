@@ -10,8 +10,8 @@ import ch.puzzle.itc.mobiliar.business.server.boundary.GetServersUseCase;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -27,7 +27,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 @Stateless
 @Path("/servers")
-@Api(value = "/servers")
+@Tag(name = "/servers")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ServersRest {
@@ -46,14 +46,14 @@ public class ServersRest {
     ServerView serverView;
 
     @GET
-    @ApiOperation("Get servers")
+    @Operation(summary = "Get servers")
     public Response getServers() {
         return Response.status(OK).entity(getServersUseCase.all()).build();
     }
 
     @GET
     @Path("/runtimes")
-    @ApiOperation("Get runtimes")
+    @Operation(summary = "Get runtimes")
     public List<ResourceGroupDTO> getRuntimes() {
         return resourceGroupPersistenceService.loadGroupsForTypeName(DefaultResourceTypeDefinition.RUNTIME.name())
                 .stream()
@@ -63,7 +63,7 @@ public class ServersRest {
 
     @GET
     @Path("/appServersSuggestions")
-    @ApiOperation("Get app servers suggestions")
+    @Operation(summary = "Get app servers suggestions")
     public List<String> getAppServersSuggestions() {
         return resourceGroupLocator.getGroupsForType(DefaultResourceTypeDefinition.APPLICATIONSERVER.name(), false, true)
                 .stream()
@@ -73,7 +73,7 @@ public class ServersRest {
 
     @GET
     @Path("/filter")
-    @ApiOperation("Get servers with params")
+    @Operation(summary = "Get servers with params")
     public Response getServers(@QueryParam("environment") String environment,
                               @QueryParam("runtime") String runtime,
                               @QueryParam("appServer") String appServer,

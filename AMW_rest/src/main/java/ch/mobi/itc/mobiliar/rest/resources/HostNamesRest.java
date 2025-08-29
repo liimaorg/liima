@@ -33,10 +33,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.AppServerRelationsTemplateProcessor;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
@@ -45,7 +44,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 @RequestScoped
 @Path("/hostNames")
-@Api(value = "/hostNames", description = "Hostnames")
+@Tag(name = "/hostNames", description = "Hostnames")
 public class HostNamesRest {
 
 	@Inject
@@ -56,11 +55,11 @@ public class HostNamesRest {
 	@PUT
 	@Path("/{node}/{release}/{env}")
 	@Consumes("text/plain")
-	@ApiOperation(value = "Set hostname value on a given node in a specific node release and environment")
-	public Response setHostNameOnNode(@ApiParam("node name") @PathParam("node") String nodeName,
-			@ApiParam("release of node") @PathParam("release") String nodeRelease,
-			@ApiParam("environment") @PathParam("env") String environmentName,
-			@ApiParam("value of the hostname") String hostNameValue) throws ValidationException {
+	@Operation(summary = "Set hostname value on a given node in a specific node release and environment")
+	public Response setHostNameOnNode(@Parameter(description = "node name") @PathParam("node") String nodeName,
+			@Parameter(description = "release of node") @PathParam("release") String nodeRelease,
+			@Parameter(description = "environment") @PathParam("env") String environmentName,
+			@Parameter(description = "value of the hostname") String hostNameValue) throws ValidationException {
 		
 		String hostName = AppServerRelationsTemplateProcessor.HOST_NAME;
 		propertyEditor.setPropertyValueOnResourceForContext(nodeName, nodeRelease, environmentName, hostName,
@@ -71,13 +70,13 @@ public class HostNamesRest {
 	@PUT
 	@Path("/{node}/{release}/{env}/{appServer}")
 	@Consumes("text/plain")
-	@ApiOperation(value = "Set hostname value on all relations between a node release and all releases of an application server where no hostname is defined yet.")
+	@Operation(summary = "Set hostname value on all relations between a node release and all releases of an application server where no hostname is defined yet.")
 	public Response setHostNameBetweenAppServerAndNodesForAllReleasesWhereNotYetDefined(
-			@ApiParam("node name") @PathParam("node") String nodeName,
-			@ApiParam("release of node") @PathParam("release") String nodeRelease,
-			@ApiParam("environment") @PathParam("env") String environmentName,
-			@ApiParam("application server name") @PathParam("appServer") String appServerName,
-			@ApiParam("value of the hostname") String hostNameValue) throws ValidationException {
+			@Parameter(description = "node name") @PathParam("node") String nodeName,
+			@Parameter(description = "release of node") @PathParam("release") String nodeRelease,
+			@Parameter(description = "environment") @PathParam("env") String environmentName,
+			@Parameter(description = "application server name") @PathParam("appServer") String appServerName,
+			@Parameter(description = "value of the hostname") String hostNameValue) throws ValidationException {
 		
 		String hostName = AppServerRelationsTemplateProcessor.HOST_NAME;
 		propertyEditor.setPropertyValueOnAllResourceRelationsForContextWhereNotYetSet(appServerName, nodeName, nodeRelease, environmentName, hostName, hostNameValue);
@@ -87,14 +86,14 @@ public class HostNamesRest {
 	@PUT
 	@Path("/{node}/{release}/{env}/{appServer}/{asRelease}")
 	@Consumes("text/plain")
-	@ApiOperation(value = "Set hostname value on the relation between a node release and an application server release.")
+	@Operation(summary = "Set hostname value on the relation between a node release and an application server release.")
 	public Response setHostNameBetweenAppServerAndNodesForSpecifiedReleases(
-			@ApiParam("node name") @PathParam("node") String nodeName,
-			@ApiParam("release of node") @PathParam("release") String nodeRelease,
-			@ApiParam("environment") @PathParam("env") String environmentName,
-			@ApiParam("application server name") @PathParam("appServer") String appServerName,
-			@ApiParam("application server release") @PathParam("asRelease") String appServerRelease,
-			@ApiParam("value of the hostname") String hostNameValue) throws ValidationException {
+			@Parameter(description = "node name") @PathParam("node") String nodeName,
+			@Parameter(description = "release of node") @PathParam("release") String nodeRelease,
+			@Parameter(description = "environment") @PathParam("env") String environmentName,
+			@Parameter(description = "application server name") @PathParam("appServer") String appServerName,
+			@Parameter(description = "application server release") @PathParam("asRelease") String appServerRelease,
+			@Parameter(description = "value of the hostname") String hostNameValue) throws ValidationException {
 
 		String hostName = AppServerRelationsTemplateProcessor.HOST_NAME;
 		propertyEditor.setPropertyValueOnResourceRelationForContext(appServerName, appServerRelease, nodeName, nodeRelease, environmentName, hostName, hostNameValue);
@@ -102,14 +101,14 @@ public class HostNamesRest {
 	}
 	
 	@GET
-	@ApiOperation(value = "Get hostnames", notes = "Returns all hostnames matching the optional filter Query Params", produces = "application/json, text/csv")
+	@Operation(summary = "Get hostnames", description = "Returns all hostnames matching the optional filter Query Params")
 	public List<ServerTuple> getHostNames(
-			 @ApiParam("Application server name") @QueryParam("appServer") String appServer,
-			 @ApiParam("Runtime name") @QueryParam("runtime") String runtime,
-			 @ApiParam("Environement name") @QueryParam("environment") String environment,
-			 @ApiParam("Host name") @QueryParam("host") String host,
-			 @ApiParam("Node name") @QueryParam("node") String node,
-			 @ApiParam("Merge releases") @QueryParam("disableMerge") @DefaultValue("false") boolean disableMerge) {
+			 @Parameter(description = "Application server name") @QueryParam("appServer") String appServer,
+			 @Parameter(description = "Runtime name") @QueryParam("runtime") String runtime,
+			 @Parameter(description = "Environement name") @QueryParam("environment") String environment,
+			 @Parameter(description = "Host name") @QueryParam("host") String host,
+			 @Parameter(description = "Node name") @QueryParam("node") String node,
+			 @Parameter(description = "Merge releases") @QueryParam("disableMerge") @DefaultValue("false") boolean disableMerge) {
 
 		return serverView.getServers(host, appServer, runtime, node, environment, !disableMerge);
 	}

@@ -52,9 +52,9 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -76,7 +76,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @Stateless
 @Path("/deployments")
-@Api(value = "/deployments", description = "Managing deployment resources")
+@Tag(name = "/deployments", description = "Managing deployment resources")
 public class DeploymentsRest {
 
     @Inject
@@ -109,8 +109,8 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filter")
-    @ApiOperation(value = "returns all Deployments matching the list of json filters - used by Angular", produces = "application/json, text/csv")
-    public Response getDeployments(@ApiParam("Filters") @QueryParam("filters") String jsonListOfFilters,
+    @Operation(summary = "returns all Deployments matching the list of json filters - used by Angular")
+    public Response getDeployments(@Parameter(description = "Filters") @QueryParam("filters") String jsonListOfFilters,
                                    @QueryParam("colToSort") String colToSort,
                                    @QueryParam("sortDirection") String sortDirection,
                                    @QueryParam("maxResults") Integer maxResults,
@@ -228,21 +228,21 @@ public class DeploymentsRest {
      **/
     @Deprecated
     @GET
-    @ApiOperation(value = "returns all Deployments matching the optional filter Query Params")
+    @Operation(summary = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
-            @ApiParam("Tracking ID") @QueryParam("trackingId") Integer trackingId,
-            @ApiParam("Deployments State") @QueryParam("deploymentState") DeploymentState deploymentState,
-            @ApiParam("Application Server Name") @QueryParam("appServerName") List<String> appServerNames,
-            @ApiParam("Application Name") @QueryParam("appName") List<String> appNames,
-            @ApiParam("Runtime Name") @QueryParam("runtimeName") List<String> runtimeNames,
-            @ApiParam("Max Results") @QueryParam("maxResults") Integer maxResults,
-            @ApiParam("Offset") @DefaultValue("0") @QueryParam("offset") Integer offset,
-            @ApiParam("From Date Filter") @QueryParam("fromDate") Long fromDate,
-            @ApiParam("To Date Filter") @QueryParam("toDate") Long toDate,
-            @ApiParam("Environment Filter") @QueryParam("environmentName") List<String> environmentNames,
-            @ApiParam("Deployment Parameter Filter") @QueryParam("deploymentParameter") List<String> deploymentParameters,
-            @ApiParam("Deployment Parameter Value Filter") @QueryParam("deploymentParameterValue") List<String> deploymentParameterValues,
-            @ApiParam("only Latest Filter") @DefaultValue("false") @QueryParam("onlyLatest") boolean onlyLatest) {
+            @Parameter(description = "Tracking ID") @QueryParam("trackingId") Integer trackingId,
+            @Parameter(description = "Deployments State") @QueryParam("deploymentState") DeploymentState deploymentState,
+            @Parameter(description = "Application Server Name") @QueryParam("appServerName") List<String> appServerNames,
+            @Parameter(description = "Application Name") @QueryParam("appName") List<String> appNames,
+            @Parameter(description = "Runtime Name") @QueryParam("runtimeName") List<String> runtimeNames,
+            @Parameter(description = "Max Results") @QueryParam("maxResults") Integer maxResults,
+            @Parameter(description = "Offset") @DefaultValue("0") @QueryParam("offset") Integer offset,
+            @Parameter(description = "From Date Filter") @QueryParam("fromDate") Long fromDate,
+            @Parameter(description = "To Date Filter") @QueryParam("toDate") Long toDate,
+            @Parameter(description = "Environment Filter") @QueryParam("environmentName") List<String> environmentNames,
+            @Parameter(description = "Deployment Parameter Filter") @QueryParam("deploymentParameter") List<String> deploymentParameters,
+            @Parameter(description = "Deployment Parameter Value Filter") @QueryParam("deploymentParameterValue") List<String> deploymentParameterValues,
+            @Parameter(description = "only Latest Filter") @DefaultValue("false") @QueryParam("onlyLatest") boolean onlyLatest) {
 
         LinkedList<CustomFilter> filters = new LinkedList<>();
 
@@ -313,8 +313,8 @@ public class DeploymentsRest {
     @GET
     @Path("/{id : \\d+}")
     // support digit only
-    @ApiOperation(value = "get Deployment by id")
-    public Response getDeployment(@ApiParam("Deployment ID") @PathParam("id") Integer id) {
+    @Operation(summary = "get Deployment by id")
+    public Response getDeployment(@Parameter(description = "Deployment ID") @PathParam("id") Integer id) {
         DeploymentEntity result;
 
         try {
@@ -329,7 +329,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/deploymentParameterKeyNames")
-    @ApiOperation(value = "returns the keys of all available DeploymentParameter")
+    @Operation(summary = "returns the keys of all available DeploymentParameter")
     public Response getAllDeploymentParameterKeyNames() {
         List<DeploymentParameterDTO> deploymentParameters = new ArrayList<>();
         for (Key key : deploymentParameterBoundary.findAllKeys()) {
@@ -340,14 +340,14 @@ public class DeploymentsRest {
 
     @GET
     @Path("/deploymentParameterKeys")
-    @ApiOperation(value = "returns the keys of all available DeploymentParameter")
+    @Operation(summary = "returns the keys of all available DeploymentParameter")
     public Response getAllDeploymentParameterKeys() {
         return Response.status(Status.OK).entity(deploymentParameterBoundary.findAllKeys()).build();
     }
 
     @POST
     @Path("/deploymentParameterKeys")
-    @ApiOperation(value = "Adds one parameter key")
+    @Operation(summary = "Adds one parameter key")
     @Produces({APPLICATION_JSON})
     public Response addOneParameterKey(String keyName) throws ch.puzzle.itc.mobiliar.common.exception.ValidationException {
         Key createdKey = deploymentParameterBoundary.createDeployParameterKey(keyName);
@@ -360,15 +360,15 @@ public class DeploymentsRest {
 
     @DELETE
     @Path("/deploymentParameterKeys/{id : \\d+}")
-    @ApiOperation(value = "Deletes one parameter key")
-    public Response deleteOneKey(@ApiParam("Key ID") @PathParam("id") Integer id) throws NotFoundException {
+    @Operation(summary = "Deletes one parameter key")
+    public Response deleteOneKey(@Parameter(description = "Key ID") @PathParam("id") Integer id) throws NotFoundException {
         deploymentParameterBoundary.deleteDeployParameterKey(id);
         return Response.status(NO_CONTENT).build();
     }
 
     @GET
     @Path("/deploymentFilterTypes")
-    @ApiOperation(value = "Returns all available DeploymentFilterTypes - used by Angular")
+    @Operation(summary = "Returns all available DeploymentFilterTypes - used by Angular")
     public Response getAllDeploymentFilterTypes() {
         List<DeploymentFilterTypeDTO> deploymentFilterTypes = new ArrayList<>();
         for (DeploymentFilterTypes filterType : deploymentBoundary.getDeploymentFilterTypes()) {
@@ -379,7 +379,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/comparatorFilterOptions")
-    @ApiOperation(value = "Returns all available ComparatorFilterOptions - used by Angular")
+    @Operation(summary = "Returns all available ComparatorFilterOptions - used by Angular")
     public Response getAllComparatorFilterOptions() {
         List<ComparatorFilterOptionDTO> comparatorFilterOptions = new ArrayList<>();
         for (ComparatorFilterOption filterOption : deploymentBoundary.getComparatorFilterOptions()) {
@@ -390,8 +390,8 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filterOptionValues")
-    @ApiOperation(value = "Returns all available option values for a specific Filter - used by Angular")
-    public Response getFilterOptionValues(@ApiParam("Filter name") @QueryParam("filterName") String filterName) {
+    @Operation(summary = "Returns all available option values for a specific Filter - used by Angular")
+    public Response getFilterOptionValues(@Parameter(description = "Filter name") @QueryParam("filterName") String filterName) {
         return Response.status(Status.OK).entity(deploymentBoundary.getFilterOptionValues(filterName)).build();
     }
 
@@ -402,8 +402,8 @@ public class DeploymentsRest {
      * @return the new DeploymentDTO
      **/
     @POST
-    @ApiOperation(value = "adds a DeploymentRequest")
-    public Response addDeployment(@ApiParam("Deployment Request") DeploymentRequestDTO request) {
+    @Operation(summary = "adds a DeploymentRequest")
+    public Response addDeployment(@Parameter(description = "Deployment Request") DeploymentRequestDTO request) {
         Integer trackingId;
         ResourceEntity appServer;
         Set<ResourceEntity> apps;
@@ -528,8 +528,8 @@ public class DeploymentsRest {
     @PUT
     @Path("/{id : \\d+}/state")
     @Consumes("text/plain")
-    @ApiOperation(value = "Update the state of a deployment")
-    public Response patchDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId, @ApiParam("New status") String stateStr) {
+    @Operation(summary = "Update the state of a deployment")
+    public Response patchDeployment(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId, @Parameter(description = "New status") String stateStr) {
         DeploymentState newState = DeploymentState.getByString(stateStr);
 
         if (newState == null) {
@@ -549,9 +549,9 @@ public class DeploymentsRest {
     @PUT
     @Path("/{id : \\d+}/confirm")
     @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Confirm a deployment")
-    public Response confirmDeployment(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
-                                      @ApiParam("New status") DeploymentDTO deploymentDTO) {
+    @Operation(summary = "Confirm a deployment")
+    public Response confirmDeployment(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId,
+                                      @Parameter(description = "New status") DeploymentDTO deploymentDTO) {
         try{
             deploymentBoundary.confirmDeployment(deploymentId,
                     deploymentDTO.isSendEmailWhenDeployed(),
@@ -567,11 +567,11 @@ public class DeploymentsRest {
     @PUT
     @Path("/{id: \\d+}/jobs/{nodeJobId: \\d+}")
     @Consumes("text/plain")
-    @ApiOperation(value = "Set the nodeJobResult for the given Deployment (id) and the nodeJob.")
+    @Operation(summary = "Set the nodeJobResult for the given Deployment (id) and the nodeJob.")
     public Response updateNodeJobResult(
-            @ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
-            @ApiParam("nodeJob Id") @PathParam("nodeJobId") Integer nodeJobId,
-            @ApiParam("Status result") String statusStr) {
+            @Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId,
+            @Parameter(description = "nodeJob Id") @PathParam("nodeJobId") Integer nodeJobId,
+            @Parameter(description = "Status result") String statusStr) {
 
         NodeJobStatus status = NodeJobStatus.getNodeJobStatusByString(statusStr);
         if (status == null) {
@@ -592,8 +592,8 @@ public class DeploymentsRest {
 
     @PUT
     @Path("/{id : \\d+}/date")
-    @ApiOperation(value = "Update the DeploymentDate of a Deployment - used by Angular")
-    public Response changeDeploymentDate(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId, @ApiParam("New date") long date) {
+    @Operation(summary = "Update the DeploymentDate of a Deployment - used by Angular")
+    public Response changeDeploymentDate(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId, @Parameter(description = "New date") long date) {
         Date newDate = new Date(date);
         try {
             deploymentBoundary.changeDeploymentDate(deploymentId, newDate);
@@ -607,9 +607,9 @@ public class DeploymentsRest {
     @PUT
     @Path("/{id : \\d+}/updateState")
     @Consumes("text/plain")
-    @ApiOperation(value = "Update state of a deployment - used by Angular")
-    public Response updateState(@ApiParam("deployment Id") @PathParam("id") Integer deploymentId,
-                                @ApiParam("state as string") String statusStr) {
+    @Operation(summary = "Update state of a deployment - used by Angular")
+    public Response updateState(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId,
+                                @Parameter(description = "state as string") String statusStr) {
         DeploymentState state;
         try {
             state = DeploymentState.valueOf(statusStr);
@@ -638,8 +638,8 @@ public class DeploymentsRest {
     @GET
     @Path("/{id : \\d+}/withActions")
     // support digit only
-    @ApiOperation(value = "Get a Deployment including actions by id - used by Angular")
-    public Response getDeploymentWithActions(@ApiParam("Deployment ID") @PathParam("id") Integer id) {
+    @Operation(summary = "Get a Deployment including actions by id - used by Angular")
+    public Response getDeploymentWithActions(@Parameter(description = "Deployment ID") @PathParam("id") Integer id) {
         DeploymentEntity result;
 
         try {
@@ -653,7 +653,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canDeploy/{resourceGroupId}")
-    @ApiOperation(value = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s) - used by Angular")
+    @Operation(summary = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canDeploy(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
         ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
@@ -674,7 +674,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canRequestDeployment/{resourceGroupId}")
-    @ApiOperation(value = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s) - used by Angular")
+    @Operation(summary = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canRequestDeployment(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
         ResourceGroupEntity resourceGroup = resourceGroupService.getById(resourceGroupId);
@@ -694,7 +694,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canRequestDeployment/")
-    @ApiOperation(value = "Checks if the caller is allowed to request a deployment at all - used by Angular")
+    @Operation(summary = "Checks if the caller is allowed to request a deployment at all - used by Angular")
     public Response canRequestDeployment() {
 
         return Response.ok(permissionBoundary.hasPermission(Permission.DEPLOYMENT, Action.CREATE)).build();

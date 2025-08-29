@@ -29,9 +29,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
@@ -48,7 +47,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
  */
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/templates")
-@Api(value = "/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/templates", description = "Resource relation templates")
+@Tag(name = "/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/templates", description = "Resource relation templates")
 public class ResourceRelationTemplatesRest {
 
     @Inject
@@ -67,7 +66,7 @@ public class ResourceRelationTemplatesRest {
     ResourceTemplatesRest resourceTemplatesRest;
 
     @GET
-    @ApiOperation(value = "Get one or all templates for a resource in a specific release")
+    @Operation(summary = "Get one or all templates for a resource in a specific release")
     public List<TemplateDTO> getResourceRelationTemplates(@PathParam("resourceGroupName") String resourceGroupName,
             @PathParam("releaseName") String releaseName,
             @PathParam("relatedResourceGroupName") String relatedResourceGroupName,
@@ -85,7 +84,7 @@ public class ResourceRelationTemplatesRest {
 
     @GET
     @Path("/{templateName}")
-    @ApiOperation(value = "Get one or all templates for a resource in a specific release")
+    @Operation(summary = "Get one or all templates for a resource in a specific release")
     public TemplateDTO getResourceRelationTemplate(@PathParam("resourceGroupName") String resourceGroupName,
             @PathParam("releaseName") String releaseName,
             @PathParam("relatedResourceGroupName") String relatedResourceGroupName,

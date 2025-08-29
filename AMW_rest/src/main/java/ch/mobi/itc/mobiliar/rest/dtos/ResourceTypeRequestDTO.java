@@ -1,18 +1,17 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@ApiModel(description = "Request to add a new resource type")
+@Schema(description = "Request to add a new resource type")
 public class ResourceTypeRequestDTO {
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private String name;
 
-    @ApiModelProperty(required = false)
+    @Schema(required = false)
     private Integer parentId;
 }

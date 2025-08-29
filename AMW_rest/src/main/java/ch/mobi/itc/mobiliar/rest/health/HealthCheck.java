@@ -1,8 +1,8 @@
 package ch.mobi.itc.mobiliar.rest.health;
 
 import ch.puzzle.itc.mobiliar.business.database.control.DatabaseConnectionTest;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 
 @Stateless
 @Path("/")
-@Api(value = "/healthCheck", description = "Health checks")
+@Tag(name = "/healthCheck", description = "Health checks")
 public class HealthCheck {
 
     @Inject
@@ -23,14 +23,14 @@ public class HealthCheck {
 
     @GET
     @Path("alive")
-    @ApiOperation(value = "Checks if Liima is alive")
+    @Operation(summary = "Checks if Liima is alive")
     public Response isAlive() {
         return Response.status(OK).build();
     }
 
     @GET
     @Path("ready")
-    @ApiOperation(value = "Checks if Liima is ready")
+    @Operation(summary = "Checks if Liima is ready")
     public Response isReady() {
         try {
             databaseConnectionTest.testConnection();

@@ -47,9 +47,9 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.persistence.EntityManager;
 
@@ -60,7 +60,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  */
 @RequestScoped
 @Path("/resources/templates")
-@Api(value = "/resources/templates")
+@Tag(name = "/resources/templates")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ResourceTemplatesRest {
@@ -82,7 +82,7 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/{resourceGroupName}/{releaseName}")
-    @ApiOperation(value = "Get all templates for a resource in a specific release")
+    @Operation(summary = "Get all templates for a resource in a specific release")
     public List<TemplateDTO> getResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
                                                   @PathParam("releaseName") String releaseName) throws ValidationException {
         List<TemplateDTO> templateDTOs = new ArrayList<>();
@@ -97,7 +97,7 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/{resourceId: \\d+}")
-    @ApiOperation(value = "Get all templates for a resource, including inherited resource type templates")
+    @Operation(summary = "Get all templates for a resource, including inherited resource type templates")
     public List<TemplateDTO> getResourceTemplatesById(@PathParam("resourceId") Integer resourceId) throws NotFoundException {
         ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
         if (resource == null) {
@@ -116,7 +116,7 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/resourceType/{resourceTypeId: \\d+}")
-    @ApiOperation(value = "Get all templates for a resource type")
+    @Operation(summary = "Get all templates for a resource type")
     public Response getResourceTypeTemplatesById(@PathParam("resourceTypeId") Integer resourceTypeId) throws NotFoundException {
 
         ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
@@ -133,8 +133,8 @@ public class ResourceTemplatesRest {
 
     @POST
     @Path("/addForResource/{id : \\d+}")
-    @ApiOperation(value = "Add new resource template")
-    public Response addNewResourceTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request)
+    @Operation(summary = "Add new resource template")
+    public Response addNewResourceTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request)
             throws AMWException {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResource(template, id);
@@ -143,8 +143,8 @@ public class ResourceTemplatesRest {
 
     @PUT
     @Path("updateForResource/{id : \\d+}")
-    @ApiOperation(value = "Modify existing template for resource")
-    public Response modifyResourceTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
+    @Operation(summary = "Modify existing template for resource")
+    public Response modifyResourceTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResource(template, id);
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
@@ -152,8 +152,8 @@ public class ResourceTemplatesRest {
 
     @POST
     @Path("/addForResourceType/{id : \\d+}")
-    @ApiOperation(value = "Add new resourceType template")
-    public Response addNewResourceTypeTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request)
+    @Operation(summary = "Add new resourceType template")
+    public Response addNewResourceTypeTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request)
             throws AMWException {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResourceType(template, id);
@@ -162,8 +162,8 @@ public class ResourceTemplatesRest {
 
     @PUT
     @Path("updateForResourceType/{id : \\d+}")
-    @ApiOperation(value = "Modify existing template for resourceType")
-    public Response modifyResourceTypeTemplate(@ApiParam("Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
+    @Operation(summary = "Modify existing template for resourceType")
+    public Response modifyResourceTypeTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResourceType(template, id);
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
@@ -171,7 +171,7 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/targetPlatforms")
-    @ApiOperation(value = "Get all targetPlatforms ")
+    @Operation(summary = "Get all targetPlatforms ")
     public Response getTargetPlatformsForContextId() {
         List<String> targetPlatformNames = commonService.getRuntimeResourceGroups().stream()
                 .map(ResourceGroupEntity::getName)
@@ -181,7 +181,7 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/{id}/revisions")
-    @ApiOperation(value = "Get all revisions of a specific resource template")
+    @Operation(summary = "Get all revisions of a specific resource template")
     public Response getTemplateRevisions(@PathParam("id") int id) throws NotFoundException {
         List<RevisionInformation> revisions = templateEditor.getTemplateRevisions(id);
         if (revisions.isEmpty()) {
@@ -192,7 +192,7 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/{id}/revisions/{revisionId}")
-    @ApiOperation(value = "Get a specific revision of a resource template")
+    @Operation(summary = "Get a specific revision of a resource template")
     public Response getTemplateByIdAndRevision(@PathParam("id") int id, @PathParam("revisionId") int revisionId)
             throws NotFoundException {
         TemplateDescriptorEntity template = templateEditor.getTemplateByIdAndRevision(id, revisionId);
@@ -204,7 +204,7 @@ public class ResourceTemplatesRest {
 
     @GET
     @Path("/{resourceGroupName}/{releaseName}/{templateName}")
-    @ApiOperation(value = "Get a template for a resource in a specific release")
+    @Operation(summary = "Get a template for a resource in a specific release")
     public TemplateDTO getResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
                                            @PathParam("releaseName") String releaseName,
                                            @PathParam("templateName") String templateName) throws ValidationException, NotFoundException {
@@ -217,7 +217,7 @@ public class ResourceTemplatesRest {
 
     @DELETE
     @Path("/{resourceGroupName}/{releaseName}/{templateName}")
-    @ApiOperation(value = "Delete a template for a resource in a specific release")
+    @Operation(summary = "Delete a template for a resource in a specific release")
     public Response deleteResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
                                            @PathParam("releaseName") String releaseName,
                                            @PathParam("templateName") String templateName) throws ValidationException, AMWException {
@@ -231,7 +231,7 @@ public class ResourceTemplatesRest {
 
     @DELETE
     @Path("/{id : \\d+}")
-    @ApiOperation(value = "Remove a template")
+    @Operation(summary = "Remove a template")
     public Response deleteTemplate(@PathParam("id") Integer id) throws TemplateNotDeletableException {
         templateEditor.removeTemplate(id);
         return Response.status(Response.Status.NO_CONTENT).build();
@@ -239,7 +239,7 @@ public class ResourceTemplatesRest {
 
     @POST
     @Path("/{resourceGroupName}/{releaseName}")
-    @ApiOperation(value = "Create a template for a resource in a specific release")
+    @Operation(summary = "Create a template for a resource in a specific release")
     public Response createResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
                                             @PathParam("releaseName") String releaseName,
                                             TemplateDTO templateDTO) throws ValidationException, AMWException {
@@ -253,7 +253,7 @@ public class ResourceTemplatesRest {
 
     @PUT
     @Path("/{resourceGroupName}/{releaseName}/{templateName}")
-    @ApiOperation(value = "Update a template for a resource in a specific release")
+    @Operation(summary = "Update a template for a resource in a specific release")
     public Response updateResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
                                             @PathParam("releaseName") String releaseName,
                                             @PathParam("templateName") String templateName,

@@ -20,40 +20,68 @@
 
 package ch.mobi.itc.mobiliar.rest;
 
-import ch.mobi.itc.mobiliar.rest.Analyze.TestGenerationRest;
+import java.util.Set;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+
+import ch.mobi.itc.mobiliar.rest.analyze.TestGenerationRest;
 import ch.mobi.itc.mobiliar.rest.apps.AppsRest;
 import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentDtoCsvBodyWriter;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsLogRest;
 import ch.mobi.itc.mobiliar.rest.deployments.DeploymentsRest;
 import ch.mobi.itc.mobiliar.rest.environments.EnvironmentsRest;
-import ch.mobi.itc.mobiliar.rest.exceptions.*;
-import ch.mobi.itc.mobiliar.rest.functions.FunctionsRest;
+import ch.mobi.itc.mobiliar.rest.exceptions.ClientErrorExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.ConcurrentModificationExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.ConstraintViolationExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.EJBExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.EJBTransactionRolledbackExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.ElementAlreadyExistsExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDtoBodyWriter;
+import ch.mobi.itc.mobiliar.rest.exceptions.IOExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.IllegalArgumentExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.IllegalStateExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.NoResultExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.NotAuthorizedExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.NotFoundExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.OptimisticLockExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.TemplateNotDeletableExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.UncaughtExceptionMapper;
+import ch.mobi.itc.mobiliar.rest.exceptions.ValidationExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
-import ch.mobi.itc.mobiliar.rest.properties.PropertyTypesRest;
-import ch.mobi.itc.mobiliar.rest.resources.*;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
+import ch.mobi.itc.mobiliar.rest.resources.BatchJobRest;
+import ch.mobi.itc.mobiliar.rest.resources.HostNamesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceFunctionsRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceGroupsRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourcePropertiesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationPropertiesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationTemplatesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationsRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceTemplatesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourceTypesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ResourcesRest;
+import ch.mobi.itc.mobiliar.rest.resources.ServerTupleCSVBodyWriter;
 import ch.mobi.itc.mobiliar.rest.servers.ServersRest;
+import ch.mobi.itc.mobiliar.rest.settings.FunctionsRest;
+import ch.mobi.itc.mobiliar.rest.settings.PropertyTypesRest;
 import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
-import ch.mobi.itc.mobiliar.rest.tags.boundary.TagsRest;
-
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-import java.util.Set;
+import ch.mobi.itc.mobiliar.rest.settings.TagsRest;
 
 @ApplicationPath("/resources/")
 public class RESTApplication extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new java.util.HashSet<>();
-        resources.add(io.swagger.jaxrs.listing.SwaggerSerializers.class);
-        resources.add(io.swagger.jaxrs.listing.ApiListingResource.class);
         addRestResourceClasses(resources);
         return resources;
     }
 
     private void addRestResourceClasses(Set<Class<?>> resources) {
+        // OpenAPI endpoint (custom configured)
+        resources.add(OpenApiEndpoint.class);
 
         // Endpoints
         resources.add(AppsRest.class);

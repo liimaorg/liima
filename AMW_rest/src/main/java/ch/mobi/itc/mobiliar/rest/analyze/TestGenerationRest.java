@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.Analyze;
+package ch.mobi.itc.mobiliar.rest.analyze;
 
 import ch.mobi.itc.mobiliar.rest.dtos.EnvironmentGenerationResultDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
@@ -14,7 +14,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -27,7 +27,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 @Path("/analyze")
-@Api(value = "/analyze", description = "Analyze test generation")
+@Tag(name = "/analyze", description = "Analyze test generation")
 public class TestGenerationRest {
 
     @Inject
