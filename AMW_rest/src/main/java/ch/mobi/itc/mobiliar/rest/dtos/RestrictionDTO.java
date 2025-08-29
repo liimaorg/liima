@@ -24,7 +24,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission;
 import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -41,7 +41,7 @@ public class RestrictionDTO {
     private Integer id;
     private String roleName;
     private String userName;
-    @ApiModelProperty(required = true)
+    @Schema(required = true)
     private PermissionDTO permission;
     private Integer resourceGroupId;
     private String resourceTypeName;

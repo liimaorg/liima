@@ -8,9 +8,9 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
 @Path("/environments")
-@Api(value = "/environments", description = "Environments")
+@Tag(name = "/environments", description = "Environments")
 public class EnvironmentsRest {
 
     @Inject
@@ -34,8 +34,8 @@ public class EnvironmentsRest {
     EnvironmentsScreenDomainService environmentsScreenDomainService;
 
     @GET
-    @ApiOperation(value = "Get environments", notes = "Returns the available environments")
-    public List<EnvironmentDTO> getEnvironments(@ApiParam("Also returns Environment groups if set to true") @QueryParam("includingGroups") boolean includingGroups) {
+    @Operation(summary = "Get environments", description = "Returns the available environments")
+    public List<EnvironmentDTO> getEnvironments(@Parameter(description = "Also returns Environment groups if set to true") @QueryParam("includingGroups") boolean includingGroups) {
 
         List<EnvironmentDTO> environments = new ArrayList<>();
         List<ContextEntity> contexts = contextLocator.getAllEnvironments();
@@ -53,15 +53,15 @@ public class EnvironmentsRest {
 
     @GET
     @Path("/contexts")
-    @ApiOperation(value = "Get all contexts", notes = "Returns all contexts as environments")
+    @Operation(summary = "Get all contexts", description = "Returns all contexts as environments")
     public List<EnvironmentDTO> getContexts() {
         return contextLocator.getAllEnvironments().stream().map(EnvironmentDTO::new).collect(Collectors.toList());
     }
 
     @POST
     @Path("/contexts")
-    @ApiOperation(value = "Add new context")
-    public Response addContext(@ApiParam() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException, ValidationException {
+    @Operation(summary = "Add new context")
+    public Response addContext(@Parameter() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException, ValidationException {
         if(request.getName() == null || request.getName().trim().isEmpty()) throw new ValidationException("Context name must not be null or blank");
         environmentsScreenDomainService.createContextByName(request.getName(), request.getNameAlias(), request.getParentId());
         return Response.status(Response.Status.OK).build();
@@ -69,15 +69,15 @@ public class EnvironmentsRest {
 
     @PUT
     @Path("/contexts/{id : \\d+}")
-    @ApiOperation(value = "Update existing context")
-    public Response updateContext(@ApiParam("Environment ID") @PathParam("id") Integer id, EnvironmentDTO request) throws ResourceNotFoundException {
+    @Operation(summary = "Update existing context")
+    public Response updateContext(@Parameter(description = "Environment ID") @PathParam("id") Integer id, EnvironmentDTO request) throws ResourceNotFoundException {
         environmentsScreenDomainService.saveEnvironment(id, request.getName(), request.getNameAlias());
         return Response.status(Response.Status.OK).build();
     }
 
     @DELETE
     @Path("contexts/{id : \\d+}")
-    @ApiOperation(value = "Remove a context")
+    @Operation(summary = "Remove a context")
     public Response deleteContext(@PathParam("id") Integer id) throws AMWException {
         contextLocator.deleteContext(id);
         return Response.status(NO_CONTENT).build();

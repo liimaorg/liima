@@ -35,9 +35,9 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
@@ -50,7 +50,7 @@ import static javax.ws.rs.core.Response.Status.*;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/relations")
-@Api(value = "/resources/{resourceGroupName}/{releaseName}/relations", description = "Resource relations")
+@Tag(name = "/resources/{resourceGroupName}/{releaseName}/relations", description = "Resource relations")
 public class ResourceRelationsRest {
 
     @PathParam("resourceGroupName")
@@ -72,8 +72,8 @@ public class ResourceRelationsRest {
     ResourceRelationTemplatesRest resourceRelationTemplatesRest;
 
     @GET
-    @ApiOperation(value = "Get all relations of a resource in a specific release, optionally filtered by a slave resource type")
-    public List<ResourceRelationDTO> getResourceRelations(@ApiParam(value = "A String representing the type of the slave Resource")
+    @Operation(summary = "Get all relations of a resource in a specific release, optionally filtered by a slave resource type")
+    public List<ResourceRelationDTO> getResourceRelations(@Parameter(description = "A String representing the type of the slave Resource")
                                                           @QueryParam("type") String resourceType) throws ValidationException, ResourceNotFoundException {
         return getResourceRelations(resourceGroupName, releaseName, resourceType);
     }
@@ -109,7 +109,7 @@ public class ResourceRelationsRest {
 
     @Path("/{relatedResourceGroupName}")
     @GET
-    @ApiOperation(value = "Get all related releases of the given resource")
+    @Operation(summary = "Get all related releases of the given resource")
     public List<ResourceRelationDTO> getRelatedResourcesForGroup(
             @PathParam("relatedResourceGroupName") String relatedResourceGroupName) throws ValidationException, ResourceNotFoundException {
         List<ConsumedResourceRelationEntity> relations =
@@ -128,7 +128,7 @@ public class ResourceRelationsRest {
     // List of ResourceRelationDTO
     @Path("/{relatedResourceGroupName}/{relatedReleaseName}")
     @GET
-    @ApiOperation(value = "Get the list of relations between the two resource releases")
+    @Operation(summary = "Get the list of relations between the two resource releases")
     public List<ResourceRelationDTO> getResourceRelation(@PathParam("relatedResourceGroupName") String relatedResourceGroupName,
                                                          @PathParam("relatedReleaseName") String relatedReleaseName) throws ValidationException, ResourceNotFoundException {
         List<ResourceRelationDTO> list = new ArrayList<>();
@@ -151,9 +151,9 @@ public class ResourceRelationsRest {
      */
     @Path("/{slaveResourceGroupName}")
     @POST
-    @ApiOperation(value = "Add a consumed or provided Relation")
+    @Operation(summary = "Add a consumed or provided Relation")
     public Response addRelation(@PathParam("slaveResourceGroupName") String slaveGroupName,
-                                @ApiParam(value = "A String representing the type of the Relation", required = true)
+                                @Parameter(description = "A String representing the type of the Relation", required = true)
                                 @QueryParam("type") String relationType) {
         if (StringUtils.isEmpty(slaveGroupName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Slave resource group name must not be empty")).build();
@@ -178,9 +178,9 @@ public class ResourceRelationsRest {
      */
     @Path("/{relationName}")
     @DELETE
-    @ApiOperation(value = "Remove a consumed or provided Relation from a specific Release", notes = "RelationName may be the identifier of a Relation or the name of the related Resource")
+    @Operation(summary = "Remove a consumed or provided Relation from a specific Release", description = "RelationName may be the identifier of a Relation or the name of the related Resource")
     public Response removeRelation(@PathParam("relationName") String relationName,
-                                   @ApiParam(value = "A String representing the type of the Relation", required = true)
+                                   @Parameter(description = "A String representing the type of the Relation", required = true)
                                    @QueryParam("type") String relationType) throws ValidationException {
         if (StringUtils.isEmpty(relationName)) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto("Relation name must not be empty")).build();

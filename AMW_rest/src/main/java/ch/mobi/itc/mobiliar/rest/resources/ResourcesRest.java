@@ -38,13 +38,13 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RequestScoped
 @Path("/resources")
-@Api(value = "/resources")
+@Tag(name = "/resources")
 public class ResourcesRest {
 
     @Inject
@@ -57,7 +57,7 @@ public class ResourcesRest {
     // TODO: better GET /{resourceId}/properties/name?
     @Path("name/{resourceId}")
     @GET
-    @ApiOperation(value = "Get resource name by id")
+    @Operation(summary = "Get resource name by id")
     public Response getResourceName(@PathParam("resourceId") Integer resourceId) {
         Map<String, String> responseMap = new HashMap<>();
         String resourceName = resourceBoundary.getResourceName(resourceId);
@@ -69,7 +69,7 @@ public class ResourcesRest {
     // TODO: should be removed and instead handeled with a 404
     @Path("exists/{resourceId}")
     @GET
-    @ApiOperation(value = "Checks if a specific Resource still exists - used by Angular")
+    @Operation(summary = "Checks if a specific Resource still exists - used by Angular")
     public Response isExistingResourceGroup(@PathParam("resourceId") Integer resourceId) {
         ResourceEntity resource = resourceLocator.getResourceById(resourceId);
         if (resource == null) {
@@ -81,7 +81,7 @@ public class ResourcesRest {
 
     @Path("/resources/{resourceId}")
     @GET
-    @ApiOperation(value = "Get a resource")
+    @Operation(summary = "Get a resource")
     public Response getResource(@PathParam("resourceId") Integer resourceId) {
         ResourceEntity resource = resourceLocator.getResourceById(resourceId);
         if (resource == null) {
@@ -98,9 +98,9 @@ public class ResourcesRest {
 
     @GET
     @Path("/{id : \\d+}")
-    @ApiOperation(value = "Get a resource by id")
+    @Operation(summary = "Get a resource by id")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@ApiParam("Resource ID") @PathParam("id") Integer id) throws NotFoundException {
+    public Response getById(@Parameter(description = "Resource ID") @PathParam("id") Integer id) throws NotFoundException {
         return Response.ok(new ResourceDTO(resourceBoundary.getResource(id))).build();
     }
 }

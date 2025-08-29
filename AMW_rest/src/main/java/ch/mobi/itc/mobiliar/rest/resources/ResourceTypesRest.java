@@ -44,9 +44,9 @@ import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -55,7 +55,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
 @Path("/resourceTypes")
-@Api(value = "/resourceTypes")
+@Tag(name = "/resourceTypes")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ResourceTypesRest {
@@ -71,7 +71,7 @@ public class ResourceTypesRest {
 
     @Path("/")
     @GET
-    @ApiOperation(value = "Get all resource types")
+    @Operation(summary = "Get all resource types")
     public List<ResourceTypeDTO> getAllResourceTypes() {
         return resourceTypeLocator.getAllResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
@@ -80,15 +80,15 @@ public class ResourceTypesRest {
 
     @GET
     @Path("/{id : \\d+}")
-    @ApiOperation(value = "Get a resourceType by id")
+    @Operation(summary = "Get a resourceType by id")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getById(@ApiParam("ResourceType ID") @PathParam("id") Integer id) throws NotFoundException {
+    public Response getById(@Parameter(description = "ResourceType ID") @PathParam("id") Integer id) throws NotFoundException {
         return Response.ok(new ResourceTypeDTO(resourceBoundary.getResourceType(id))).build();
     }
 
     @Path("/{name}")
     @GET
-    @ApiOperation(value = "Get a resource type by name")
+    @Operation(summary = "Get a resource type by name")
     public ResourceTypeDTO getResourceTypeByName(@NotNull @PathParam("name") String name) throws ValidationException {
         ResourceTypeEntity resourceType = resourceTypeLocator.getResourceTypeByName(name);
         return new ResourceTypeDTO(resourceType);
@@ -96,7 +96,7 @@ public class ResourceTypesRest {
 
     @Path("/predefinedResourceTypes")
     @GET
-    @ApiOperation(value = "Get predefined resource types")
+    @Operation(summary = "Get predefined resource types")
     public List<ResourceTypeDTO> getPredefinedResourceTypes() {
         return resourceTypeLocator.getPredefinedResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
@@ -105,7 +105,7 @@ public class ResourceTypesRest {
 
     @Path("/rootResourceTypes")
     @GET
-    @ApiOperation(value = "Get root resource types")
+    @Operation(summary = "Get root resource types")
     public List<ResourceTypeDTO> getRootResourceTypes() {
         return resourceTypeLocator.getRootResourceTypes().stream()
                 .map(ResourceTypeDTO::new)
@@ -114,7 +114,7 @@ public class ResourceTypesRest {
 
     @Path("/")
     @POST
-    @ApiOperation(value = "Add a new resource type")
+    @Operation(summary = "Add a new resource type")
     @Consumes("application/json")
     public Response addNewResourceType(ResourceTypeRequestDTO request)
             throws ElementAlreadyExistsException, ValidationException, NotFoundException {
@@ -138,7 +138,7 @@ public class ResourceTypesRest {
 
     @DELETE
     @Path("/{id : \\d+}")
-    @ApiOperation(value = "Delete a resource type")
+    @Operation(summary = "Delete a resource type")
     public Response deleteResourceType(@PathParam("id") Integer id) throws NotAuthorizedException, NotFoundException {
         try {
             if (resourceTypeLocator.getPredefinedResourceTypes().stream()
