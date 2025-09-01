@@ -5,9 +5,9 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentLogContentUseCa
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.ListDeploymentLogsUseCase;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -21,7 +21,7 @@ import java.io.IOException;
 
 @Stateless
 @Path("/deployments")
-@Api(value = "/deployments", description = "Deployment log files")
+@Tag(name = "/deployments", description = "Deployment log files")
 public class DeploymentsLogRest {
 
     @Inject
@@ -32,9 +32,9 @@ public class DeploymentsLogRest {
 
     @GET
     @Path("/{id : \\d+}/logs/{fileName}")
-    @ApiOperation(value = "get the log file content as plain text for a given deployment and file name")
+    @Operation(summary = "get the log file content as plain text for a given deployment and file name")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getDeploymentLogFileContent(@ApiParam("Deployment ID") @PathParam("id") Integer id,
+    public Response getDeploymentLogFileContent(@Parameter(description = "Deployment ID") @PathParam("id") Integer id,
                                                 @PathParam("fileName") String filename) throws ValidationException, IOException {
 
         DeploymentLogContentCommand deploymentLogContentCommand = new DeploymentLogContentCommand(id, filename);
@@ -43,7 +43,7 @@ public class DeploymentsLogRest {
 
     @GET
     @Path("/{deploymentId : \\d+}/logs")
-    @ApiOperation(value = "Get the list of available log file names for a given deployment id.")
+    @Operation(summary = "Get the list of available log file names for a given deployment id.")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDeploymentLogs(
             @PathParam("deploymentId") Long deploymentId) throws ValidationException, NotFoundException {

@@ -35,7 +35,7 @@
 
         <version.liquibase>4.16.1</version.liquibase>
         <version.assertj-core>3.16.1</version.assertj-core>
-        <version.swagger>1.6.2</version.swagger>
+        <version.swagger>2.2.36</version.swagger>
         <version.hamcrest>1.3</version.hamcrest>
     </properties>
 

@@ -43,13 +43,13 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/properties")
-@Api(value = "/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/properties", description = "Resource relation properties")
+@Tag(name = "/resources/{resourceGroupName}/{releaseName}/relations/{relatedResourceGroupName}/{relatedReleaseName}/properties", description = "Resource relation properties")
 public class ResourceRelationPropertiesRest {
 
     @PathParam("resourceGroupName")
@@ -74,7 +74,7 @@ public class ResourceRelationPropertiesRest {
     ResourceRelationLocator resourceRelationLocator;
 
     @GET
-    @ApiOperation(value = "Get all properties of the relation between the two resource releases")
+    @Operation(summary = "Get all properties of the relation between the two resource releases")
     public Response getResourceRelationProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         List<ConsumedResourceRelationEntity> relations = resourceRelationLocator.getResourceRelationList(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
         if (relations.isEmpty()) {
@@ -103,9 +103,9 @@ public class ResourceRelationPropertiesRest {
      */
     @Path("/batch")
     @GET
-    @ApiOperation(value = "Get all batch properties")
+    @Operation(summary = "Get all batch properties")
     public List<BatchPropertyDTO> getResourceRelationBatchProperties(@DefaultValue("Global")
-                                                                     @ApiParam("the environment - if not set, this falls back to global") @QueryParam("env") String environment)
+                                                                     @Parameter(description = "the environment - if not set, this falls back to global") @QueryParam("env") String environment)
             throws ValidationException {
 
         List<ConsumedResourceRelationEntity> relations = resourceRelationLocator
@@ -144,9 +144,9 @@ public class ResourceRelationPropertiesRest {
      */
     @Path("/batch/{propertyName}")
     @GET
-    @ApiOperation(value = "Get a batchjob property")
+    @Operation(summary = "Get a batchjob property")
     public List<BatchPropertyDTO> getResourceRelationBatchProperty(@PathParam("propertyName") String propertyName,
-                                                                   @ApiParam("the environment - if not set, this falls back to global") @DefaultValue("Global") @QueryParam("env") String environment)
+                                                                   @Parameter(description = "the environment - if not set, this falls back to global") @DefaultValue("Global") @QueryParam("env") String environment)
             throws ValidationException {
 
         List<ConsumedResourceRelationEntity> relations = resourceRelationLocator
@@ -176,7 +176,7 @@ public class ResourceRelationPropertiesRest {
 
     @Path("/{propertyName}")
     @GET
-    @ApiOperation(value = "Get the given property of the relation between the two resource releases")
+    @Operation(summary = "Get the given property of the relation between the two resource releases")
     public Response getResourceRelationProperty(@PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         List<ConsumedResourceRelationEntity> relations = resourceRelationLocator.getResourceRelationList(resourceGroupName,
                 releaseName, relatedResourceGroupName, relatedReleaseName);
@@ -198,15 +198,15 @@ public class ResourceRelationPropertiesRest {
     @Path("/{propertyName}")
     @PUT
     @Consumes("text/plain")
-    @ApiOperation(value = "Set the value of the given property on the relation between the two resource releases")
-    public Response updateResourceRelationProperty(@ApiParam("the new value of the property") String value, @PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
+    @Operation(summary = "Set the value of the given property on the relation between the two resource releases")
+    public Response updateResourceRelationProperty(@Parameter(description = "the new value of the property") String value, @PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         propertyEditor.setPropertyValueOnResourceRelationForContext(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName, environment, propertyName, value);
         return Response.status(Response.Status.OK).build();
     }
 
     @Path("/{propertyName}")
     @DELETE
-    @ApiOperation(value = "Reset the value of the given property in the specified context to null")
+    @Operation(summary = "Reset the value of the given property in the specified context to null")
     public Response resetResourceRelationProperty(@PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         propertyEditor.resetPropertyValueOnResourceRelationForContext(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName, environment, propertyName);
         return Response.status(Response.Status.OK).build();

@@ -5,9 +5,9 @@ import ch.mobi.itc.mobiliar.rest.dtos.AppServerDTO;
 import ch.puzzle.itc.mobiliar.business.apps.boundary.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -25,7 +25,7 @@ import javax.inject.Inject;
 
 @RequestScoped
 @Path("/apps")
-@Api(value = "/apps", description = "Application servers and apps")
+@Tag(name = "/apps", description = "Application servers and apps")
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class AppsRest {
@@ -45,7 +45,7 @@ public class AppsRest {
 
 
     @GET
-    @ApiOperation(value = "Get applicationservers and apps", notes = "Returns all apps")
+    @Operation(summary = "Get applicationservers and apps", description = "Returns all apps")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getApps(@QueryParam("appServerName") String filter,
                             @NotNull @QueryParam("releaseId") Integer releaseId) throws NotFoundException {
@@ -63,7 +63,7 @@ public class AppsRest {
     }
 
     @POST
-    @ApiOperation(value = "Add a application")
+    @Operation(summary = "Add a application")
     public Response addApp(@NotNull @QueryParam("appName") String appName, @NotNull @QueryParam("releaseId") Integer releaseId) throws NotFoundException, IllegalArgumentException, IllegalStateException {
         AddAppCommand addAppCommand = new AddAppCommand(appName, releaseId);
         return Response.status(CREATED).entity(addAppUseCase.add(addAppCommand)).build();
@@ -71,7 +71,7 @@ public class AppsRest {
 
     @Path("/appServer")
     @POST
-    @ApiOperation(value = "Add a applicationserver")
+    @Operation(summary = "Add a applicationserver")
     public Response addAppServer(@NotNull @QueryParam("appServerName") String name, @NotNull @QueryParam("releaseId") Integer releaseId) throws NotFoundException, IllegalArgumentException, IllegalStateException {
         AppServerCommand appServerCommand = new AppServerCommand(name, releaseId);
         return Response.status(CREATED).entity(addAppServerUseCase.add(appServerCommand)).build();
@@ -80,8 +80,8 @@ public class AppsRest {
 
     @Path("/appWithServer")
     @POST
-    @ApiOperation(value = "Add a application with appServer")
-    public Response addAppWithAppServer(@NotNull @ApiParam() AppAppServerDTO app) throws NotFoundException, IllegalArgumentException, IllegalStateException {
+    @Operation(summary = "Add a application with appServer")
+    public Response addAppWithAppServer(@NotNull @Parameter() AppAppServerDTO app) throws NotFoundException, IllegalArgumentException, IllegalStateException {
         AddAppWithServerCommand addAppWithServerCommand =
                 new AddAppWithServerCommand(app.getAppName(), app.getAppReleaseId(), app.getAppServerId(), app.getAppServerReleaseId());
         return Response.status(CREATED).entity(addAppWithServerUseCase.add(addAppWithServerCommand)).build();

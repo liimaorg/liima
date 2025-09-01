@@ -4,9 +4,9 @@ import ch.mobi.itc.mobiliar.rest.dtos.AuditViewEntryDTO;
 import ch.puzzle.itc.mobiliar.business.auditview.boundary.AuditViewBoundary;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ import java.util.List;
 
 @Stateless
 @Path("/auditview")
-@Api(value = "/auditview", description = "Managing auditview")
+@Tag(name = "/auditview", description = "Managing auditview")
 public class AuditViewRest {
 
     @Inject
@@ -33,8 +33,8 @@ public class AuditViewRest {
 
     @GET
     @Path("/resource/{id : \\d+}")
-    @ApiOperation(value = "Get detail information of a Deployment - used by Angular")
-    public Response getAuditLog(@ApiParam("resource ID") @PathParam("id") Integer resourceId,
+    @Operation(summary = "Get detail information of a Deployment - used by Angular")
+    public Response getAuditLog(@Parameter(description = "resource ID") @PathParam("id") Integer resourceId,
                                 @QueryParam("contextId") Integer contextId) {
         List<AuditViewEntry> auditlogForResource = new ArrayList<>();
 //        List<ResourceEditProperty> propertiesForResourceIncludingDescriptors = propertyEditor.getPropertiesForResource(resourceId, contextId);
