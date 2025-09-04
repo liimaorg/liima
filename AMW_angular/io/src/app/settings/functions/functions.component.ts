@@ -77,7 +77,7 @@ export class FunctionsComponent implements OnDestroy {
       .addNewFunction(functionData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success('Function saved successfully.'),
+        next: () => this.toastService.success('Function saved successfully.'),
         error: (e) => this.error$.next(e),
         complete: () => this.functionsService.refreshData(),
       });
@@ -88,7 +88,7 @@ export class FunctionsComponent implements OnDestroy {
       .modifyFunction(functionData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success('Function saved successfully.'),
+        next: () => this.toastService.success('Function saved successfully.'),
         error: (e) => this.error$.next(e),
         complete: () => this.functionsService.refreshData(),
       });
@@ -107,7 +107,7 @@ export class FunctionsComponent implements OnDestroy {
       .deleteFunction(functionData.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (r) => this.toastService.success('Function deleted.'),
+        next: () => this.toastService.success('Function deleted.'),
         error: (e) => this.error$.next(e),
         complete: () => this.functionsService.refreshData(),
       });

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, forwardRef, ViewChild, Injector } from '@angular/core';
+import { Component, OnInit, Input, forwardRef, ViewChild, Injector, inject } from '@angular/core';
 import { NgbPopoverConfig, NgbPopover, NgbDateStruct, NgbDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, NgControl, FormsModule } from '@angular/forms';
 import { DatePipe, NgClass } from '@angular/common';
@@ -22,6 +22,9 @@ import { ButtonComponent } from '../button/button.component';
   imports: [FormsModule, NgClass, NgbPopover, IconComponent, NgbDatepicker, ButtonComponent],
 })
 export class DatePickerComponent implements ControlValueAccessor, OnInit {
+  private config = inject(NgbPopoverConfig);
+  private inj = inject(Injector);
+
   @Input()
   dateStringFormat = DATE_FORMAT;
   @Input()
@@ -40,16 +43,10 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
 
   ngControl: NgControl;
 
-  constructor(
-    private config: NgbPopoverConfig,
-    private inj: Injector,
-  ) {
-    config.autoClose = 'outside';
-    config.placement = 'auto';
-  }
-
   ngOnInit(): void {
     this.ngControl = this.inj.get(NgControl);
+    this.config.autoClose = 'outside';
+    this.config.placement = 'auto';
   }
 
   writeValue(newModel: DateModel) {
@@ -112,7 +109,7 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
     this.onChange(this.date);
   }
 
-  inputBlur($event) {
+  inputBlur() {
     this.onTouched();
   }
 

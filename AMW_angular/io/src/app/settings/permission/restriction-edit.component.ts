@@ -1,5 +1,14 @@
 import { NgClass } from '@angular/common';
-import { AfterViewChecked, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  inject,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import * as _ from 'lodash';
 import { Permission } from 'src/app/auth/permission';
@@ -10,13 +19,14 @@ import { ResourceType } from 'src/app/resources/models/resource-type';
 import { ButtonComponent } from 'src/app/shared/button/button.component';
 import { IconComponent } from 'src/app/shared/icon/icon.component';
 
-
 @Component({
   selector: 'app-restriction-edit',
   templateUrl: './restriction-edit.component.html',
   imports: [FormsModule, NgClass, IconComponent, ButtonComponent],
 })
 export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
+  private cdRef = inject(ChangeDetectorRef);
+
   actions: Action[] = ['ALL', 'CREATE', 'DELETE', 'READ', 'UPDATE'];
   resourceTypePermissions: ResourceTypeCategory[] = ['ANY', 'DEFAULT_ONLY', 'NON_DEFAULT_ONLY'];
   resourceGroup: Resource = {} as Resource;
@@ -34,8 +44,6 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
   similarRestrictions: Restriction[] = [];
 
   availableEnvironments: string[] = [];
-
-  constructor(private cdRef: ChangeDetectorRef) {}
 
   ngAfterViewChecked() {
     // explicit change detection to avoid "expression-has-changed-after-it-was-checked-error"

@@ -148,10 +148,6 @@ describe('DeploymentsComponent (with query params)', () => {
 
   it('should call the right service method on exportCSV ', () => {
     // given
-    const deploymentFilters: DeploymentFilterType[] = [
-      { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' },
-    ];
     const buffer = new ArrayBuffer(8);
     spyOn(deploymentService, 'getFilteredDeploymentsForCsvExport').and.returnValue(of(buffer));
 
@@ -177,10 +173,6 @@ describe('DeploymentsComponent (with illegal query params)', () => {
     activatedRouteStub.queryParams.next(navigationExtras.queryParams),
   );
 
-  const filter: string = JSON.stringify([
-    { name: 'Application', val: 'test' },
-    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' },
-  ]);
   let deploymentService: DeploymentService;
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -237,12 +229,7 @@ describe('DeploymentsComponent (without query params)', () => {
     activatedRouteStub.queryParams.next(navigationExtras.queryParams),
   );
 
-  const filter: string = JSON.stringify([
-    { name: 'Application', val: 'test' },
-    { name: 'Confirmed on', comp: 'lt', val: '12.12.2012 12:12' },
-  ]);
   let deploymentService: DeploymentService;
-  let resourceService: ResourceService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -254,7 +241,6 @@ describe('DeploymentsComponent (without query params)', () => {
       ],
       providers: [
         DeploymentService,
-        ResourceService,
         { provide: Router, useValue: routerStub },
         { provide: ActivatedRoute, useValue: activatedRouteStub },
         provideHttpClient(withInterceptorsFromDi()),
@@ -265,7 +251,6 @@ describe('DeploymentsComponent (without query params)', () => {
     fixture = TestBed.createComponent(DeploymentsComponent);
     component = fixture.componentInstance;
     deploymentService = TestBed.inject(DeploymentService);
-    resourceService = TestBed.inject(ResourceService);
   });
 
   it('should check permission on ngOnInit', () => {

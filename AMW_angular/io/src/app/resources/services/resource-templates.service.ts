@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ResourceTemplate } from '../models/resource-template';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
@@ -8,6 +8,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { RevisionInformation } from '../../shared/model/revisionInformation';
 @Injectable({ providedIn: 'root' })
 export class ResourceTemplatesService extends BaseService {
+  private http = inject(HttpClient);
+
   private templates$: Subject<number> = new Subject<number>();
   private templatesForType$: Subject<number> = new Subject<number>();
 
@@ -24,10 +26,6 @@ export class ResourceTemplatesService extends BaseService {
   resourceTemplates = toSignal(this.templateById$, { initialValue: [] });
 
   resourceTypeTemplates = toSignal(this.templateByTypeId$, { initialValue: [] });
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   setIdForResourceTemplateList(id: number) {
     this.templates$.next(id);

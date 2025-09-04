@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ResourceFunction } from '../models/resource-function';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
@@ -10,6 +10,8 @@ import { RevisionInformation } from '../../shared/model/revisionInformation';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceFunctionsService extends BaseService {
+  private http = inject(HttpClient);
+
   private path = `${this.getBaseUrl()}/resources`;
   private functions$: Subject<number> = new Subject<number>();
   private functionsForType$: Subject<number> = new Subject<number>();
@@ -26,10 +28,6 @@ export class ResourceFunctionsService extends BaseService {
 
   functions = toSignal(this.functionById$, { initialValue: [] });
   functionsForType = toSignal(this.functionByTypeId$, { initialValue: [] });
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   setIdForResourceFunctionList(id: number) {
     this.functions$.next(id);

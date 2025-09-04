@@ -44,7 +44,7 @@ export class EnvironmentEditComponent {
   }
 
   save() {
-    let forms: NodeListOf<Element> = document.querySelectorAll('.needs-validation');
+    const forms: NodeListOf<Element> = document.querySelectorAll('.needs-validation');
     if (this.isValidForm()) {
       this.saveEnvironment.emit(this.environment);
       this.activeModal.close();

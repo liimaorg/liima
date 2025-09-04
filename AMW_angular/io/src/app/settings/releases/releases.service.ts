@@ -1,4 +1,4 @@
-import { Injectable, Signal } from '@angular/core';
+import { Injectable, Signal, inject } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
@@ -9,6 +9,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class ReleasesService extends BaseService {
+  private http = inject(HttpClient);
+
   private allReleases$ = this.getAllReleases();
   allReleases = toSignal(this.allReleases$, { initialValue: [] as Release[] });
 
@@ -28,10 +30,6 @@ export class ReleasesService extends BaseService {
   );
 
   releases: Signal<Release[]> = toSignal(this.releases$, { initialValue: [] as Release[] });
-
-  constructor(private http: HttpClient) {
-    super();
-  }
 
   getCount(): Observable<number> {
     return this.http.get<number>(`${this.getBaseUrl()}/releases/count`).pipe(catchError(this.handleError));

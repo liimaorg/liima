@@ -1,15 +1,50 @@
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ReleaseDeleteComponent } from './release-delete.component';
 
 describe('ReleaseDeleteComponent', () => {
+  let fixture: ComponentFixture<ReleaseDeleteComponent>;
   let component: ReleaseDeleteComponent;
-  const activeModal = new NgbActiveModal();
+  let activeModal: NgbActiveModal;
 
   beforeEach(async () => {
-    component = new ReleaseDeleteComponent(activeModal);
+    await TestBed.configureTestingModule({
+      imports: [ReleaseDeleteComponent],
+      providers: [NgbActiveModal],
+    }).compileComponents();
+    fixture = TestBed.createComponent(ReleaseDeleteComponent);
+    component = fixture.componentInstance;
+    activeModal = TestBed.inject(NgbActiveModal);
+    component.resources = new Map();
+    component.release = { id: null } as any;
+    fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('creates component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('sets hasResources true when resources provided on init', () => {
+    component.resources = new Map([['k', [{ id: 1 } as any]]]);
+    component.ngOnInit();
+    expect(component.hasResources).toBeTrue();
+  });
+
+  it('getTitle returns Remove release', () => {
+    expect(component.getTitle()).toBe('Remove release');
+  });
+
+  it('cancel closes modal', () => {
+    spyOn(activeModal, 'close');
+    component.cancel();
+    expect(activeModal.close).toHaveBeenCalled();
+  });
+
+  it('delete emits deleteRelease and closes', () => {
+    spyOn(component.deleteRelease, 'emit');
+    spyOn(activeModal, 'close');
+    component.delete();
+    expect(component.deleteRelease.emit).toHaveBeenCalledWith(component.release);
+    expect(activeModal.close).toHaveBeenCalled();
   });
 });

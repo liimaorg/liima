@@ -18,8 +18,6 @@ export class NotificationComponent {
 
   @Input()
   messageType: MessageType;
-
-  constructor() {}
 }
 
 export type MessageType = 'success' | 'warning';

@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ResourceService } from '../resources/services/resource.service';
@@ -43,6 +43,13 @@ import { switchMap } from 'rxjs/operators';
   ],
 })
 export class DeploymentComponent implements OnInit, AfterViewInit {
+  private resourceService = inject(ResourceService);
+  private environmentService = inject(EnvironmentService);
+  private deploymentService = inject(DeploymentService);
+  private activatedRoute = inject(ActivatedRoute);
+  private location = inject(Location);
+  private resourceTypesService = inject(ResourceTypesService);
+
   // from url
   appserverName: string = '';
   releaseName: string = '';
@@ -88,15 +95,6 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   isDeploymentBlocked: boolean = false;
 
   appServerResourceType$ = this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER');
-
-  constructor(
-    private resourceService: ResourceService,
-    private environmentService: EnvironmentService,
-    private deploymentService: DeploymentService,
-    private activatedRoute: ActivatedRoute,
-    private location: Location,
-    private resourceTypesService: ResourceTypesService,
-  ) {}
 
   appservers = toSignal(
     this.appServerResourceType$.pipe(

@@ -11,7 +11,7 @@ import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.com
 import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
 import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
 import { RevisionCompareComponent } from '../../shared/revision-compare/revision-compare.component';
-import { FullscreenToggleComponent } from "../../shared/fullscreen-toggle/fullscreen-toggle.component";
+import { FullscreenToggleComponent } from '../../shared/fullscreen-toggle/fullscreen-toggle.component';
 
 @Component({
   selector: 'app-function-edit',
@@ -25,10 +25,12 @@ import { FullscreenToggleComponent } from "../../shared/fullscreen-toggle/fullsc
     ModalHeaderComponent,
     ButtonComponent,
     RevisionCompareComponent,
-    FullscreenToggleComponent
-],
+    FullscreenToggleComponent,
+  ],
 })
 export class FunctionEditComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() function: AppFunction;
   @Input() canManage: boolean;
   @Output() saveFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();
@@ -42,8 +44,6 @@ export class FunctionEditComponent implements OnInit {
     original: '',
     modified: '',
   };
-
-  constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     if (this.function && this.function.id) {

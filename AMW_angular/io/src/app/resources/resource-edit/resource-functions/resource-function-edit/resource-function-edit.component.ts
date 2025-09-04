@@ -1,4 +1,3 @@
-
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
@@ -29,10 +28,12 @@ import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revisi
     ModalHeaderComponent,
     IconComponent,
     RevisionCompareComponent,
-    FullscreenToggleComponent
-],
+    FullscreenToggleComponent,
+  ],
 })
 export class ResourceFunctionEditComponent implements OnInit {
+  activeModal = inject(NgbActiveModal);
+
   @Input() function: ResourceFunction;
   @Input() canEdit: boolean;
   @Input() isOverwrite: boolean;
@@ -48,8 +49,6 @@ export class ResourceFunctionEditComponent implements OnInit {
     original: '',
     modified: '',
   };
-
-  constructor(public activeModal: NgbActiveModal) {}
 
   ngOnInit(): void {
     if (this.function && this.function.id) {

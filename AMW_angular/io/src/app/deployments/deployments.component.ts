@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import * as _ from 'lodash';
@@ -23,8 +23,6 @@ import { PageComponent } from '../layout/page/page.component';
 import { ToastService } from '../shared/elements/toast/toast.service';
 import { ButtonComponent } from '../shared/button/button.component';
 
-declare let $: any;
-
 @Component({
   selector: 'app-deployments',
   templateUrl: './deployments.component.html',
@@ -41,6 +39,12 @@ declare let $: any;
   ],
 })
 export class DeploymentsComponent implements OnInit {
+  private activatedRoute = inject(ActivatedRoute);
+  private location = inject(Location);
+  private deploymentService = inject(DeploymentService);
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
+
   defaultComparator = 'eq';
 
   // initially by queryParam
@@ -100,20 +104,12 @@ export class DeploymentsComponent implements OnInit {
   @ViewChild('selectModel', { static: true })
   selectModel: NgModel;
 
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private location: Location,
-    private deploymentService: DeploymentService,
-    private modalService: NgbModal,
-    private toastService: ToastService,
-  ) {}
-
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: Params) => {
       if (param.filters) {
         try {
           this.paramFilters = JSON.parse(param.filters);
-        } catch (e) {
+        } catch {
           this.errorMessage = 'Error parsing filter';
           this.autoload = false;
         }

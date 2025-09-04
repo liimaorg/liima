@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, QueryList, SimpleChanges, ViewChildren } from '@angular/core';
+import { Component, Input, OnChanges, QueryList, SimpleChanges, ViewChildren, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewTableService } from './auditview-table.service';
@@ -18,13 +18,10 @@ import { FormsModule } from '@angular/forms';
 export class AuditviewTableComponent implements OnChanges {
   @Input() auditlogEntries;
 
-  auditlogEntries$: Observable<AuditLogEntry[]>;
+  service = inject(AuditviewTableService);
+  auditlogEntries$: Observable<AuditLogEntry[]> = this.service.result$;
   @ViewChildren(SortableHeader) headers: QueryList<SortableHeader>;
   dateFormat = DATE_TIME_FORMAT;
-
-  constructor(public service: AuditviewTableService) {
-    this.auditlogEntries$ = service.result$;
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.auditlogEntries) {

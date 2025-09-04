@@ -1,5 +1,5 @@
 import { Location, AsyncPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
@@ -30,13 +30,11 @@ function failed(): Observable<Failed> {
   imports: [FormsModule, AsyncPipe, PageComponent, DeploymentLogContentComponent, DeploymentLogFileSelectorComponent],
 })
 export class DeploymentLogsComponent implements OnInit, OnDestroy {
-  constructor(
-    private deploymentService: DeploymentService,
-    private deploymentLogsService: DeploymentLogsService,
-    private route: ActivatedRoute,
-    private location: Location,
-    private toastService: ToastService,
-  ) {}
+  private deploymentService = inject(DeploymentService);
+  private deploymentLogsService = inject(DeploymentLogsService);
+  private route = inject(ActivatedRoute);
+  private location = inject(Location);
+  private toastService = inject(ToastService);
 
   /**
    * the deployment id taken from the route param

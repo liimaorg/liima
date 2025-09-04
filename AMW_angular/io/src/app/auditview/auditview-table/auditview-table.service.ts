@@ -1,16 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, map, tap } from 'rxjs/operators';
 import { DatePipe } from '@angular/common';
 import { AuditLogEntry } from '../auditview-entry';
 import { SortDirection } from './sortable.directive';
 import { DATE_TIME_FORMAT } from '../../core/amw-constants';
-
-interface State {
-  searchTerm: string;
-  sortColumn: string;
-  sortDirection: SortDirection;
-}
 
 function sort(entries: AuditLogEntry[], column: string, direction: string): AuditLogEntry[] {
   if (direction === '') {
@@ -50,9 +44,9 @@ function compare(v1, v2) {
   providedIn: 'root',
 })
 export class AuditviewTableService {
-  private _loading$ = new BehaviorSubject<boolean>(true);
+  private pipe = inject(DatePipe);
 
-  private _result$: Observable<AuditLogEntry[]>;
+  private _loading$ = new BehaviorSubject<boolean>(true);
 
   private searchTerm$ = new BehaviorSubject<string>('');
   private sortColumn$ = new BehaviorSubject<string>('timestamp');
@@ -61,16 +55,14 @@ export class AuditviewTableService {
 
   private _search$ = combineLatest([this.searchTerm$, this.sortColumn$, this.sortDirection$, this.auditlogEntries$]);
 
-  constructor(private pipe: DatePipe) {
-    this._result$ = this._search$.pipe(
-      tap(() => this._loading$.next(true)),
-      debounceTime(200),
-      map(([searchTerm, sortColumn, sortDirection, auditlogEntries]) => {
-        return this._search(searchTerm, sortColumn, sortDirection, auditlogEntries);
-      }),
-      tap(() => this._loading$.next(false)),
-    );
-  }
+  private _result$ = this._search$.pipe(
+    tap(() => this._loading$.next(true)),
+    debounceTime(200),
+    map(([searchTerm, sortColumn, sortDirection, auditlogEntries]) =>
+      this._search(searchTerm, sortColumn, sortDirection, auditlogEntries),
+    ),
+    tap(() => this._loading$.next(false)),
+  );
 
   get result$() {
     return this._result$;
