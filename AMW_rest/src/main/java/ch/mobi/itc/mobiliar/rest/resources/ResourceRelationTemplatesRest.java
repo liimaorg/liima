@@ -28,6 +28,8 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -66,6 +68,7 @@ public class ResourceRelationTemplatesRest {
     ResourceTemplatesRest resourceTemplatesRest;
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get one or all templates for a resource in a specific release")
     public List<TemplateDTO> getResourceRelationTemplates(@PathParam("resourceGroupName") String resourceGroupName,
             @PathParam("releaseName") String releaseName,
@@ -84,6 +87,7 @@ public class ResourceRelationTemplatesRest {
 
     @GET
     @Path("/{templateName}")
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get one or all templates for a resource in a specific release")
     public TemplateDTO getResourceRelationTemplate(@PathParam("resourceGroupName") String resourceGroupName,
             @PathParam("releaseName") String releaseName,

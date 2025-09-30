@@ -46,7 +46,7 @@ public class AppsRest {
 
     @GET
     @Operation(summary = "Get applicationservers and apps", description = "Returns all apps")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     public Response getApps(@QueryParam("appServerName") String filter,
                             @NotNull @QueryParam("releaseId") Integer releaseId) throws NotFoundException {
         List<ResourceWithRelations> result = listAppsUseCase.appsFor(filter, releaseId);

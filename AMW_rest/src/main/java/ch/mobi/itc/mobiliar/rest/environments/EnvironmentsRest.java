@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @RequestScoped
@@ -34,6 +35,7 @@ public class EnvironmentsRest {
     EnvironmentsScreenDomainService environmentsScreenDomainService;
 
     @GET
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Get environments", description = "Returns the available environments")
     public List<EnvironmentDTO> getEnvironments(@Parameter(description = "Also returns Environment groups if set to true") @QueryParam("includingGroups") boolean includingGroups) {
 
@@ -53,6 +55,7 @@ public class EnvironmentsRest {
 
     @GET
     @Path("/contexts")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Get all contexts", description = "Returns all contexts as environments")
     public List<EnvironmentDTO> getContexts() {
         return contextLocator.getAllEnvironments().stream().map(EnvironmentDTO::new).collect(Collectors.toList());
@@ -60,6 +63,7 @@ public class EnvironmentsRest {
 
     @POST
     @Path("/contexts")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Add new context")
     public Response addContext(@Parameter() EnvironmentDTO request) throws ElementAlreadyExistsException, ResourceNotFoundException, ValidationException {
         if(request.getName() == null || request.getName().trim().isEmpty()) throw new ValidationException("Context name must not be null or blank");
@@ -69,6 +73,7 @@ public class EnvironmentsRest {
 
     @PUT
     @Path("/contexts/{id : \\d+}")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Update existing context")
     public Response updateContext(@Parameter(description = "Environment ID") @PathParam("id") Integer id, EnvironmentDTO request) throws ResourceNotFoundException {
         environmentsScreenDomainService.saveEnvironment(id, request.getName(), request.getNameAlias());
@@ -77,6 +82,7 @@ public class EnvironmentsRest {
 
     @DELETE
     @Path("contexts/{id : \\d+}")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Remove a context")
     public Response deleteContext(@PathParam("id") Integer id) throws AMWException {
         contextLocator.deleteContext(id);

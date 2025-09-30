@@ -61,7 +61,6 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.ValidationException;
@@ -71,6 +70,7 @@ import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.CREATED;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
@@ -109,6 +109,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filter")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "returns all Deployments matching the list of json filters - used by Angular")
     public Response getDeployments(@Parameter(description = "Filters") @QueryParam("filters") String jsonListOfFilters,
                                    @QueryParam("colToSort") String colToSort,
@@ -228,6 +229,7 @@ public class DeploymentsRest {
      **/
     @Deprecated
     @GET
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
             @Parameter(description = "Tracking ID") @QueryParam("trackingId") Integer trackingId,
@@ -312,6 +314,7 @@ public class DeploymentsRest {
      **/
     @GET
     @Path("/{id : \\d+}")
+    @Produces(APPLICATION_JSON)
     // support digit only
     @Operation(summary = "get Deployment by id")
     public Response getDeployment(@Parameter(description = "Deployment ID") @PathParam("id") Integer id) {
@@ -329,6 +332,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/deploymentParameterKeyNames")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "returns the keys of all available DeploymentParameter")
     public Response getAllDeploymentParameterKeyNames() {
         List<DeploymentParameterDTO> deploymentParameters = new ArrayList<>();
@@ -340,6 +344,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/deploymentParameterKeys")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "returns the keys of all available DeploymentParameter")
     public Response getAllDeploymentParameterKeys() {
         return Response.status(Status.OK).entity(deploymentParameterBoundary.findAllKeys()).build();
@@ -348,7 +353,8 @@ public class DeploymentsRest {
     @POST
     @Path("/deploymentParameterKeys")
     @Operation(summary = "Adds one parameter key")
-    @Produces({APPLICATION_JSON})
+    @Consumes({TEXT_PLAIN})
+    @Produces(APPLICATION_JSON)
     public Response addOneParameterKey(String keyName) throws ch.puzzle.itc.mobiliar.common.exception.ValidationException {
         Key createdKey = deploymentParameterBoundary.createDeployParameterKey(keyName);
         return Response
@@ -360,6 +366,7 @@ public class DeploymentsRest {
 
     @DELETE
     @Path("/deploymentParameterKeys/{id : \\d+}")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Deletes one parameter key")
     public Response deleteOneKey(@Parameter(description = "Key ID") @PathParam("id") Integer id) throws NotFoundException {
         deploymentParameterBoundary.deleteDeployParameterKey(id);
@@ -368,6 +375,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/deploymentFilterTypes")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Returns all available DeploymentFilterTypes - used by Angular")
     public Response getAllDeploymentFilterTypes() {
         List<DeploymentFilterTypeDTO> deploymentFilterTypes = new ArrayList<>();
@@ -379,6 +387,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/comparatorFilterOptions")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Returns all available ComparatorFilterOptions - used by Angular")
     public Response getAllComparatorFilterOptions() {
         List<ComparatorFilterOptionDTO> comparatorFilterOptions = new ArrayList<>();
@@ -390,6 +399,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filterOptionValues")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Returns all available option values for a specific Filter - used by Angular")
     public Response getFilterOptionValues(@Parameter(description = "Filter name") @QueryParam("filterName") String filterName) {
         return Response.status(Status.OK).entity(deploymentBoundary.getFilterOptionValues(filterName)).build();
@@ -402,6 +412,8 @@ public class DeploymentsRest {
      * @return the new DeploymentDTO
      **/
     @POST
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "adds a DeploymentRequest")
     public Response addDeployment(@Parameter(description = "Deployment Request") DeploymentRequestDTO request) {
         Integer trackingId;
@@ -527,7 +539,8 @@ public class DeploymentsRest {
 
     @PUT
     @Path("/{id : \\d+}/state")
-    @Consumes("text/plain")
+    @Consumes(TEXT_PLAIN)
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Update the state of a deployment")
     public Response patchDeployment(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId, @Parameter(description = "New status") String stateStr) {
         DeploymentState newState = DeploymentState.getByString(stateStr);
@@ -548,7 +561,8 @@ public class DeploymentsRest {
 
     @PUT
     @Path("/{id : \\d+}/confirm")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Confirm a deployment")
     public Response confirmDeployment(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId,
                                       @Parameter(description = "New status") DeploymentDTO deploymentDTO) {
@@ -566,7 +580,8 @@ public class DeploymentsRest {
 
     @PUT
     @Path("/{id: \\d+}/jobs/{nodeJobId: \\d+}")
-    @Consumes("text/plain")
+    @Consumes(TEXT_PLAIN)
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Set the nodeJobResult for the given Deployment (id) and the nodeJob.")
     public Response updateNodeJobResult(
             @Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId,
@@ -592,6 +607,7 @@ public class DeploymentsRest {
 
     @PUT
     @Path("/{id : \\d+}/date")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Update the DeploymentDate of a Deployment - used by Angular")
     public Response changeDeploymentDate(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId, @Parameter(description = "New date") long date) {
         Date newDate = new Date(date);
@@ -606,7 +622,8 @@ public class DeploymentsRest {
 
     @PUT
     @Path("/{id : \\d+}/updateState")
-    @Consumes("text/plain")
+    @Consumes(TEXT_PLAIN)
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Update state of a deployment - used by Angular")
     public Response updateState(@Parameter(description = "deployment Id") @PathParam("id") Integer deploymentId,
                                 @Parameter(description = "state as string") String statusStr) {
@@ -637,6 +654,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/{id : \\d+}/withActions")
+    @Produces(APPLICATION_JSON)
     // support digit only
     @Operation(summary = "Get a Deployment including actions by id - used by Angular")
     public Response getDeploymentWithActions(@Parameter(description = "Deployment ID") @PathParam("id") Integer id) {
@@ -653,6 +671,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canDeploy/{resourceGroupId}")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Checks if caller is allowed to deploy a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canDeploy(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
@@ -674,6 +693,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canRequestDeployment/{resourceGroupId}")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Checks if caller is allowed to request a deployment a given ResourceGroup on the specified Environment(s) - used by Angular")
     public Response canRequestDeployment(@PathParam("resourceGroupId") Integer resourceGroupId,
                               @QueryParam("contextId") Set<Integer> contextIds) {
@@ -694,6 +714,7 @@ public class DeploymentsRest {
 
     @GET
     @Path("/canRequestDeployment/")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Checks if the caller is allowed to request a deployment at all - used by Angular")
     public Response canRequestDeployment() {
 

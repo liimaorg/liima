@@ -36,24 +36,10 @@ public class GenerationUnitGenerationResult {
 	private List<GeneratedTemplate> generatedTemplates = new ArrayList<GeneratedTemplate>();
 
 	@Getter
-	private List<TemplatePropertyException> errorMessages = new ArrayList<TemplatePropertyException>();
-
-	@Getter
 	@Setter
 	private GenerationUnitPreprocessResult generationUnitPreprocessResult;
 	
-	/**
-	 * adds an general Unit Exception
-	 * @param e
-	 */
-	public void addErrorMessage(TemplatePropertyException e){
-		errorMessages.add(e);
-	}
-	
 	public boolean isSuccess() {
-		if(errorMessages != null && !errorMessages.isEmpty()){
-			return false;
-		}
 		return !hasErrorsInGeneratedTemplates() && !hasErrorsInPreprocessing();
 	}
 
@@ -78,12 +64,6 @@ public class GenerationUnitGenerationResult {
 		if(!isSuccess()){
 			if(hasErrorsInPreprocessing()){
 				sb.append(generationUnitPreprocessResult.getErrorMessageAsString());
-			}
-			if(errorMessages != null && !errorMessages.isEmpty()){
-				sb.append("General Unit Template Errors\n");
-				for (TemplatePropertyException e : errorMessages) {
-					sb.append(e.getMessage()+ "\n");
-				}
 			}
 			if(generatedTemplates != null && !generatedTemplates.isEmpty()){
 				if(hasErrorsInGeneratedTemplates()){

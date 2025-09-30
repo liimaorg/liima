@@ -1,24 +1,29 @@
 package ch.mobi.itc.mobiliar.rest.auditview;
 
-import ch.mobi.itc.mobiliar.rest.dtos.AuditViewEntryDTO;
-import ch.puzzle.itc.mobiliar.business.auditview.boundary.AuditViewBoundary;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
-import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+
+import ch.mobi.itc.mobiliar.rest.dtos.AuditViewEntryDTO;
+import ch.puzzle.itc.mobiliar.business.auditview.boundary.AuditViewBoundary;
+import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
+import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 @Stateless
 @Path("/auditview")
@@ -33,19 +38,12 @@ public class AuditViewRest {
 
     @GET
     @Path("/resource/{id : \\d+}")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Get detail information of a Deployment - used by Angular")
     public Response getAuditLog(@Parameter(description = "resource ID") @PathParam("id") Integer resourceId,
                                 @QueryParam("contextId") Integer contextId) {
         List<AuditViewEntry> auditlogForResource = new ArrayList<>();
-//        List<ResourceEditProperty> propertiesForResourceIncludingDescriptors = propertyEditor.getPropertiesForResource(resourceId, contextId);
-//        List<ResourceEditProperty> propertyDescriptors = filterPropertyDescriptors(propertiesForResourceIncludingDescriptors);
-//        List<ResourceEditProperty> propertiesForResource = removePropertyDescriptors(propertiesForResourceIncludingDescriptors, propertyDescriptors);
-
-//        auditlogForResource.addAll(auditViewBoundary.getAuditlogForProperties(propertiesForResource));
-//        auditlogForResource.addAll(auditViewBoundary.getAuditlogForPropertyDescriptors(propertyDescriptors));
-
         auditlogForResource.addAll(auditViewBoundary.getAuditlogForResource(resourceId));
-
         List<AuditViewEntryDTO> dtos = createDtosAndSortByTimestamp(auditlogForResource);
         return Response.status(Response.Status.OK).entity(dtos).build();
     }

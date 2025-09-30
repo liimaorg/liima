@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.*;
 
@@ -72,6 +73,7 @@ public class ResourceRelationsRest {
     ResourceRelationTemplatesRest resourceRelationTemplatesRest;
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all relations of a resource in a specific release, optionally filtered by a slave resource type")
     public List<ResourceRelationDTO> getResourceRelations(@Parameter(description = "A String representing the type of the slave Resource")
                                                           @QueryParam("type") String resourceType) throws ValidationException, ResourceNotFoundException {
@@ -109,6 +111,7 @@ public class ResourceRelationsRest {
 
     @Path("/{relatedResourceGroupName}")
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all related releases of the given resource")
     public List<ResourceRelationDTO> getRelatedResourcesForGroup(
             @PathParam("relatedResourceGroupName") String relatedResourceGroupName) throws ValidationException, ResourceNotFoundException {
@@ -128,6 +131,7 @@ public class ResourceRelationsRest {
     // List of ResourceRelationDTO
     @Path("/{relatedResourceGroupName}/{relatedReleaseName}")
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get the list of relations between the two resource releases")
     public List<ResourceRelationDTO> getResourceRelation(@PathParam("relatedResourceGroupName") String relatedResourceGroupName,
                                                          @PathParam("relatedReleaseName") String relatedReleaseName) throws ValidationException, ResourceNotFoundException {
@@ -151,6 +155,7 @@ public class ResourceRelationsRest {
      */
     @Path("/{slaveResourceGroupName}")
     @POST
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add a consumed or provided Relation")
     public Response addRelation(@PathParam("slaveResourceGroupName") String slaveGroupName,
                                 @Parameter(description = "A String representing the type of the Relation", required = true)
@@ -178,6 +183,7 @@ public class ResourceRelationsRest {
      */
     @Path("/{relationName}")
     @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Remove a consumed or provided Relation from a specific Release", description = "RelationName may be the identifier of a Relation or the name of the related Resource")
     public Response removeRelation(@PathParam("relationName") String relationName,
                                    @Parameter(description = "A String representing the type of the Relation", required = true)

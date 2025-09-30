@@ -20,6 +20,8 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +34,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -46,6 +47,9 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RequestScoped
 @Path("/resources/{resourceGroupName}/{releaseName}/properties")
@@ -68,6 +72,7 @@ public class ResourcePropertiesRest {
     ContextLocator contextLocator;
 
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all properties for a resource in a specific release")
     public Response getResourceProperties(@DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         List<PropertyDTO> resourceProperties = getResourceProperties(resourceGroupName, releaseName, environment);
@@ -93,6 +98,7 @@ public class ResourcePropertiesRest {
 
     @Path("/{propertyName}")
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get the property including its value for a resource in a specific release")
     public Response getResourcePropertyValueForEnvironment(@PathParam("propertyName") String propertyName, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
@@ -111,7 +117,8 @@ public class ResourcePropertiesRest {
 
     @Path("/{propertyName}")
     @PUT
-    @Consumes("text/plain")
+    @Consumes(TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Set the value of an existing property on a resource in a specific release")
     public Response updateResourceProperty(@Parameter(description = "the new value of the property") String value, @PathParam("propertyName") String propertyName,  @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
         propertyEditor.setPropertyValueOnResourceForContext(resourceGroupName, releaseName, environment, propertyName, value);
@@ -120,6 +127,7 @@ public class ResourcePropertiesRest {
 
     @Path("/{propertyName}")
     @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Reset the value of the given property in the specified context to null")
     public Response resetResourceProperty(@PathParam("propertyName") String propertyName,  @DefaultValue("Global")  @QueryParam("env")  String environment) throws ValidationException {
         propertyEditor.resetPropertyValueOnResourceForContext(resourceGroupName, releaseName, environment, propertyName);

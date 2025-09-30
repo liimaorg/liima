@@ -25,7 +25,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 @Path("/settings/tags")
 @Tag(name = "/settings/tags")
 @Consumes(APPLICATION_JSON)
-@Produces({APPLICATION_JSON})
+@Produces(APPLICATION_JSON)
 public class TagsRest {
 
     @Inject

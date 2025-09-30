@@ -115,7 +115,7 @@ public class ResourceTypesRest {
     @Path("/")
     @POST
     @Operation(summary = "Add a new resource type")
-    @Consumes("application/json")
+    @Consumes(APPLICATION_JSON)
     public Response addNewResourceType(ResourceTypeRequestDTO request)
             throws ElementAlreadyExistsException, ValidationException, NotFoundException {
 

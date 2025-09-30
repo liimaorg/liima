@@ -15,8 +15,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.io.IOException;
 
 @Stateless
@@ -33,7 +35,7 @@ public class DeploymentsLogRest {
     @GET
     @Path("/{id : \\d+}/logs/{fileName}")
     @Operation(summary = "get the log file content as plain text for a given deployment and file name")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     public Response getDeploymentLogFileContent(@Parameter(description = "Deployment ID") @PathParam("id") Integer id,
                                                 @PathParam("fileName") String filename) throws ValidationException, IOException {
 
@@ -44,7 +46,7 @@ public class DeploymentsLogRest {
     @GET
     @Path("/{deploymentId : \\d+}/logs")
     @Operation(summary = "Get the list of available log file names for a given deployment id.")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     public Response getDeploymentLogs(
             @PathParam("deploymentId") Long deploymentId) throws ValidationException, NotFoundException {
 
