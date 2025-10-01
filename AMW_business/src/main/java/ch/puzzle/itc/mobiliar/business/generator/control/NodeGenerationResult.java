@@ -119,7 +119,6 @@ public class NodeGenerationResult {
 		StringBuilder sb = new StringBuilder();
 		if(hasErrors()){
 			sb.append("Error on Node: " + node.getName() + "\n");
-
 			for (TemplatePropertyException e : propertyValidationExceptions) {
 				sb.append(e.getMessage() + "\n");
 			}

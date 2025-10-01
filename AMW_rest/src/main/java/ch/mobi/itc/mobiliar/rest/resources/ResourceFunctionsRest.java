@@ -83,6 +83,7 @@ public class ResourceFunctionsRest {
 
     @GET
     @Path("functions/{id}/revisions")
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all revisions of a specific resource function")
     public Response getFunctionRevisions(@PathParam("id") int id) throws NotFoundException {
         List<RevisionInformation> revisions = listRevisions.getRevisions(id);
@@ -94,6 +95,7 @@ public class ResourceFunctionsRest {
 
     @GET
     @Path("functions/{id}/revisions/{revisionId}")
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get a specific revision of a resource function")
     public Response getFunctionByIdAndRevision(@PathParam("id") int id, @PathParam("revisionId") int revisionId)
             throws NotFoundException {
@@ -103,6 +105,7 @@ public class ResourceFunctionsRest {
 
     @POST
     @Path("/resource/{id : \\d+}/functions")
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add new resource function")
     public Response addNewResourceFunction(@Parameter(description = "Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws ValidationException, NotFoundException {
@@ -113,6 +116,7 @@ public class ResourceFunctionsRest {
 
     @POST
     @Path("/resourceType/{id : \\d+}/functions")
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Add new resourceType function")
     public Response addNewResourceTypeFunction(@Parameter(description = "Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws ValidationException, NotFoundException {
@@ -124,6 +128,8 @@ public class ResourceFunctionsRest {
 
     @PUT
     @Path("functions/{id : \\d+}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Modify existing function")
     public Response modifyFunction(@Parameter(description = "Function ID") @PathParam("id") Integer id, String content) throws ValidationException, NotFoundException {
         UpdateFunctionCommand functionCommand =
@@ -134,6 +140,8 @@ public class ResourceFunctionsRest {
 
     @PUT
     @Path("/resource/{id : \\d+}/functions/overwrite")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Overwrite resource function")
     public Response overwriteResourceFunction(@Parameter(description = "Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws AMWException {
@@ -146,6 +154,8 @@ public class ResourceFunctionsRest {
 
     @PUT
     @Path("/resourceType/{id : \\d+}/functions/overwrite")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Overwrite resourceType function")
     public Response overwriteResourceTypeFunction(@Parameter(description = "Resource ID") @PathParam("id") Integer id, FunctionDTO request)
             throws ValidationException, NotFoundException {
@@ -157,6 +167,7 @@ public class ResourceFunctionsRest {
 
     @DELETE
     @Path("functions/{id : \\d+}")
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Remove a function")
     public Response deleteFunction(@PathParam("id") Integer id) throws AMWException {
         deleteFunctionUseCase.deleteFunction(id);

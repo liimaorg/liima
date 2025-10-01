@@ -25,6 +25,7 @@ import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
 
 import java.util.Set;
 
@@ -40,7 +41,8 @@ public class OpenApiEndpoint extends OpenApiResource {
                         "Liima allows you to manage the configurations of your Java EE applications on an unlimited" +
                         "number of different environments with various versions, including the automated deployment of those apps.")
                 .license(new License().name("GNU Affero General Public License")
-                        .url("https://www.gnu.org/licenses/agpl-3.0.en.html")));
+                .url("https://www.gnu.org/licenses/agpl-3.0.en.html")))
+                .addServersItem(new Server().url("/AMW_rest").description("AMW REST API"));
 
         setOpenApiConfiguration(new SwaggerConfiguration()
                 .openAPI(openAPI)

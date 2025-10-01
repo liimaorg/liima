@@ -14,7 +14,9 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.GeneratorException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 import org.junit.Before;
@@ -30,6 +32,9 @@ import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class TestGenerationRestTest {
@@ -196,7 +201,7 @@ public class TestGenerationRestTest {
 
 
     @Test
-    public void shouldReturnInternalServerErrorStatusIfGenerationResultHasErrors() throws IOException, ValidationException, AMWException {
+    public void shouldReturnUnprocessableEntityStatusIfGenerationResultHasErrors() throws IOException, ValidationException, AMWException {
         // given => setup
         ReleaseEntity release = new ReleaseEntity();
         release.setName(releaseName);
@@ -205,20 +210,33 @@ public class TestGenerationRestTest {
         context.setName(env);
         context.setId(12);
 
+        // Mock the complex object hierarchy needed for EnvironmentGenerationResultDTO
+        GenerationContext generationContext = mock(GenerationContext.class);
+        ResourceEntity appServerForResult = mock(ResourceEntity.class);
+        ReleaseEntity releaseForResult = mock(ReleaseEntity.class);
+
         when(resourceEntity.getId()).thenReturn(13);
         when(resourceEntity.getResourceType()).thenReturn(resourceTypeEntity);
         when(resourceLocator.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(resourceEntity);
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
+        // Mock the EnvironmentGenerationResult and its nested objects
         when(environmentGenerationResult.hasErrors()).thenReturn(true);
         when(environmentGenerationResult.getErrorMessage()).thenReturn("error");
+        when(environmentGenerationResult.getGenerationContext()).thenReturn(generationContext);
+        when(generationContext.getApplicationServer()).thenReturn(appServerForResult);
+        when(appServerForResult.getRelease()).thenReturn(releaseForResult);
+        when(appServerForResult.getName()).thenReturn("TestAppServer");
+        when(releaseForResult.getName()).thenReturn(releaseName);
+        when(environmentGenerationResult.getNodeGenerationResults()).thenReturn(new java.util.ArrayList<>());
+        when(environmentGenerationResult.getEnvironmentException()).thenReturn(new GeneratorException("Test error", GeneratorException.MISSING.CONTEXT));
         when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), ArgumentMatchers.<Date>any())).thenReturn(environmentGenerationResult);
 
         // when
         Response response = rest.testGeneration(resourceGroupName, releaseName, env);
 
         // then
-        assertThat(response.getStatus(), is(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()));
+        assertThat(response.getStatus(), is(422));
     }
 
 

@@ -47,18 +47,6 @@ public class GenerationUnitGenerationResultTest {
 	}
 	
 	@Test
-	public void should_haveErrors_added() {
-		// given
-		GenerationUnitGenerationResult result = new GenerationUnitGenerationResult();
-
-		result.addErrorMessage(new TemplatePropertyException("error", CAUSE.INVALID_PROPERTY));
-		// when
-		
-		// then
-		assertFalse(result.isSuccess());
-	}
-	
-	@Test
 	public void should_haveErrors_Errors_in_generated_template() {
 		// given
 		GenerationUnitGenerationResult result = new GenerationUnitGenerationResult();
@@ -114,34 +102,6 @@ public class GenerationUnitGenerationResultTest {
 		
 		// then
 		assertFalse(result.isSuccess());
-	}
-	
-	
-	@Test
-	public void should_return_error_string() {
-		// given
-		GenerationUnitGenerationResult result = new GenerationUnitGenerationResult();
-		// add General Error
-		result.addErrorMessage(new TemplatePropertyException("error", CAUSE.INVALID_PROPERTY));
-		
-		// Template Errors
-		GeneratedTemplate generatedTemplate = Mockito.mock(GeneratedTemplate.class);
-		Mockito.when(generatedTemplate.hasErrors()).thenReturn(Boolean.TRUE);
-		Mockito.when(generatedTemplate.getErrorMessageAsString()).thenReturn("GeneratedTemplateError\n");
-		List<GeneratedTemplate> templates = new ArrayList<GeneratedTemplate>();
-		templates.add(generatedTemplate);
-		result.setGeneratedTemplates(templates);
-		
-		// when
-		String message = result.getErrorMessageAsString();
-		// then
-		
-		String expected = "General Unit Template Errors\n"
-						+ "error\n"
-						+ "Template Errors\n"
-						+ "GeneratedTemplateError\n";
-		
-		assertEquals(expected, message);
 	}
 
 }

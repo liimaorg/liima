@@ -20,6 +20,8 @@
 
 package ch.mobi.itc.mobiliar.rest.exceptions;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
@@ -27,7 +29,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@Produces({"application/json"})
+@Produces(APPLICATION_JSON)
 public class ClientErrorExceptionMapper implements ExceptionMapper<ClientErrorException> {
 
     @Override

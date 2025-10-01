@@ -20,6 +20,9 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
+
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -30,11 +33,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.AppServerRelationsTemplateProcessor;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
@@ -54,8 +60,13 @@ public class HostNamesRest {
 
 	@PUT
 	@Path("/{node}/{release}/{env}")
-	@Consumes("text/plain")
+	@Consumes(TEXT_PLAIN)
+	@Produces(APPLICATION_JSON)
 	@Operation(summary = "Set hostname value on a given node in a specific node release and environment")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Hostname set successfully"),
+		@ApiResponse(responseCode = "400", description = "Validation error")
+	})
 	public Response setHostNameOnNode(@Parameter(description = "node name") @PathParam("node") String nodeName,
 			@Parameter(description = "release of node") @PathParam("release") String nodeRelease,
 			@Parameter(description = "environment") @PathParam("env") String environmentName,
@@ -69,8 +80,13 @@ public class HostNamesRest {
 
 	@PUT
 	@Path("/{node}/{release}/{env}/{appServer}")
-	@Consumes("text/plain")
+	@Consumes(TEXT_PLAIN)
+	@Produces(APPLICATION_JSON)
 	@Operation(summary = "Set hostname value on all relations between a node release and all releases of an application server where no hostname is defined yet.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Hostnames set successfully on all applicable relations"),
+		@ApiResponse(responseCode = "400", description = "Validation error")
+	})
 	public Response setHostNameBetweenAppServerAndNodesForAllReleasesWhereNotYetDefined(
 			@Parameter(description = "node name") @PathParam("node") String nodeName,
 			@Parameter(description = "release of node") @PathParam("release") String nodeRelease,
@@ -85,8 +101,13 @@ public class HostNamesRest {
 
 	@PUT
 	@Path("/{node}/{release}/{env}/{appServer}/{asRelease}")
-	@Consumes("text/plain")
+	@Consumes(TEXT_PLAIN)
+	@Produces(APPLICATION_JSON)
 	@Operation(summary = "Set hostname value on the relation between a node release and an application server release.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "Hostname set successfully on the specific relation"),
+		@ApiResponse(responseCode = "400", description = "Validation error")
+	})
 	public Response setHostNameBetweenAppServerAndNodesForSpecifiedReleases(
 			@Parameter(description = "node name") @PathParam("node") String nodeName,
 			@Parameter(description = "release of node") @PathParam("release") String nodeRelease,
@@ -101,6 +122,7 @@ public class HostNamesRest {
 	}
 	
 	@GET
+	@Produces(APPLICATION_JSON)
 	@Operation(summary = "Get hostnames", description = "Returns all hostnames matching the optional filter Query Params")
 	public List<ServerTuple> getHostNames(
 			 @Parameter(description = "Application server name") @QueryParam("appServer") String appServer,

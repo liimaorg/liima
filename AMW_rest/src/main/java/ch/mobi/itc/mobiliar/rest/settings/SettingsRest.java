@@ -10,6 +10,10 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.List;
 
 @Stateless
@@ -21,6 +25,7 @@ public class SettingsRest {
     ApplicationVersionService applicationVersionService;
 
     @GET
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Get Liima configuration information")
     public List<ConfigurationKeyValuePair> getAppConfig() {
         return applicationVersionService.getObfuscatedApplicationConfigurationKeyValuePairs();
@@ -28,6 +33,7 @@ public class SettingsRest {
 
     @GET
     @Path("/appInfo")
+    @Produces(APPLICATION_JSON)
     @Operation(summary = "Get Liima application information")
     public List<ApplicationBuildInfoKeyValue> getAppInfo() {
         return applicationVersionService.getApplicationBuildInfo().getAsList();

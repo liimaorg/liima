@@ -1,5 +1,13 @@
 package ch.mobi.itc.mobiliar.rest.exceptions;
 
+import static javax.ws.rs.core.MediaType.TEXT_HTML;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
@@ -7,14 +15,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 
 @Provider
-@Produces({"text/html"})
+@Produces(TEXT_HTML)
 public class ExceptionDtoBodyWriter implements MessageBodyWriter<ExceptionDto> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {

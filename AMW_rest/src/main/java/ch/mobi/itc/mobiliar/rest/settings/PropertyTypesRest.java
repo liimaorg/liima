@@ -34,7 +34,7 @@ import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 @Path("/settings/propertyTypes")
 @Tag(name = "/settings/propertyTypes")
 @Consumes(APPLICATION_JSON)
-@Produces({APPLICATION_JSON})
+@Produces(APPLICATION_JSON)
 public class PropertyTypesRest {
 
     @Inject

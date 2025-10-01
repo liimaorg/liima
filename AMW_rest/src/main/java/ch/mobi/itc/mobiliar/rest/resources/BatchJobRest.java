@@ -20,6 +20,8 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -73,7 +75,7 @@ public class BatchJobRest {
      * consumed resources (short)
      */
     @Path("batchjobResources/{appName}")
-    @Produces("application/json")
+    @Produces(APPLICATION_JSON)
     @GET
     @Operation(summary = "Get batch job resources (only db2, oracle, ws, rest and file) of an app", description = "Returns the consumed batchJob resources for this app")
     public List<BatchResourceDTO> getBatchJobResources(
@@ -132,7 +134,7 @@ public class BatchJobRest {
      * consumed resources (short)
      */
     @Path("resource/{envName}/{resourceTypeId : \\d+}")
-    @Produces("application/json")
+    @Produces(APPLICATION_JSON)
     @GET
     @Operation(summary = "Get batch job inventory", description = "Returns the available batch applications and their related resources (only db2, oracle, ws, rest and file)")
     public BatchJobInventoryDTO getBatchJobInventar(
