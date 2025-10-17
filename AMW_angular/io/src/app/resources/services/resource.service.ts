@@ -78,17 +78,23 @@ export class ResourceService extends BaseService {
       );
   }
 
+  getResourceName(resourceId: number): Observable<Named> {
+    return this.getResource(resourceId).pipe(
+      map((resource) => ({ name: resource.name })),
+      catchError(this.handleError)
+    );
+  }
+
+  resourceExists(resourceId: number): Observable<boolean> {
+    return this.getResource(resourceId).pipe(
+      map((resource) => !!resource),
+      catchError(() => [false])
+    );
+  }
+
   createResourceForResourceType(resource: any) {
     return this.http
       .post<Resource>(`${this.getBaseUrl()}/resources`, resource, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  getResourceName(resourceId: number): Observable<Named> {
-    return this.http
-      .get<Named>(`${this.getBaseUrl()}/resources/name/${resourceId}`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
@@ -111,14 +117,6 @@ export class ResourceService extends BaseService {
         headers: this.getHeaders(),
       })
       .pipe(map(toResource), catchError(this.handleError));
-  }
-
-  resourceExists(resourceId: number): Observable<Resource> {
-    return this.http
-      .get<Resource>(`${this.getBaseUrl()}/resources/exists/${resourceId}`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
   }
 
   getAllResourceGroups(): Observable<Resource[]> {

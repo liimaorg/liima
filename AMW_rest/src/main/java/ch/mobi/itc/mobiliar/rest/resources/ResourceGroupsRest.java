@@ -135,6 +135,14 @@ public class ResourceGroupsRest {
     private ResourceRelationService resourceRelationService;
 
     @GET
+    @Path("/{id : \\d+}")
+    @Operation(summary = "Get a resource by id")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getById(@Parameter(description = "Resource ID") @PathParam("id") Integer id) throws NotFoundException {
+        return Response.ok(new ResourceDTO(resourceBoundary.getResource(id))).build();
+    }
+
+    @GET
     @Produces(APPLICATION_JSON)
     @Operation(summary = "Get resource groups", description = "Returns the available resource groups")
     public List<ResourceGroupDTO> getResources(

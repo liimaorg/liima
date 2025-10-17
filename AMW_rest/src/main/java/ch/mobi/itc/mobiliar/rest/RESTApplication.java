@@ -62,7 +62,6 @@ import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationTemplatesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourceRelationsRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourceTemplatesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourceTypesRest;
-import ch.mobi.itc.mobiliar.rest.resources.ResourcesRest;
 import ch.mobi.itc.mobiliar.rest.resources.ServerTupleCSVBodyWriter;
 import ch.mobi.itc.mobiliar.rest.servers.ServersRest;
 import ch.mobi.itc.mobiliar.rest.settings.FunctionsRest;
@@ -86,7 +85,6 @@ public class RESTApplication extends Application {
         // Endpoints
         resources.add(AppsRest.class);
         resources.add(BatchJobRest.class);
-        resources.add(ResourcesRest.class);
         resources.add(ResourceGroupsRest.class);
         resources.add(ResourceTypesRest.class);
         resources.add(ReleasesRest.class);
