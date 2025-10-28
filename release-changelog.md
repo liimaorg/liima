@@ -1,4 +1,5 @@
 # v1.18.5
+* chore(deps): update JavaScript dependencies [#912](https://github.com/liimaorg/liima/pull/912)
 * Improve permission cache management with revision-based invalidation [#911](https://github.com/liimaorg/liima/pull/911)
 * run ng test in separate maven phase so tests can be skipped via -DskipTests [#910](https://github.com/liimaorg/liima/pull/910)
 * chore(deps): bump playwright and @playwright/test in /AMW_e2e [#909](https://github.com/liimaorg/liima/pull/909)
