@@ -76,6 +76,16 @@
                             <arguments>run mavenbuild</arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>npm run maventest</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run maventest</arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

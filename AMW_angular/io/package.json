@@ -12,7 +12,8 @@
     "test:watch": "ng test --watch",
     "lint": "ng lint",
     "prettier": "npx prettier --write .",
-    "mavenbuild": "ng test --watch=false --browsers=ChromeHeadless && ng build --configuration production",
+    "mavenbuild": "ng build --configuration production",
+    "maventest": "ng test --watch=false --browsers=ChromeHeadless",
     "prepare": "husky"
   },
   "private": true,
