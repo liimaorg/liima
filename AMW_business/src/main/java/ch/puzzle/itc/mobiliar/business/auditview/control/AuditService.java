@@ -179,6 +179,21 @@ public class AuditService {
                     .getResultList();
     }
 
+    public Integer getLastRevisionForEntityType(Class<?> entityClass, Integer lastKnownRevision) {
+        AuditReader auditReader = AuditReaderFactory.get(entityManager);
+        AuditQuery query = auditReader.createQuery()
+                .forRevisionsOfEntity(entityClass, false, true)
+                .addProjection(AuditEntity.revisionNumber().max());
+
+        @SuppressWarnings("unchecked")
+        List<Integer> results = (List<Integer>) query.getResultList();
+        log.fine("Last revision for entity type " + entityClass.getSimpleName() + " is " + results);
+        if (results.isEmpty()) {
+            return null;
+        }
+        return results.get(0);
+    }
+
     public void storeIdInThreadLocalForAuditLog(HasContexts<?> hasContexts) {
         if (hasContexts instanceof ResourceTypeEntity) {
             setResourceTypeIdInThreadLocal(hasContexts.getId());

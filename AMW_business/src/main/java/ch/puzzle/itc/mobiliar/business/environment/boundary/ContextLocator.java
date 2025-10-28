@@ -87,7 +87,6 @@ public class ContextLocator {
 				}
 			}
 			restrictionRepository.deleteAllWithContext(context);
-			permissionService.reloadCache();
 			contextRepository.remove(context);
 		} else {
 			throw new AMWException("Es wurde versucht den Kontext \"Global\" (id: "+contextId+" zu löschen.");

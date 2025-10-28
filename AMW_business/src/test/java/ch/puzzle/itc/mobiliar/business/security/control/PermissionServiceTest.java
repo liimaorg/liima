@@ -24,12 +24,14 @@ import java.security.Principal;
 import java.util.*;
 
 import javax.ejb.SessionContext;
+import javax.enterprise.event.Event;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.RestrictionDTOBuilder;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
@@ -71,7 +73,7 @@ public class PermissionServiceTest {
 
 	private Principal principal;
 
-    @Before
+	@Before
 	public void setUp(){
 		permissionService = new PermissionService();
 		roleCache = new RoleCache();
@@ -85,6 +87,8 @@ public class PermissionServiceTest {
 		permissionService.deployableRolesWithRestrictions = null;
 		permissionService.rolesWithRestrictions = null;
 		permissionService.userRestrictions = null;
+		permissionService.auditService = Mockito.mock(AuditService.class);
+		permissionService.permissionRefreshEvent = Mockito.mock(Event.class);
 
 		global = new ContextEntityBuilder().id(1).buildContextEntity("GLOBAL", null, new HashSet<ContextEntity>(), false);
 		test = new ContextEntityBuilder().id(5).buildContextEntity("TEST", global, new HashSet<ContextEntity>(), false);
