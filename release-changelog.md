@@ -1,5 +1,13 @@
+# v1.18.5
+* Improve permission cache management with revision-based invalidation [#911](https://github.com/liimaorg/liima/pull/911)
+* run ng test in separate maven phase so tests can be skipped via -DskipTests [#910](https://github.com/liimaorg/liima/pull/910)
+* chore(deps): bump playwright and @playwright/test in /AMW_e2e [#909](https://github.com/liimaorg/liima/pull/909)
+* fix(resources rest): /resources/{resourceGroupName}/{releaseName} hiding /resources/exists/{resourceId} [#908](https://github.com/liimaorg/liima/pull/908)
+* swagger fix and cleanup [#907](https://github.com/liimaorg/liima/pull/907)
+* chore(deps): bump tar-fs from 3.1.0 to 3.1.1 in /AMW_angular/io [#906](https://github.com/liimaorg/liima/pull/906)
+
 # v1.18.4
-* resources -> New Resource doesn't check permission correctly [#893](https://github.com/liimaorg/liima/issues/893) 
+* resources -> New Resource doesn't check permission correctly [#893](https://github.com/liimaorg/liima/issues/893)
 * ADD_ADMIN_PERMISSIONS_ON_CREATED_RESOURCE doesn't work anymore [#892](https://github.com/liimaorg/liima/issues/892)
 * release of /AMW_rest/resources/resources/<name>/lte/<release> is now case sensitive [#891](https://github.com/liimaorg/liima/issues/891)
 * feature: return to selected resource type [#878](https://github.com/liimaorg/liima/pull/878)
