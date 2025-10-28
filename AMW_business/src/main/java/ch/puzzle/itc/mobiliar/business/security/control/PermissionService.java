@@ -20,27 +20,46 @@
 
 package ch.puzzle.itc.mobiliar.business.security.control;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
+import static javax.enterprise.event.TransactionPhase.AFTER_SUCCESS;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
+import javax.ejb.Schedule;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+
+import org.apache.commons.lang3.StringUtils;
+
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.*;
+import ch.puzzle.itc.mobiliar.business.security.entity.Action;
+import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.entity.ResourceTypePermission;
+import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionDTO;
+import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
+import ch.puzzle.itc.mobiliar.business.security.entity.RoleEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.ejb.Schedule;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.ALL;
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.UPDATE;
 
 @Stateless
 public class PermissionService implements Serializable {
@@ -55,7 +74,13 @@ public class PermissionService implements Serializable {
     SessionContext sessionContext;
 
     @Inject
+    AuditService auditService;
+
+    @Inject
     RoleCache roleCache;
+
+    @Inject
+    Event<PermissionRefreshEvent> permissionRefreshEvent;
 
     // map containing only Roles with Restrictions which have the DEPLOYMENT-Permission (non legacy)
     static Map<String, List<RestrictionDTO>> deployableRolesWithRestrictions;
@@ -64,15 +89,48 @@ public class PermissionService implements Serializable {
     // map containing UserRestrictions with Restrictions (non legacy)
     static Map<String, List<RestrictionEntity>> userRestrictions;
 
-    @Schedule(hour = "*", minute = "*/20", persistent = false)
+    static int cacheRestrictionRevision = -1;
+    private static final Object PERMISSION_RELOAD_LOCK = new Object();
+
+    @Schedule(hour = "*", minute = "*/1", persistent = false)
+    private void reloadCacheScheduled() {
+        synchronized (PERMISSION_RELOAD_LOCK) {
+            Integer lastRevision = auditService.getLastRevisionForEntityType(RestrictionEntity.class, cacheRestrictionRevision);
+            log.fine("Scheduled check for permission changes - last known revision: " + cacheRestrictionRevision + ", last revision in DB: " + lastRevision);
+            if (lastRevision != null && cacheRestrictionRevision >= lastRevision) {
+                return;
+            }
+            reloadPermissions();
+            reloadUserRestrictions();
+            // can be null if no restrictions exist
+            if (lastRevision != null) {
+                cacheRestrictionRevision = lastRevision;
+            }
+        }
+    }
+
+    // Doesn't check if cacheRestrictionRevision has changed and should only called after modifications to permissions/restrictions.
     public void reloadCache() {
-        reloadPermissions();
-        reloadUserRestrictions();
+        synchronized (PERMISSION_RELOAD_LOCK) {
+            reloadPermissions();
+            reloadUserRestrictions();
+            // update revision after transaction has ended and audit log has been written
+            permissionRefreshEvent.fire(new PermissionRefreshEvent());
+        }
+    }
+
+    // Updates cacheRestrictionRevision after transaction has ended and audit log has been written
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void updateCacheRestrictionRevision(@Observes(during=AFTER_SUCCESS) PermissionRefreshEvent event) {
+        synchronized (PERMISSION_RELOAD_LOCK) {
+            cacheRestrictionRevision = auditService.getLastRevisionForEntityType(RestrictionEntity.class, cacheRestrictionRevision);
+            log.fine("PermissionRefreshEvent observed - updated cacheRestrictionRevision to: " + cacheRestrictionRevision);
+        }
     }
 
     Map<String, List<RestrictionDTO>> getDeployableRoles() {
         if (deployableRolesWithRestrictions == null) {
-            reloadPermissions();
+            reloadCache();
         }
         return deployableRolesWithRestrictions;
     }
@@ -131,7 +189,7 @@ public class PermissionService implements Serializable {
      */
     public Map<String, List<RestrictionDTO>> getPermissions() {
         if (rolesWithRestrictions == null) {
-            reloadPermissions();
+            reloadCache();
         }
         return rolesWithRestrictions;
     }
