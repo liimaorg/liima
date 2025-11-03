@@ -1,3 +1,6 @@
+# v1.18.6
+* fix(rest): add produces csv annotation to deployment rest, consolidate servers and hostNames endpoint [#913](https://github.com/liimaorg/liima/pull/913)
+
 # v1.18.5
 * chore(deps): update JavaScript dependencies [#912](https://github.com/liimaorg/liima/pull/912)
 * Improve permission cache management with revision-based invalidation [#911](https://github.com/liimaorg/liima/pull/911)

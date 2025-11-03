@@ -22,9 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-/**
- * A class with similar functionality exists in the AMW_web package { @link: ch.puzzle.itc.mobiliar.presentation.deploy.DeploymentCSVExport.class }
- */
 @Provider
 @Produces({"text/comma-separated-values", "text/csv"})
 public class DeploymentDtoCsvBodyWriter implements MessageBodyWriter<List<DeploymentDTO>>{
