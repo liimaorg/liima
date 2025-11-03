@@ -109,8 +109,8 @@ public class DeploymentsRest {
 
     @GET
     @Path("/filter")
-    @Produces(APPLICATION_JSON)
-    @Operation(summary = "returns all Deployments matching the list of json filters - used by Angular")
+    @Produces({APPLICATION_JSON, "text/csv"})
+    @Operation(summary = "returns all Deployments matching the list of json filters")
     public Response getDeployments(@Parameter(description = "Filters") @QueryParam("filters") String jsonListOfFilters,
                                    @QueryParam("colToSort") String colToSort,
                                    @QueryParam("sortDirection") String sortDirection,
@@ -229,7 +229,7 @@ public class DeploymentsRest {
      **/
     @Deprecated
     @GET
-    @Produces(APPLICATION_JSON)
+    @Produces({APPLICATION_JSON, "text/csv"})
     @Operation(summary = "returns all Deployments matching the optional filter Query Params")
     public Response getDeployments(
             @Parameter(description = "Tracking ID") @QueryParam("trackingId") Integer trackingId,

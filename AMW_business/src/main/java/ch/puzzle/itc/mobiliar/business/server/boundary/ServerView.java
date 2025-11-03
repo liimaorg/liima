@@ -60,21 +60,21 @@ public class ServerView {
 	private static final String LOCAL_ENV = ConfigurationService.getProperty(ConfigKey.LOCAL_ENV);
 	public static final String MULTI_MARKER = "multiple";
 	
+	public List<ServerTuple> getAllServers() {
+		return this.getServers(null, null, null, null, null, true);
+	}
+
 	public List<ServerTuple> getServers(String hostFilter, String appServerFilter, String runtimeFilter, String nodeFilter, String contextFilter, boolean merge) {
-		List<ServerTuple> result;
-		
 		//convert wildcards
 		hostFilter = JpaWildcardConverter.convertWildCards(hostFilter);
 		appServerFilter = JpaWildcardConverter.convertWildCards(appServerFilter);
 		runtimeFilter = JpaWildcardConverter.convertWildCards(runtimeFilter);
 		nodeFilter = JpaWildcardConverter.convertWildCards(nodeFilter);		
 		
-		List<ServerTuple> nodeServers = this.getNodeServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
-		List<ServerTuple> asServers = this.getAppServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
-		nodeServers.addAll(new HashSet<>(asServers));
+		List<ServerTuple> result = this.getNodeServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter);
+		result.addAll(new HashSet<>(this.getAppServers(hostFilter, appServerFilter, runtimeFilter, nodeFilter, contextFilter)));
 
-		result = nodeServers;
-		if(merge) {
+		if (merge) {
 			result = new LinkedList<>(merge(result).values());
 		}
 		

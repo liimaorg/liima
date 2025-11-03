@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.mobi.itc.mobiliar.rest.resources;
+package ch.mobi.itc.mobiliar.rest.servers;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -37,24 +37,25 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.AppServerRelationsTemplateProcessor;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.business.server.entity.ServerTuple;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RequestScoped
 @Path("/hostNames")
-@Tag(name = "/hostNames", description = "Hostnames")
+@Tag(name = "/hostNames", description = "Set hostnames on nodes and application server relations")
 public class HostNamesRest {
 
 	@Inject
 	PropertyEditor propertyEditor;
+
 	@Inject
 	private ServerView serverView;
 
@@ -120,19 +121,19 @@ public class HostNamesRest {
 		propertyEditor.setPropertyValueOnResourceRelationForContext(appServerName, appServerRelease, nodeName, nodeRelease, environmentName, hostName, hostNameValue);
 		return Response.status(Response.Status.OK).build();
 	}
-	
-	@GET
-	@Produces(APPLICATION_JSON)
-	@Operation(summary = "Get hostnames", description = "Returns all hostnames matching the optional filter Query Params")
-	public List<ServerTuple> getHostNames(
-			 @Parameter(description = "Application server name") @QueryParam("appServer") String appServer,
-			 @Parameter(description = "Runtime name") @QueryParam("runtime") String runtime,
-			 @Parameter(description = "Environement name") @QueryParam("environment") String environment,
-			 @Parameter(description = "Host name") @QueryParam("host") String host,
-			 @Parameter(description = "Node name") @QueryParam("node") String node,
-			 @Parameter(description = "Merge releases") @QueryParam("disableMerge") @DefaultValue("false") boolean disableMerge) {
 
-		return serverView.getServers(host, appServer, runtime, node, environment, !disableMerge);
-	}
+    // Old method kept for backward compatibility with old rest clients
+    @GET
+    @Operation(summary = "Get hostnames", description = "Returns all hostnames matching the optional filter Query Params")
+    @Produces({ APPLICATION_JSON, "text/csv" })
+    public List<ServerTuple> getHostNames(
+            @Parameter(description = "Application server name") @QueryParam("appServer") String appServer,
+            @Parameter(description = "Runtime name") @QueryParam("runtime") String runtime,
+            @Parameter(description = "Environment name") @QueryParam("environment") String environment,
+            @Parameter(description = "Host name") @QueryParam("host") String host,
+            @Parameter(description = "Node name") @QueryParam("node") String node,
+            @Parameter(description = "Merge releases") @QueryParam("disableMerge") @DefaultValue("false") boolean disableMerge) {
+        return serverView.getServers(host, appServer, runtime, node, environment, !disableMerge);
+    }
 
 }

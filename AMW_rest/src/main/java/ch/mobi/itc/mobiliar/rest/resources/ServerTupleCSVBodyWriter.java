@@ -43,7 +43,7 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 @Provider
-@Produces({"text/comma-separated-values", "text/csv"})
+@Produces("text/csv")
 public class ServerTupleCSVBodyWriter implements MessageBodyWriter<List<ServerTuple>> {
 
 	private static final String CSV_SEPARATOR = ConfigurationService.getProperty(ConfigKey.CSV_SEPARATOR);
