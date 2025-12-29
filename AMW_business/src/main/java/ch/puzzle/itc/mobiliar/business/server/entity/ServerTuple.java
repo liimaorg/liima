@@ -23,43 +23,30 @@ package ch.puzzle.itc.mobiliar.business.server.entity;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Objects;
 
+/* Must match AMW_angular/io/src/app/servers/server.ts */
 @XmlRootElement(name="server")
 @XmlAccessorType(XmlAccessType.FIELD)
-//JAXB Annotations are ignored by Jackson of JBoss
 @Getter
 @Setter
-@JsonAutoDetect()
 public class ServerTuple {
 
 	private String host;
 	private String appServer;
+	private Integer appServerId;
 	private String appServerRelease;
 	private String runtime;
 	private String node;
+	private Integer nodeId;
 	private String nodeRelease;
 	private String environment;
-	@XmlTransient
-	@JsonIgnore
-	private Integer appServerId;
-	@XmlTransient
-	@JsonIgnore
-	private Integer nodeId;
-	@XmlTransient
-	@JsonIgnore
 	private Integer environmentId;
 	private String domain;
-	@XmlTransient
-	@JsonIgnore
 	private Integer domainId;
 	private boolean definedOnNode;
 	
@@ -117,6 +104,5 @@ public class ServerTuple {
 	@Override
 	public String toString() {
 		return host + " " + appServer + " " + appServerRelease + " " + runtime + " " + node + " " + nodeRelease + " " + environment + " " + definedOnNode;
-
 	}
 }
