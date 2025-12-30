@@ -61,8 +61,8 @@ describe(ServersListComponent.name, () => {
   it('should create', () => {
     expect(component).toBeDefined();
     expect(component.servers().length).toBe(2);
-    expect(component.canReadResources()).toBeFalse();
-    expect(component.canReadAppServer()).toBeTrue();
+    expect(component.canReadResources()).toBe(false);
+    expect(component.canReadAppServer()).toBe(true);
     expect(component.linkToHostUrl()).toEqual('/link/to/host');
   });
 });

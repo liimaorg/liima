@@ -12,7 +12,7 @@ import { Action } from './action';
 import { Restriction } from 'src/app/auth/restriction';
 import { RestrictionsCreation } from './restrictions-creation';
 import { Permission } from 'src/app/auth/permission';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import { Environment } from 'src/app/deployment/environment';
 import { Resource } from 'src/app/resources/models/resource';
 import { ResourceType } from 'src/app/resources/models/resource-type';

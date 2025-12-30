@@ -24,7 +24,7 @@ describe('FunctionDeleteComponent', () => {
   });
 
   it('calls activeModal.close on cancel()', () => {
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
     component.cancel();
     expect(activeModal.close).toHaveBeenCalled();
   });
@@ -32,8 +32,8 @@ describe('FunctionDeleteComponent', () => {
   it('emits deleteFunction and closes on delete()', () => {
     const testFn: any = { id: 1 };
     component.function = testFn;
-    spyOn(component.deleteFunction, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.deleteFunction, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.delete();
     expect(component.deleteFunction.emit).toHaveBeenCalledWith(testFn);
     expect(activeModal.close).toHaveBeenCalled();

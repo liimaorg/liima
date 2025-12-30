@@ -29,7 +29,7 @@ describe('ReleasesComponent', () => {
   it('should open release-edit modal and set date from existing release', () => {
     // Arrange
     const modalService = TestBed.inject(NgbModal);
-    const openSpy = spyOn(modalService, 'open').and.callThrough();
+    const openSpy = vi.spyOn(modalService, 'open');
     const testRelease: Release = {
       id: 123,
       name: 'Test Release',
@@ -41,7 +41,7 @@ describe('ReleasesComponent', () => {
       v: 1,
     };
     // Patch results() to return the test release
-    spyOn(component, 'results').and.returnValue([testRelease]);
+    vi.spyOn(component, 'results').mockReturnValue([testRelease]);
 
     // Act
     component.editRelease(testRelease.id);
@@ -49,7 +49,7 @@ describe('ReleasesComponent', () => {
     // Assert
     expect(openSpy).toHaveBeenCalledWith(ReleaseEditComponent);
     // The modalRef.componentInstance.release should be set to testRelease
-    const modalRef = openSpy.calls.mostRecent().returnValue;
+    const modalRef = openSpy.mock.results[openSpy.mock.results.length - 1].value;
     expect(modalRef.componentInstance.release).toEqual(testRelease);
 
     // The installationDate should be set from installationInProductionAt

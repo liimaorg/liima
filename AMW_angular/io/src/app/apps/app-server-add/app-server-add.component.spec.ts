@@ -27,26 +27,26 @@ describe('AppServerAddComponent', () => {
   it('hasInvalidFields true when missing name', () => {
     component.appServer.name = '';
     component.appServer.release = { id: 1 } as any;
-    expect(component.hasInvalidFields()).toBeTrue();
+    expect(component.hasInvalidFields()).toBe(true);
   });
 
   it('hasInvalidFields true when missing release', () => {
     component.appServer.name = 'srv';
     component.appServer.release = null;
-    expect(component.hasInvalidFields()).toBeTrue();
+    expect(component.hasInvalidFields()).toBe(true);
   });
 
   it('hasInvalidFields false when name and release present', () => {
     component.appServer.name = 'srv';
     component.appServer.release = { id: 2 } as any;
-    expect(component.hasInvalidFields()).toBeFalse();
+    expect(component.hasInvalidFields()).toBe(false);
   });
 
   it('save emits and closes when valid', () => {
     component.appServer.name = 'srv';
     component.appServer.release = { id: 2 } as any;
-    spyOn(component.saveAppServer, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.saveAppServer, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.save();
     expect(component.saveAppServer.emit).toHaveBeenCalled();
     expect(activeModal.close).toHaveBeenCalled();
@@ -55,15 +55,15 @@ describe('AppServerAddComponent', () => {
   it('save does nothing when invalid', () => {
     component.appServer.name = '';
     component.appServer.release = null;
-    spyOn(component.saveAppServer, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.saveAppServer, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.save();
     expect(component.saveAppServer.emit).not.toHaveBeenCalled();
     expect(activeModal.close).not.toHaveBeenCalled();
   });
 
   it('cancel closes modal', () => {
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
     component.cancel();
     expect(activeModal.close).toHaveBeenCalled();
   });

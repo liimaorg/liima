@@ -53,7 +53,7 @@ export class DateModel implements NgbDateStruct {
   }
 
   public toString(format?: string): string {
-    const date = datefns.toDate(this.thisToDate());
+    const date = this.thisToDate();
     if (!datefns.isValid(date)) {
       return null;
     }

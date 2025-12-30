@@ -1,21 +1,14 @@
-// override bootstrap variables before importing boostrap itself
-$font-size-base: 0.9rem;
-$btn-disabled-opacity: 0.55;
-
-$container-max-widths: (
-  sm: 640px,
-  md: 820px,
-  lg: 1160px,
-  xl: 1440px,
-  xxl: 1920px,
-);
-
-$toast-padding-x: 0;
-$toast-padding-y: 0;
-
-// bootstrap doesn't support @use yet
 @use '@ng-select/ng-select/themes/default.theme.css' as *;
-@import 'bootstrap/scss/bootstrap';
+@use 'bootstrap/scss/bootstrap' as * with ($font-size-base: 0.9rem,
+  $btn-disabled-opacity: 0.55,
+  $container-max-widths: (sm: 640px,
+    md: 820px,
+    lg: 1160px,
+    xl: 1440px,
+    xxl: 1920px,
+  ),
+  $toast-padding-x: 0,
+  $toast-padding-y: 0);
 
 .text-warning-2 {
   color: #8a6d3b;
@@ -27,12 +20,12 @@ $toast-padding-y: 0;
 
 // legacy style definition below - check if they can be deleted
 /* global table styles */
-.table > thead > tr > th,
-.table > thead > tr > td,
-.table > tbody > tr > th,
-.table > tbody > tr > td,
-.table > tfoot > tr > th,
-.table > tfoot > tr > td {
+.table>thead>tr>th,
+.table>thead>tr>td,
+.table>tbody>tr>th,
+.table>tbody>tr>td,
+.table>tfoot>tr>th,
+.table>tfoot>tr>td {
   padding: 8px;
   line-height: 1.42857;
   vertical-align: top;
@@ -42,6 +35,7 @@ $toast-padding-y: 0;
 .modal-backdrop {
   z-index: 1040 !important;
 }
+
 .modal-dialog {
   margin: 2px auto;
   z-index: 1100 !important;

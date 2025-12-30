@@ -1,5 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import { Restriction } from 'src/app/auth/restriction';
 import { Resource } from 'src/app/resources/models/resource';
 import { TableComponent } from 'src/app/shared/table/table.component';

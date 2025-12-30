@@ -15,8 +15,9 @@ export class ServersListComponent {
   linkToHostUrl = input.required<string>();
 
   serversTableData = computed(() =>
-    this.servers()?.map((server) => {
+    this.servers()?.map((server, index) => {
       return {
+        id: `${server.appServerId}-${server.nodeId}-${server.environmentId}-${index}`,
         host: server.host,
         hostLinkUrl: this.linkToHostUrl() ? this.linkToHostUrl().replace('{hostName}', server.host) : undefined,
         environment: server.environment,
@@ -36,6 +37,7 @@ export class ServersListComponent {
   );
 
   serversHeader(): TableColumnType<{
+    id: string;
     host: string;
     hostLinkUrl: string;
     appServer: string;

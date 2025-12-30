@@ -29,7 +29,7 @@ describe('DeploymentLogsService', () => {
     let actual: DeploymentLog[] | undefined;
     service.getLogFileMetaData(1).subscribe({
       next: (logs) => (actual = logs),
-      error: fail,
+      error: expect.fail,
     });
 
     const req = httpMock.expectOne('/AMW_rest/resources/deployments/1/logs');
@@ -42,7 +42,7 @@ describe('DeploymentLogsService', () => {
   it('handles 404 error and maps message', () => {
     let actualError: any;
     service.getLogFileMetaData(1).subscribe({
-      next: () => fail('expected error'),
+      next: () => expect.fail('expected error'),
       error: (e) => (actualError = e),
     });
 
@@ -64,7 +64,7 @@ describe('DeploymentLogsService', () => {
     let actual: DeploymentLog | undefined;
     service.getLogFileContent(deploymentLog).subscribe({
       next: (log) => (actual = log),
-      error: fail,
+      error: expect.fail,
     });
     const req = httpMock.expectOne('/AMW_rest/resources/deployments/5/logs/output.log');
     expect(req.request.method).toBe('GET');

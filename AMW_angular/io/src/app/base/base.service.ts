@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 
 @Injectable()
 export class BaseService {

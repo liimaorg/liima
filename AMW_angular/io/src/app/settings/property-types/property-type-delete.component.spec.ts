@@ -29,7 +29,7 @@ describe('PropertyTypeDeleteComponent', () => {
   });
 
   it('calls activeModal.close on cancel()', () => {
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
     component.cancel();
     expect(activeModal.close).toHaveBeenCalled();
   });
@@ -37,8 +37,8 @@ describe('PropertyTypeDeleteComponent', () => {
   it('emits deletePropertyType and closes on delete()', () => {
     const pt: any = { id: 123 };
     component.propertyType = pt;
-    spyOn(component.deletePropertyType, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.deletePropertyType, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.delete();
     expect(component.deletePropertyType.emit).toHaveBeenCalledWith(pt);
     expect(activeModal.close).toHaveBeenCalled();

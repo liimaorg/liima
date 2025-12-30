@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, OnInit, inject } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SettingService } from './setting/setting.service';
 import { AppConfiguration } from './setting/app-configuration';
@@ -16,7 +16,7 @@ import { ToastContainerComponent } from './shared/elements/toast/toast-container
 export class AppComponent implements OnInit {
   private settingService = inject(SettingService);
 
-  logoutUrl: string;
+  logoutUrl = signal('');
 
   ngOnInit(): void {
     this.settingService.getAllAppSettings().subscribe((r) => this.configureSettings(r));
@@ -24,6 +24,6 @@ export class AppComponent implements OnInit {
 
   private configureSettings(settings: AppConfiguration[]) {
     const logoutUrl = settings.find((config) => config.key.value === AMW_LOGOUT_URL);
-    this.logoutUrl = logoutUrl ? logoutUrl.value : '';
+    this.logoutUrl.set(logoutUrl ? logoutUrl.value : '');
   }
 }

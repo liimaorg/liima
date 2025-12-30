@@ -115,6 +115,5 @@ interface Global extends GlobalEnvironment {}
 
 // Custom jQuery Typings
 interface JQuery {
-  modal(...any): any;
   datetimepicker(...any): any;
 }

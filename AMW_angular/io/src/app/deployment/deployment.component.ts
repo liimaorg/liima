@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, AfterViewInit, OnDestroy, inject, signal } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ResourceService } from '../resources/services/resource.service';
@@ -13,8 +13,8 @@ import { EnvironmentService } from './environment.service';
 import { Environment } from './environment';
 import { DeploymentRequest } from './deployment-request';
 import { AppWithVersion } from './app-with-version';
-import { of, Subscription } from 'rxjs';
-import * as _ from 'lodash';
+import { of, Subject, Subscription } from 'rxjs';
+import * as _ from 'lodash-es';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { IconComponent } from '../shared/icon/icon.component';
 import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
@@ -26,10 +26,11 @@ import { PageComponent } from '../layout/page/page.component';
 import { ButtonComponent } from '../shared/button/button.component';
 import { ResourceTypesService } from '../resources/services/resource-types.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-deployment',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './deployment.component.html',
   imports: [
     LoadingIndicatorComponent,
@@ -42,13 +43,14 @@ import { switchMap } from 'rxjs/operators';
     ButtonComponent,
   ],
 })
-export class DeploymentComponent implements OnInit, AfterViewInit {
+export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private resourceService = inject(ResourceService);
   private environmentService = inject(EnvironmentService);
   private deploymentService = inject(DeploymentService);
   private activatedRoute = inject(ActivatedRoute);
   private location = inject(Location);
   private resourceTypesService = inject(ResourceTypesService);
+  private destroy$ = new Subject<void>();
 
   // from url
   appserverName: string = '';
@@ -57,42 +59,42 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   deploymentId: number;
 
   // these are valid for all (loaded ony once)
-  environments: Environment[] = [];
-  groupedEnvironments: { [key: string]: Environment[] } = {};
-  deploymentParameters: DeploymentParameter[] = [];
+  environments = signal<Environment[]>([]);
+  groupedEnvironments = signal<{ [key: string]: Environment[] }>({});
+  deploymentParameters = signal<DeploymentParameter[]>([]);
   defaultResourceTag: ResourceTag = { label: 'HEAD' } as ResourceTag;
-  isRedeployment: boolean = false;
+  isRedeployment = signal(false);
 
   // per appserver/deployment request
-  selectedAppserver: Resource = null;
-  releases: Release[] = [];
-  selectedRelease: Release = null;
-  runtime: Relation = null;
-  resourceTags: ResourceTag[] = [this.defaultResourceTag];
-  selectedResourceTag: ResourceTag = this.defaultResourceTag;
+  selectedAppserver = signal<Resource | null>(null);
+  releases = signal<Release[]>([]);
+  selectedRelease = signal<Release | null>(null);
+  runtime = signal<Relation | null>(null);
+  resourceTags = signal<ResourceTag[]>([this.defaultResourceTag]);
+  selectedResourceTag = signal<ResourceTag>(this.defaultResourceTag);
   deploymentDate: DateTimeModel = null;
-  appsWithVersion: AppWithVersion[] = [];
+  appsWithVersion = signal<AppWithVersion[]>([]);
   transDeploymentParameter: DeploymentParameter = {} as DeploymentParameter;
   transDeploymentParameters: DeploymentParameter[] = [];
-  deploymentResponse: any = {};
-  hasPermissionToDeploy: boolean = false;
-  hasPermissionToRequestDeployment: boolean = false;
+  deploymentResponse = signal<any>({});
+  hasPermissionToDeploy = signal(false);
+  hasPermissionToRequestDeployment = signal(false);
 
   // redeploy only
-  selectedDeployment: Deployment = {} as Deployment;
-  redeploymentAppserverDisplayName: string = '';
-  appsWithVersionForRedeployment: AppWithVersion[] = [];
+  selectedDeployment = signal<Deployment>({} as Deployment);
+  redeploymentAppserverDisplayName = signal('');
+  appsWithVersionForRedeployment = signal<AppWithVersion[]>([]);
 
   simulate: boolean = false;
   requestOnly: boolean = false;
   doSendEmail: boolean = false;
 
-  bestForSelectedRelease: Release = null;
+  bestForSelectedRelease = signal<Release | null>(null);
 
-  errorMessage: string = '';
-  successMessage: string = '';
-  isLoading: boolean = false;
-  isDeploymentBlocked: boolean = false;
+  errorMessage = signal('');
+  successMessage = signal('');
+  isLoading = signal(false);
+  isDeploymentBlocked = signal(false);
 
   appServerResourceType$ = this.resourceTypesService.getResourceTypeByName('APPLICATIONSERVER');
 
@@ -104,17 +106,22 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   );
 
   ngOnInit() {
-    this.initEnvironments();
-    this.activatedRoute.params.subscribe((param: any) => {
+    this.activatedRoute.params.pipe(takeUntil(this.destroy$)).subscribe((param: any) => {
+      // Reset all component state when route params change
+      this.resetComponentState();
+
       this.appserverName = param['appserverName'];
       this.releaseName = param['releaseName'];
       this.deploymentId = param['deploymentId'];
 
-      if (this.deploymentId && Number(this.deploymentId)) {
-        this.prepareRedeploy();
-      } else {
-        this.prepareNewDeployment();
-      }
+      // Initialize environments for each deployment
+      this.initEnvironments().then(() => {
+        if (this.deploymentId && Number(this.deploymentId)) {
+          this.prepareRedeploy();
+        } else {
+          this.prepareNewDeployment();
+        }
+      });
     });
   }
 
@@ -123,10 +130,15 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
     this.loadDeploymentParameters();
   }
 
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   initAppservers() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.setPreselected();
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 
   onChangeAppserver() {
@@ -136,15 +148,15 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   onChangeRelease() {
-    if (!this.selectedRelease) {
-      this.selectedRelease = this.releases[0];
+    if (!this.selectedRelease()) {
+      this.selectedRelease.set(this.releases()[0]);
     }
     this.getRelatedForRelease();
-    this.goTo(this.selectedAppserver?.name + '/' + this.selectedRelease.release);
+    this.goTo(this.selectedAppserver()?.name + '/' + this.selectedRelease().release);
   }
 
   onChangeEnvironment() {
-    if (!this.isRedeployment) {
+    if (!this.isRedeployment()) {
       this.getAppVersions();
     } else {
       this.verifyRedeployment();
@@ -166,10 +178,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
 
   isReadyForDeployment(): boolean {
     return (
-      !this.isDeploymentBlocked &&
-      this.selectedRelease &&
-      this.appsWithVersion.length > 0 &&
-      _.filter(this.environments, 'selected').length > 0
+      !this.isDeploymentBlocked() &&
+      this.selectedRelease() !== null &&
+      this.appsWithVersion().length > 0 &&
+      _.filter(this.environments(), 'selected').length > 0
     );
   }
 
@@ -184,138 +196,160 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   getEnvironmentGroups() {
-    return Object.keys(this.groupedEnvironments);
+    return Object.keys(this.groupedEnvironments());
   }
 
   private getDeployment(): Subscription {
     return this.deploymentService.get(this.deploymentId).subscribe({
-      next: (r) => (this.selectedDeployment = r),
-      error: (e) => (this.errorMessage = e),
+      next: (r) => this.selectedDeployment.set(r),
+      error: (e) => this.errorMessage.set(e),
       complete: () => this.initRedeploymentValues(),
     });
   }
 
   private initRedeploymentValues() {
-    this.isLoading = false;
+    this.isLoading.set(false);
     this.composeRedeploymentAppserverDisplayName();
-    this.transDeploymentParameters = this.selectedDeployment.deploymentParameters;
-    this.appsWithVersion = this.selectedDeployment.appsWithVersion;
-    this.selectedAppserver = {
-      id: this.selectedDeployment.appServerId,
-      name: this.selectedDeployment.appServerName,
-    } as Resource;
+    const deployment = this.selectedDeployment();
+    this.transDeploymentParameters = deployment.deploymentParameters;
+    this.appsWithVersion.set(deployment.appsWithVersion);
+    this.selectedAppserver.set({
+      id: deployment.appServerId,
+      name: deployment.appServerName,
+    } as Resource);
     this.loadReleases();
     this.setPreSelectedEnvironment();
     this.canDeploy();
   }
 
   private composeRedeploymentAppserverDisplayName() {
-    this.redeploymentAppserverDisplayName = this.redeploymentAppserverDisplayName.concat(
-      '<h5>',
-      this.selectedDeployment.appServerName,
-      ' (',
-      this.selectedDeployment.releaseName,
-      ')',
-      '</h5>',
-    );
-    this.selectedDeployment.appsWithVersion.forEach((appWithVersion) => {
-      this.redeploymentAppserverDisplayName = this.redeploymentAppserverDisplayName.concat(
-        '<h6>',
-        appWithVersion.applicationName,
-        ' (',
-        appWithVersion.version,
-        ')',
-        '</h6>',
-      );
+    const deployment = this.selectedDeployment();
+    let displayName = '<h5>' + deployment.appServerName + ' (' + deployment.releaseName + ')' + '</h5>';
+    deployment.appsWithVersion.forEach((appWithVersion) => {
+      displayName += '<h6>' + appWithVersion.applicationName + ' (' + appWithVersion.version + ')' + '</h6>';
     });
+    this.redeploymentAppserverDisplayName.set(displayName);
   }
 
   private setPreSelectedEnvironment() {
-    const env = _.find(this.environments, {
-      name: this.selectedDeployment.environmentName,
+    const env = _.find(this.environments(), {
+      name: this.selectedDeployment().environmentName,
     });
     if (env) {
       env.selected = true;
+      this.environments.set([...this.environments()]);
     }
   }
 
   private setSelectedRelease(): Subscription {
-    return this.resourceService.getMostRelevantRelease(this.selectedAppserver.id).subscribe({
-      next: (r) => (this.selectedRelease = this.releases.find((release) => release.release === r.release)),
-      error: (e) => (this.errorMessage = e),
+    return this.resourceService.getMostRelevantRelease(this.selectedAppserver().id).subscribe({
+      next: (r) => {
+        this.selectedRelease.set(this.releases().find((release) => release.release === r.release));
+      },
+      error: (e) => this.errorMessage.set(e),
       complete: () => this.onChangeRelease(),
     });
   }
 
   private setSelectedReleaseForRedeployment() {
-    this.selectedRelease = this.releases.find((release) => release.release === this.selectedDeployment.releaseName);
+    this.selectedRelease.set(
+      this.releases().find((release) => release.release === this.selectedDeployment().releaseName),
+    );
     // will perform verifyRedeployment()
     this.getAppVersions();
   }
 
   private loadReleases(): Subscription {
-    return this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe({
-      next: (r) => (this.releases = r),
-      error: (e) => (this.errorMessage = e),
-      complete: () => (this.isRedeployment ? this.setSelectedReleaseForRedeployment() : this.setSelectedRelease()),
+    return this.resourceService.getDeployableReleases(this.selectedAppserver().id).subscribe({
+      next: (r) => {
+        this.releases.set(r);
+      },
+      error: (e) => this.errorMessage.set(e),
+      complete: () => (this.isRedeployment() ? this.setSelectedReleaseForRedeployment() : this.setSelectedRelease()),
     });
   }
 
   private getRelatedForRelease() {
-    this.resourceService.getLatestForRelease(this.selectedAppserver.id, this.selectedRelease.id).subscribe({
-      next: (r) => (this.bestForSelectedRelease = r),
-      error: (e) => (this.errorMessage = e),
+    this.resourceService.getLatestForRelease(this.selectedAppserver().id, this.selectedRelease().id).subscribe({
+      next: (r) => {
+        this.bestForSelectedRelease.set(r);
+      },
+      error: (e) => this.errorMessage.set(e),
       complete: () => this.extractFromRelations(),
     });
   }
 
   private extractFromRelations() {
-    this.runtime = _.filter(this.bestForSelectedRelease.relations, {
-      type: 'RUNTIME',
-    }).pop();
-    this.resourceTags = this.resourceTags.concat(this.bestForSelectedRelease.resourceTags);
-    this.appsWithVersion = [];
+    const best = this.bestForSelectedRelease();
+    if (!best) {
+      return;
+    }
+    this.runtime.set(_.filter(best.relations, { type: 'RUNTIME' }).pop());
+    this.resourceTags.set([this.defaultResourceTag, ...(best.resourceTags || [])]);
+    this.appsWithVersion.set([]);
     this.getAppVersions();
   }
 
   private getAppVersions() {
     this.resourceService
       .getAppsWithVersions(
-        this.selectedAppserver.id,
-        this.selectedRelease.id,
-        _.filter(this.environments, 'selected').map((val: Environment) => val.id),
+        this.selectedAppserver().id,
+        this.selectedRelease().id,
+        _.filter(this.environments(), 'selected').map((val: Environment) => val.id),
       )
       .subscribe({
-        next: (r) => (this.isRedeployment ? (this.appsWithVersionForRedeployment = r) : (this.appsWithVersion = r)),
-        error: (e) => (this.errorMessage = e),
-        complete: () => (this.isRedeployment ? this.verifyRedeployment() : ''),
+        next: (r) => {
+          if (this.isRedeployment()) {
+            this.appsWithVersionForRedeployment.set(r);
+          } else {
+            this.appsWithVersion.set(r);
+          }
+        },
+        error: (e) => this.errorMessage.set(e),
+        complete: () => (this.isRedeployment() ? this.verifyRedeployment() : ''),
       });
   }
 
   private resetVars() {
-    this.errorMessage = '';
-    this.successMessage = '';
-    this.isDeploymentBlocked = false;
-    this.selectedRelease = null;
-    this.bestForSelectedRelease = null;
-    this.resourceTags = [this.defaultResourceTag];
-    this.selectedResourceTag = this.defaultResourceTag;
+    this.errorMessage.set('');
+    this.successMessage.set('');
+    this.isDeploymentBlocked.set(false);
+    this.selectedRelease.set(null);
+    this.bestForSelectedRelease.set(null);
+    this.resourceTags.set([this.defaultResourceTag]);
+    this.selectedResourceTag.set(this.defaultResourceTag);
     this.deploymentDate = null;
     this.simulate = false;
     this.doSendEmail = false;
-    this.appsWithVersion = [];
+    this.appsWithVersion.set([]);
     this.transDeploymentParameter = {} as DeploymentParameter;
     this.transDeploymentParameters = [];
   }
 
+  private resetComponentState() {
+    // Reset all state when switching between deployments
+    this.isRedeployment.set(false);
+    this.selectedAppserver.set(null);
+    this.releases.set([]);
+    this.selectedRelease.set(null);
+    this.runtime.set(null);
+    this.selectedDeployment.set({} as Deployment);
+    this.redeploymentAppserverDisplayName.set('');
+    this.appsWithVersionForRedeployment.set([]);
+    this.resetVars();
+    // Environments will be reloaded by initEnvironments()
+  }
+
   private canDeploy() {
-    if (this.selectedAppserver != null) {
-      this.hasPermissionToDeploy = false;
-      const contextIds: number[] = _.filter(this.environments, 'selected').map((val: Environment) => val.id);
+    if (this.selectedAppserver() != null) {
+      this.hasPermissionToDeploy.set(false);
+      const contextIds: number[] = _.filter(this.environments(), 'selected').map((val: Environment) => val.id);
       if (contextIds.length > 0) {
-        this.deploymentService.canDeploy(this.selectedAppserver.id, contextIds).subscribe({
-          next: (r) => (this.hasPermissionToDeploy = r),
-          error: (e) => (this.errorMessage = e),
+        this.deploymentService.canDeploy(this.selectedAppserver().id, contextIds).subscribe({
+          next: (r) => {
+            this.hasPermissionToDeploy.set(r);
+          },
+          error: (e) => this.errorMessage.set(e),
           complete: () => this.canRequestDeployment(contextIds),
         });
       }
@@ -323,55 +357,57 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private canRequestDeployment(contextIds: number[]) {
-    if (this.selectedAppserver != null) {
-      this.hasPermissionToRequestDeployment = false;
+    if (this.selectedAppserver() != null) {
+      this.hasPermissionToRequestDeployment.set(false);
       if (contextIds.length > 0) {
-        this.deploymentService.canRequestDeployment(this.selectedAppserver.id, contextIds).subscribe({
-          next: (r) => (this.hasPermissionToRequestDeployment = r),
-          error: (e) => (this.errorMessage = e),
+        this.deploymentService.canRequestDeployment(this.selectedAppserver().id, contextIds).subscribe({
+          next: (r) => {
+            this.hasPermissionToRequestDeployment.set(r);
+          },
+          error: (e) => this.errorMessage.set(e),
         });
       }
     }
   }
 
   private verifyRedeployment() {
-    this.errorMessage = '';
-    this.isDeploymentBlocked = false;
-    this.appsWithVersion.forEach((originApp: AppWithVersion) => {
-      const actualApp: AppWithVersion = _.find(this.appsWithVersionForRedeployment, [
+    this.errorMessage.set('');
+    this.isDeploymentBlocked.set(false);
+    this.appsWithVersion().forEach((originApp: AppWithVersion) => {
+      const actualApp: AppWithVersion = _.find(this.appsWithVersionForRedeployment(), [
         'applicationName',
         originApp.applicationName,
       ]);
-      if (!this.isDeploymentBlocked && !actualApp) {
-        this.errorMessage = 'Application <strong>' + originApp.applicationName + '</strong> does not exist anymore';
-        this.isDeploymentBlocked = true;
+      if (!this.isDeploymentBlocked() && !actualApp) {
+        this.errorMessage.set('Application <strong>' + originApp.applicationName + '</strong> does not exist anymore');
+        this.isDeploymentBlocked.set(true);
       }
     });
   }
 
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
-      const contextIds: number[] = _.filter(this.environments, 'selected').map((val: Environment) => val.id);
+      const contextIds: number[] = _.filter(this.environments(), 'selected').map((val: Environment) => val.id);
       this.createDeploymentRequest(contextIds);
     }
   }
 
   private createDeploymentRequest(contextIds: number[]) {
-    this.isLoading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+    this.successMessage.set('');
     const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
-    deploymentRequest.appServerName = this.selectedAppserver?.name;
-    deploymentRequest.releaseName = this.selectedRelease.release;
+    deploymentRequest.appServerName = this.selectedAppserver()?.name;
+    deploymentRequest.releaseName = this.selectedRelease().release;
     deploymentRequest.contextIds = contextIds;
     deploymentRequest.simulate = this.simulate;
     deploymentRequest.sendEmail = this.doSendEmail;
     deploymentRequest.requestOnly = this.requestOnly;
-    deploymentRequest.appsWithVersion = this.appsWithVersion;
-    if (!this.isRedeployment) {
+    deploymentRequest.appsWithVersion = this.appsWithVersion();
+    if (!this.isRedeployment()) {
       deploymentRequest.stateToDeploy =
-        this.selectedResourceTag && this.selectedResourceTag.tagDate
-          ? this.selectedResourceTag.tagDate
+        this.selectedResourceTag() && this.selectedResourceTag().tagDate
+          ? this.selectedResourceTag().tagDate
           : new Date().getTime();
     }
     if (this.deploymentDate) {
@@ -381,61 +417,79 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
       deploymentRequest.deploymentParameters = this.transDeploymentParameters;
     }
     this.deploymentService.createDeployment(deploymentRequest).subscribe({
-      next: (r) => (this.deploymentResponse = r),
-      error: (e) => (this.errorMessage = e),
+      next: (r) => this.deploymentResponse.set(r),
+      error: (e) => this.errorMessage.set(e),
       complete: () => {
-        this.isLoading = false;
+        this.isLoading.set(false);
         this.composeSuccessMessage();
       },
     });
   }
 
   private composeSuccessMessage() {
-    const link = `<a href="#/deployments?filters=[{%22name%22:%22Tracking%20Id%22,%22val%22:%22${this.deploymentResponse.trackingId}%22}]">Tracking Id ${this.deploymentResponse.trackingId}</a>`;
-    this.successMessage = 'Deployment created: <strong>' + link + '</strong>';
+    const link = `<a href="#/deployments?filters=[{%22name%22:%22Tracking%20Id%22,%22val%22:%22${this.deploymentResponse().trackingId}%22}]">Tracking Id ${this.deploymentResponse().trackingId}</a>`;
+    this.successMessage.set('Deployment created: <strong>' + link + '</strong>');
   }
 
-  private initEnvironments() {
-    this.isLoading = true;
-    this.environmentService.getAll().subscribe({
-      next: (r) => {
-        this.environments = r;
-        this.extractEnvironmentGroups();
-      },
-      error: (e) => (this.errorMessage = e),
-      complete: () => (this.isLoading = false),
+  private initEnvironments(): Promise<void> {
+    return new Promise((resolve) => {
+      this.isLoading.set(true);
+      this.environmentService.getAll().subscribe({
+        next: (r) => {
+          this.environments.set(r);
+          this.groupedEnvironments.set({}); // Clear previous grouping
+          this.extractEnvironmentGroups();
+        },
+        error: (e) => {
+          this.errorMessage.set(e);
+          this.isLoading.set(false);
+          resolve();
+        },
+        complete: () => {
+          this.isLoading.set(false);
+          resolve();
+        },
+      });
     });
   }
 
   private extractEnvironmentGroups() {
-    this.environments.forEach((environment) => {
-      if (!this.groupedEnvironments[environment['parentName']]) {
-        this.groupedEnvironments[environment['parentName']] = [];
+    const grouped: { [key: string]: Environment[] } = {};
+    this.environments().forEach((environment) => {
+      if (!grouped[environment['parentName']]) {
+        grouped[environment['parentName']] = [];
       }
-      this.groupedEnvironments[environment['parentName']].push(environment);
+      grouped[environment['parentName']].push(environment);
     });
+    this.groupedEnvironments.set(grouped);
   }
 
   private loadDeploymentParameters() {
     this.deploymentService.getAllDeploymentParameterKeys().subscribe({
       next: (r) =>
-        (this.deploymentParameters = r.sort(function (a, b) {
-          return a.key.localeCompare(b.key, undefined, { sensitivity: 'base' });
-        })),
-      error: (e) => (this.errorMessage = e),
+        this.deploymentParameters.set(
+          r.sort(function (a, b) {
+            return a.key.localeCompare(b.key, undefined, { sensitivity: 'base' });
+          }),
+        ),
+      error: (e) => this.errorMessage.set(e),
     });
   }
 
   // for url params only
   private setPreselected() {
     if (this.appserverName) {
-      this.selectedAppserver = _.find(this.appservers(), {
-        name: this.appserverName,
-      });
-      if (this.selectedAppserver) {
-        this.resourceService.getDeployableReleases(this.selectedAppserver.id).subscribe({
-          next: (r) => (this.releases = r),
-          error: (e) => (this.errorMessage = e),
+      this.selectedAppserver.set(
+        _.find(this.appservers(), {
+          name: this.appserverName,
+        }),
+      );
+      if (this.selectedAppserver()) {
+        this.resourceService.getDeployableReleases(this.selectedAppserver().id).subscribe({
+          next: (r) => {
+            this.releases.set(r);
+          },
+          error: (e) => this.errorMessage.set(e),
           complete: () => this.setRelease(),
         });
       }
@@ -451,14 +505,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit {
   }
 
   private prepareRedeploy() {
-    this.isRedeployment = true;
+    this.isRedeployment.set(true);
     this.getDeployment();
   }
 
   // for url params only
   private setRelease() {
     if (this.releaseName) {
-      this.selectedRelease = this.releases.find((release) => release.release === this.releaseName);
+      this.selectedRelease.set(this.releases().find((release) => release.release === this.releaseName));
       this.onChangeRelease();
     }
   }

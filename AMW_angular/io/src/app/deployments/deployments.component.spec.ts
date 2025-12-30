@@ -20,9 +20,16 @@ describe('DeploymentsComponent (with query params)', () => {
   let fixture: ComponentFixture<DeploymentsComponent>;
 
   const activatedRouteStub = { queryParams: new BehaviorSubject<any>({}) };
-  const routerStub = jasmine.createSpyObj('router', ['navigate']);
-  routerStub.navigate.and.callFake((commands: any, navigationExtras: { queryParams: any }) =>
-    activatedRouteStub.queryParams.next(navigationExtras.queryParams),
+  const routerStub = {
+    navigate: vi.fn().mockName('router.navigate'),
+  };
+  routerStub.navigate.mockImplementation(
+    (
+      _commands: any,
+      navigationExtras: {
+        queryParams: any;
+      },
+    ) => activatedRouteStub.queryParams.next(navigationExtras.queryParams),
   );
 
   const filter: string = JSON.stringify([
@@ -61,9 +68,9 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
-    spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
 
     // when
     component.ngOnInit();
@@ -85,9 +92,9 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
-    spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
 
     // when
     component.ngOnInit();
@@ -106,16 +113,18 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
-    spyOn(deploymentService, 'getFilterOptionValues').and.callFake((param: string) => {
-      const optionValues: { [key: string]: string[] } = {
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
+    vi.spyOn(deploymentService, 'getFilterOptionValues').mockImplementation((param: string) => {
+      const optionValues: {
+        [key: string]: string[];
+      } = {
         Application: ['app1', 'app2'],
         'Confirmed on': [],
       };
       return of(optionValues[param]);
     });
-    spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
 
     // when
     component.ngOnInit();
@@ -132,10 +141,10 @@ describe('DeploymentsComponent (with query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
-    spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
     // when
     component.ngOnInit();
@@ -149,7 +158,7 @@ describe('DeploymentsComponent (with query params)', () => {
   it('should call the right service method on exportCSV ', () => {
     // given
     const buffer = new ArrayBuffer(8);
-    spyOn(deploymentService, 'getFilteredDeploymentsForCsvExport').and.returnValue(of(buffer));
+    vi.spyOn(deploymentService, 'getFilteredDeploymentsForCsvExport').mockReturnValue(of(buffer));
 
     // when
     component.exportCSV();
@@ -168,9 +177,16 @@ describe('DeploymentsComponent (with illegal query params)', () => {
   let fixture: ComponentFixture<DeploymentsComponent>;
 
   const activatedRouteStub = { queryParams: new BehaviorSubject<any>({}) };
-  const routerStub = jasmine.createSpyObj('router', ['navigate']);
-  routerStub.navigate.and.callFake((commands: any, navigationExtras: { queryParams: any }) =>
-    activatedRouteStub.queryParams.next(navigationExtras.queryParams),
+  const routerStub = {
+    navigate: vi.fn().mockName('router.navigate'),
+  };
+  routerStub.navigate.mockImplementation(
+    (
+      commands: any,
+      navigationExtras: {
+        queryParams: any;
+      },
+    ) => activatedRouteStub.queryParams.next(navigationExtras.queryParams),
   );
 
   let deploymentService: DeploymentService;
@@ -204,8 +220,8 @@ describe('DeploymentsComponent (with illegal query params)', () => {
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of([]));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
 
     // when
     activatedRouteStub.queryParams.next({ filters: 'invalid filter' });
@@ -224,9 +240,16 @@ describe('DeploymentsComponent (without query params)', () => {
   let fixture: ComponentFixture<DeploymentsComponent>;
 
   const activatedRouteStub = { queryParams: new BehaviorSubject<any>({}) };
-  const routerStub = jasmine.createSpyObj('router', ['navigate']);
-  routerStub.navigate.and.callFake((commands: any, navigationExtras: { queryParams: any }) =>
-    activatedRouteStub.queryParams.next(navigationExtras.queryParams),
+  const routerStub = {
+    navigate: vi.fn().mockName('router.navigate'),
+  };
+  routerStub.navigate.mockImplementation(
+    (
+      commands: any,
+      navigationExtras: {
+        queryParams: any;
+      },
+    ) => activatedRouteStub.queryParams.next(navigationExtras.queryParams),
   );
 
   let deploymentService: DeploymentService;
@@ -255,7 +278,7 @@ describe('DeploymentsComponent (without query params)', () => {
 
   it('should check permission on ngOnInit', () => {
     // given
-    spyOn(deploymentService, 'canRequestDeployments').and.returnValue(of(true));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
 
     // when
     component.ngOnInit();
@@ -372,8 +395,8 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
 
     // when
     component.removeFilter(component.filters[0]);
@@ -470,9 +493,9 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
     // given
     component.filters = [
@@ -523,9 +546,9 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
     component.filters = [
       {
@@ -609,9 +632,9 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'eq', displayName: 'is' },
       { name: 'neq', displayName: 'is not' },
     ];
-    spyOn(deploymentService, 'getAllDeploymentFilterTypes').and.returnValue(of(deploymentFilters));
-    spyOn(deploymentService, 'getAllComparatorFilterOptions').and.returnValue(of(comparatorOptions));
-    spyOn(deploymentService, 'getFilteredDeployments').and.returnValue(of({ deployments: [], total: 0 }));
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
     // when
     component.sortDeploymentsBy('d.trackingId');
@@ -641,8 +664,8 @@ describe('DeploymentsComponent (without query params)', () => {
   it('should confirm a deployment and reload it', () => {
     // given
     const deployment: Deployment = { id: 1 } as Deployment;
-    spyOn(deploymentService, 'confirmDeployment').and.returnValue(of());
-    spyOn(deploymentService, 'getWithActions').and.returnValue(of(deployment));
+    vi.spyOn(deploymentService, 'confirmDeployment').mockReturnValue(of());
+    vi.spyOn(deploymentService, 'getWithActions').mockReturnValue(of(deployment));
 
     // when
     component.confirmDeployment(deployment);
@@ -655,8 +678,8 @@ describe('DeploymentsComponent (without query params)', () => {
   it('should reject a deployment and reload it', () => {
     // given
     const deployment: Deployment = { id: 2 } as Deployment;
-    spyOn(deploymentService, 'rejectDeployment').and.returnValue(of());
-    spyOn(deploymentService, 'getWithActions').and.returnValue(of(deployment));
+    vi.spyOn(deploymentService, 'rejectDeployment').mockReturnValue(of());
+    vi.spyOn(deploymentService, 'getWithActions').mockReturnValue(of(deployment));
 
     // when
     component.rejectDeployment(deployment);
@@ -669,8 +692,8 @@ describe('DeploymentsComponent (without query params)', () => {
   it('should cancel a deployment and reload it', () => {
     // given
     const deployment: Deployment = { id: 3 } as Deployment;
-    spyOn(deploymentService, 'cancelDeployment').and.returnValue(of());
-    spyOn(deploymentService, 'getWithActions').and.returnValue(of(deployment));
+    vi.spyOn(deploymentService, 'cancelDeployment').mockReturnValue(of());
+    vi.spyOn(deploymentService, 'getWithActions').mockReturnValue(of(deployment));
 
     // when
     component.cancelDeployment(deployment);
@@ -686,14 +709,14 @@ describe('DeploymentsComponent (without query params)', () => {
       id: 3,
       deploymentDate: 1253765123,
     } as Deployment;
-    component.deployments = [
+    component.deployments.set([
       { id: 1, deploymentDate: 121212121 } as Deployment,
       { id: 3, deploymentDate: 121212111 } as Deployment,
       { id: 5, deploymentDate: 121212122 } as Deployment,
-    ];
+    ]);
 
-    spyOn(deploymentService, 'setDeploymentDate').and.returnValue(of());
-    spyOn(deploymentService, 'getWithActions').and.returnValue(of(deployment));
+    vi.spyOn(deploymentService, 'setDeploymentDate').mockReturnValue(of());
+    vi.spyOn(deploymentService, 'getWithActions').mockReturnValue(of(deployment));
 
     // when
     component.changeDeploymentDate(deployment);
@@ -701,6 +724,6 @@ describe('DeploymentsComponent (without query params)', () => {
     // then
     expect(deploymentService.setDeploymentDate).toHaveBeenCalledWith(deployment.id, deployment.deploymentDate);
     expect(deploymentService.getWithActions).toHaveBeenCalledWith(deployment.id);
-    expect(component.deployments[1].deploymentDate).toEqual(deployment.deploymentDate);
+    expect(component.deployments()[1].deploymentDate).toEqual(deployment.deploymentDate);
   });
 });

@@ -115,7 +115,7 @@ describe('PermissionService', () => {
   // see https://github.com/angular/angular/issues/25047
   // activate the test as soon as the issue is resolved (if ever)
   // or do a http post request without query params... and change the api accordingly
-  xit('should invoke the right endpoints when createRestriction is called', () => {
+  it.skip('should invoke the right endpoints when createRestriction is called', () => {
     service.createRestriction({ roleName: 'TESTER' } as Restriction, false).subscribe((response) => {
       expect(response).toEqual({ id: 8, roleName: 'TESTER' } as Restriction);
     });

@@ -1,23 +1,23 @@
-<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
   <div class="page-title">Deployment</div>
   <div class="page-content">
     <div>
-      @if (successMessage) {
-        <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>
+      @if (successMessage()) {
+        <app-notification [message]="successMessage()" [messageType]="'success'"></app-notification>
       }
-      @if (errorMessage) {
-        <app-notification [message]="errorMessage" [messageType]="'warning'"></app-notification>
+      @if (errorMessage()) {
+        <app-notification [message]="errorMessage()" [messageType]="'warning'"></app-notification>
       }
       <span class="form-horizontal">
         <h1 class="offset-2 mb-4">
-          @if (isRedeployment) {
+          @if (isRedeployment()) {
             Redeployment
           } @else {
             Create new deployment
           }
         </h1>
-        @if (!isRedeployment) {
+        @if (!isRedeployment()) {
           <div class="form-group row">
             <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
             <div class="col-sm-10 col-md-5">
@@ -35,10 +35,10 @@
           <div class="form-group row">
             <label for="selectRelease" class="col-sm-2 fw-bold text-end">Release</label>
             <div class="col-sm-10 col-md-5">
-              @if (selectedAppserver) {
+              @if (selectedAppserver()) {
                 <ng-select
                   id="selectRelease"
-                  [items]="releases"
+                  [items]="releases()"
                   bindLabel="release"
                   placeholder=""
                   [(ngModel)]="selectedRelease"
@@ -52,7 +52,7 @@
           <div class="form-group row">
             <label class="col-sm-2 fw-bold text-end">Applicationserver</label>
             <div class="col-sm-10 col-md-5">
-              <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName"></span>
+              <span class="environments-title" [innerHTML]="redeploymentAppserverDisplayName()"></span>
             </div>
           </div>
         }
@@ -62,7 +62,7 @@
           <div class="col-sm-10">
             @for (group of getEnvironmentGroups(); track group) {
               <p class="mb-1">{{ group }}:</p>
-              @for (env of groupedEnvironments[group]; track env) {
+              @for (env of groupedEnvironments()[group]; track env.id) {
                 <div class="d-inline me-3">
                   <label
                     ><input
@@ -82,13 +82,13 @@
           </div>
         </div>
 
-        @if (!isRedeployment) {
+        @if (!isRedeployment()) {
           <div class="form-group row">
             <label class="col-sm-2 fw-bold text-end">Applications</label>
             <div class="col-sm-10 col-md-5">
-              @if (appsWithVersion.length > 0) {
+              @if (appsWithVersion().length > 0) {
                 <table class="table table-striped pt-0">
-                  @for (app of appsWithVersion; track app) {
+                  @for (app of appsWithVersion(); track app.applicationId) {
                     <tr class="pt-0 pb-3">
                       <td class="pt-0 pb-3">{{ app.applicationName }}</td>
                       <td class="pt-0 pb-3">
@@ -103,19 +103,19 @@
           <div class="form-group row">
             <label class="col-sm-2 fw-bold text-end">Runtime</label>
             <div class="col-sm-10 col-md-5">
-              @if (runtime) {
+              @if (runtime()) {
                 <h5 class="environments-title">
-                  {{ runtime.identifier }}
+                  {{ runtime().identifier }}
                 </h5>
               }
             </div>
           </div>
           <div class="form-group row">
             <label for="selectState" class="col-sm-2 fw-bold text-end">State</label>
-            @if (bestForSelectedRelease) {
+            @if (bestForSelectedRelease()) {
               <div class="col-sm-10 col-md-5">
                 <select id="selectState" class="form-control input-sm" [(ngModel)]="selectedResourceTag">
-                  @for (resourceTag of resourceTags; track resourceTag) {
+                  @for (resourceTag of resourceTags(); track resourceTag.id) {
                     <option [ngValue]="resourceTag">{{ resourceTag.label }}</option>
                   }
                 </select>
@@ -140,7 +140,7 @@
           <div class="col-sm-2">
             <input class="form-control" list="depParamList" type="text" [(ngModel)]="transDeploymentParameter.key" />
             <datalist id="depParamList">
-              @for (depParam of deploymentParameters; track depParam) {
+              @for (depParam of deploymentParameters(); track depParam.key) {
                 <option>{{ depParam.key }}</option>
               }
             </datalist>
@@ -157,8 +157,8 @@
           </div>
         </div>
 
-        @if (transDeploymentParameters.length > 0) {
-          @for (transDepParam of transDeploymentParameters; track transDepParam) {
+        @if (transDeploymentParameters?.length) {
+          @for (transDepParam of transDeploymentParameters; track transDepParam.key) {
             <div class="form-group row">
               <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end"></label>
               <div class="col-sm-2">
@@ -195,7 +195,7 @@
             <app-button
               [variant]="'secondary'"
               [additionalClasses]="'mb-2 me-2'"
-              [disabled]="!hasPermissionToRequestDeployment"
+              [disabled]="!hasPermissionToRequestDeployment()"
               (click)="requestDeployment()"
             >
               Request deployment
@@ -203,7 +203,7 @@
             <app-button
               [variant]="'primary'"
               [additionalClasses]="'mb-2 me-2'"
-              [disabled]="!hasPermissionToDeploy"
+              [disabled]="!hasPermissionToDeploy()"
               [dataTestId]="'btn-deploy'"
               (click)="createDeployment()"
               >Deploy</app-button

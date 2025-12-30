@@ -5,7 +5,7 @@
       <div class="d-flex justify-content-end mb-1">
         <div class="d-flex">
           <app-revision-compare
-            [revisions]="revisions"
+            [revisions]="revisions()"
             (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"
           ></app-revision-compare>
         </div>

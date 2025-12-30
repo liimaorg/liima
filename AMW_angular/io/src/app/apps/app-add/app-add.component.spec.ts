@@ -28,23 +28,23 @@ describe('AppAddComponent', () => {
 
   it('hasInvalidGroup true when no group', () => {
     component.appServerGroup = undefined;
-    expect(component.hasInvalidGroup()).toBeTrue();
+    expect(component.hasInvalidGroup()).toBe(true);
   });
 
   it('hasInvalidGroup false when group with releases', () => {
     component.appServerGroup = { id: 1, releases: [{}] } as any;
-    expect(component.hasInvalidGroup()).toBeFalse();
+    expect(component.hasInvalidGroup()).toBe(false);
   });
 
   it('hasInvalidFields true when required missing', () => {
     component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
-    expect(component.hasInvalidFields()).toBeTrue();
+    expect(component.hasInvalidFields()).toBe(true);
   });
 
   it('save emits app and closes when valid', () => {
     component.app = { appName: 'a', appReleaseId: 1, appServerId: null, appServerReleaseId: null };
-    spyOn(component.saveApp, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.saveApp, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.save();
     expect(component.saveApp.emit).toHaveBeenCalled();
     expect(activeModal.close).toHaveBeenCalled();
@@ -52,15 +52,15 @@ describe('AppAddComponent', () => {
 
   it('save does nothing when invalid', () => {
     component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
-    spyOn(component.saveApp, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.saveApp, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.save();
     expect(component.saveApp.emit).not.toHaveBeenCalled();
     expect(activeModal.close).not.toHaveBeenCalled();
   });
 
   it('cancel closes modal', () => {
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
     component.cancel();
     expect(activeModal.close).toHaveBeenCalled();
   });

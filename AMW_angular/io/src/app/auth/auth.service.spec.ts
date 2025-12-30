@@ -117,7 +117,7 @@ describe('AuthService', () => {
       { ...baseRestriction, permission: { name: permissionName }, action: action },
     ]);
 
-    expect(authService.hasPermission(permissionName, action)).toBeTrue();
+    expect(authService.hasPermission(permissionName, action)).toBe(true);
   });
 
   it('should return true if the user has the specified permission and ALL action', () => {
@@ -140,7 +140,7 @@ describe('AuthService', () => {
       },
     ]);
 
-    expect(authService.hasPermission(permissionName, action)).toBeTrue();
+    expect(authService.hasPermission(permissionName, action)).toBe(true);
   });
 
   it('should return false if the user has the specified permission and but not action', () => {
@@ -163,7 +163,7 @@ describe('AuthService', () => {
       },
     ]);
 
-    expect(authService.hasPermission(permissionName, action)).toBeFalse();
+    expect(authService.hasPermission(permissionName, action)).toBe(false);
   });
 
   it("should return false if the user doesn't have the specified permission", () => {
@@ -186,7 +186,7 @@ describe('AuthService', () => {
       },
     ]);
 
-    expect(authService.hasPermission(permissionName, action)).toBeFalse();
+    expect(authService.hasPermission(permissionName, action)).toBe(false);
   });
 
   describe('hasPermission', () => {
@@ -214,7 +214,7 @@ describe('AuthService', () => {
         },
       ]);
 
-      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBeTrue();
+      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBe(true);
     });
 
     it('should return true when restriction has null resourceTypeName', () => {
@@ -230,7 +230,7 @@ describe('AuthService', () => {
         },
       ]);
 
-      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBeTrue();
+      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBe(true);
     });
 
     it('should return true when restriction has null resourceGroupId', () => {
@@ -246,7 +246,7 @@ describe('AuthService', () => {
         },
       ]);
 
-      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBeTrue();
+      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBe(true);
     });
 
     it('should return true for action ALL', () => {
@@ -262,7 +262,7 @@ describe('AuthService', () => {
         },
       ]);
 
-      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBeTrue();
+      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBe(true);
     });
 
     it('should return false if action does not match', () => {
@@ -278,7 +278,7 @@ describe('AuthService', () => {
         },
       ]);
 
-      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBeFalse();
+      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBe(false);
     });
 
     it('should return false if resourceTypeName does not match', () => {
@@ -294,7 +294,7 @@ describe('AuthService', () => {
         },
       ]);
 
-      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBeFalse();
+      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBe(false);
     });
 
     it('should return false if resourceGroupId does not match', () => {
@@ -310,7 +310,7 @@ describe('AuthService', () => {
         },
       ]);
 
-      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBeFalse();
+      expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId)).toBe(false);
     });
 
     describe('with resourceTypePermission categories', () => {
@@ -327,7 +327,7 @@ describe('AuthService', () => {
             resourceTypePermission: 'DEFAULT_ONLY',
           },
         ]);
-        expect(authService.hasPermission(permissionName, action, defaultTypeName, resourceGroupId)).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, defaultTypeName, resourceGroupId)).toBe(true);
       });
 
       it('should return false for DEFAULT_ONLY with a non-default type', () => {
@@ -343,7 +343,7 @@ describe('AuthService', () => {
             resourceTypePermission: 'DEFAULT_ONLY',
           },
         ]);
-        expect(authService.hasPermission(permissionName, action, nonDefaultTypeName, resourceGroupId)).toBeFalse();
+        expect(authService.hasPermission(permissionName, action, nonDefaultTypeName, resourceGroupId)).toBe(false);
       });
 
       it('should return true for NON_DEFAULT_ONLY with a non-default type', () => {
@@ -359,7 +359,7 @@ describe('AuthService', () => {
             resourceTypePermission: 'NON_DEFAULT_ONLY',
           },
         ]);
-        expect(authService.hasPermission(permissionName, action, nonDefaultTypeName, resourceGroupId)).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, nonDefaultTypeName, resourceGroupId)).toBe(true);
       });
 
       it('should return false for NON_DEFAULT_ONLY with a default type', () => {
@@ -375,7 +375,7 @@ describe('AuthService', () => {
             resourceTypePermission: 'NON_DEFAULT_ONLY',
           },
         ]);
-        expect(authService.hasPermission(permissionName, action, defaultTypeName, resourceGroupId)).toBeFalse();
+        expect(authService.hasPermission(permissionName, action, defaultTypeName, resourceGroupId)).toBe(false);
       });
     });
 
@@ -431,13 +431,13 @@ describe('AuthService', () => {
       it('should return true if context is null', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, null)).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, null)).toBe(true);
       });
 
       it('should return true if restriction contextName is null', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: null }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBe(true);
       });
 
       it('should return true if restriction contextName is GLOBAL', () => {
@@ -445,7 +445,7 @@ describe('AuthService', () => {
         req.flush([
           { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'GLOBAL' },
         ]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBe(true);
       });
 
       it('should return true if restriction contextName is GLOBAL with sub-context', () => {
@@ -453,31 +453,31 @@ describe('AuthService', () => {
         req.flush([
           { ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'GLOBAL' },
         ]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'B')).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'B')).toBe(true);
       });
 
       it('should return true if contextName matches', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBe(true);
       });
 
       it('should return true if restriction contextName is a parent of the context', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'D')).toBeTrue();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'D')).toBe(true);
       });
 
       it('should return false if context does not match', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'PROD' }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBeFalse();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBe(false);
       });
 
       it('should return false if context is a parent of restriction context', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'D' }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBeFalse();
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, 'DEV')).toBe(false);
       });
     });
   });

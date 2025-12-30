@@ -17,8 +17,9 @@ describe('ToastContainerComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should show the toast', () => {
+  it('should show the toast', async () => {
     component.toastService.success('success-message');
+    await new Promise((resolve) => setTimeout(resolve, 0));
     fixture.detectChanges();
     const element = fixture.nativeElement;
     const message = element.querySelector('.toast-body .content');

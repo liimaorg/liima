@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 export interface Toast {
   type: 'success' | 'error';
@@ -11,7 +11,7 @@ const DEFAULT_ERROR_TIMEOUT = 15000;
 
 @Injectable({ providedIn: 'root' })
 export class ToastService {
-  toasts: Toast[] = [];
+  toasts = signal<Toast[]>([]);
 
   success(message: string) {
     this.show({ type: 'success', body: message, delay: DEFAULT_SUCCESS_TIMEOUT });
@@ -22,10 +22,12 @@ export class ToastService {
   }
 
   show(toast: Toast) {
-    this.toasts.push(toast);
+    setTimeout(() => {
+      this.toasts.update((toasts) => [...toasts, toast]);
+    });
   }
 
   remove(toast: Toast) {
-    this.toasts = this.toasts.filter((t) => t !== toast);
+    this.toasts.update((toasts) => toasts.filter((t) => t !== toast));
   }
 }

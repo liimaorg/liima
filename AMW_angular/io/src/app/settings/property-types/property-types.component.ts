@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, Signal, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, Signal, signal } from '@angular/core';
 
 import { AuthService } from '../../auth/auth.service';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
@@ -16,6 +16,7 @@ import { TableColumnType, TableComponent } from '../../shared/table/table.compon
 
 @Component({
   selector: 'app-property-types',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent, LoadingIndicatorComponent, ButtonComponent, TableComponent],
   templateUrl: './property-types.component.html',
 })
@@ -58,7 +59,7 @@ export class PropertyTypesComponent implements OnDestroy {
   );
 
   private readonly PROPERTY_TYPE = 'Property type';
-  isLoading = false;
+  isLoading = signal(false);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -117,7 +118,7 @@ export class PropertyTypesComponent implements OnDestroy {
   }
 
   save(propertyType: PropertyType) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     if (this.permissions().canSave && this.permissions().canEditValidation && this.permissions().canEditName) {
       this.propertyTypeService
         .save(propertyType)
@@ -126,15 +127,17 @@ export class PropertyTypesComponent implements OnDestroy {
           next: () => this.toastService.success(`${this.PROPERTY_TYPE} saved.`),
           error: (e) => this.error.set(e),
           complete: () => {
+            this.isLoading.set(false);
             this.propertyTypeService.reload();
           },
         });
+    } else {
+      this.isLoading.set(false);
     }
-    this.isLoading = false;
   }
 
   delete(propertyType: PropertyType) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.propertyTypeService
       .delete(propertyType.id)
       .pipe(takeUntil(this.destroy$))
@@ -142,10 +145,10 @@ export class PropertyTypesComponent implements OnDestroy {
         next: () => this.toastService.success(`${this.PROPERTY_TYPE} deleted.`),
         error: (e) => this.error.set(e),
         complete: () => {
+          this.isLoading.set(false);
           this.propertyTypeService.reload();
         },
       });
-    this.isLoading = false;
   }
 
   propertyTypesHeader(): TableColumnType<{

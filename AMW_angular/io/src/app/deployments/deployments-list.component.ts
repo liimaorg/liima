@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resources/services/resource.service';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DATE_TIME_FORMAT } from '../core/amw-constants';

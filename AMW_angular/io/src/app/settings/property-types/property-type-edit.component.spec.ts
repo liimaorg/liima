@@ -43,19 +43,19 @@ describe('PropertyTypeEditComponent', () => {
   });
 
   it('cancel closes modal', () => {
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
     component.cancel();
     expect(activeModal.close).toHaveBeenCalled();
   });
 
   it('isValidRegex handles empty regex', () => {
     component.propertyType.validationRegex = '';
-    expect(component.isValidRegex()).toBeTrue();
+    expect(component.isValidRegex()).toBe(true);
   });
 
   it('isValidRegex returns false on invalid regex', () => {
     component.propertyType.validationRegex = '['; // invalid
-    expect(component.isValidRegex()).toBeFalse();
+    expect(component.isValidRegex()).toBe(false);
   });
 
   it('addTag trims and adds tag then resets input', () => {
@@ -76,8 +76,8 @@ describe('PropertyTypeEditComponent', () => {
   });
 
   it('save emits property type and closes modal', () => {
-    spyOn(component.savePropertyType, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.savePropertyType, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.propertyType = {
       id: null,
       name: 'NAME',

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { ResourceFunction } from 'src/app/resources/models/resource-function';
@@ -31,17 +31,27 @@ import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revisi
     FullscreenToggleComponent,
   ],
 })
-export class ResourceFunctionEditComponent implements OnInit {
+export class ResourceFunctionEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() function: ResourceFunction;
+  private _function: ResourceFunction;
+  @Input() set function(value: ResourceFunction) {
+    this._function = value;
+    if (value && value.id) {
+      this.loadRevisions(value.id);
+    }
+  }
+  get function(): ResourceFunction {
+    return this._function;
+  }
+
   @Input() canEdit: boolean;
   @Input() isOverwrite: boolean;
 
   @Output() saveFunction: EventEmitter<ResourceFunction> = new EventEmitter<ResourceFunction>();
 
   private functionsService = inject(ResourceFunctionsService);
-  public revisions: RevisionInformation[] = [];
+  public revisions: WritableSignal<RevisionInformation[]> = signal([]);
   public revision: ResourceFunction;
   public selectedRevisionName: string;
   public newMik: string = '';
@@ -49,12 +59,6 @@ export class ResourceFunctionEditComponent implements OnInit {
     original: '',
     modified: '',
   };
-
-  ngOnInit(): void {
-    if (this.function && this.function.id) {
-      this.loadRevisions(this.function.id);
-    }
-  }
 
   getTitle(): string {
     return (this.function.id ? (this.isOverwrite ? 'Overwrite' : 'Edit') : 'Add') + ' function';
@@ -73,7 +77,7 @@ export class ResourceFunctionEditComponent implements OnInit {
 
   loadRevisions(functionId: number): void {
     this.functionsService.getFunctionRevisions(functionId).subscribe((revisions) => {
-      this.revisions = revisions;
+      this.revisions.set(revisions);
     });
   }
 

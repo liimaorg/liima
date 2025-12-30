@@ -81,14 +81,14 @@ export class ResourceService extends BaseService {
   getResourceName(resourceId: number): Observable<Named> {
     return this.getResource(resourceId).pipe(
       map((resource) => ({ name: resource.name })),
-      catchError(this.handleError)
+      catchError(this.handleError),
     );
   }
 
   resourceExists(resourceId: number): Observable<boolean> {
     return this.getResource(resourceId).pipe(
       map((resource) => !!resource),
-      catchError(() => [false])
+      catchError(() => [false]),
     );
   }
 

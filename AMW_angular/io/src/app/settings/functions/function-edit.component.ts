@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal, WritableSignal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -28,28 +28,32 @@ import { FullscreenToggleComponent } from '../../shared/fullscreen-toggle/fullsc
     FullscreenToggleComponent,
   ],
 })
-export class FunctionEditComponent implements OnInit {
+export class FunctionEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() function: AppFunction;
+  private _function: AppFunction;
+  @Input() set function(value: AppFunction) {
+    this._function = value;
+    if (value && value.id) {
+      this.loadRevisions(value.id);
+    }
+  }
+  get function(): AppFunction {
+    return this._function;
+  }
+
   @Input() canManage: boolean;
   @Output() saveFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();
 
   private functionsService = inject(FunctionsService);
-  public revisions: RevisionInformation[] = [];
-  public revision: AppFunction;
-  public selectedRevisionName: string;
+  public revisions: WritableSignal<RevisionInformation[]> = signal([]);
+  public revision: WritableSignal<AppFunction | null> = signal(null);
+  public selectedRevisionName: WritableSignal<string | null> = signal(null);
 
   public diffValue = {
     original: '',
     modified: '',
   };
-
-  ngOnInit(): void {
-    if (this.function && this.function.id) {
-      this.loadRevisions(this.function.id);
-    }
-  }
 
   getTitle(): string {
     return this.function.id ? 'Edit function' : 'Add function';
@@ -69,28 +73,34 @@ export class FunctionEditComponent implements OnInit {
       document.querySelectorAll('.needs-validation')[0].classList.add('was-validated');
       return;
     }
-    if (this.revision) this.function.content = this.diffValue.original;
+    if (this.revision()) this.function.content = this.diffValue.original;
     this.saveFunction.emit(this.function);
     this.activeModal.close();
   }
 
   loadRevisions(functionId: number): void {
-    this.functionsService.getFunctionRevisions(functionId).subscribe((revisions) => {
-      this.revisions = revisions;
+    this.functionsService.getFunctionRevisions(functionId).subscribe({
+      next: (revisions) => {
+        this.revisions.set(revisions);
+      },
+      error: (err) => {
+        console.error('Failed to load revisions:', err);
+        this.revisions.set([]);
+      }
     });
   }
 
   selectRevision(revisionId: number, displayName: string): void {
     if (revisionId && displayName) {
       this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
-        this.revision = revision;
-        this.selectedRevisionName = displayName;
-        this.diffValue = { original: this.function.content, modified: this.revision.content };
+        this.revision.set(revision);
+        this.selectedRevisionName.set(displayName);
+        this.diffValue = { original: this.function.content, modified: revision.content };
       });
     } else {
       //reset selected revision
-      this.revision = null;
-      this.selectedRevisionName = null;
+      this.revision.set(null);
+      this.selectedRevisionName.set(null);
     }
   }
 

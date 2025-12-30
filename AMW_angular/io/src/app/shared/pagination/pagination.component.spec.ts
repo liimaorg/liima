@@ -73,7 +73,7 @@ describe('PaginationComponent', () => {
     componentRef.setInput('currentPage', 1);
     componentRef.setInput('lastPage', component.paginatorItems + 10);
 
-    spyOn(component.doSetOffset, 'emit');
+    vi.spyOn(component.doSetOffset, 'emit');
 
     // when
     component.toPage(2);
@@ -87,7 +87,7 @@ describe('PaginationComponent', () => {
     componentRef.setInput('currentPage', 2);
     componentRef.setInput('lastPage', 10);
 
-    spyOn(component.doSetOffset, 'emit');
+    vi.spyOn(component.doSetOffset, 'emit');
 
     // when
     component.toPage(1);
@@ -101,7 +101,7 @@ describe('PaginationComponent', () => {
     componentRef.setInput('currentPage', 1);
     componentRef.setInput('lastPage', 10);
 
-    spyOn(component.doSetOffset, 'emit');
+    vi.spyOn(component.doSetOffset, 'emit');
 
     // when
     component.toPage(2);
@@ -116,7 +116,7 @@ describe('PaginationComponent', () => {
     componentRef.setInput('lastPage', 10);
 
     component.maxResults = 50;
-    spyOn(component.doSetOffset, 'emit');
+    vi.spyOn(component.doSetOffset, 'emit');
 
     // when
     component.toPage(2);
@@ -130,7 +130,7 @@ describe('PaginationComponent', () => {
     componentRef.setInput('currentPage', 1);
     componentRef.setInput('lastPage', 10);
 
-    spyOn(component.doSetOffset, 'emit');
+    vi.spyOn(component.doSetOffset, 'emit');
 
     // when
     component.toPage(10);

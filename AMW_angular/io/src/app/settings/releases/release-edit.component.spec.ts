@@ -47,11 +47,11 @@ describe('ReleaseEditComponent', () => {
 
   it('hasInvalidDate true when installationDate null', () => {
     component.installationDate = null;
-    expect(component.hasInvalidDate()).toBeTrue();
+    expect(component.hasInvalidDate()).toBe(true);
   });
 
   it('cancel closes modal', () => {
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
     component.cancel();
     expect(activeModal.close).toHaveBeenCalled();
   });
@@ -59,8 +59,8 @@ describe('ReleaseEditComponent', () => {
   it('save emits release and closes when valid date', () => {
     const epoch = 1234567890;
     component.installationDate = DateModel.fromEpoch(epoch);
-    spyOn(component.saveRelease, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.saveRelease, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.save();
     expect(component.saveRelease.emit).toHaveBeenCalled();
     expect(activeModal.close).toHaveBeenCalled();
@@ -68,8 +68,8 @@ describe('ReleaseEditComponent', () => {
 
   it('save does nothing when date invalid', () => {
     component.installationDate = null;
-    spyOn(component.saveRelease, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.saveRelease, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.save();
     expect(component.saveRelease.emit).not.toHaveBeenCalled();
     expect(activeModal.close).not.toHaveBeenCalled();

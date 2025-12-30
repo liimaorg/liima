@@ -1,4 +1,4 @@
-<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
   <div class="page-title">Deployments</div>
   <div class="page-content">
@@ -21,7 +21,7 @@
               [(ngModel)]="selectedFilterType"
               (change)="addFilter()"
             >
-              @for (filterType of filterTypes; track filterType) {
+              @for (filterType of filterTypes; track filterType.name) {
                 <option [ngValue]="filterType">{{ filterType.name }}</option>
               }
             </select>
@@ -29,7 +29,7 @@
         </div>
 
         @if (filters.length > 0) {
-          @for (filter of filters; track filter; let i = $index) {
+          @for (filter of filters; track $index; let i = $index) {
             <div class="form-group row">
               <div class="col-sm-4 offset-1">
                 <input class="form-control" disabled type="text" value="{{ filter.name }}" />
@@ -118,7 +118,7 @@
             <app-button
               [variant]="'secondary'"
               [additionalClasses]="'mb-2 me-2'"
-              [disabled]="deployments.length < 1"
+              [disabled]="deployments().length < 1"
               (click)="exportCSV()"
               ><app-icon icon="cloud-arrow-down"></app-icon> Export</app-button
             >
@@ -160,12 +160,12 @@
           </div>
         </div>
 
-        @if (deployments.length > 0) {
+        @if (deployments().length > 0) {
           <div class="form-group row">
             <div>
               <div class="border border-muted rounded">
                 <app-deployments-list
-                  [deployments]="deployments"
+                  [deployments]="deployments()"
                   [sortCol]="sortCol"
                   [sortDirection]="sortDirection"
                   [filtersForParam]="filtersForParam"

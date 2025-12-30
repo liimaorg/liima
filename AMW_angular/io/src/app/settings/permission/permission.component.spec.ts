@@ -107,10 +107,10 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       { id: 2, name: 'V', parentName: 'Dev' } as Environment,
       { id: 3, name: 'T', parentName: 'Test' } as Environment,
     ];
-    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
-    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
-    spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
-    spyOn(resourceTypesService, 'getAllResourceTypes').and.callThrough();
+    vi.spyOn(permissionService, 'getAllPermissionEnumValues').mockReturnValue(of(permissions));
+    vi.spyOn(environmentService, 'getAllIncludingGroups').mockReturnValue(of(environments));
+    vi.spyOn(resourceService, 'getAllResourceGroups');
+    vi.spyOn(resourceTypesService, 'getAllResourceTypes');
     // when
     component.ngOnInit();
     mockRoute.params.next({ restrictionType: 'role' });
@@ -124,25 +124,25 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     expect(resourceTypesService.getAllResourceTypes).toHaveBeenCalled();
     expect(component.permissions).toEqual(permissions);
     expect(component.restriction).toBeNull();
-    expect(component.groupedEnvironments['All']).toContain({
+    expect(component.groupedEnvironments['All']).toContainEqual({
       id: null,
       name: null,
       parentName: 'All',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain({
+    expect(component.groupedEnvironments['Dev']).toContainEqual({
       id: 1,
       name: 'U',
       parentName: 'Dev',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain({
+    expect(component.groupedEnvironments['Dev']).toContainEqual({
       id: 2,
       name: 'V',
       parentName: 'Dev',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Test']).toContain({
+    expect(component.groupedEnvironments['Test']).toContainEqual({
       id: 3,
       name: 'T',
       parentName: 'Test',
@@ -171,15 +171,15 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     ];
     component.selectedRoleName = 'TESTER';
     component.roleNames = ['tester', 'role'];
-    spyOn(permissionService, 'getRoleWithRestrictions').and.returnValue(of(restrictions));
+    vi.spyOn(permissionService, 'getRoleWithRestrictions').mockReturnValue(of(restrictions));
     // when
     component.onChangeRole();
     // then
     expect(permissionService.getRoleWithRestrictions).toHaveBeenCalledWith('TESTER');
-    expect(component.assignedRestrictions.length).toBe(3);
-    expect(component.assignedRestrictions[0].id).toBe(22);
-    expect(component.assignedRestrictions[1].id).toBe(21);
-    expect(component.assignedRestrictions[2].id).toBe(23);
+    expect(component.assignedRestrictions().length).toBe(3);
+    expect(component.assignedRestrictions()[0].id).toBe(22);
+    expect(component.assignedRestrictions()[1].id).toBe(21);
+    expect(component.assignedRestrictions()[2].id).toBe(23);
   });
 
   it('should trim selectedRoleName on changeRole', () => {
@@ -193,15 +193,15 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   it('should not invoke PermissionService on changeRole if selected Role does not exist', () => {
     // given
-    component.assignedRestrictions = [{ id: 31 } as Restriction, { id: 32 } as Restriction];
+    component.assignedRestrictions.set([{ id: 31 } as Restriction, { id: 32 } as Restriction]);
     component.selectedRoleName = 'TESTER';
     component.roleNames = ['role'];
-    spyOn(permissionService, 'getRoleWithRestrictions').and.callThrough();
+    vi.spyOn(permissionService, 'getRoleWithRestrictions');
     // when
     component.onChangeRole();
     // then
     expect(permissionService.getRoleWithRestrictions).not.toHaveBeenCalled();
-    expect(component.assignedRestrictions).toEqual([]);
+    expect(component.assignedRestrictions()).toEqual([]);
   });
 
   it('should convert and trim users (provided as string or Tag) to selectedUserNames on changeUser', () => {
@@ -229,14 +229,14 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['tester', 'user'];
-    spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(of(restrictions));
+    vi.spyOn(permissionService, 'getUserWithRestrictions').mockReturnValue(of(restrictions));
     // when
     component.onChangeUser(['Tester']);
     // then
     expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
-    expect(component.assignedRestrictions.length).toBe(2);
-    expect(component.assignedRestrictions[0].id).toBe(42);
-    expect(component.assignedRestrictions[1].id).toBe(41);
+    expect(component.assignedRestrictions().length).toBe(2);
+    expect(component.assignedRestrictions()[0].id).toBe(42);
+    expect(component.assignedRestrictions()[1].id).toBe(41);
   });
   it('should invoke PermissionService and sort the Restrictions by Permission.name, action on changeUser if selected User (provided as Tag) exists', () => {
     // given
@@ -254,58 +254,58 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     ];
     component.selectedUserNames = ['Tester'];
     component.userNames = ['tester', 'user'];
-    spyOn(permissionService, 'getUserWithRestrictions').and.returnValue(of(restrictions));
+    vi.spyOn(permissionService, 'getUserWithRestrictions').mockReturnValue(of(restrictions));
     // when
     component.onChangeUser([{ label: 'Tester' } as Tag]);
     // then
     expect(permissionService.getUserWithRestrictions).toHaveBeenCalledWith('Tester');
-    expect(component.assignedRestrictions.length).toBe(2);
-    expect(component.assignedRestrictions[0].id).toBe(42);
-    expect(component.assignedRestrictions[1].id).toBe(41);
+    expect(component.assignedRestrictions().length).toBe(2);
+    expect(component.assignedRestrictions()[0].id).toBe(42);
+    expect(component.assignedRestrictions()[1].id).toBe(41);
   });
 
   it('should not invoke PermissionService on changeUser if selected User does not exist', () => {
     // given
-    component.assignedRestrictions = [{ id: 51 } as Restriction, { id: 52 } as Restriction];
+    component.assignedRestrictions.set([{ id: 51 } as Restriction, { id: 52 } as Restriction]);
     component.selectedUserNames = ['Tester'];
     component.userNames = ['user'];
-    spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
+    vi.spyOn(permissionService, 'getUserWithRestrictions');
     // when
     component.onChangeUser(['tester']);
     // then
     expect(permissionService.getUserWithRestrictions).not.toHaveBeenCalled();
-    expect(component.assignedRestrictions).toEqual([]);
+    expect(component.assignedRestrictions()).toEqual([]);
   });
 
   it('should not invoke PermissionService on changeUser if selected User (provided as Tag) does not exist', () => {
     // given
-    component.assignedRestrictions = [{ id: 51 } as Restriction, { id: 52 } as Restriction];
+    component.assignedRestrictions.set([{ id: 51 } as Restriction, { id: 52 } as Restriction]);
     component.selectedUserNames = ['Tester'];
     component.userNames = ['user'];
-    spyOn(permissionService, 'getUserWithRestrictions').and.callThrough();
+    vi.spyOn(permissionService, 'getUserWithRestrictions');
     // when
     component.onChangeUser([{ label: 'Tester' } as Tag]);
     // then
     expect(permissionService.getUserWithRestrictions).not.toHaveBeenCalled();
-    expect(component.assignedRestrictions).toEqual([]);
+    expect(component.assignedRestrictions()).toEqual([]);
   });
 
   it('should invoke PermissionService on removeRestriction', () => {
     // given
-    component.assignedRestrictions = [
+    component.assignedRestrictions.set([
       { id: 121, contextName: 'T' } as Restriction,
       { id: 122, contextName: 'B' } as Restriction,
-    ];
+    ]);
     component.restriction = {
       id: 122,
       contextName: 'B',
     } as Restriction;
-    spyOn(permissionService, 'removeRestriction').and.callThrough();
+    vi.spyOn(permissionService, 'removeRestriction');
     // when
     component.removeRestriction(122);
     // then
     expect(permissionService.removeRestriction).toHaveBeenCalledWith(122);
-    expect(component.assignedRestrictions).toContain({
+    expect(component.assignedRestrictions()).toContainEqual({
       id: 121,
       contextName: 'T',
     } as Restriction);
@@ -334,13 +334,13 @@ describe('PermissionComponent without any params (default: type Role)', () => {
 
   it('should create a copy of the original Restriction on modifyRestriction', () => {
     // given
-    component.assignedRestrictions = [
+    component.assignedRestrictions.set([
       {
         id: 123,
         contextName: 'B',
         permission: { name: 'aPermission' },
       } as Restriction,
-    ];
+    ]);
 
     expect(component.restriction).toBeNull();
     expect(component.backupRestriction).toBeNull();
@@ -359,7 +359,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       id: 111,
       contextName: 'T',
     } as Restriction;
-    spyOn(permissionService, 'updateRestriction').and.callThrough();
+    vi.spyOn(permissionService, 'updateRestriction');
     // when
     component.persistRestriction();
     // then
@@ -372,7 +372,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       id: null,
       contextName: 'S',
     } as Restriction;
-    spyOn(permissionService, 'createRestriction').and.callThrough();
+    vi.spyOn(permissionService, 'createRestriction');
     // when
     component.persistRestriction();
     // then
@@ -471,11 +471,11 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       { id: 2, name: 'V', parentName: 'Dev' } as Environment,
       { id: 3, name: 'T', parentName: 'Test' } as Environment,
     ];
-    spyOn(permissionService, 'getAllPermissionEnumValues').and.returnValue(of(permissions));
-    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
-    spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
-    spyOn(resourceTypesService, 'getAllResourceTypes').and.callThrough();
-    spyOn(permissionService, 'getAllUserRestrictionNames').and.callThrough();
+    vi.spyOn(permissionService, 'getAllPermissionEnumValues').mockReturnValue(of(permissions));
+    vi.spyOn(environmentService, 'getAllIncludingGroups').mockReturnValue(of(environments));
+    vi.spyOn(resourceService, 'getAllResourceGroups');
+    vi.spyOn(resourceTypesService, 'getAllResourceTypes');
+    vi.spyOn(permissionService, 'getAllUserRestrictionNames');
     // when
     component.ngOnInit();
     mockRoute.params.next({ restrictionType: 'user' });
@@ -490,25 +490,25 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
     expect(component.permissions).toEqual(permissions);
     expect(component.restriction).toBeNull();
 
-    expect(component.groupedEnvironments['All']).toContain({
+    expect(component.groupedEnvironments['All']).toContainEqual({
       id: null,
       name: null,
       parentName: 'All',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain({
+    expect(component.groupedEnvironments['Dev']).toContainEqual({
       id: 1,
       name: 'U',
       parentName: 'Dev',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Dev']).toContain({
+    expect(component.groupedEnvironments['Dev']).toContainEqual({
       id: 2,
       name: 'V',
       parentName: 'Dev',
       selected: false,
     } as Environment);
-    expect(component.groupedEnvironments['Test']).toContain({
+    expect(component.groupedEnvironments['Test']).toContainEqual({
       id: 3,
       name: 'T',
       parentName: 'Test',
@@ -585,11 +585,11 @@ describe('PermissionComponent with param actingUser (delegation mode)', () => {
       { id: 2, name: 'V', parentName: 'Dev' } as Environment,
       { id: 3, name: 'T', parentName: 'Test' } as Environment,
     ];
-    spyOn(permissionService, 'getAllUserRestrictionNames').and.returnValue(of(userNames));
-    spyOn(permissionService, 'getOwnUserAndRoleRestrictions').and.returnValue(of(restrictions));
-    spyOn(environmentService, 'getAllIncludingGroups').and.returnValue(of(environments));
-    spyOn(resourceService, 'getAllResourceGroups').and.callThrough();
-    spyOn(resourceTypesService, 'getAllResourceTypes').and.callThrough();
+    vi.spyOn(permissionService, 'getAllUserRestrictionNames').mockReturnValue(of(userNames));
+    vi.spyOn(permissionService, 'getOwnUserAndRoleRestrictions').mockReturnValue(of(restrictions));
+    vi.spyOn(environmentService, 'getAllIncludingGroups').mockReturnValue(of(environments));
+    vi.spyOn(resourceService, 'getAllResourceGroups');
+    vi.spyOn(resourceTypesService, 'getAllResourceTypes');
     // when
     component.ngOnInit();
     mockRoute.params.next({ actingUser: 'testUser' });

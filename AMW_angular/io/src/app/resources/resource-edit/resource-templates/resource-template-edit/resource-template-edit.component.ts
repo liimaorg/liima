@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, inject, Input, OnInit, Output, Signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, Output, Signal, signal, WritableSignal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
@@ -34,10 +34,20 @@ interface TargetPlatformModel {
     FullscreenToggleComponent,
   ],
 })
-export class ResourceTemplateEditComponent implements OnInit {
+export class ResourceTemplateEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() template: ResourceTemplate;
+  private _template: ResourceTemplate;
+  @Input() set template(value: ResourceTemplate) {
+    this._template = value;
+    if (value && value.id) {
+      this.loadRevisions(value.id);
+    }
+  }
+  get template(): ResourceTemplate {
+    return this._template;
+  }
+
   @Input() canAddOrEdit: boolean;
 
   @Output() saveTemplate: EventEmitter<ResourceTemplate> = new EventEmitter<ResourceTemplate>();
@@ -48,7 +58,7 @@ export class ResourceTemplateEditComponent implements OnInit {
   });
 
   public wrapLinesEnabled: false;
-  public revisions: RevisionInformation[] = [];
+  public revisions: WritableSignal<RevisionInformation[]> = signal([]);
   public revision: ResourceTemplate;
   public selectedRevisionName: string;
   public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
@@ -61,12 +71,6 @@ export class ResourceTemplateEditComponent implements OnInit {
     original: '',
     modified: '',
   };
-
-  ngOnInit(): void {
-    if (this.template && this.template.id) {
-      this.loadRevisions(this.template.id);
-    }
-  }
 
   getTitle(): string {
     return (this.template.id ? 'Edit' : 'Add') + ' template';
@@ -118,7 +122,7 @@ export class ResourceTemplateEditComponent implements OnInit {
 
   loadRevisions(templateId: number): void {
     this.templatesService.getTemplateRevisions(templateId).subscribe((revisions) => {
-      this.revisions = revisions;
+      this.revisions.set(revisions);
     });
   }
 
