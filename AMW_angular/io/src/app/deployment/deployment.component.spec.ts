@@ -465,7 +465,7 @@ describe('DeploymentComponent (redeployment)', () => {
 
   it('should initRedeploymentValues ngOnInit and leave isDeploymentBlocked to false if all appWithVersion have been found', async () => {
     // given
-    component.environments.set([{ name: 'X' } as Environment, { name: 'Y' } as Environment]);
+    component.environments.set([{ name: 'X', id: 1 } as Environment, { name: 'Y', id: 2 } as Environment]);
     const appsWithVersion: AppWithVersion[] = [
       {
         applicationId: 4,
@@ -492,7 +492,7 @@ describe('DeploymentComponent (redeployment)', () => {
 
     vi.spyOn(deploymentService, 'get').mockReturnValue(of(deployment));
     vi.spyOn(environmentService, 'getAll').mockReturnValue(
-      of([{ name: 'X' } as Environment, { name: 'Y' } as Environment]),
+      of([{ name: 'X', id: 1 } as Environment, { name: 'Y', id: 2 } as Environment]),
     );
     vi.spyOn(resourceService, 'getDeployableReleases').mockReturnValue(
       of([{ id: 9, release: 'testRelease' } as Release]),
@@ -534,7 +534,7 @@ describe('DeploymentComponent (redeployment)', () => {
 
   it('should initRedeploymentValues and set isDeploymentBlocked to true if an appWithVersion is missing ngOnInit', async () => {
     // given
-    component.environments.set([{ name: 'X' } as Environment, { name: 'Y' } as Environment]);
+    component.environments.set([{ name: 'X', id: 1 } as Environment, { name: 'Y', id: 2 } as Environment]);
     const appsWithVersion: AppWithVersion[] = [
       {
         applicationId: 4,
@@ -561,7 +561,7 @@ describe('DeploymentComponent (redeployment)', () => {
     } as Deployment;
     vi.spyOn(deploymentService, 'get').mockReturnValue(of(deployment));
     vi.spyOn(environmentService, 'getAll').mockReturnValue(
-      of([{ name: 'X' } as Environment, { name: 'Y' } as Environment]),
+      of([{ name: 'X', id: 1 } as Environment, { name: 'Y', id: 2 } as Environment]),
     );
     vi.spyOn(resourceService, 'getDeployableReleases').mockReturnValue(
       of([{ id: 9, release: 'testRelease' } as Release]),
