@@ -29,7 +29,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         java-version: 11
-        distribution: adopt
+        distribution: temurin
 
     - name: Get the version
       id: get_version

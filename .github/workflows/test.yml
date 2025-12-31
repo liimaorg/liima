@@ -32,7 +32,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         java-version: 11
-        distribution: adopt
+        distribution: temurin
 
     - name: Build and test
       run: mvn --batch-mode clean install
