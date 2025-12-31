@@ -10,7 +10,7 @@ import {
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import { Permission } from 'src/app/auth/permission';
 import { Action, ResourceTypeCategory, Restriction } from 'src/app/auth/restriction';
 import { Environment } from 'src/app/deployment/environment';

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TileListComponent } from './tile-list.component';
 import { ComponentRef } from '@angular/core';
 
@@ -12,11 +12,11 @@ describe('TileListComponent', () => {
     { name: 'startJob_1.sh', description: 'job 2 again', id: 1 },
   ];
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       imports: [TileListComponent],
     }).compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TileListComponent);

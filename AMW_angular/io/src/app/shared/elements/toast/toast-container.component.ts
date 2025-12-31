@@ -5,7 +5,7 @@ import { ToastService } from './toast.service';
 @Component({
   selector: 'app-toasts',
   imports: [NgbToastModule],
-  template: `@for (toast of toastService.toasts; track toast) {
+  template: `@for (toast of toastService.toasts(); track toast) {
     <ngb-toast
       [class]="['toast', toast.type]"
       [autohide]="true"
@@ -14,7 +14,14 @@ import { ToastService } from './toast.service';
     >
       <div class="content">
         <div class="image"></div>
-        <div class="px-4 align-self-center">{{ toast.body }}</div>
+        <div class="px-4 align-self-center flex-fill">{{ toast.body }}</div>
+        <button
+          type="button"
+          class="btn-close ms-2"
+          aria-label="Close"
+          data-testid="toast-close"
+          (click)="toastService.remove(toast)"
+        ></button>
       </div>
     </ngb-toast>
   }`,
@@ -57,6 +64,10 @@ import { ToastService } from './toast.service';
 
     .danger .content {
       color: darkred;
+    }
+
+    .content .btn-close {
+      align-self: center;
     }
   `,
 })

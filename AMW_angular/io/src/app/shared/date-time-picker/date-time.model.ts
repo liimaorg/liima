@@ -47,7 +47,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
   }
 
   public static fromEpoch(epoch: number) {
-    const date = datefns.toDate(epoch);
+    const date = new Date(epoch);
     return this.fromDate(date);
   }
 
@@ -56,7 +56,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
   }
 
   public toString(format?: string): string {
-    const date = datefns.toDate(this.thisToDate());
+    const date = this.thisToDate();
     if (!datefns.isValid(date)) {
       return null;
     }
@@ -67,7 +67,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
   }
 
   public toEpoch(): number {
-    const date = datefns.toDate(this.thisToDate());
+    const date = this.thisToDate();
     if (!datefns.isValid(date)) {
       return null;
     }

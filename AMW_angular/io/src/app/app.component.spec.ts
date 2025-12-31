@@ -51,11 +51,11 @@ describe('App', () => {
       key: { value: configKeyVal, env: configKeyEnv },
       value: expectedValue,
     } as AppConfiguration;
-    spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
+    vi.spyOn(settingService, 'getAllAppSettings').mockReturnValueOnce(of([appConf]));
 
     app.ngOnInit();
 
-    expect(app.logoutUrl).toEqual(expectedValue);
+    expect(app.logoutUrl()).toEqual(expectedValue);
   });
 
   it('should set empty logoutUrl if config not found', () => {
@@ -64,10 +64,10 @@ describe('App', () => {
     const appConf: AppConfiguration = {
       key: { value: 'test', env: 'TEST' },
     } as AppConfiguration;
-    spyOn(settingService, 'getAllAppSettings').and.returnValues(of([appConf]));
+    vi.spyOn(settingService, 'getAllAppSettings').mockReturnValueOnce(of([appConf]));
 
     app.ngOnInit();
 
-    expect(app.logoutUrl).toEqual(expectedValue);
+    expect(app.logoutUrl()).toEqual(expectedValue);
   });
 });

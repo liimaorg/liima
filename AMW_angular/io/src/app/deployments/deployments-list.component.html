@@ -56,7 +56,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (deployment of deployments; track deployment) {
+        @for (deployment of deployments; track deployment.id) {
           <tr class="deploy-{{ deployment.state }}">
             <td class="has-checkbox">
               <input type="checkbox" [(ngModel)]="deployment.selected" />
@@ -74,7 +74,7 @@
             <td>
               <span class="link" (click)="appServerLink(deployment.resourceId)">{{ deployment.appServerName }}</span>
               <ul class="nob">
-                @for (appWithVersion of deployment.appsWithVersion; track appWithVersion) {
+                @for (appWithVersion of deployment.appsWithVersion; track appWithVersion.applicationId) {
                   <li class="link" (click)="appLink(appWithVersion.applicationId)">
                     {{ appWithVersion.applicationName }} ({{ appWithVersion.version }})
                   </li>

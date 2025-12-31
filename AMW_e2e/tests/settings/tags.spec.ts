@@ -18,12 +18,12 @@ test.describe('Tags -CRUD', () => {
         await page.locator('#tagName').fill('test-tag');
         await page.locator('#tagName').press('Enter');
         await expect(page.locator('#tagName')).toBeEmpty();
-        expect(page.locator('ngb-toast :has-text("Tag added.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Tag added.")')).toBeDefined();
 
         await page.locator('#tagName').fill('test-tag');
         await page.locator('#tagName').press('Enter');
         await expect(page.locator('#tagName')).toBeEmpty();
-        expect(page.locator('ngb-toast :has-text("Tag with name test-tag already exists.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Tag with name test-tag already exists.")')).toBeDefined();
 
         await page.locator('#tagName').clear();
         await page.locator('#tagName').fill('other-tag');
@@ -32,6 +32,6 @@ test.describe('Tags -CRUD', () => {
         await page.getByRole('row').filter({ hasText: 'other-tag' }).getByRole('button').last().click();
         await expect(page.getByText(/Tag deleted/).first()).toBeVisible();
         await page.getByRole('row').filter({ hasText: 'test-tag' }).getByRole('button').last().click();
-        expect(page.locator('ngb-toast :has-text("Tag deleted.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Tag deleted.")')).toBeDefined();
     });
 });

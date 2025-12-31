@@ -1,8 +1,3 @@
-// bootstrap doesn't support @use yet
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-@import 'bootstrap/scss/mixins';
-
 .CodeMirror {
   &.cm-s-default {
     height: 100%;
@@ -10,7 +5,7 @@
 }
 
 .cm-warning {
-  color: $warning;
+  color: var(--bs-warning); // uses the runtime CSS custom property from Bootstrap
 }
 
 .CodeMirror-vscrollbar {

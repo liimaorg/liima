@@ -1,4 +1,4 @@
-<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 
 <div class="container">
   <ul ngbNav #nav="ngbNav" [(activeId)]="restrictionType" class="nav-tabs mt-2 pt-4">
@@ -93,7 +93,7 @@
           }
           <div class="card-body">
             <app-restriction-list
-              [restrictions]="assignedRestrictions"
+              [restrictions]="assignedRestrictions()"
               [resourceGroups]="resourceGroups"
               [delegationMode]="delegationMode"
               (deleteRestriction)="removeRestriction($event)"

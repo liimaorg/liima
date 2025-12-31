@@ -27,7 +27,7 @@ describe('ReleaseDeleteComponent', () => {
   it('sets hasResources true when resources provided on init', () => {
     component.resources = new Map([['k', [{ id: 1 } as any]]]);
     component.ngOnInit();
-    expect(component.hasResources).toBeTrue();
+    expect(component.hasResources).toBe(true);
   });
 
   it('getTitle returns Remove release', () => {
@@ -35,14 +35,14 @@ describe('ReleaseDeleteComponent', () => {
   });
 
   it('cancel closes modal', () => {
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
     component.cancel();
     expect(activeModal.close).toHaveBeenCalled();
   });
 
   it('delete emits deleteRelease and closes', () => {
-    spyOn(component.deleteRelease, 'emit');
-    spyOn(activeModal, 'close');
+    vi.spyOn(component.deleteRelease, 'emit');
+    vi.spyOn(activeModal, 'close');
     component.delete();
     expect(component.deleteRelease.emit).toHaveBeenCalledWith(component.release);
     expect(activeModal.close).toHaveBeenCalled();

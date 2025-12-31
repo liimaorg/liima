@@ -45,14 +45,12 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit(): void {
     this.ngControl = this.inj.get(NgControl);
-    this.config.autoClose = 'outside';
     this.config.placement = 'auto';
   }
 
   writeValue(newModel: DateModel) {
     if (newModel) {
-      this.date = Object.assign(this.date, newModel);
-      //this.datetime = newModel;
+      this.date = new DateModel(newModel);
       this.setDateString();
     } else {
       this.date = new DateModel();

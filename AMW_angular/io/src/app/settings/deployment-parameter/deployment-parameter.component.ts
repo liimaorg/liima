@@ -23,7 +23,7 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
   toastService = inject(ToastService);
 
   keyName = '';
-  paramKeys: Key[] = [];
+  paramKeys = signal<Key[]>([]);
   canCreate = signal<boolean>(false);
   canDelete = signal<boolean>(false);
   private destroy$ = new Subject<void>();
@@ -32,7 +32,7 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
     this.getUserPermissions();
     this.http.get<Key[]>('/AMW_rest/resources/deployments/deploymentParameterKeys').subscribe({
       next: (data) => {
-        this.paramKeys = data;
+        this.paramKeys.set(data);
       },
     });
   }
@@ -53,7 +53,7 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
       this.http
         .post<Key>('/AMW_rest/resources/deployments/deploymentParameterKeys', this.keyName)
         .subscribe((newKey) => {
-          this.paramKeys.push(newKey);
+          this.paramKeys.update((keys) => [...keys, newKey]);
           this.toastService.success('Key added.');
           this.keyName = '';
         });
@@ -64,7 +64,7 @@ export class DeploymentParameterComponent implements OnInit, OnDestroy {
 
   deleteKey(keyId: number): void {
     this.http.delete<Key>(`/AMW_rest/resources/deployments/deploymentParameterKeys/${keyId}`).subscribe(() => {
-      this.paramKeys = this.paramKeys.filter((key) => key.id !== keyId);
+      this.paramKeys.update((keys) => keys.filter((key) => key.id !== keyId));
       this.toastService.success('Key deleted.');
     });
   }

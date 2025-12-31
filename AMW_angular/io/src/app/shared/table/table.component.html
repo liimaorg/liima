@@ -2,7 +2,7 @@
   <table [class]="tableClass">
     <thead>
       <tr>
-        @for (header of headers(); track header) {
+        @for (header of headers(); track header.key) {
           <th scope="col">{{ header.columnTitle }}</th>
         }
         @if (hasAction()) {
@@ -13,7 +13,7 @@
     <tbody>
       @for (row of data(); track row.id) {
         <tr>
-          @for (header of headers(); track header) {
+          @for (header of headers(); track header.key) {
             @switch (header.cellType) {
               @case ('badge-list') {
                 <td>

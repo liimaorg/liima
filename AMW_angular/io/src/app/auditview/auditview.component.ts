@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuditviewService } from './auditview.service';
 import { ResourceService } from '../resources/services/resource.service';
@@ -12,6 +12,7 @@ import { PageComponent } from '../layout/page/page.component';
 
 @Component({
   selector: 'app-auditview',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './auditview.component.html',
   providers: [AuditviewService, AuditviewTableService, DatePipe],
   imports: [LoadingIndicatorComponent, NotificationComponent, AuditviewTableComponent, PageComponent],
@@ -26,7 +27,7 @@ export class AuditviewComponent implements OnInit {
   errorMessage: string;
   successMessage: string;
   resourceId: number;
-  isLoading: boolean = true;
+  isLoading = signal(true);
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: any) => {
@@ -47,11 +48,11 @@ export class AuditviewComponent implements OnInit {
       this.auditViewService.getAuditLogForResource(this.resourceId).subscribe({
         next: (auditLogEntries) => (this.auditLogEntries = auditLogEntries),
         error: (e) => (this.errorMessage = e),
-        complete: () => (this.isLoading = false),
+        complete: () => this.isLoading.set(false),
       });
     } else {
       this.errorMessage = 'Parameter resourceId must be set!';
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 }

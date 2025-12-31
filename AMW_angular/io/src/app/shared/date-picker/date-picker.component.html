@@ -18,7 +18,7 @@
 
   <div class="input-group-append">
     <!-- TODO: convert this button-->
-    <button class="btn btn-secondary" [ngbPopover]="calendarContent" [disabled]="disabled" type="button">
+    <button class="btn btn-secondary" [ngbPopover]="calendarContent" [autoClose]="'outside'" [disabled]="disabled" type="button">
       <app-icon icon="calendar3"></app-icon>
     </button>
   </div>
@@ -27,7 +27,7 @@
 <ng-template #calendarContent>
   <div>
     <div class="d-grid">
-      <ngb-datepicker name="datepicker" [ngModel]="date" (ngModelChange)="onDateChange($event)"></ngb-datepicker>
+      <ngb-datepicker name="datepicker" [ngModel]="date" (ngModelChange)="onDateChange($event)" [startDate]="date?.year ? date : null"></ngb-datepicker>
       <app-button
         [variant]="'secondary'"
         [additionalClasses]="'m-0 w-100'"

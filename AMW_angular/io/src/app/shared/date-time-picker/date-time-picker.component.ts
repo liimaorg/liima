@@ -61,7 +61,6 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
   ngControl: NgControl;
 
   ngOnInit(): void {
-    this.config.autoClose = 'outside';
     this.config.placement = 'auto';
     this.ngControl = this.inj.get(NgControl);
   }
@@ -74,8 +73,7 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
 
   writeValue(newModel: DateTimeModel) {
     if (newModel) {
-      this.datetime = Object.assign(this.datetime, newModel);
-      //this.datetime = newModel;
+      this.datetime = new DateTimeModel(newModel);
       this.setDateString();
     } else {
       this.datetime = new DateTimeModel();

@@ -1,8 +1,8 @@
 import { Location } from '@angular/common';
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import * as datefns from 'date-fns';
 import { Subscription, timer } from 'rxjs';
 import { DeploymentFilter } from '../deployment/deployment-filter';
@@ -26,6 +26,7 @@ import { ButtonComponent } from '../shared/button/button.component';
 @Component({
   selector: 'app-deployments',
   templateUrl: './deployments.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     LoadingIndicatorComponent,
     NotificationComponent,
@@ -76,7 +77,7 @@ export class DeploymentsComponent implements OnInit {
   filters: DeploymentFilter[] = [];
 
   // filtered deployments
-  deployments: Deployment[] = [];
+  deployments = signal<Deployment[]>([]);
 
   // csv export
   csvDocument: ArrayBuffer;
@@ -99,7 +100,7 @@ export class DeploymentsComponent implements OnInit {
 
   errorMessage = '';
   successMessage = '';
-  isLoading = true;
+  isLoading = signal(true);
 
   @ViewChild('selectModel', { static: true })
   selectModel: NgModel;
@@ -209,11 +210,14 @@ export class DeploymentsComponent implements OnInit {
   }
 
   switchDeployments(enable: boolean) {
-    this.deployments.forEach((deployment) => (deployment.selected = enable));
+    this.deployments.update((deps) => {
+      deps.forEach((deployment) => (deployment.selected = enable));
+      return [...deps];
+    });
   }
 
   editableDeployments(): boolean {
-    return _.findIndex(this.deployments, { selected: true }) !== -1;
+    return _.findIndex(this.deployments(), { selected: true }) !== -1;
   }
 
   showEdit() {
@@ -271,7 +275,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   exportCSV() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
     this.getFilteredDeploymentsForCsvExport(JSON.stringify(this.filtersForBackend));
   }
@@ -313,7 +317,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   getSelectedDeployments(): Deployment[] {
-    return this.deployments.filter((deployment) => deployment.selected === true);
+    return this.deployments().filter((deployment) => deployment.selected === true);
   }
 
   autoRefresh() {
@@ -333,7 +337,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private pushDownload(prefix: string) {
-    this.isLoading = false;
+    this.isLoading.set(false);
     const docName: string = prefix + '_' + datefns.format(new Date(), 'yyyy-MM-dd_HHmm').toString() + '.csv';
     const blob = new Blob([this.csvDocument], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -357,7 +361,15 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private updateDeploymentsList(deployment: Deployment) {
-    this.deployments.splice(_.findIndex(this.deployments, { id: deployment.id }), 1, deployment);
+    this.deployments.update((deps) => {
+      const index = _.findIndex(deps, { id: deployment.id });
+      if (index !== -1) {
+        const newDeps = [...deps];
+        newDeps[index] = deployment;
+        return newDeps;
+      }
+      return deps;
+    });
   }
 
   private comparatorOptionsForType(filterType: string) {
@@ -380,8 +392,8 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private mapStates() {
-    if (this.deployments) {
-      this.deployments.forEach((deployment) => {
+    if (this.deployments()) {
+      this.deployments().forEach((deployment) => {
         switch (deployment.state) {
           case 'PRE_DEPLOYMENT':
             deployment.state = 'pre_deploy';
@@ -408,11 +420,13 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private initTypeAndOptions() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.deploymentService.getAllDeploymentFilterTypes().subscribe({
       next: (r) => (this.filterTypes = _.sortBy(r, 'name')),
       error: (e) => (this.errorMessage = e),
-      complete: () => this.getAllComparatorOptions(),
+      complete: () => {
+        this.getAllComparatorOptions();
+      },
     });
   }
 
@@ -436,22 +450,22 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private getFilteredDeployments(filterString: string) {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.deploymentService
       .getFilteredDeployments(filterString, this.sortCol, this.sortDirection, this.offset, this.maxResults)
       .subscribe({
         next: (r) => {
-          this.deployments = r.deployments;
+          this.deployments.set(r.deployments);
           this.allResults = r.total;
           this.currentPage = Math.floor(this.offset / this.maxResults) + 1;
           this.lastPage = Math.ceil(this.allResults / this.maxResults);
         },
         error: (e) => {
           this.errorMessage = e;
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
         complete: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
           this.mapStates();
           this.autoRefresh();
         },
@@ -508,7 +522,7 @@ export class DeploymentsComponent implements OnInit {
     this.comparatorOptions.forEach((option) => {
       this.comparatorOptionsMap[option.name] = option.displayName;
     });
-    this.isLoading = false;
+    this.isLoading.set(false);
   }
 
   private updateFiltersInURL(destination: string) {

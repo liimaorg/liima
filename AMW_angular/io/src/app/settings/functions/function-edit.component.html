@@ -14,13 +14,13 @@
         </div>
         <div class="d-flex">
           <app-revision-compare
-            [revisions]="revisions"
+            [revisions]="revisions()"
             (selectedRevision)="selectRevision($event.revisionId, $event.displayName)"
           ></app-revision-compare>
           <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
         </div>
       </div>
-      @if (!revision) {
+      @if (!revision()) {
         <div class="editor border border-primary-subtle rounded">
           <app-code-editor
             [theme]="'light'"
@@ -31,7 +31,7 @@
       } @else {
         <div class="mx-0 row">
           <label class="col badge bg-info">Current version</label>
-          <label class="col badge bg-secondary">Version: {{ selectedRevisionName }}</label>
+          <label class="col badge bg-secondary">Version: {{ selectedRevisionName() }}</label>
         </div>
         <div class="editor border border-primary-subtle rounded">
           <app-diff-editor [(ngModel)]="diffValue" revertControls="b-to-a"></app-diff-editor>

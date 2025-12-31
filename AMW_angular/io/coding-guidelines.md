@@ -75,5 +75,6 @@ this.canViewSettings.set(this.authService.hasPermission('SETTINGS', 'READ'));
 ```
 
 ## Buttons
+
 Buttons without a text should have a html title set.<br>
 This improves accessibility and user experience, as the title serves as a tooltip that provides brief information about the button's function.

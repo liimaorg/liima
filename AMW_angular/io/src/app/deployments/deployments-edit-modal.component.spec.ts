@@ -24,8 +24,8 @@ describe('DeploymentsEditModalComponent', () => {
   it('logs unknown edit actions in doEdit()', () => {
     component.selectedEditAction = 'test';
     component.deployments = [{ id: 1, selected: true } as Deployment];
-    spyOn(console, 'error');
-    spyOn(activeModal, 'close');
+    vi.spyOn(console, 'error');
+    vi.spyOn(activeModal, 'close');
 
     component.doEdit();
 
@@ -41,7 +41,7 @@ describe('DeploymentsEditModalComponent', () => {
       { id: 1, selected: true, deploymentDate: 5555 } as Deployment,
       { id: 2, selected: true, deploymentDate: 6666 } as Deployment,
     ];
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
 
     component.doEdit();
 
@@ -60,7 +60,7 @@ describe('DeploymentsEditModalComponent', () => {
       { id: 1, selected: true, deploymentDate: 5555 } as Deployment,
       { id: 2, selected: true, deploymentDate: 6666 } as Deployment,
     ];
-    spyOn(activeModal, 'close');
+    vi.spyOn(activeModal, 'close');
 
     component.doEdit();
 
