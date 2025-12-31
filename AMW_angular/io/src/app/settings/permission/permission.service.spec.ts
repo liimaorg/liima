@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { PermissionService } from './permission.service';
 import { Restriction } from 'src/app/auth/restriction';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpHeaders, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PermissionService', () => {
   let service: PermissionService;
@@ -112,17 +112,23 @@ describe('PermissionService', () => {
     req.flush({});
   });
 
-  // see https://github.com/angular/angular/issues/25047
-  // activate the test as soon as the issue is resolved (if ever)
-  // or do a http post request without query params... and change the api accordingly
-  it.skip('should invoke the right endpoints when createRestriction is called', () => {
-    service.createRestriction({ roleName: 'TESTER' } as Restriction, false).subscribe((response) => {
-      expect(response).toEqual({ id: 8, roleName: 'TESTER' } as Restriction);
-    });
-    const req = httpTestingController.expectOne('/AMW_rest/resources/permissions/restrictions/');
+  it('should invoke the right endpoints when createRestriction is called', () => {
+    const created = { id: 8, roleName: 'TESTER' } as Restriction;
 
-    expect(req.request.method).toEqual('POST');
-    req.flush({ id: 8, roleName: 'TESTER' } as Restriction);
-    httpTestingController.expectOne('/AMW_rest/resourcesnull');
+    service.createRestriction({ roleName: 'TESTER' } as Restriction, false).subscribe((response) => {
+      expect(response).toEqual(created);
+    });
+
+    const postReq = httpTestingController.expectOne((req) => {
+      return req.method === 'POST' && req.urlWithParams === '/AMW_rest/resources/permissions/restrictions/?delegation=false';
+    });
+
+    postReq.flush(created, {
+      headers: new HttpHeaders({ Location: '/permissions/restrictions/8' }),
+    });
+
+    const getReq = httpTestingController.expectOne('/AMW_rest/resources/permissions/restrictions/8');
+    expect(getReq.request.method).toEqual('GET');
+    getReq.flush(created);
   });
 });
