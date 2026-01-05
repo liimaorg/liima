@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -29,7 +28,6 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -179,108 +177,4 @@ public class ResourceRepository {
     public void removeResourceGroup(ResourceGroupEntity resourceGroup) {
         entityManager.remove(resourceGroup);
     }
-
-    /**
-     * Für JavaBatch Monitor
-     * 
-     * @param name
-     * @return
-     */
-    public List<ResourceEntity> getResourceByName(String name) {
-        return entityManager
-                .createQuery("select r from ResourceEntity r where LOWER(r.name)=:name", ResourceEntity.class)
-                .setParameter("name", name.toLowerCase()).getResultList();
-    }
-
-    /**
-     * Für JavaBatch Monitor
-     * 
-     * @param name
-     * @param release
-     * @return
-     */
-    public ResourceEntity getMasterResourceByNameAndReleaseWithRelations(String name, ReleaseEntity release) {
-        return entityManager
-                .createQuery(
-                        "select r from ResourceEntity r left join fetch r.consumedMasterRelations rel left join fetch rel.masterResource where LOWER(r.name)=:name and r.release=:release",
-                        ResourceEntity.class)
-                .setParameter("name", name.toLowerCase()).setParameter("release", release).getSingleResult();
-    }
-
-    /**
-     * Für JavaBatch Monitor<br>
-     * Resourcetypes see TAMW_Resourcetype
-     *
-     * 
-     * @param resource
-     * @return
-     */
-    public List<ResourceEntity> getAllApplicationsWithResource(int resource) {
-        return entityManager.createQuery(
-                "select distinct r from ResourceEntity r left join " + "fetch r.consumedMasterRelations rel "
-                        + "left join fetch rel.slaveResource s " + "where s.resourceType.id =:resource ",
-                ResourceEntity.class).setMaxResults(101).setParameter("resource", resource).getResultList();
-    }
-
-    /**
-     *  Für JavaBatch Monitor
-     * @param apps
-     * @return
-     */
-    public List<ResourceEntity> getBatchJobConsumedResources(List<String> apps) {
-        List<Integer> rsc = new ArrayList<>();
-        rsc.add(Constants.RESOURCETYPE_DB2);
-        rsc.add(Constants.RESOURCETYPE_ORACLE);
-        rsc.add(Constants.RESOURCETYPE_WS);
-        rsc.add(Constants.RESOURCETYPE_REST);
-        rsc.add(Constants.RESOURCETYPE_FILE);
-        return entityManager
-                .createQuery(
-                        "select r from ResourceEntity r " +      //
-                                "left join fetch r.resourceGroup rg " +      //
-                                "left join fetch r.consumedMasterRelations rel " +      //
-                                "left join fetch rel.slaveResource slave " +      //
-                                "where LOWER(rg.name) in :apps " + "and slave.resourceType.id in :rsc ",
-                        ResourceEntity.class)
-                .setParameter("apps", apps).setParameter("rsc", rsc).getResultList();
-    }
-
-    /**
-     *  Für JavaBatch Monitor
-     * @param apps
-     * @return
-     */
-    public List<ResourceEntity> getBatchJobProvidedResources(List<String> apps) {
-        List<Integer> rsc = new ArrayList<>();
-        rsc.add(Constants.RESOURCETYPE_DB2);
-        rsc.add(Constants.RESOURCETYPE_ORACLE);
-        rsc.add(Constants.RESOURCETYPE_WS);
-        rsc.add(Constants.RESOURCETYPE_REST);
-        rsc.add(Constants.RESOURCETYPE_FILE);
-        return entityManager
-                .createQuery(
-                        "select r from ResourceEntity r " +      //
-                                "left join fetch r.resourceGroup rg " +      //
-                                "left join fetch r.providedMasterRelations rel " +      //
-                                "left join fetch rel.slaveResource slave " +      //
-                                "where LOWER(rg.name) in :apps " + "and slave.resourceType.id in :rsc ",
-                        ResourceEntity.class)
-                .setParameter("apps", apps).setParameter("rsc", rsc).getResultList();
-    }
-
-    /**
-     * Für JavaBatch Monitor <br>
-     * read only Applications
-     * @param appServerList
-     * @return
-     */
-    public List<ResourceEntity> getAppToAppServerMapping(List<String> appServerList) {
-        return entityManager.createQuery(
-                "select r from ResourceEntity r left join fetch r.consumedMasterRelations rel " //
-                        + "left join fetch rel.slaveResource s where s.resourceType.id = "
-                        + Constants.RESOURCETYPE_APPLICATION + " AND LOWER(r.name) in :appServerList",
-                ResourceEntity.class).setParameter("appServerList", appServerList).getResultList();
-
-    }
-    
 }

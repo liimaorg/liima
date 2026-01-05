@@ -25,15 +25,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.junit.After;
 import org.junit.Before;
@@ -49,10 +46,7 @@ import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntit
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 public class ResourceLocatorTest {
@@ -237,180 +231,6 @@ public class ResourceLocatorTest {
 
         // then
         assertFalse(hasResourceProvidableType);
-    }
-
-    @Test
-    public void getResourceByGroupName() throws ValidationException {
-        // given
-        String name = "ch_mobi_fofa_fofa_selection";
-        List<ResourceEntity> list = new ArrayList<>();
-        ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().name("ch_mobi_fofa_fofa_selection").build();
-        ResourceEntity entity = new ResourceEntityBuilder().withType(resourceType).build();
-        entity.setName("ch_mobi_fofa_fofa_selection");
-        list.add(entity);
-        Mockito.when(resourceRepositoryMock.getResourceByName(Mockito.anyString())).thenReturn(list);
-
-        // when
-        List<ResourceEntity> result = resourceLocator.getResourceByGroupName(name);
-
-        // then
-        assertTrue(name.equals(result.get(0).getName()));
-    }
-
-    @Test
-    public void getAllApplicationsWithResource() throws ValidationException {
-        
-        // given       
-        int id = 2305; //batchjobs
-        String name = "ch_mobi_fofa_fofa_selection";
-        List<ResourceEntity> list = new ArrayList<>();
-        ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().name(name).build();
-
-        ResourceEntity slave1 = ResourceFactory.createNewResource("BatchJob");
-        ResourceTypeEntity type1 = new ResourceTypeEntity();
-        type1.setName("type1");
-        type1.setId(id);
-        slave1.setResourceType(type1);
-
-        ConsumedResourceRelationEntity relation1 = new ConsumedResourceRelationEntity();
-        relation1.setSlaveResource(slave1);
-        relation1.setIdentifier("1");
-               
-        ResourceEntity entity = new ResourceEntityBuilder().withType(resourceType).build();
-        entity.addConsumedRelation(relation1);
-        entity.setName(name);
-        list.add(entity);        
-        Mockito.when(resourceRepositoryMock.getAllApplicationsWithResource(Mockito.anyInt())).thenReturn(list);
-        
-        // when
-        List<ResourceEntity> result = resourceLocator.getAllApplicationsWithResource(id);
-
-        // then
-        ResourceEntity re = result.get(0);
-        assertTrue(name.equals(re.getName()));
-        Object[] rel = re.getConsumedMasterRelations().toArray();
-
-        assertTrue("BatchJob".equals(((ConsumedResourceRelationEntity)rel[0]).getSlaveResource().getName()));
-    }
-
-    @Test
-    public void getBatchJobConsumedResources() throws ValidationException {
-        
-        // given       
-        String name = "ch_mobi_fofa_fofa_selection";
-        List<String> apps = new ArrayList<>();
-        String resource = "DB2";
-        apps.add(name);
-
-        List<ResourceEntity> list = new ArrayList<>();
-        ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().name(name).build();
-
-        ResourceEntity slave1 = ResourceFactory.createNewResource(resource);
-        ResourceTypeEntity type1 = new ResourceTypeEntity();
-        type1.setName("db2Host");
-        slave1.setResourceType(type1);
-
-        ConsumedResourceRelationEntity relation1 = new ConsumedResourceRelationEntity();
-        relation1.setSlaveResource(slave1);
-        relation1.setIdentifier("1");
-               
-        ResourceEntity entity = new ResourceEntityBuilder().withType(resourceType).build();
-        entity.addConsumedRelation(relation1);
-        list.add(entity);        
-        Mockito.when(resourceRepositoryMock.getBatchJobConsumedResources(Mockito.anyList())).thenReturn(list);
-        
-        // when
-        List<ResourceEntity> result = resourceLocator.getBatchJobConsumedResources(apps);
-
-        // then
-        ResourceEntity re = result.get(0);
-        Object[] rel = re.getConsumedMasterRelations().toArray();
-
-        assertTrue(resource.equals(((ConsumedResourceRelationEntity)rel[0]).getSlaveResource().getName()));
-    }
-
-    @Test
-    public void getBatchJobProvidedResources() throws ValidationException {
-        
-        // given       
-        String name = "ch_mobi_javabatch_beispielapplikation";
-        String resource = "integrationFile";
-        List<String> apps = new ArrayList<>();
-        apps.add(name);
-
-        List<ResourceEntity> list = new ArrayList<>();
-        ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().name(name).build();
-
-        ResourceEntity slave1 = ResourceFactory.createNewResource(resource);
-        ResourceTypeEntity type1 = new ResourceTypeEntity();
-        type1.setName("File");
-        slave1.setResourceType(type1);
-
-        ProvidedResourceRelationEntity relation1 = new ProvidedResourceRelationEntity();
-        relation1.setSlaveResource(slave1);
-        relation1.setIdentifier("1");
-               
-        ResourceEntity entity = new ResourceEntityBuilder().withType(resourceType).build();
-        entity.addProvidedRelation(relation1);
-        list.add(entity);        
-        Mockito.when(resourceRepositoryMock.getBatchJobProvidedResources(Mockito.anyList())).thenReturn(list);
-        
-        // when
-        List<ResourceEntity> result = resourceLocator.getBatchJobProvidedResources(apps);
-
-        // then
-        ResourceEntity re = result.get(0);
-        Object[] rel = re.getProvidedMasterRelations().toArray();
-
-        assertTrue(resource.equals(((ProvidedResourceRelationEntity)rel[0]).getSlaveResource().getName()));
-    }
-    
-    
-    @Test
-    public void getAppToAppServerMappingEmpty() {
-        // given
-        List<String> list = new ArrayList<>();
-        list.add("app");
-
-        // when
-        Map<String, String> map = resourceLocator.getAppToAppServerMapping(list);
-
-        // then
-        assertTrue(map.isEmpty());
-    }
-
-    @Test
-    public void getAppToAppServerMapping() {
-        // given
-        List<String> list = new ArrayList<>();
-        list.add("app");
-        List<ResourceEntity> value = new ArrayList<>();
-
-        ResourceEntity master = ResourceFactory.createNewResource("server");
-        ResourceEntity slave1 = ResourceFactory.createNewResource("app");
-        ResourceEntity slave2 = ResourceFactory.createNewResource(slave1.getResourceGroup());
-
-        ConsumedResourceRelationEntity relation1 = new ConsumedResourceRelationEntity();
-        relation1.setMasterResource(master);
-        relation1.setSlaveResource(slave1);
-        relation1.setIdentifier("1");
-        master.addConsumedRelation(relation1);
-        ConsumedResourceRelationEntity relation2 = new ConsumedResourceRelationEntity();
-        relation2.setMasterResource(master);
-        relation2.setSlaveResource(slave2);
-        relation2.setIdentifier("1");
-        master.addConsumedRelation(relation2);
-
-        value.add(master);
-        Mockito.when(resourceRepositoryMock.getAppToAppServerMapping(list)).thenReturn(value);
-
-        // when
-        Map<String, String> map = resourceLocator.getAppToAppServerMapping(list);
-
-        // then
-        assertTrue(map.size() == 1);
-        assertTrue(map.get("app").equals("server"));
-
     }
 
 }

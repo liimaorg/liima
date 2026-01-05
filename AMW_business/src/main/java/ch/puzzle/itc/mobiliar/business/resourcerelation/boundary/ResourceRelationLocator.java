@@ -87,8 +87,6 @@ public class ResourceRelationLocator {
     }
 
     /**
-     * Für JavaBatch Monitor: gibt Liste zurück, da mehr als 1 'StandardJob' pro App möglich
-     * 
      * @param resourceGroupName
      * @param resourceGroupReleaseName
      * @param relatedResourceGroupName
