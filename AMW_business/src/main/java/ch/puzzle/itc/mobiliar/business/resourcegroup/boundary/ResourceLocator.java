@@ -41,9 +41,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 @Stateless
@@ -289,88 +287,6 @@ public class ResourceLocator {
             }
         }
         return result;
-    }
-
-    
-    /**
-     * Für JavaBatch Monitor
-     * @param name
-     *            name of resource group
-     * @return List of ResourceEntities
-     * @throws ValidationException
-     *             thrown if one of the arguments is either empty or null
-     */
-    public List<ResourceEntity> getResourceByGroupName(String name) throws ValidationException {
-        ValidationHelper.validateNotNullOrEmptyChecked(name);
-
-        try {
-            return resourceRepository.getResourceByName(name);
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-    
-    /**
-     *  Für JavaBatch Monitor
-     * @param resource
-     * @return
-     */
-    public List<ResourceEntity> getAllApplicationsWithResource(int resource) {
-        return resourceRepository.getAllApplicationsWithResource(resource);
-    }
-
-    /**
-     *  Für JavaBatch Monitor
-     * @param apps
-     * @return
-     */
-    public List<ResourceEntity> getBatchJobConsumedResources(List<String> apps) {
-        if (apps == null || apps.isEmpty()) {
-            return null;
-        }
-
-        try {
-            return resourceRepository.getBatchJobConsumedResources(apps);
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-    
-    /**
-     *  Für JavaBatch Monitor
-     * @param apps
-     * @return
-     */
-    public List<ResourceEntity> getBatchJobProvidedResources(List<String> apps) {
-        if (apps == null || apps.isEmpty()) {
-            return null;
-        }
-        try {
-            return resourceRepository.getBatchJobProvidedResources(apps);
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
-    
-    /**
-     *  Für JavaBatch Monitor
-     * @param appServerList
-     * @return Map<String app, String server>
-     */
-    public Map<String, String> getAppToAppServerMapping(List<String> appServerList) {
-        Map<String, String> map = new HashMap<>();
-        if (appServerList==null || appServerList.isEmpty()) {
-            return map;
-        }
-        List<ResourceEntity> resultList = resourceRepository.getAppToAppServerMapping(appServerList);
-        for (ResourceEntity entity : resultList) {
-            for (ConsumedResourceRelationEntity rel: entity.getConsumedMasterRelations()) {
-                map.put(rel.getSlaveResource().getName(), entity.getName());
-                break; //einmal zuweisen genügt
-            }
-            
-        }
-        return map;
     }
 
     public ResourceEntity getResourceById(Integer resourceId) {

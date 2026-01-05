@@ -20,19 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.database.control;
 
-
-public class Constants
-{
-	public static final String GENERATORTABLE = "SAMW_sequences";
-	public static final String GENERATORPKCOLUMNNAME= "SEQ_name";
-	public static final String GENERATORVALUECOLUMNNAME = "next_val";
-	
-	//Für JavaBatch Monitor:
-	public static final Integer RESOURCETYPE_APPLICATION = 1;
-    public static final Integer RESOURCETYPE_DB2 = 5;
-    public static final Integer RESOURCETYPE_ORACLE = 6;
-    public static final Integer RESOURCETYPE_WS = 7;
-    public static final Integer RESOURCETYPE_REST = 2052;
-    public static final Integer RESOURCETYPE_FILE = 2303;
-    
+public class Constants {
+    public static final String GENERATORTABLE = "SAMW_sequences";
+    public static final String GENERATORPKCOLUMNNAME = "SEQ_name";
+    public static final String GENERATORVALUECOLUMNNAME = "next_val";
 }

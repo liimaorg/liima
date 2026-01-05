@@ -39,7 +39,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import ch.mobi.itc.mobiliar.rest.dtos.BatchPropertyDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -98,88 +97,6 @@ public class ResourceRelationPropertiesRest {
             propertyDTOS.add(new PropertyDTO(property, context.getName()));
         }
         return Response.ok(propertyDTOS).build();
-    }
-
-    /**
-     * Für JavaBatch Monitor: liest alle Properties zu allen standardJobs einer Batch Applikation
-     *
-     * @param environment
-     * @return
-     * @throws ValidationException
-     */
-    @Path("/batch")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get all batch properties")
-    public List<BatchPropertyDTO> getResourceRelationBatchProperties(@DefaultValue("Global")
-                                                                     @Parameter(description = "the environment - if not set, this falls back to global") @QueryParam("env") String environment)
-            throws ValidationException {
-
-        List<ConsumedResourceRelationEntity> relations = resourceRelationLocator
-                .getResourceRelationList(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
-
-        List<BatchPropertyDTO> result = new ArrayList<BatchPropertyDTO>();
-
-        ContextEntity context = contextLocator.getContextByName(environment);
-
-        for (ConsumedResourceRelationEntity relation : relations) {
-
-            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(relation,
-                    context.getId());
-            List<PropertyDTO> props = new ArrayList<>();
-            for (ResourceEditProperty property : properties) {
-                props.add(new PropertyDTO(property, context.getName()));
-            }
-            BatchPropertyDTO job = new BatchPropertyDTO(relation.getMasterResourceName(), relation.buildIdentifer(),
-                    props);
-            result.add(job);
-        }
-
-        return result;
-    }
-
-
-    //TODO Yves/Lorenz: Performance; ablösen durch mengenwertige neue Methode mit neuem Query
-
-    /**
-     * Für JavaBatch Monitor: liest ein einzelnes Property (Jobname) zu allen standardJobs einer Batch-Applikation
-     *
-     * @param propertyName
-     * @param environment
-     * @return
-     * @throws ValidationException
-     */
-    @Path("/batch/{propertyName}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get a batchjob property")
-    public List<BatchPropertyDTO> getResourceRelationBatchProperty(@PathParam("propertyName") String propertyName,
-                                                                   @Parameter(description = "the environment - if not set, this falls back to global") @DefaultValue("Global") @QueryParam("env") String environment)
-            throws ValidationException {
-
-        List<ConsumedResourceRelationEntity> relations = resourceRelationLocator
-                .getResourceRelationList(resourceGroupName, releaseName, relatedResourceGroupName, relatedReleaseName);
-
-        List<BatchPropertyDTO> result = new ArrayList<BatchPropertyDTO>();
-
-        ContextEntity context = contextLocator.getContextByName(environment);
-
-        for (ConsumedResourceRelationEntity relation : relations) {
-
-            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(relation,
-                    context.getId());
-            List<PropertyDTO> props = new ArrayList<>();
-            for (ResourceEditProperty property : properties) {
-                if (property.getTechnicalKey().equals(propertyName)) {
-                    props.add(new PropertyDTO(property, context.getName()));
-                }
-            }
-            BatchPropertyDTO job = new BatchPropertyDTO(relation.getMasterResourceName(), relation.buildIdentifer(),
-                    props);
-            result.add(job);
-        }
-
-        return result;
     }
 
     @Path("/{propertyName}")

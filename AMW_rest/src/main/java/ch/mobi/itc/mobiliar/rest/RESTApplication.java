@@ -52,7 +52,6 @@ import ch.mobi.itc.mobiliar.rest.exceptions.ValidationExceptionMapper;
 import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
-import ch.mobi.itc.mobiliar.rest.resources.BatchJobRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourceFunctionsRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourceGroupsRest;
 import ch.mobi.itc.mobiliar.rest.resources.ResourcePropertiesRest;
@@ -84,7 +83,6 @@ public class RESTApplication extends Application {
 
         // Endpoints
         resources.add(AppsRest.class);
-        resources.add(BatchJobRest.class);
         resources.add(ResourceGroupsRest.class);
         resources.add(ResourceTypesRest.class);
         resources.add(ReleasesRest.class);
