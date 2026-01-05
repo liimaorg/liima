@@ -1,3 +1,9 @@
+# v1.18.7
+* fix: readd missing fields in ServerTuple to make links on servers page work again [#922](https://github.com/liimaorg/liima/pull/922)
+* Deployment log: warn and error highlighting doesn't work anymore [#914](https://github.com/liimaorg/liima/issues/914)
+* Remove batch job REST resources [#915](https://github.com/liimaorg/liima/issues/915)
+* chore: upgrade to Angular 21 and migrate to zoneless architecture [#924](https://github.com/liimaorg/liima/pull/924)
+
 # v1.18.6
 * fix(rest): add produces csv annotation to deployment rest, consolidate servers and hostNames endpoint [#913](https://github.com/liimaorg/liima/pull/913)
 
