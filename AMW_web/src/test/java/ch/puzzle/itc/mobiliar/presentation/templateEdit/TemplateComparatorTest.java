@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.presentation.templateEdit;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 
@@ -34,7 +34,7 @@ public class TemplateComparatorTest {
 
 	private TemplateComparator templateComparator;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		templateComparator = new TemplateComparator();
 	}
@@ -138,7 +138,6 @@ public class TemplateComparatorTest {
 		// then
 		assertEquals(t2,list.get(0));
 		assertEquals(t1,list.get(1));
-		
 	}
 
 }

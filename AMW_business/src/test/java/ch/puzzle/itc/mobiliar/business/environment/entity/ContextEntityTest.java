@@ -22,19 +22,18 @@ package ch.puzzle.itc.mobiliar.business.environment.entity;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ContextEntityTest
-{
+public class ContextEntityTest {
 
 	PropertyEntity propertyEntity;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		propertyEntity = new PropertyEntity();
 		propertyEntity.setId(Integer.valueOf(1));

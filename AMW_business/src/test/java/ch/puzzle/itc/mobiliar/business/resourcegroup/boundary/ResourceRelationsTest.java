@@ -20,6 +20,21 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import ch.puzzle.itc.mobiliar.business.domain.applist.ApplistScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -30,15 +45,6 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class ResourceRelationsTest {
 
@@ -64,7 +70,7 @@ public class ResourceRelationsTest {
     ResourceEntity app;
     ResourceGroupEntity appGrp;
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
         release = Mockito.mock(ReleaseEntity.class);
@@ -118,9 +124,9 @@ public class ResourceRelationsTest {
         List<ResourceWithRelations> resources = service.filterAppServersByRelease(release, applicationServers);
 
         //then
-        Assert.assertEquals(1, resources.size());
-        Assert.assertEquals(0, resources.get(0).getRelatedResources().size());
-        Assert.assertEquals(as, resources.get(0).getResource());
+        assertEquals(1, resources.size());
+        assertEquals(0, resources.get(0).getRelatedResources().size());
+        assertEquals(as, resources.get(0).getResource());
     }
 
     @Test
@@ -128,8 +134,8 @@ public class ResourceRelationsTest {
         ResourceWithRelations resourceWithRelations = doTestFilterApplicationsByRelease(5);
 
         //then
-        Assert.assertEquals(1, resourceWithRelations.getRelatedResources().size());
-        Assert.assertEquals(resourceWithRelations.getRelatedResources().get(0), app);
+        assertEquals(1, resourceWithRelations.getRelatedResources().size());
+        assertEquals(resourceWithRelations.getRelatedResources().get(0), app);
     }
 
     private ResourceWithRelations doTestFilterApplicationsByRelease(int appId)

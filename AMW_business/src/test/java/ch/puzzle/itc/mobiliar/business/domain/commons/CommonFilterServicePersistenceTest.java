@@ -27,12 +27,12 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
 import ch.puzzle.itc.mobiliar.business.domain.commons.Sort.SortingDirectionType;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
 import org.hibernate.internal.QueryImpl;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -50,7 +50,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class CommonFilterServicePersistenceTest {
 
 	@Spy
@@ -63,7 +63,7 @@ public class CommonFilterServicePersistenceTest {
 	@InjectMocks
 	CommonFilterService service;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MockitoAnnotations.openMocks(this);
 	}

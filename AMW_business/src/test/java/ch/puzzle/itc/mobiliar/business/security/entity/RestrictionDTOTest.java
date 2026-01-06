@@ -20,19 +20,21 @@
 
 package ch.puzzle.itc.mobiliar.business.security.entity;
 
-import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
 
 public class RestrictionDTOTest {
 
     private RoleEntity rol;
     private PermissionEntity per;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         rol = new RoleEntity();
         rol.setName("testRole");
@@ -51,8 +53,8 @@ public class RestrictionDTOTest {
         RestrictionDTO resDTO = new RestrictionDTO(res);
 
         //then
-        Assert.assertEquals(per.getValue(), resDTO.getPermissionName());
-        Assert.assertEquals(res.getAction(), resDTO.getRestriction().getAction());
+        assertEquals(per.getValue(), resDTO.getPermissionName());
+        assertEquals(res.getAction(), resDTO.getRestriction().getAction());
     }
 
     @Test
@@ -68,7 +70,7 @@ public class RestrictionDTOTest {
         RestrictionDTO resDTO = new RestrictionDTO(res);
 
         //then
-        Assert.assertEquals(rol.getName(), resDTO.getRestriction().getRole().getName());
-        Assert.assertEquals(res.getContext().getName(), resDTO.getRestriction().getContext().getName());
+        assertEquals(rol.getName(), resDTO.getRestriction().getRole().getName());
+        assertEquals(res.getContext().getName(), resDTO.getRestriction().getContext().getName());
     }
 }

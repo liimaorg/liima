@@ -20,32 +20,38 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
+import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Date;
+
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
-import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Date;
-
-import static ch.puzzle.itc.mobiliar.business.security.entity.Action.READ;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class EditResourceViewTest {
 
 	public EditResourceView context = new EditResourceView();
@@ -62,7 +68,7 @@ public class EditResourceViewTest {
 	@Mock
 	ResourceLocator resourceLocator;
 	
-	@Before
+	@BeforeEach
 	public void setup(){
 		context.resourceType = resourceType;
 		context.permissionBoundary = permissionBoundary;
@@ -75,7 +81,7 @@ public class EditResourceViewTest {
 	public void testGetDefaultResourceTypeCapitalizedName() {
 		when(resourceType.getName()).thenReturn(DefaultResourceTypeDefinition.APPLICATION.name());
 		String displayName = context.getCapitalizedResourceTypeName();
-		Assert.assertEquals("Application", displayName);
+		assertEquals("Application", displayName);
 	}
 
 	@Test
@@ -95,12 +101,12 @@ public class EditResourceViewTest {
 		//when
 		context.resource=r;
 		//then
-		Assert.assertTrue(context.hasNewerRelease());
+		assertTrue(context.hasNewerRelease());
 		
 		//when
 		context.resource=r2;
 		//then
-		Assert.assertFalse(context.hasNewerRelease());
+		assertFalse(context.hasNewerRelease());
 		
 	}
 	
@@ -127,18 +133,18 @@ public class EditResourceViewTest {
 		//then	
 		
 		//The second group does only exist for a release later than the first - therefore the method returns false.
-		Assert.assertFalse(context.existsForThisRelease(group2));
+		assertFalse(context.existsForThisRelease(group2));
 		
 		//when
 		context.resource=r2;
 		//then
 		//In the inverse direction, the first group already exists...
-		Assert.assertTrue(context.existsForThisRelease(group));
+		assertTrue(context.existsForThisRelease(group));
 		
 		//when
 		r.setRelease(rel2);
 		//if both have the same release, the method also returns true
-		Assert.assertTrue(context.existsForThisRelease(group));
+		assertTrue(context.existsForThisRelease(group));
 		
 	}
 
@@ -210,7 +216,7 @@ public class EditResourceViewTest {
 		String result = context.getDeploymentLinkAngular();
 
 		// then
-		Assert.assertEquals("[{\"name\":\"Application\",\"val\":\"resourceName\"}]", result);
+		assertEquals("[{\"name\":\"Application\",\"val\":\"resourceName\"}]", result);
 
 	}
 

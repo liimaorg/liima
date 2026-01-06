@@ -28,12 +28,12 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModelException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 
 import javax.persistence.EntityManager;
@@ -41,10 +41,10 @@ import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class ApplicationResolverTest {
 
 	@Spy
@@ -61,7 +61,7 @@ public class ApplicationResolverTest {
      @Mock
 	ResourceDependencyResolverService resourceDependencyResolverService;
 
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		CustomLogging.setup(Level.OFF);
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();

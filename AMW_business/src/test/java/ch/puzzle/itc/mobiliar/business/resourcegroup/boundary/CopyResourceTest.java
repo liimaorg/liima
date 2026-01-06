@@ -20,6 +20,24 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
@@ -35,19 +53,6 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.*;
 
 public class CopyResourceTest {
 
@@ -66,14 +71,13 @@ public class CopyResourceTest {
     @Mock
     ResourceLocator resourceLocatorMock;
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void shouldNotAllowCopyFromResourceOfDifferentType() throws Exception {
-
         //given
         String targetResourceName = "target";
         Integer targetResourceId = 2;
@@ -91,7 +95,9 @@ public class CopyResourceTest {
         when(commonDomainService.getResourceEntityById(originResourceId)).thenReturn(originResource);
 
         // when // then
-        copyResource.doCopyResource(targetResourceId, originResourceId, ForeignableOwner.getSystemOwner());
+        assertThrows(AMWException.class, () -> {
+            copyResource.doCopyResource(targetResourceId, originResourceId, ForeignableOwner.getSystemOwner());
+        });
     }
 
     @Test

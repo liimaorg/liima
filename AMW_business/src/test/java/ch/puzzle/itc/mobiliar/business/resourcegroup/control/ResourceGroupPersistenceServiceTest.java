@@ -20,32 +20,35 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService}
  */
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class ResourceGroupPersistenceServiceTest {
 
 	@Spy
@@ -69,7 +72,7 @@ public class ResourceGroupPersistenceServiceTest {
 	ResourceEntity resource4;
 	ResourceEntity asContainer;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MockitoAnnotations.openMocks(this);
 	}
@@ -128,11 +131,11 @@ public class ResourceGroupPersistenceServiceTest {
 		entityManager.flush();
 		entityManager.clear();
 		ResourceGroupEntity resGrp = entityManager.find(ResourceGroupEntity.class, resource1.getResourceGroup().getId());
-		Assert.assertFalse(entityManager.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(resGrp, "resources"));
+		assertFalse(entityManager.getEntityManagerFactory().getPersistenceUnitUtil().isLoaded(resGrp, "resources"));
 		resGrp.setName("newName");
 		entityManager.flush();
 		ResourceEntity res = entityManager.find(ResourceEntity.class, resource1.getId());
-		Assert.assertEquals("newName", res.getName());
+		assertEquals("newName", res.getName());
 	}
 
 

@@ -32,8 +32,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -66,7 +66,7 @@ public class DeploymentSchedulerTest {
 
 	ContextEntity contextEntity;
 
-	@Before
+	@BeforeEach
 	public void setUp(){
 		MockitoAnnotations.openMocks(this);
 

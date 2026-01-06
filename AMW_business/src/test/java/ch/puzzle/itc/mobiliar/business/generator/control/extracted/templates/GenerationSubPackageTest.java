@@ -23,9 +23,9 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GenerationSubPackageTest {
 	

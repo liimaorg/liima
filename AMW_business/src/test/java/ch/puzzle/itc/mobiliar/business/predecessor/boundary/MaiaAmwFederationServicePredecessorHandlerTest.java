@@ -41,12 +41,12 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,12 +54,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests {@link MaiaAmwFederationServicePredecessorHandler}
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MaiaAmwFederationServicePredecessorHandlerTest {
 
     private static final String APPNAME_P = "predecessor";
@@ -95,14 +96,14 @@ public class MaiaAmwFederationServicePredecessorHandlerTest {
     private ResourceRelationEntityBuilder relationBuilder = new ResourceRelationEntityBuilder();
 
 
-    @Test(expected = AMWRuntimeException.class)
+    @Test
     public void shouldFailIfSuccessorIsNotFound() throws ValidationException {
 
         // given
         Mockito.when(resourceRepositoryMock.getResourcesByGroupNameWithAllRelationsOrderedByRelease(APPNAME_S)).thenReturn(new LinkedList<ResourceEntity>());
 
         // when // then
-        servicePredecessorHandler.handlePredecessor(APPNAME_S, APPNAME_P, ForeignableOwner.MAIA);
+        assertThrows(AMWRuntimeException.class, () -> servicePredecessorHandler.handlePredecessor(APPNAME_S, APPNAME_P, ForeignableOwner.MAIA));
     }
 
     @Test

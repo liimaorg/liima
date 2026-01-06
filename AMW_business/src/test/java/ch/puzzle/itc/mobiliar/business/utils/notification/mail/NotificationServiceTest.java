@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.utils.notification.mail;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,8 +34,8 @@ import javax.mail.internet.InternetAddress;
 
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
 import ch.puzzle.itc.mobiliar.business.utils.notification.MailService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -50,13 +50,10 @@ public class NotificationServiceTest {
 	@Mock
 	MailService mailService;
 	
-	
-	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		MockitoAnnotations.openMocks(this);
 	}
-	
 	
 	@Test
 	public void test_createAndSendMail_noEmailRecipients() throws MessagingException {

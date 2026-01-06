@@ -33,12 +33,12 @@ import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.test.PersistingEntityBuilder;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceEnversTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -50,10 +50,10 @@ import java.util.Map;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.APP;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.AS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(PersistenceEnversTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class ReleaseTest {
 
 
@@ -78,7 +78,7 @@ public class ReleaseTest {
 	ResourceContextEntity asContext;
 
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MockitoAnnotations.openMocks(this);
 		builder = new PersistingEntityBuilder(entityManager).buildSimple();

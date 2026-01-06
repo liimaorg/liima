@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FreeMarkerPropertyDescriptorTest {
 

@@ -20,12 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.control;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -34,24 +34,19 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ResourceRelationConfigurationServiceTest {
-
 
     @InjectMocks
     ResourceRelationConfigurationService service;
 
     @Test
     public void suspectOwnerCombinationShouldNotBePlausibleTest() {
-
-        // when then
         assertFalse(service.isPlausibleOwnerCombination(ForeignableOwner.MAIA,ForeignableOwner.AMW,ForeignableOwner.MAIA));
-
     }
 
     @Test
     public void plausibleOwnerCombinationsShouldNotBeSuspectTest() {
-
         // when then
         assertFalse(service.isSuspectOwnerCombination(ForeignableOwner.getSystemOwner(), ForeignableOwner.getSystemOwner(), ForeignableOwner.getSystemOwner()));
 
@@ -71,7 +66,6 @@ public class ResourceRelationConfigurationServiceTest {
 
     @Test
     public void suspectRelationShouldNotBePlausibleTest() {
-
         // given
         ResourceEntity master = ResourceFactory.createNewResource("master");
         ResourceEntity slave = ResourceFactory.createNewResource("slave");
@@ -86,12 +80,10 @@ public class ResourceRelationConfigurationServiceTest {
 
         // when then
         assertFalse(service.isPlausibleRelation(cRelation));
-
     }
 
     @Test
     public void plausibleRelationShouldNotBeSuspectTest() {
-
         // given
         ResourceEntity master = ResourceFactory.createNewResource("master");
         ResourceEntity slave = ResourceFactory.createNewResource("slave");
@@ -106,7 +98,6 @@ public class ResourceRelationConfigurationServiceTest {
 
         // when then
         assertFalse(service.isSuspectRelation(pRelation));
-
     }
 
 }

@@ -25,15 +25,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.lang.System;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 public class CustomLoggingTest {
 
 	Logger log = Logger.getLogger(CustomLogging.class.getName());
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MockitoAnnotations.openMocks(this);
 	}

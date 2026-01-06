@@ -23,8 +23,8 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 import static ch.puzzle.itc.mobiliar.business.domain.TestUtils.unitsFor;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.LB;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.WS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,8 +32,8 @@ import java.util.logging.Level;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
@@ -89,7 +89,7 @@ public class TemplateProcessorUseCasesTest extends AmwTemplateProcessorTest {
 	String appTemplateExpected = "xurl=https://test.org//test_ctx";
 
 	@Override
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		super.before();
 		CustomLogging.setup(Level.OFF);

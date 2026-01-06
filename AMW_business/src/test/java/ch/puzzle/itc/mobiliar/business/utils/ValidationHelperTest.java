@@ -20,71 +20,65 @@
 
 package ch.puzzle.itc.mobiliar.business.utils;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-
-import static org.junit.Assert.*;
 
 public class ValidationHelperTest {
 
 	@Test
-	public void validateNotNullOrEmptyOnOneValidArgumentShouldValidate() {
+	public void validateNotNullOrEmptyOnOneValidArgumentShouldValidate() throws ValidationException {
 		// given
 		String arg1 = "not empty argument1";
-
 		// when
-		try {
-			ValidationHelper.validateNotNullOrEmptyChecked(arg1);
-		}
-		catch (ValidationException e) {
-			fail();
-		}
+		ValidationHelper.validateNotNullOrEmptyChecked(arg1);
 	}
 
 	@Test
-	public void validateNotNullOrEmptyOnManyValidArgumentsShouldValidate() {
+	public void validateNotNullOrEmptyOnManyValidArgumentsShouldValidate() throws ValidationException {
 		// given
 		String arg1 = "not empty argument1";
 		String arg2 = "not empty argument2";
 		String arg3 = "not empty argument3";
 
 		// when
-		try {
-			ValidationHelper.validateNotNullOrEmptyChecked(arg1, arg2, arg3);
-		}
-		catch (ValidationException e) {
-			fail();
-		}
+		ValidationHelper.validateNotNullOrEmptyChecked(arg1, arg2, arg3);
 	}
 
-	@Test(expected = ValidationException.class)
-	public void validateNotNullOrEmptyOnOneEmptyArgumentShouldThrowException() throws ValidationException {
+	@Test
+	public void validateNotNullOrEmptyOnOneEmptyArgumentShouldThrowException() {
 		// given
 		String arg1 = "";
 
 		// when
-		ValidationHelper.validateNotNullOrEmptyChecked(arg1);
+		assertThrows(ValidationException.class, () -> {
+			ValidationHelper.validateNotNullOrEmptyChecked(arg1);
+		});
 	}
 
-	@Test(expected = ValidationException.class)
-	public void validateNotNullOrEmptyOnOneNullArgumentShouldThrowException() throws ValidationException {
+	@Test
+	public void validateNotNullOrEmptyOnOneNullArgumentShouldThrowException() {
 		// given
 		String arg1 = null;
 
 		// when
-		ValidationHelper.validateNotNullOrEmptyChecked(arg1);
+		assertThrows(ValidationException.class, () -> {
+			ValidationHelper.validateNotNullOrEmptyChecked(arg1);
+		});
 	}
 
-    @Test(expected = ValidationException.class)
-	public void validateNotNullOrEmptyOnAtLeastOneInvalidArgumentShouldThrowException() throws ValidationException {
+	@Test
+	public void validateNotNullOrEmptyOnAtLeastOneInvalidArgumentShouldThrowException() {
 		// given
 		String arg1 = "not empty argument1";
 		String arg2 = "";
 		String arg3 = "not empty argument3";
 
 		// when
-		ValidationHelper.validateNotNullOrEmptyChecked(arg1, arg2, arg3);
+		assertThrows(ValidationException.class, () -> {
+			ValidationHelper.validateNotNullOrEmptyChecked(arg1, arg2, arg3);
+		});
 	}
-
 }

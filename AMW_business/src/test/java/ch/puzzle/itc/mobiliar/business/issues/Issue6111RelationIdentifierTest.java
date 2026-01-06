@@ -20,15 +20,15 @@
 
 package ch.puzzle.itc.mobiliar.business.issues;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
@@ -43,9 +43,9 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
 import ch.puzzle.itc.mobiliar.test.PersistingEntityBuilder;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<PersistingEntityBuilder> {
 
 	@Spy
@@ -57,7 +57,7 @@ public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<P
 	private ResourceEntity adIntern;
 	private ResourceEntity adExtern;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MockitoAnnotations.openMocks(this);
 		builder = new PersistingEntityBuilder(entityManager).buildSimple();

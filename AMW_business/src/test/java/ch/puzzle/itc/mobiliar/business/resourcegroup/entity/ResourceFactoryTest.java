@@ -20,18 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashSet;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ResourceFactoryTest {
 
 	@Test
 	public void test_createNewResource() {
-
 		// when
 		ResourceEntity resource = ResourceFactory.createNewResource();
 
@@ -43,7 +42,6 @@ public class ResourceFactoryTest {
 
 	@Test
 	public void test_createNewResourceWithName() {
-
 		// when
 		ResourceEntity resource = ResourceFactory.createNewResource("foo");
 

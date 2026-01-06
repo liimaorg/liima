@@ -34,8 +34,8 @@ import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +43,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BaseTemplateProcessorTest {
 
@@ -60,7 +60,7 @@ public class BaseTemplateProcessorTest {
     PropertyDescriptorEntity des2;
     PropertyDescriptorEntity des3;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         des1 = new PropertyDescriptorEntity();
         des1.setPropertyName("foo");

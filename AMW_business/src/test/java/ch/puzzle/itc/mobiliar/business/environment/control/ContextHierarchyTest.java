@@ -21,15 +21,15 @@
 package ch.puzzle.itc.mobiliar.business.environment.control;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +38,7 @@ public class ContextHierarchyTest {
     @InjectMocks
     ContextHierarchy contextHierarchy;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         MockitoAnnotations.openMocks(this);
     }
@@ -59,6 +59,5 @@ public class ContextHierarchyTest {
 
         assertEquals(3, result.size());
         assertEquals(Arrays.asList(3000, 1002, 2000), result);
-
     }
 }

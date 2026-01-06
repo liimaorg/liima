@@ -29,8 +29,8 @@ import java.util.logging.Logger;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFailureReason;
 import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.NodeGenerationResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -60,7 +60,7 @@ public class DeploymentAsynchronousExecuterTest {
 	DeploymentEntity deployment;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
 		

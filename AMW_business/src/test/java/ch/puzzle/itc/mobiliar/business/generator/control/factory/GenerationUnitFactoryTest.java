@@ -30,20 +30,56 @@ import ch.puzzle.itc.mobiliar.test.SimpleEntityBuilder;
 
 import com.google.common.collect.Lists;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
 
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
 import static ch.puzzle.itc.mobiliar.business.domain.TestUtils.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GenerationUnitFactoryTest extends GenerationUnitFactoryBaseTest<SimpleEntityBuilder> {
+import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorUtils;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationOptions;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationPackage;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnitFactory;
+import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
+import java.util.logging.Logger;
 
-    ResourceEntity node;
-    @Override
+public class GenerationUnitFactoryTest {
+
+	ResourceEntity node;
+
+	@InjectMocks
+	GenerationUnitFactory factory;
+
+	@Spy
+	Logger log = Logger.getLogger(GenerationUnitFactoryTest.class.getSimpleName());
+
+	@Mock
+	GeneratorUtils utils;
+
+	SimpleEntityBuilder builder;
+
+	@Mock
+	ResourceTypeProvider resourceTypeProvider;
+
+	@Mock
+	ResourceDependencyResolverService dependencyResolver;
+
+	@Mock
+	FunctionService FunctionService;
+
+	GenerationOptions options;
+
+	@BeforeEach
 	public void before() {
 		CustomLogging.setup(Level.OFF);
 		MockitoAnnotations.openMocks(this);
@@ -53,46 +89,42 @@ public class GenerationUnitFactoryTest extends GenerationUnitFactoryBaseTest<Sim
 		builder.ad = builder.buildResource(EntityBuilderType.AD, "ad");
 		builder.ws = builder.buildResource(EntityBuilderType.WS, "ws");
 		builder.buildConsumedRelation(builder.as, builder.app, ForeignableOwner.AMW);
-	    	node = builder.buildResource(EntityBuilderType.NODE1, EntityBuilderType.NODE1.name);
-	     builder.buildConsumedRelation(builder.as, node, ForeignableOwner.AMW);
+	    node = builder.buildResource(EntityBuilderType.NODE1, EntityBuilderType.NODE1.name);
+	    builder.buildConsumedRelation(builder.as, node, ForeignableOwner.AMW);
 	}
 
 	@Test
 	public void testAsConsumesApp() {
-		initialize();
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
 		assertEquals(3, properties(work.getAsSet()).size());
-
-		assertGenerationUnitSequence(builder.app, node, builder.as);
-
-		assertPropertyValues(builder.as, EntityBuilderType.AS.name);
-		assertPropertyValues(builder.app, "app");
+		assertGenerationUnitSequence(work, builder.app, node, builder.as);
+		assertPropertyValues(work, builder.as, EntityBuilderType.AS.name);
+		assertPropertyValues(work, builder.app, "app");
 	}
 
 	@Test
 	public void testAsConsumesAppConsumesAd() {
 		builder.buildConsumedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
 
-		initialize();
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
-		assertGenerationUnitSequence(builder.ad, builder.app, node, builder.as);
-
-		assertPropertyValues(builder.ad, "ad");
-		assertPropertyValues(builder.as, EntityBuilderType.AS.name);
-		assertPropertyValues(builder.app, "app");
+		assertGenerationUnitSequence(work, builder.ad, builder.app, node, builder.as);
+		assertPropertyValues(work, builder.ad, "ad");
+		assertPropertyValues(work, builder.as, EntityBuilderType.AS.name);
+		assertPropertyValues(work, builder.app, "app");
 	}
 
 	@Test
 	public void testAsConsumesAppProvidesAd() {
 		builder.buildProvidedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
 
-		initialize();
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
-		assertGenerationUnitSequence(builder.ad, builder.app, node, builder.as);
-
-		assertPropertyValues(builder.ad, "ad");
-		assertPropertyValues(builder.as, EntityBuilderType.AS.name);
-		assertPropertyValues(builder.app, "app");
+		assertGenerationUnitSequence(work, builder.ad, builder.app, node, builder.as);
+		assertPropertyValues(work, builder.ad, "ad");
+		assertPropertyValues(work, builder.as, EntityBuilderType.AS.name);
+		assertPropertyValues(work, builder.app, "app");
 	}
 
 	@Test
@@ -101,23 +133,22 @@ public class GenerationUnitFactoryTest extends GenerationUnitFactoryBaseTest<Sim
 		builder.buildConsumedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
 		builder.buildConsumedRelation(builder.app, builder.ws, ForeignableOwner.AMW);
 
-		initialize();
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
-		assertGenerationUnitSequence(builder.ad, builder.ws, builder.app, node, builder.as);
-
-		assertPropertyValues(builder.ad, "ad");
-		assertPropertyValues(builder.ws, "ws");
-		assertPropertyValues(builder.as, "amw");
-		assertPropertyValues(builder.app, "app");
+		assertGenerationUnitSequence(work, builder.ad, builder.ws, builder.app, node, builder.as);
+		assertPropertyValues(work, builder.ad, "ad");
+		assertPropertyValues(work, builder.ws, "ws");
+		assertPropertyValues(work, builder.as, "amw");
+		assertPropertyValues(work, builder.app, "app");
 	}
 
-	void assertPropertyValues(ResourceEntity entity, String value) {
+	void assertPropertyValues(GenerationPackage work, ResourceEntity entity, String value) {
 		GenerationUnit unit = unitFor(work.getAsSet(), entity);
 		Map<String, FreeMarkerProperty> properties = unit.getAppServerRelationProperties().getProperties();
 		assertEquals(value, properties.get("name").getCurrentValue());
 	}
 
-	void assertGenerationUnitSequence(ResourceEntity... entities) {
+	void assertGenerationUnitSequence(GenerationPackage work, ResourceEntity... entities) {
 		List<GenerationUnit> list = Lists.newArrayList(work.getAsSet());
 		for (int i = 0; i < entities.length; i++) {
 			assertEquals(entities[i], list.get(i).getSlaveResource());

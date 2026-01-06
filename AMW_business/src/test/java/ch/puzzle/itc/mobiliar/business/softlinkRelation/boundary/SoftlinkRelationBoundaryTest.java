@@ -20,33 +20,40 @@
 
 package ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import javax.persistence.EntityManager;
 
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.SoftlinkRelationEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 
 // disable Strict Stubbing because of extra mocking of the EntityBuilders
-@RunWith(MockitoJUnitRunner.Silent.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@ExtendWith(MockitoExtension.class)
 public class SoftlinkRelationBoundaryTest {
 
     @Mock
@@ -66,14 +73,9 @@ public class SoftlinkRelationBoundaryTest {
 
     ReleaseEntity pastRelease;
 
-    @Before
-    public void before() {
-        MockitoAnnotations.openMocks(this);
-    }
-
-
     @Test
-    public void createSoftlinkRelationWhenNotYetExistShouldCreateNewSoftlinkRelationWithValues() throws ForeignableOwnerViolationException {
+    public void createSoftlinkRelationWhenNotYetExistShouldCreateNewSoftlinkRelationWithValues()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner creatingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
@@ -89,22 +91,24 @@ public class SoftlinkRelationBoundaryTest {
         ArgumentCaptor<SoftlinkRelationEntity> argCapt = ArgumentCaptor.forClass(SoftlinkRelationEntity.class);
         verify(softlinkRelationServiceMock).setSoftlinkRelation(eq(resourceEntity), argCapt.capture());
 
-        Assert.assertEquals(softlinkRef, argCapt.getValue().getSoftlinkRef());
-        Assert.assertEquals(creatingOwner, argCapt.getValue().getOwner());
-        Assert.assertEquals(resourceEntity.getId(), argCapt.getValue().getCpiResource().getId());
+        assertEquals(softlinkRef, argCapt.getValue().getSoftlinkRef());
+        assertEquals(creatingOwner, argCapt.getValue().getOwner());
+        assertEquals(resourceEntity.getId(), argCapt.getValue().getCpiResource().getId());
     }
 
     @Test
-    public void createSoftlinkRelationWhenExistOwnerShouldVerifyForeignability() throws ForeignableOwnerViolationException {
+    public void createSoftlinkRelationWhenExistOwnerShouldVerifyForeignability()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner creatingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
         String softlinkRef = "softlinkIdRef";
 
-        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withOwner(ForeignableOwner.MAIA).build();
+        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder()
+                .withOwner(ForeignableOwner.MAIA).build();
 
-        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId).withSoftlinkRelation(softlinkRelationEntity).mock();
-
+        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId)
+                .withSoftlinkRelation(softlinkRelationEntity).mock();
 
         when((entityManagerMock).find(ResourceEntity.class, cpiResourceId)).thenReturn(resourceEntity);
 
@@ -116,15 +120,18 @@ public class SoftlinkRelationBoundaryTest {
     }
 
     @Test
-    public void createSoftlinkRelationWhenExistShouldCreateNewSoftlinkRelationWithChangedValues() throws ForeignableOwnerViolationException {
+    public void createSoftlinkRelationWhenExistShouldCreateNewSoftlinkRelationWithChangedValues()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner creatingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
         String oldSoftlinkRef = "oldSoftlinkIdRef";
         String softlinkRef = "softlinkIdRef";
 
-        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withSoftlinkRef(oldSoftlinkRef).withOwner(creatingOwner).build();
-        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId).withSoftlinkRelation(softlinkRelationEntity).mock();
+        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder()
+                .withSoftlinkRef(oldSoftlinkRef).withOwner(creatingOwner).build();
+        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId)
+                .withSoftlinkRelation(softlinkRelationEntity).mock();
         when((entityManagerMock).find(ResourceEntity.class, cpiResourceId)).thenReturn(resourceEntity);
 
         // when
@@ -134,13 +141,14 @@ public class SoftlinkRelationBoundaryTest {
         ArgumentCaptor<SoftlinkRelationEntity> argCapt = ArgumentCaptor.forClass(SoftlinkRelationEntity.class);
         verify(softlinkRelationServiceMock).setSoftlinkRelation(eq(resourceEntity), argCapt.capture());
 
-        Assert.assertEquals(softlinkRef, argCapt.getValue().getSoftlinkRef());
-        Assert.assertEquals(creatingOwner, argCapt.getValue().getOwner());
-        Assert.assertEquals(resourceEntity.getId(), argCapt.getValue().getCpiResource().getId());
+        assertEquals(softlinkRef, argCapt.getValue().getSoftlinkRef());
+        assertEquals(creatingOwner, argCapt.getValue().getOwner());
+        assertEquals(resourceEntity.getId(), argCapt.getValue().getCpiResource().getId());
     }
 
-    @Test(expected = RuntimeException.class)
-    public void createSoftlinkRelationWhenNoResourceFoundForIdShouldThrowException() throws ForeignableOwnerViolationException {
+    @Test
+    public void createSoftlinkRelationWhenNoResourceFoundForIdShouldThrowException()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner creatingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
@@ -149,26 +157,29 @@ public class SoftlinkRelationBoundaryTest {
         when((entityManagerMock).find(ResourceEntity.class, cpiResourceId)).thenReturn(null);
 
         // when
-        softlinkRelationBoundary.createSoftlinkRelation(creatingOwner, cpiResourceId, softlinkRef);
+        assertThrows(RuntimeException.class, () -> {
+            softlinkRelationBoundary.createSoftlinkRelation(creatingOwner, cpiResourceId, softlinkRef);
 
+        });
     }
 
-
-    @Test(expected = RuntimeException.class)
-    public void removeRelationForResourceWhenNoResourceFoundForIdShouldThrowException() throws ForeignableOwnerViolationException {
+    @Test
+    public void removeRelationForResourceWhenNoResourceFoundForIdShouldThrowException()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
 
         when((entityManagerMock).find(ResourceEntity.class, cpiResourceId)).thenReturn(null);
-
-        // when
-        softlinkRelationBoundary.removeRelationForResource(deletingOwner, cpiResourceId);
-
+        // then
+        assertThrows(RuntimeException.class, () -> {
+            softlinkRelationBoundary.removeRelationForResource(deletingOwner, cpiResourceId);
+        });
     }
 
     @Test
-    public void removeRelationForResourceWhenResourceHasNoRelationShouldNotDelegateRemoveCall() throws ForeignableOwnerViolationException {
+    public void removeRelationForResourceWhenResourceHasNoRelationShouldNotDelegateRemoveCall()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
@@ -190,8 +201,10 @@ public class SoftlinkRelationBoundaryTest {
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
 
-        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withOwner(deletingOwner).build();
-        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId).withSoftlinkRelation(softlinkRelationEntity).mock();
+        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withOwner(deletingOwner)
+                .build();
+        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId)
+                .withSoftlinkRelation(softlinkRelationEntity).mock();
         when((entityManagerMock).find(ResourceEntity.class, cpiResourceId)).thenReturn(resourceEntity);
 
         // when
@@ -203,13 +216,16 @@ public class SoftlinkRelationBoundaryTest {
     }
 
     @Test
-    public void removeRelationForResourceShouldDelegateCheckForForeignableCall() throws ForeignableOwnerViolationException {
+    public void removeRelationForResourceShouldDelegateCheckForForeignableCall()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.AMW;
         Integer cpiResourceId = 1;
 
-        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withOwner(deletingOwner).build();
-        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId).withSoftlinkRelation(softlinkRelationEntity).mock();
+        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withOwner(deletingOwner)
+                .build();
+        ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(cpiResourceId)
+                .withSoftlinkRelation(softlinkRelationEntity).mock();
         when((entityManagerMock).find(ResourceEntity.class, cpiResourceId)).thenReturn(resourceEntity);
 
         // when
@@ -220,29 +236,32 @@ public class SoftlinkRelationBoundaryTest {
 
     }
 
-
-
-    @Test(expected = RuntimeException.class)
-    public void editSoftlinkRelationWhenNoResourceFoundOnDbShouldThrowException() throws ForeignableOwnerViolationException {
+    @Test
+    public void editSoftlinkRelationWhenNoResourceFoundOnDbShouldThrowException()
+            throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner editingOwner = ForeignableOwner.AMW;
         Integer softlinkRelationId = 1;
 
-        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withId(softlinkRelationId).withOwner(editingOwner).build();
+        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withId(softlinkRelationId)
+                .withOwner(editingOwner).build();
         when((entityManagerMock).find(SoftlinkRelationEntity.class, softlinkRelationId)).thenReturn(null);
 
         // when
-        softlinkRelationBoundary.editSoftlinkRelation(editingOwner, softlinkRelationEntity);
-
+        assertThrows(RuntimeException.class, () -> {
+            softlinkRelationBoundary.editSoftlinkRelation(editingOwner, softlinkRelationEntity);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void editSoftlinkRelationWithArgumentNullShouldThrowException() throws ForeignableOwnerViolationException {
         // given
         ForeignableOwner editingOwner = ForeignableOwner.AMW;
 
         // when
-        softlinkRelationBoundary.editSoftlinkRelation(editingOwner, null);
+        assertThrows(NullPointerException.class, () -> {
+            softlinkRelationBoundary.editSoftlinkRelation(editingOwner, null);
+        });
     }
 
     @Test
@@ -252,36 +271,41 @@ public class SoftlinkRelationBoundaryTest {
         Integer softlinkRelationId = 1;
 
         SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withId(softlinkRelationId)
-                .withOwner(editingOwner).withCpiResource(new ResourceEntityBuilder().mockResourceEntity("test", null, null, pastRelease, null)).build();
-        when((entityManagerMock).find(SoftlinkRelationEntity.class, softlinkRelationId)).thenReturn(softlinkRelationEntity);
+                .withOwner(editingOwner)
+                .withCpiResource(new ResourceEntityBuilder().mockResourceEntity("test", null, null, pastRelease, null))
+                .build();
+        when((entityManagerMock).find(SoftlinkRelationEntity.class, softlinkRelationId))
+                .thenReturn(softlinkRelationEntity);
 
-        SoftlinkRelationEntity mergedSoftlinkRelationEntity = new SoftlinkRelationEntityBuilder().withId(softlinkRelationId).withOwner(editingOwner).build();
+        SoftlinkRelationEntity mergedSoftlinkRelationEntity = new SoftlinkRelationEntityBuilder()
+                .withId(softlinkRelationId).withOwner(editingOwner).build();
         when((entityManagerMock).merge(softlinkRelationEntity)).thenReturn(mergedSoftlinkRelationEntity);
 
         // when
         softlinkRelationBoundary.editSoftlinkRelation(editingOwner, softlinkRelationEntity);
 
         // then
-        verify(foreignableServiceMock).verifyEditableByOwner(eq(editingOwner), anyInt(), eq(mergedSoftlinkRelationEntity));
+        verify(foreignableServiceMock).verifyEditableByOwner(eq(editingOwner), anyInt(),
+                eq(mergedSoftlinkRelationEntity));
     }
 
-
     @Test
-    public void getSoftlinkResolvableSlaveResourceWhenRelationIsNullShouldReturnNull() throws ForeignableOwnerViolationException {
+    public void getSoftlinkResolvableSlaveResourceWhenRelationIsNullShouldReturnNull()
+            throws ForeignableOwnerViolationException {
 
         // when
         ResourceEntity result = softlinkRelationBoundary.getSoftlinkResolvableSlaveResource(null, pastRelease);
 
         // then
-        Assert.assertNull(result);
+        assertNull(result);
     }
 
     @Test
     public void getSoftlinkResolvableSlaveResourceShouldDelegateToService() throws ForeignableOwnerViolationException {
         // given
         String softlinkId = "softlinkId";
-
-        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withSoftlinkRef(softlinkId).build();
+        SoftlinkRelationEntity softlinkRelationEntity = new SoftlinkRelationEntityBuilder().withSoftlinkRef(softlinkId)
+                .build();
 
         // when
         softlinkRelationBoundary.getSoftlinkResolvableSlaveResource(softlinkRelationEntity, pastRelease);

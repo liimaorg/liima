@@ -38,12 +38,15 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static java.util.Collections.EMPTY_LIST;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -73,7 +76,7 @@ public class PermissionServiceTest {
 
 	private Principal principal;
 
-	@Before
+	@BeforeEach
 	public void setUp(){
 		permissionService = new PermissionService();
 		roleCache = new RoleCache();
@@ -131,7 +134,7 @@ public class PermissionServiceTest {
 		// when
 		boolean result = permissionService.hasPermission(Permission.RESOURCE, Action.DELETE, applicationResTypeEntity);
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 	
 	@Test
@@ -153,7 +156,7 @@ public class PermissionServiceTest {
 		// when
 		boolean result = permissionService.hasPermission(Permission.RESOURCE, Action.DELETE, nonDefaultResType);
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 	
 	@Test
@@ -176,7 +179,7 @@ public class PermissionServiceTest {
 		// when
 		boolean result = permissionService.hasPermission(Permission.RESOURCE, Action.DELETE, applicationResTypeEntity);
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -223,8 +226,8 @@ public class PermissionServiceTest {
 		boolean canCreateResOfTyp2 = permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, resourceType2);
 
 		// then
-		Assert.assertTrue(canCreateResOfTyp1);
-		Assert.assertFalse(canCreateResOfTyp2);
+		assertTrue(canCreateResOfTyp1);
+		assertFalse(canCreateResOfTyp2);
 	}
 
 	@Test
@@ -256,7 +259,7 @@ public class PermissionServiceTest {
 		boolean canCreateResOfTyp1 = permissionService.hasPermission(Permission.RESOURCE, Action.CREATE, resourceType1);
 
 		// then
-		Assert.assertFalse(canCreateResOfTyp1);
+		assertFalse(canCreateResOfTyp1);
 	}
 
     @Test
@@ -276,7 +279,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(app, new ContextEntity());
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 	
 	@Test
@@ -296,7 +299,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(ws, new ContextEntity());
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
     @Test
@@ -316,7 +319,7 @@ public class PermissionServiceTest {
         boolean result = permissionService.hasPermissionToDeleteRelation(resourceWithoutResourceType, new ContextEntity());
 
         // then
-        Assert.assertFalse(result);
+        assertFalse(result);
     }
 
 	/**
@@ -339,7 +342,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(as, new ContextEntity());
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 	
 	@Test
@@ -359,7 +362,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(node, new ContextEntity());
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 	
 	@Test
@@ -379,7 +382,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(app, new ContextEntity());
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -400,7 +403,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(app, envC);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -419,8 +422,8 @@ public class PermissionServiceTest {
 		permissionService.rolesWithRestrictions = myRoles;
 
 		// then
-		Assert.assertTrue(permissionService.hasPermissionToDeleteRelation(app, envC));
-		Assert.assertTrue(permissionService.hasPermissionToDeleteRelation(app, envZ));
+		assertTrue(permissionService.hasPermissionToDeleteRelation(app, envC));
+		assertTrue(permissionService.hasPermissionToDeleteRelation(app, envZ));
 	}
 
 	@Test
@@ -441,7 +444,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(app, envZ);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -466,7 +469,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(app, envC);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 	
 	@Test
@@ -486,7 +489,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDeleteRelation(as, new ContextEntity());
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
     @Test
@@ -506,7 +509,7 @@ public class PermissionServiceTest {
         boolean result = permissionService.hasPermissionToDeleteRelation(runtime, new ContextEntity());
 
         // then
-        Assert.assertTrue(result);
+        assertTrue(result);
     }
 
     @Test
@@ -526,7 +529,7 @@ public class PermissionServiceTest {
         boolean canAdd = permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertTrue(canAdd);
+        assertTrue(canAdd);
     }
 
     @Test
@@ -548,7 +551,7 @@ public class PermissionServiceTest {
         boolean canAdd = permissionService.hasPermissionToAddRelation(resourceWithoutResourceType, new ContextEntity());
 
         // then
-        Assert.assertFalse(canAdd);
+        assertFalse(canAdd);
     }
 
     @Test
@@ -569,7 +572,7 @@ public class PermissionServiceTest {
         boolean canAdd= permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertTrue(canAdd);
+        assertTrue(canAdd);
     }
 
     @Test
@@ -590,7 +593,7 @@ public class PermissionServiceTest {
         boolean canAdd = permissionService.hasPermissionToAddRelation(app, new ContextEntity());
 
         // then
-        Assert.assertFalse(canAdd);
+        assertFalse(canAdd);
     }
 
     @Test
@@ -610,7 +613,7 @@ public class PermissionServiceTest {
         boolean canAdd = permissionService.hasPermissionToAddRelation(app, new ContextEntity());
 
 		// then
-		Assert.assertTrue(canAdd);
+		assertTrue(canAdd);
 	}
 
     @Test
@@ -630,7 +633,7 @@ public class PermissionServiceTest {
         boolean canAdd = permissionService.hasPermissionToAddRelation(as, new ContextEntity());
 
         // then
-        Assert.assertFalse(canAdd);
+        assertFalse(canAdd);
     }
 
     @Test
@@ -650,7 +653,7 @@ public class PermissionServiceTest {
         boolean result = permissionService.hasPermissionToAddResourceTemplate(as);
 
         // then
-        Assert.assertFalse(result);
+        assertFalse(result);
     }
 
 	@Test
@@ -670,7 +673,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToAddResourceTemplate(as);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
     @Test
@@ -691,7 +694,7 @@ public class PermissionServiceTest {
         boolean result = permissionService.hasPermissionToAddResourceTypeTemplate(app);
 
         // then
-        Assert.assertFalse(result);
+        assertFalse(result);
     }
 
 	@Test
@@ -712,7 +715,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToAddResourceTypeTemplate(app);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -736,7 +739,7 @@ public class PermissionServiceTest {
 		boolean result1 = permissionService.hasPermission(Permission.DEPLOYMENT, Action.CREATE);
 
 		// then
-		Assert.assertTrue(result1);
+		assertTrue(result1);
 	}
 
 	@Test
@@ -752,7 +755,7 @@ public class PermissionServiceTest {
 		// when
 		boolean result = permissionService.hasPermissionToSeeDeployment();
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -794,9 +797,9 @@ public class PermissionServiceTest {
 		boolean result3 = permissionService.hasPermission(Permission.DEPLOYMENT, envC, Action.CREATE, forbiddenResGroup3, null);
 
 		// then
-		Assert.assertTrue(result1);
-		Assert.assertTrue(result2);
-		Assert.assertFalse(result3);
+		assertTrue(result1);
+		assertTrue(result2);
+		assertFalse(result3);
 	}
 
 	@Test
@@ -818,7 +821,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToAddResourceTypeTemplate(as);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -839,7 +842,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToAddResourceTypeTemplate(app);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 	
 	@Test
@@ -859,7 +862,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermission(Permission.RELEASE);
 		
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 	
 	@Test
@@ -879,7 +882,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermission(Permission.RELEASE);
 		
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -958,13 +961,13 @@ public class PermissionServiceTest {
 
 		// then
 		verify(permissionService.permissionRepository, times(1)).getRolesWithRestrictions();
-		Assert.assertEquals(1, permissions.size());
-		Assert.assertNotNull(permissions.get(VIEWER));
-		Assert.assertEquals(3, permissions.get(VIEWER).size());
+		assertEquals(1, permissions.size());
+		assertNotNull(permissions.get(VIEWER));
+		assertEquals(3, permissions.get(VIEWER).size());
 
-		Assert.assertEquals(1, deployablePermissions.size());
-		Assert.assertNotNull(deployablePermissions.get(VIEWER));
-		Assert.assertEquals(1, deployablePermissions.get(VIEWER).size());
+		assertEquals(1, deployablePermissions.size());
+		assertNotNull(deployablePermissions.get(VIEWER));
+		assertEquals(1, deployablePermissions.get(VIEWER).size());
 	}
 
 	@Test
@@ -987,7 +990,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceGroup, null);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -1013,7 +1016,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceGroup, null);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 
@@ -1037,7 +1040,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1063,7 +1066,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1085,7 +1088,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -1110,7 +1113,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup, null);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	// Test for a bug where only the first restriction with the correct permissions name was checked
@@ -1151,7 +1154,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionOnAllContext(Permission.RESOURCE_PROPERTY_DECRYPT, Action.ALL, resourceGroup2, null);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -1172,7 +1175,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1193,7 +1196,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1224,7 +1227,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1256,7 +1259,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, resourceGroup, null, null, Action.CREATE);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1288,7 +1291,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, resourceGroup, null, null, Action.CREATE);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1317,7 +1320,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
 
 		// then
-		Assert.assertFalse(result);
+		assertFalse(result);
 	}
 
 	@Test
@@ -1349,7 +1352,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, resourceGroup, null, envC, Action.CREATE);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -1380,7 +1383,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, envC, Action.CREATE);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -1406,7 +1409,7 @@ public class PermissionServiceTest {
 		boolean result = permissionService.hasPermissionToDelegatePermission(Permission.RESOURCE_PROPERTY_DECRYPT, null, null, null, Action.CREATE);
 
 		// then
-		Assert.assertTrue(result);
+		assertTrue(result);
 	}
 
 	@Test
@@ -1430,7 +1433,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(restriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1455,7 +1458,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(restriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1492,7 +1495,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1529,7 +1532,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 	@Test
@@ -1568,7 +1571,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 	@Test
@@ -1615,7 +1618,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1652,7 +1655,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 	@Test
@@ -1686,7 +1689,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 	@Test
@@ -1720,7 +1723,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1751,7 +1754,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 	@Test
@@ -1782,7 +1785,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1812,7 +1815,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1841,7 +1844,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1870,7 +1873,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 	@Test
@@ -1907,7 +1910,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 	@Test
@@ -1944,7 +1947,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.identicalOrMoreGeneralRestrictionExists(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -1998,7 +2001,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.callerHasIdenticalOrMoreGeneralRestriction(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -2052,7 +2055,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.callerHasIdenticalOrMoreGeneralRestriction(newRestriction);
 
 		// then
-		Assert.assertTrue(exists);
+		assertTrue(exists);
 	}
 
 	@Test
@@ -2106,7 +2109,7 @@ public class PermissionServiceTest {
 		boolean exists = permissionService.callerHasIdenticalOrMoreGeneralRestriction(newRestriction);
 
 		// then
-		Assert.assertFalse(exists);
+		assertFalse(exists);
 	}
 
 }

@@ -20,13 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Date;
 
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -46,7 +46,7 @@ public class ResourceReleaseComparatorTest {
 
     private ResourceReleaseComparator comparator;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         comparator = new ResourceReleaseComparator();
     }

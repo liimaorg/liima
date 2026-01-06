@@ -20,12 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 

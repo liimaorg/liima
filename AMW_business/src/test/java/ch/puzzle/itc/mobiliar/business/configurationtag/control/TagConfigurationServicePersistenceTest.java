@@ -20,32 +20,36 @@
 
 package ch.puzzle.itc.mobiliar.business.configurationtag.control;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService}
  */
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class TagConfigurationServicePersistenceTest {
 
 	@Spy
@@ -62,7 +66,7 @@ public class TagConfigurationServicePersistenceTest {
 	TagConfigurationService service;
 
 
-	@Before
+	@BeforeEach
 	public void before() {
 		MockitoAnnotations.openMocks(this);
 	}
@@ -79,10 +83,10 @@ public class TagConfigurationServicePersistenceTest {
 		ResourceTagEntity result = service.tagConfiguration(as1.getId(), tagLabel, tagDate);
 
 		// then
-		Assert.assertNotNull(result);
-		Assert.assertEquals(tagLabel, result.getLabel());
-		Assert.assertEquals(tagDate, result.getTagDate());
-		Assert.assertEquals(as1.getId(), result.getResource().getId());
+		assertNotNull(result);
+		assertEquals(tagLabel, result.getLabel());
+		assertEquals(tagDate, result.getTagDate());
+		assertEquals(as1.getId(), result.getResource().getId());
 	}
 
 	@Test
@@ -114,16 +118,16 @@ public class TagConfigurationServicePersistenceTest {
 		List<ResourceTagEntity> result2 = service.loadTagLabelsForResource(as2);
 		
 		// then
-		Assert.assertNotNull(result1);
-		Assert.assertEquals(2, result1.size());
+		assertNotNull(result1);
+		assertEquals(2, result1.size());
 		for (ResourceTagEntity t : result1) {
-			Assert.assertEquals(as1.getId(), t.getResource().getId());
+			assertEquals(as1.getId(), t.getResource().getId());
 		}
 		
-		Assert.assertNotNull(result2);
-		Assert.assertEquals(1, result2.size());
+		assertNotNull(result2);
+		assertEquals(1, result2.size());
 		for (ResourceTagEntity t : result2) {
-			Assert.assertEquals(as2.getId(), t.getResource().getId());
+			assertEquals(as2.getId(), t.getResource().getId());
 		}
 	}
 

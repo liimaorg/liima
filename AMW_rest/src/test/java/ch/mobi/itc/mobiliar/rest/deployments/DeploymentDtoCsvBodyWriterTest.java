@@ -2,8 +2,8 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 
 import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
@@ -17,7 +17,7 @@ public class DeploymentDtoCsvBodyWriterTest {
     @InjectMocks
     DeploymentDtoCsvBodyWriter writer;
 
-    @Before
+    @BeforeEach
     public void configure() {
         MockitoAnnotations.openMocks(this);
     }

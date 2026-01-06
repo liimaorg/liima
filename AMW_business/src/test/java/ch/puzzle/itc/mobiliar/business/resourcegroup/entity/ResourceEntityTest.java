@@ -32,8 +32,8 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -42,146 +42,149 @@ import org.mockito.MockitoAnnotations;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ResourceEntityTest {
 
-	@Mock
-	ResourceEntity resourceEntity;
+    @Mock
+    ResourceEntity resourceEntity;
 
-	ResourceEntity slaveResourceEntity = ResourceFactory.createNewResource();
-	ResourceEntity masterResource = ResourceFactory.createNewResource();
-	ResourceRelationTypeEntity relationTypeEntity = new ResourceRelationTypeEntity();
-	ProvidedResourceRelationEntity providedResourceRelationEntity = new ProvidedResourceRelationEntity();
-	private ResourceEntityBuilder resourceEntityBuilder = new ResourceEntityBuilder();
-	private ResourceTypeEntityBuilder typeEntityBuilder = new ResourceTypeEntityBuilder();
+    ResourceEntity slaveResourceEntity = ResourceFactory.createNewResource();
+    ResourceEntity masterResource = ResourceFactory.createNewResource();
+    ResourceRelationTypeEntity relationTypeEntity = new ResourceRelationTypeEntity();
+    ProvidedResourceRelationEntity providedResourceRelationEntity = new ProvidedResourceRelationEntity();
+    private ResourceEntityBuilder resourceEntityBuilder = new ResourceEntityBuilder();
+    private ResourceTypeEntityBuilder typeEntityBuilder = new ResourceTypeEntityBuilder();
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.openMocks(this);
-		providedResourceRelationEntity.setResourceRelationType(relationTypeEntity);
-		providedResourceRelationEntity.setMasterResource(masterResource);
-		providedResourceRelationEntity.setSlaveResource(slaveResourceEntity);
-	}
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        providedResourceRelationEntity.setResourceRelationType(relationTypeEntity);
+        providedResourceRelationEntity.setMasterResource(masterResource);
+        providedResourceRelationEntity.setSlaveResource(slaveResourceEntity);
+    }
 
-	@Test
-	public void testAddProvidedResourceRelation() {
-		assertEquals(relationTypeEntity, providedResourceRelationEntity.getResourceRelationType());
-		assertEquals(slaveResourceEntity, providedResourceRelationEntity.getSlaveResource());
-	}
+    @Test
+    public void testAddProvidedResourceRelation() {
+        assertEquals(relationTypeEntity, providedResourceRelationEntity.getResourceRelationType());
+        assertEquals(slaveResourceEntity, providedResourceRelationEntity.getSlaveResource());
+    }
 
-	@Test
-	public void testGetRelationById() {
-		// given
-		Mockito.when(resourceEntity.getRelationById(ArgumentMatchers.anyInt(), ArgumentMatchers.anySet())).thenCallRealMethod();
+    @Test
+    public void testGetRelationById() {
+        // given
+        Mockito.when(resourceEntity.getRelationById(ArgumentMatchers.anyInt(), ArgumentMatchers.anySet()))
+                .thenCallRealMethod();
 
-		final int slaveResourceId = 21;
+        final int slaveResourceId = 21;
 
-		final Set<ConsumedResourceRelationEntity> relations = new HashSet<ConsumedResourceRelationEntity>();
-		final ConsumedResourceRelationEntity resourceRelation = Mockito.mock(ConsumedResourceRelationEntity.class);
-		relations.add(resourceRelation);
-		final ResourceEntity slaveResource = Mockito.mock(ResourceEntity.class);
-		Mockito.when(slaveResource.getId()).thenReturn(slaveResourceId);
-		Mockito.when(resourceRelation.getSlaveResource()).thenReturn(slaveResource);
+        final Set<ConsumedResourceRelationEntity> relations = new HashSet<ConsumedResourceRelationEntity>();
+        final ConsumedResourceRelationEntity resourceRelation = Mockito.mock(ConsumedResourceRelationEntity.class);
+        relations.add(resourceRelation);
+        final ResourceEntity slaveResource = Mockito.mock(ResourceEntity.class);
+        Mockito.when(slaveResource.getId()).thenReturn(slaveResourceId);
+        Mockito.when(resourceRelation.getSlaveResource()).thenReturn(slaveResource);
 
-		// when
-		final AbstractResourceRelationEntity result = resourceEntity.getRelationById(slaveResourceId, relations);
+        // when
+        final AbstractResourceRelationEntity result = resourceEntity.getRelationById(slaveResourceId, relations);
 
-		// then
-		assertEquals(resourceRelation, result);
+        // then
+        assertEquals(resourceRelation, result);
+    }
 
-	}
+    @Test
+    public void testGetMasterRelation() {
+        // given
+        Mockito.when(
+                resourceEntity.getMasterRelation(ArgumentMatchers.any(ResourceEntity.class), ArgumentMatchers.anySet()))
+                .thenCallRealMethod();
 
-	@Test
-	public void testGetMasterRelation() {
-		// given
-		Mockito.when(resourceEntity.getMasterRelation(ArgumentMatchers.any(ResourceEntity.class), ArgumentMatchers.anySet())).thenCallRealMethod();
+        final int slaveResourceId = 21;
+        final Set<ConsumedResourceRelationEntity> relations = new HashSet<ConsumedResourceRelationEntity>();
+        final ConsumedResourceRelationEntity resourceRelation = Mockito.mock(ConsumedResourceRelationEntity.class);
+        relations.add(resourceRelation);
+        final ResourceEntity slaveResource = Mockito.mock(ResourceEntity.class);
+        Mockito.when(slaveResource.getId()).thenReturn(slaveResourceId);
+        Mockito.when(resourceRelation.getSlaveResource()).thenReturn(slaveResource);
 
-		final int slaveResourceId = 21;
-		final Set<ConsumedResourceRelationEntity> relations = new HashSet<ConsumedResourceRelationEntity>();
-		final ConsumedResourceRelationEntity resourceRelation = Mockito.mock(ConsumedResourceRelationEntity.class);
-		relations.add(resourceRelation);
-		final ResourceEntity slaveResource = Mockito.mock(ResourceEntity.class);
-		Mockito.when(slaveResource.getId()).thenReturn(slaveResourceId);
-		Mockito.when(resourceRelation.getSlaveResource()).thenReturn(slaveResource);
+        // when
+        final AbstractResourceRelationEntity result = resourceEntity.getMasterRelation(slaveResource, relations);
 
-		// when
-		final AbstractResourceRelationEntity result = resourceEntity.getMasterRelation(slaveResource, relations);
+        // then
+        assertEquals(resourceRelation, result);
+    }
 
-		// then
-		assertEquals(resourceRelation, result);
+    private ConsumedResourceRelationEntity createConsumedResourceRelation(final int masterResourceId,
+            final int slaveResourceId) {
+        final ConsumedResourceRelationEntity resourceRelation = Mockito.mock(ConsumedResourceRelationEntity.class);
 
-	}
+        final ResourceEntity slaveResource = Mockito.mock(ResourceEntity.class);
+        Mockito.when(slaveResource.getId()).thenReturn(slaveResourceId);
+        Mockito.when(resourceRelation.getSlaveResource()).thenReturn(slaveResource);
 
+        final ResourceEntity masterResource = Mockito.mock(ResourceEntity.class);
+        Mockito.when(masterResource.getId()).thenReturn(masterResourceId);
+        Mockito.when(resourceRelation.getMasterResource()).thenReturn(masterResource);
 
+        return resourceRelation;
+    }
 
-	private ConsumedResourceRelationEntity createConsumedResourceRelation(final int masterResourceId, final int slaveResourceId) {
-		final ConsumedResourceRelationEntity resourceRelation = Mockito.mock(ConsumedResourceRelationEntity.class);
+    private ConsumedResourceRelationEntity prepareConsumedSlaveRelationTest() {
+        Mockito.when(resourceEntity.getConsumedSlaveRelation(ArgumentMatchers.any(ResourceEntity.class)))
+                .thenCallRealMethod();
 
-		final ResourceEntity slaveResource = Mockito.mock(ResourceEntity.class);
-		Mockito.when(slaveResource.getId()).thenReturn(slaveResourceId);
-		Mockito.when(resourceRelation.getSlaveResource()).thenReturn(slaveResource);
+        final ConsumedResourceRelationEntity consumedResourceRelationEntity = createConsumedResourceRelation(11, 12);
 
-		final ResourceEntity masterResource = Mockito.mock(ResourceEntity.class);
-		Mockito.when(masterResource.getId()).thenReturn(masterResourceId);
-		Mockito.when(resourceRelation.getMasterResource()).thenReturn(masterResource);
+        final Set<ConsumedResourceRelationEntity> relations = new HashSet<ConsumedResourceRelationEntity>();
+        relations.add(consumedResourceRelationEntity);
 
-		return resourceRelation;
-	}
+        Mockito.when(resourceEntity.getConsumedSlaveRelations()).thenReturn(relations);
 
-	private ConsumedResourceRelationEntity prepareConsumedSlaveRelationTest() {
-		Mockito.when(resourceEntity.getConsumedSlaveRelation(ArgumentMatchers.any(ResourceEntity.class))).thenCallRealMethod();
+        return consumedResourceRelationEntity;
+    }
 
-		final ConsumedResourceRelationEntity consumedResourceRelationEntity = createConsumedResourceRelation(11, 12);
+    @Test
+    public void testGetConsumedSlaveRelation() {
+        ConsumedResourceRelationEntity consumedResourceRelationEntity = prepareConsumedSlaveRelationTest();
 
-		final Set<ConsumedResourceRelationEntity> relations = new HashSet<ConsumedResourceRelationEntity>();
-		relations.add(consumedResourceRelationEntity);
+        ResourceEntity queryEntity = ResourceFactory.createNewResource("testName");
+        queryEntity.setId(11);
 
-		Mockito.when(resourceEntity.getConsumedSlaveRelations()).thenReturn(relations);
+        assertEquals(consumedResourceRelationEntity, resourceEntity.getConsumedSlaveRelation(queryEntity));
+    }
 
-		return consumedResourceRelationEntity;
-	}
+    @Test
+    public void testGetConsumedSlaveRelationWithoutName() {
+        prepareConsumedSlaveRelationTest();
 
-	@Test
-	public void testGetConsumedSlaveRelation() {
-		ConsumedResourceRelationEntity consumedResourceRelationEntity = prepareConsumedSlaveRelationTest();
+        final ResourceEntity queryEntity = ResourceFactory.createNewResource();
+        queryEntity.setId(11);
 
-		ResourceEntity queryEntity = ResourceFactory.createNewResource("testName");
-		queryEntity.setId(11);
+        assertNull(resourceEntity.getConsumedSlaveRelation(queryEntity));
+    }
 
-		assertEquals(consumedResourceRelationEntity, resourceEntity.getConsumedSlaveRelation(queryEntity));
-	}
+    @Test
+    public void testGetConsumedSlaveRelationWithAppserverDisplayName() {
+        prepareConsumedSlaveRelationTest();
 
-	@Test
-	public void testGetConsumedSlaveRelationWithoutName() {
-		prepareConsumedSlaveRelationTest();
+        ResourceEntity queryEntity = ResourceFactory
+                .createNewResource(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
+        queryEntity.setId(11);
 
-		final ResourceEntity queryEntity = ResourceFactory.createNewResource();
-		queryEntity.setId(11);
+        assertNull(resourceEntity.getConsumedSlaveRelation(queryEntity));
+    }
 
-		assertNull(resourceEntity.getConsumedSlaveRelation(queryEntity));
-	}
+    @Test
+    public void testGetConsumedSlaveRelationWithWrongResource() {
+        prepareConsumedSlaveRelationTest();
 
-	@Test
-	public void testGetConsumedSlaveRelationWithAppserverDisplayName() {
-		prepareConsumedSlaveRelationTest();
+        final ResourceEntity queryEntity = ResourceFactory
+                .createNewResource(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
+        queryEntity.setId(12);
 
-		ResourceEntity queryEntity = ResourceFactory.createNewResource(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
-		queryEntity.setId(11);
-
-		assertNull(resourceEntity.getConsumedSlaveRelation(queryEntity));
-	}
-
-	@Test
-	public void testGetConsumedSlaveRelationWithWrongResource() {
-		prepareConsumedSlaveRelationTest();
-
-		final ResourceEntity queryEntity = ResourceFactory.createNewResource(ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
-		queryEntity.setId(12);
-
-		assertNull(resourceEntity.getConsumedSlaveRelation(queryEntity));
-	}
+        assertNull(resourceEntity.getConsumedSlaveRelation(queryEntity));
+    }
 
     @Test
     public void getExternalLinkWhenResourceGroupIsNullShouldReturnNull() {
@@ -298,7 +301,7 @@ public class ResourceEntityTest {
     }
 
     @Test
-    public void defaultConstructorShouldSetDefaultSystemOwner(){
+    public void defaultConstructorShouldSetDefaultSystemOwner() {
 
         // when
         resourceEntity = new ResourceEntity();
@@ -309,7 +312,7 @@ public class ResourceEntityTest {
     }
 
     @Test
-    public void constructorWithOwnerShouldSetOwner(){
+    public void constructorWithOwnerShouldSetOwner() {
         // given
         ForeignableOwner owner = ForeignableOwner.MAIA;
 
@@ -320,93 +323,101 @@ public class ResourceEntityTest {
         assertEquals(owner, resourceEntity.getOwner());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void constructorWithNullShouldThrowException(){
+    @Test
+    public void constructorWithNullShouldThrowException() {
         // given
         ForeignableOwner owner = null;
 
         // when
-        resourceEntity = new ResourceEntity(owner);
+        assertThrows(NullPointerException.class, () -> {
+            resourceEntity = new ResourceEntity(owner);
+        });
     }
 
-	@Test
-	public void copyResourceEntity_resources_should_be_same_type_COPY() throws AMWException {
-		copyResourceEntity_resources_should_be_same_type(CopyResourceDomainService.CopyMode.COPY);
-	}
+    @Test
+    public void copyResourceEntity_resources_should_be_same_type_COPY() throws AMWException {
+        copyResourceEntity_resources_should_be_same_type(CopyResourceDomainService.CopyMode.COPY);
+    }
 
-	@Test
-	public void copyResourceEntity_resources_should_be_same_type_RELEASE() throws AMWException {
-		copyResourceEntity_resources_should_be_same_type(CopyResourceDomainService.CopyMode.RELEASE);
-	}
+    @Test
+    public void copyResourceEntity_resources_should_be_same_type_RELEASE() throws AMWException {
+        copyResourceEntity_resources_should_be_same_type(CopyResourceDomainService.CopyMode.RELEASE);
+    }
 
-	private void copyResourceEntity_resources_should_be_same_type(CopyResourceDomainService.CopyMode copying) throws AMWException{
-		// given
-		ResourceEntity originResource = resourceEntityBuilder.buildAppServerEntity("origin", null, null, true);
-		ResourceEntity targetResource = resourceEntityBuilder.buildApplicationEntity(
-				"appTargetResource", null, null, true);
-		CopyUnit copyUnit = new CopyUnit(originResource, targetResource, copying, ForeignableOwner.AMW);
+    private void copyResourceEntity_resources_should_be_same_type(CopyResourceDomainService.CopyMode copying)
+            throws AMWException {
+        // given
+        ResourceEntity originResource = resourceEntityBuilder.buildAppServerEntity("origin", null, null, true);
+        ResourceEntity targetResource = resourceEntityBuilder.buildApplicationEntity(
+                "appTargetResource", null, null, true);
+        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, copying, ForeignableOwner.AMW);
 
-		// when
-		originResource.getCopy(targetResource, copyUnit);
+        // when
+        originResource.getCopy(targetResource, copyUnit);
 
-		// then
-		assertFalse(copyUnit.getResult().isSuccess());
-		Set<CopyResourceResult.CopyFailure> failures = copyUnit.getResult().getExceptionEnums();
-		assertTrue(failures.contains(CopyResourceResult.CopyFailure.RESOURCETYPE_DIFF));
-	}
+        // then
+        assertFalse(copyUnit.getResult().isSuccess());
+        Set<CopyResourceResult.CopyFailure> failures = copyUnit.getResult().getExceptionEnums();
+        assertTrue(failures.contains(CopyResourceResult.CopyFailure.RESOURCETYPE_DIFF));
+    }
 
-	@Test
-	public void getCopy_COPY() throws AMWException{
-		// given
-		String targetName = "target";
-		Integer targetId = 2;
-		boolean targetDeletable = true;
-		ResourceEntity targetResource = new ResourceEntityBuilder().withName(targetName).withId(targetId).withIsDeletable(targetDeletable).build();
+    @Test
+    public void getCopy_COPY() throws AMWException {
+        // given
+        String targetName = "target";
+        Integer targetId = 2;
+        boolean targetDeletable = true;
+        ResourceEntity targetResource = new ResourceEntityBuilder().withName(targetName).withId(targetId)
+                .withIsDeletable(targetDeletable).build();
 
-		String origName = "origin";
-		Integer origId = 1;
-		boolean originDeletable = false;
-		String originSoftlinkId = "origSoftlinkId";
-		ResourceTypeEntity appType = typeEntityBuilder.buildApplicationResourceTypeEntity(null, true);
-		ResourceEntity originResource = new ResourceEntityBuilder().withName(origName).withId(origId).withType(appType).withIsDeletable(originDeletable).withSoftlinkId(originSoftlinkId).build();
+        String origName = "origin";
+        Integer origId = 1;
+        boolean originDeletable = false;
+        String originSoftlinkId = "origSoftlinkId";
+        ResourceTypeEntity appType = typeEntityBuilder.buildApplicationResourceTypeEntity(null, true);
+        ResourceEntity originResource = new ResourceEntityBuilder().withName(origName).withId(origId).withType(appType)
+                .withIsDeletable(originDeletable).withSoftlinkId(originSoftlinkId).build();
 
-		CopyUnit copyUnit = new CopyUnit(originResource, targetResource, CopyResourceDomainService.CopyMode.COPY, ForeignableOwner.AMW);
+        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, CopyResourceDomainService.CopyMode.COPY,
+                ForeignableOwner.AMW);
 
-		// when
-		ResourceEntity copy = originResource.getCopy(targetResource, copyUnit);
+        // when
+        ResourceEntity copy = originResource.getCopy(targetResource, copyUnit);
 
-		// then
-		assertEquals(targetName, copy.getName());
-		assertEquals(targetId, copy.getId());
-		assertEquals(appType, copy.getResourceType());
-		assertEquals(originDeletable, copy.isDeletable());
-		assertEquals(originSoftlinkId, copy.getSoftlinkId());
-	}
+        // then
+        assertEquals(targetName, copy.getName());
+        assertEquals(targetId, copy.getId());
+        assertEquals(appType, copy.getResourceType());
+        assertEquals(originDeletable, copy.isDeletable());
+        assertEquals(originSoftlinkId, copy.getSoftlinkId());
+    }
 
-	@Test
-	public void getCopy_RELEASE() throws AMWException{
-		// given
-		ResourceEntity targetResource = new ResourceEntityBuilder().build();
+    @Test
+    public void getCopy_RELEASE() throws AMWException {
+        // given
+        ResourceEntity targetResource = new ResourceEntityBuilder().build();
 
-		String origName = "origin";
-		Integer origId = 1;
-		boolean originDeletable = false;
-		String originSoftlinkId = "origSoftlinkId";
-		ResourceTypeEntity appType = typeEntityBuilder.buildApplicationResourceTypeEntity(null, true);
-		ResourceEntity originResource = new ResourceEntityBuilder().withName(origName).withId(origId).withType(appType).withIsDeletable(originDeletable).withSoftlinkId(originSoftlinkId).build();
+        String origName = "origin";
+        Integer origId = 1;
+        boolean originDeletable = false;
+        String originSoftlinkId = "origSoftlinkId";
+        ResourceTypeEntity appType = typeEntityBuilder.buildApplicationResourceTypeEntity(null, true);
+        ResourceEntity originResource = new ResourceEntityBuilder().withName(origName).withId(origId).withType(appType)
+                .withIsDeletable(originDeletable).withSoftlinkId(originSoftlinkId).build();
 
-		CopyUnit copyUnit = new CopyUnit(originResource, targetResource, CopyResourceDomainService.CopyMode.RELEASE, ForeignableOwner.AMW);
+        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, CopyResourceDomainService.CopyMode.RELEASE,
+                ForeignableOwner.AMW);
 
-		// when
-		ResourceEntity copy = originResource.getCopy(targetResource, copyUnit);
+        // when
+        ResourceEntity copy = originResource.getCopy(targetResource, copyUnit);
 
-		// then
-		assertNull(copy.getId());
-		assertEquals(origName, copy.getName());
-		assertEquals(origName, copyUnit.getResult().getTargetResourceName());
-		assertEquals(appType, copy.getResourceType());
-		assertEquals(originDeletable, copy.isDeletable());
-		assertEquals(originSoftlinkId, copy.getSoftlinkId());
-	}
+        // then
+        assertNull(copy.getId());
+        assertEquals(origName, copy.getName());
+        assertEquals(origName, copyUnit.getResult().getTargetResourceName());
+        assertEquals(appType, copy.getResourceType());
+        assertEquals(originDeletable, copy.isDeletable());
+        assertEquals(originSoftlinkId, copy.getSoftlinkId());
+    }
 
 }

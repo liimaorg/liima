@@ -20,17 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
@@ -42,12 +42,13 @@ public class BasePropertyCollectorTest {
 	
 	BasePropertyCollector c = new BasePropertyCollector();
 
-	@Before
+	@BeforeEach
 	public void setUp(){
 		// set Up Encription Key
 		System.getProperties().put(ConfigKey.ENCRYPTION_KEY.getValue(), "78E76138D98F00BBF713136BC13DEE4B");
 	}
-	@After
+
+	@AfterEach
 	public void tearDown(){
 		// set Up Encription Key
 		System.getProperties().remove(ConfigKey.ENCRYPTION_KEY.getValue());

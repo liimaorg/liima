@@ -27,7 +27,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,13 +39,12 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceGroupDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseCopyDTO;
@@ -73,6 +72,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
+@ExtendWith(MockitoExtension.class)
 public class ResourceGroupsRestTest {
 
     @InjectMocks
@@ -111,11 +111,6 @@ public class ResourceGroupsRestTest {
     @Mock
     ResourceDependencyResolverService resourceDependencyResolverServiceMock;
 
-    @Before
-    public void configure() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     public void getResourcesWhenTypeIsNullAndNoRessourceGroupsShouldReturnEmptyResult() {
         // given
@@ -145,8 +140,8 @@ public class ResourceGroupsRestTest {
         List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName, null);
 
         // then
-        Assert.assertFalse(resourcesResult.isEmpty());
-        Assert.assertEquals(resourceGroupEntities.size(), resourcesResult.size());
+        assertFalse(resourcesResult.isEmpty());
+        assertEquals(resourceGroupEntities.size(), resourcesResult.size());
     }
 
     @Test
@@ -163,10 +158,10 @@ public class ResourceGroupsRestTest {
         List<ResourceGroupDTO> resourcesResult = rest.getResources(typeName, null);
 
         // then
-        Assert.assertFalse(resourcesResult.isEmpty());
-        Assert.assertEquals(resourceGroupEntities.get(0).getName(), resourcesResult.get(0).getName());
-        Assert.assertEquals(groupName, resourcesResult.get(0).getName());
-        Assert.assertNull(resourcesResult.get(0).getType());
+        assertFalse(resourcesResult.isEmpty());
+        assertEquals(resourceGroupEntities.get(0).getName(), resourcesResult.get(0).getName());
+        assertEquals(groupName, resourcesResult.get(0).getName());
+        assertNull(resourcesResult.get(0).getType());
     }
 
     @Test

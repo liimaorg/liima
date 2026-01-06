@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -30,7 +30,7 @@ import java.util.Map;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.BaseTemplateProcessor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;

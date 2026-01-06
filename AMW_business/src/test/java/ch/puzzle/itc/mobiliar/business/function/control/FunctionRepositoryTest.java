@@ -22,19 +22,19 @@ package ch.puzzle.itc.mobiliar.business.function.control;
 
 import javax.persistence.EntityManager;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntityBuilder;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FunctionRepositoryTest {
 
 	@Mock
@@ -43,7 +43,7 @@ public class FunctionRepositoryTest {
 	@InjectMocks
 	private FunctionRepository functionRepository;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		functionRepository.entityManager = entityManagerMock;
 	}

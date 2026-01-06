@@ -24,8 +24,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationRepository;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class ResourceRelationBoundaryTest {
@@ -45,14 +45,13 @@ public class ResourceRelationBoundaryTest {
     @Mock
     ResourceRelationRepository resourceRelationRepository;
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     public void shouldBeAddableAsProvidedResourceIfItsNotProvidedByAnyGroup() throws Exception {
-
         // given
         ResourceEntity master = new ResourceEntity();
         String slaveName = "slave";
@@ -65,7 +64,6 @@ public class ResourceRelationBoundaryTest {
 
     @Test
     public void shouldBeAddableAsProvidedResourceIfItsProvidedBySameGroup() throws Exception {
-
         // given
         ResourceGroupEntity masterGroup = new ResourceGroupEntity();
         masterGroup.setName("master");
@@ -91,7 +89,6 @@ public class ResourceRelationBoundaryTest {
 
     @Test
     public void shouldNotBeAddableAsProvidedResourceIfItsProvidedByAnotherGroup() throws Exception {
-
         // given
         ResourceGroupEntity masterGroup = new ResourceGroupEntity();
         masterGroup.setName("master");

@@ -22,15 +22,15 @@ package ch.puzzle.itc.mobiliar.business.issues;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.JBOSS7MANAGEMENT;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.NODE1;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.logging.Level;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
@@ -50,7 +50,7 @@ public class Issue6110NestedPropertyAccessTest extends TemplateProcessorBaseTest
 	ResourceEntity app;
 	ResourceEntity node;
 
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		CustomLogging.setup(Level.OFF);
 		builder = new SimpleEntityBuilder();

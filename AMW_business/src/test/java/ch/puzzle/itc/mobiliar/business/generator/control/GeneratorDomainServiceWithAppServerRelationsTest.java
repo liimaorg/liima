@@ -27,8 +27,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -48,11 +48,10 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @InjectMocks
     GeneratorDomainServiceWithAppServerRelations service;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
 
     @Test
     public void testDoNotOmitTemplateWithPermission() throws Exception {
@@ -65,7 +64,6 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
 
         //then
         Mockito.verify(result, Mockito.never()).omitAllTemplates();
-
     }
 
     @Test
@@ -79,6 +77,5 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
 
         //then
         Mockito.verify(result).omitAllTemplates();
-
     }
 }

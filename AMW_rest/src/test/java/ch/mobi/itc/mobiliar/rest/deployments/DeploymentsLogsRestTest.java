@@ -3,13 +3,11 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -18,11 +16,11 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeploymentsLogsRestTest {
 
     @InjectMocks
@@ -34,10 +32,6 @@ public class DeploymentsLogsRestTest {
     @Mock
     private DeploymentLogContentUseCase logContentUseCase;
 
-    @Before
-    public void setUp() {
-    }
-
     @Test
     public void getDeploymentLogFileContent() throws ValidationException, IOException {
         doReturn(new DeploymentLog(123, "log-file-name", "log-file-content")).when(logContentUseCase).getContent(any(DeploymentLogContentCommand.class));
@@ -47,37 +41,28 @@ public class DeploymentsLogsRestTest {
         assertThat(deploymentLogContent.getContent(), is("log-file-content"));
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void getDeploymentLogFileContent_invalidFileName() throws ValidationException, IOException {
+    @Test
+    public void getDeploymentLogFileContent_invalidFileName() {
         // given
 
-        // when
-        resource.getDeploymentLogFileContent(123456, "path/../../whit-file-traversal");
-
-        // then
-        fail("should have thrown exception");
+        // when / then
+        assertThrows(ConstraintViolationException.class, () -> resource.getDeploymentLogFileContent(123456, "path/../../whit-file-traversal"));
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void getDeploymentLogFileContent_id_is_null() throws ValidationException, IOException {
+    @Test
+    public void getDeploymentLogFileContent_id_is_null() {
         // given
 
-        // when
-        resource.getDeploymentLogFileContent(null, "deployment.log");
-
-        // then
-        fail("should have thrown exception");
+        // when / then
+        assertThrows(ConstraintViolationException.class, () -> resource.getDeploymentLogFileContent(null, "deployment.log"));
     }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void getDeploymentLogFileContent_filename_is_null() throws ValidationException, IOException {
+    @Test
+    public void getDeploymentLogFileContent_filename_is_null() {
         // given
 
-        // when
-        resource.getDeploymentLogFileContent(12345, null);
-
-        // then
-        fail("should have thrown exception");
+        // when / then
+        assertThrows(ConstraintViolationException.class, () -> resource.getDeploymentLogFileContent(12345, null));
     }
 
     @Test
@@ -108,14 +93,11 @@ public class DeploymentsLogsRestTest {
         assertThat(logs, is(response.getEntity()));
     }
 
-    @Test(expected = ValidationException.class)
-    public void getDeploymentLogs_throwsValidationExceptionWhenDeploymentIdIsNull() throws ValidationException, NotFoundException {
+    @Test
+    public void getDeploymentLogs_throwsValidationExceptionWhenDeploymentIdIsNull() {
         // given
 
-        // when
-        resource.getDeploymentLogs(null);
-
-        // then
-        fail("should have thrown exception");
+        // when / then
+        assertThrows(ValidationException.class, () -> resource.getDeploymentLogs(null));
     }
 }

@@ -24,14 +24,14 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * is tests with implementation ConsumedResourceRelationEntity
@@ -42,7 +42,7 @@ public class AbstractResourceRelationEntityTest {
 
 	ContextEntity context2;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		context = new ContextEntity();

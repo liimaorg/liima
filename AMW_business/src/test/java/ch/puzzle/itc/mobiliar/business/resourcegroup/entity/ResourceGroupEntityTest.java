@@ -20,14 +20,15 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -36,7 +37,7 @@ public class ResourceGroupEntityTest {
 
 	ResourceGroupEntity resourceGroup;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		resourceGroup = new ResourceGroupEntity();
 	}
@@ -62,7 +63,7 @@ public class ResourceGroupEntityTest {
 		ReleaseEntity rel = resourceGroup.getNewestRelease();
 		
 		//then
-		Assert.assertEquals(newestResource.getRelease(), rel);
+		assertEquals(newestResource.getRelease(), rel);
 	}
 	
 	
@@ -73,7 +74,7 @@ public class ResourceGroupEntityTest {
 		ReleaseEntity rel = resourceGroup.getNewestRelease();
 		
 		//then
-		Assert.assertEquals(null, rel);
+		assertEquals(null, rel);
 	}
 
 	@Test
@@ -89,7 +90,7 @@ public class ResourceGroupEntityTest {
 		ReleaseEntity rel = resourceGroup.getFirstRelease();
 		
 		//then
-		Assert.assertEquals(earlyResource.getRelease(), rel);
+		assertEquals(earlyResource.getRelease(), rel);
 	}
 	
 	@Test
@@ -99,7 +100,7 @@ public class ResourceGroupEntityTest {
 		ReleaseEntity rel = resourceGroup.getFirstRelease();
 		
 		//then
-		Assert.assertEquals(null, rel);
+		assertEquals(null, rel);
 	}
 	
 	@Test
@@ -108,7 +109,7 @@ public class ResourceGroupEntityTest {
 		entity1.setName("aaaa");
 		ResourceGroupEntity entity2 = new ResourceGroupEntity();
 		entity2.setName("bbbb");
-		Assert.assertEquals(-1, entity1.compareTo(entity2));		
+		assertEquals(-1, entity1.compareTo(entity2));		
 	}
 	
 	@Test
@@ -117,7 +118,7 @@ public class ResourceGroupEntityTest {
 		entity1.setName(null);
 		ResourceGroupEntity entity2 = new ResourceGroupEntity();
 		entity2.setName("bbbb");
-		Assert.assertEquals(-1, entity1.compareTo(entity2));		
+		assertEquals(-1, entity1.compareTo(entity2));		
 	}
 	
 	@Test
@@ -126,7 +127,7 @@ public class ResourceGroupEntityTest {
 		entity1.setName("aaaa");
 		ResourceGroupEntity entity2 = new ResourceGroupEntity();
 		entity2.setName(null);
-		Assert.assertEquals(1, entity1.compareTo(entity2));		
+		assertEquals(1, entity1.compareTo(entity2));		
 	}
 	
 	@Test
@@ -135,7 +136,7 @@ public class ResourceGroupEntityTest {
 		entity1.setName("aaaa");
 		ResourceGroupEntity entity2 = new ResourceGroupEntity();
 		entity2.setName("aaaa");
-		Assert.assertEquals(0, entity1.compareTo(entity2));		
+		assertEquals(0, entity1.compareTo(entity2));		
 	}
 	
 	@Test
@@ -144,7 +145,7 @@ public class ResourceGroupEntityTest {
 		entity1.setName(null);
 		ResourceGroupEntity entity2 = new ResourceGroupEntity();
 		entity2.setName(null);
-		Assert.assertEquals(0, entity1.compareTo(entity2));		
+		assertEquals(0, entity1.compareTo(entity2));		
 	}
 
 }

@@ -25,11 +25,11 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.ws.rs.core.Response;
 
@@ -40,20 +40,16 @@ import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.RESOURC
 import static ch.puzzle.itc.mobiliar.business.security.entity.Permission.RESOURCETYPE;
 import static java.util.Collections.EMPTY_LIST;
 import static javax.ws.rs.core.Response.Status.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class RestrictionTest {
 
     @InjectMocks
     RestrictionsRest rest;
     @Mock
     PermissionBoundary permissionBoundary;
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void shouldReturnState404IfRestrictionHasNotBeenFound() {

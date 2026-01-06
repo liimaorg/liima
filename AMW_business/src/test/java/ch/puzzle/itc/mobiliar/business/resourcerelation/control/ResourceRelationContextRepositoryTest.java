@@ -23,15 +23,15 @@ package ch.puzzle.itc.mobiliar.business.resourcerelation.control;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import javax.persistence.EntityManager;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ResourceRelationContextRepositoryTest {
@@ -42,8 +42,7 @@ public class ResourceRelationContextRepositoryTest {
     @InjectMocks
     ResourceRelationContextRepository resourceRelationContextRepository;
 
-
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         MockitoAnnotations.openMocks(this);
     }

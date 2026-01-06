@@ -20,8 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -29,12 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
-
 
 public class TemplateUtilsTest {
 
@@ -42,7 +42,7 @@ public class TemplateUtilsTest {
 	private static final String ENCRYPT_TESTDATA_FILENAME = "src/test/resources/test-data/business/domain/generator/encrypt-testdata.txt";
 	List<String> encryptStrings;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException {
 		encryptStrings = new ArrayList<String>();
 
@@ -51,15 +51,13 @@ public class TemplateUtilsTest {
 			while (scanner.hasNextLine()) {
 				encryptStrings.add(scanner.nextLine());
 			}
-		}
-		finally {
+		} finally {
 			scanner.close();
 		}
 	}
-	
-	@After
-	public void tearDown(){
-		// set Up Encription Key
+
+	@AfterEach
+	public void tearDown() {
 		System.getProperties().remove(ConfigKey.ENCRYPTION_KEY.getValue());
 	}
 
@@ -96,23 +94,24 @@ public class TemplateUtilsTest {
 		assertEquals("635654", TemplateUtils.decrypt("ir6JtGptxKEfgbbJQN1KcQ==\r\n"));
 		assertEquals("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "
 				+ "eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam "
-				+ "voluptua. At vero eos et accusam et justo duo dolores et ea rebum."
-				,
+				+ "voluptua. At vero eos et accusam et justo duo dolores et ea rebum.",
 				TemplateUtils
 						.decrypt("n+igEaDyKnZCj1QFhGEMMyGcGYU/uPOqUJL8wJStX7KbZRj1N0iHwEYAHs+pl0CIk2KDDU4xuBVP\r\n"
 								+ "X/RwkI4xcA8XKHecBODit9yRo8JEGgM8zdoHm5ni7aE/rWUItPJXzxFoar3gVye2USh0yIh89/d/\r\n"
 								+ "k6FMomcc48jobNiwtcQbQHLGe8vxyY6016e7o63Sz1yd7zfWWzgwSZNgxgjpgr+syiEJbxSAHXrb\r\n"
 								+ "CrmbGcnvj58xY8jffKdaRyh53P4/a+2T3IcRHtMpn5He0a+u+RP3PtK9QSwlXk4zI5Ud1cI=\r\n"));
-		
-		assertEquals(TemplateUtils.decrypt("FQkB54Qner8V/RfjV0XHGQ=="), TemplateUtils.decrypt("FQkB54Qner8V/RfjV0XHGQ==\r\n"));
-		assertEquals(TemplateUtils.decrypt("n+igEaDyKnZCj1QFhGEMMyGcGYU/uPOqUJL8wJStX7KbZRj1N0iHwEYAHs+pl0CIk2KDDU4xuBVP"
-				+ "X/RwkI4xcA8XKHecBODit9yRo8JEGgM8zdoHm5ni7aE/rWUItPJXzxFoar3gVye2USh0yIh89/d/"
-				+ "k6FMomcc48jobNiwtcQbQHLGe8vxyY6016e7o63Sz1yd7zfWWzgwSZNgxgjpgr+syiEJbxSAHXrb"
-				+ "CrmbGcnvj58xY8jffKdaRyh53P4/a+2T3IcRHtMpn5He0a+u+RP3PtK9QSwlXk4zI5Ud1cI="), 
+
+		assertEquals(TemplateUtils.decrypt("FQkB54Qner8V/RfjV0XHGQ=="),
+				TemplateUtils.decrypt("FQkB54Qner8V/RfjV0XHGQ==\r\n"));
+		assertEquals(
+				TemplateUtils.decrypt("n+igEaDyKnZCj1QFhGEMMyGcGYU/uPOqUJL8wJStX7KbZRj1N0iHwEYAHs+pl0CIk2KDDU4xuBVP"
+						+ "X/RwkI4xcA8XKHecBODit9yRo8JEGgM8zdoHm5ni7aE/rWUItPJXzxFoar3gVye2USh0yIh89/d/"
+						+ "k6FMomcc48jobNiwtcQbQHLGe8vxyY6016e7o63Sz1yd7zfWWzgwSZNgxgjpgr+syiEJbxSAHXrb"
+						+ "CrmbGcnvj58xY8jffKdaRyh53P4/a+2T3IcRHtMpn5He0a+u+RP3PtK9QSwlXk4zI5Ud1cI="),
 				TemplateUtils.decrypt("n+igEaDyKnZCj1QFhGEMMyGcGYU/uPOqUJL8wJStX7KbZRj1N0iHwEYAHs+pl0CIk2KDDU4xuBVP\r\n"
-				+ "X/RwkI4xcA8XKHecBODit9yRo8JEGgM8zdoHm5ni7aE/rWUItPJXzxFoar3gVye2USh0yIh89/d/\r\n"
-				+ "k6FMomcc48jobNiwtcQbQHLGe8vxyY6016e7o63Sz1yd7zfWWzgwSZNgxgjpgr+syiEJbxSAHXrb\r\n"
-				+ "CrmbGcnvj58xY8jffKdaRyh53P4/a+2T3IcRHtMpn5He0a+u+RP3PtK9QSwlXk4zI5Ud1cI=\r\n"));
+						+ "X/RwkI4xcA8XKHecBODit9yRo8JEGgM8zdoHm5ni7aE/rWUItPJXzxFoar3gVye2USh0yIh89/d/\r\n"
+						+ "k6FMomcc48jobNiwtcQbQHLGe8vxyY6016e7o63Sz1yd7zfWWzgwSZNgxgjpgr+syiEJbxSAHXrb\r\n"
+						+ "CrmbGcnvj58xY8jffKdaRyh53P4/a+2T3IcRHtMpn5He0a+u+RP3PtK9QSwlXk4zI5Ud1cI=\r\n"));
 	}
 
 	@Test
@@ -126,57 +125,67 @@ public class TemplateUtilsTest {
 			assertEquals(str, decrypted);
 		}
 	}
-	
+
 	@Test
 	public void test_encrypt_nullvalue() {
 		// then
 		assertNull(TemplateUtils.encrypt(null));
 	}
-	
-	@Test(expected=RuntimeException.class)
+
+	@Test
 	public void test_encrypt_No_key() {
 		// given
-		System.getProperties().put(ConfigKey.ENCRYPTION_KEY.getValue(), null);
+		assertNull(System.getProperties().get(ConfigKey.ENCRYPTION_KEY.getValue()));
 		// when
-		TemplateUtils.encrypt("test");
+		assertThrows(RuntimeException.class, () -> {
+			TemplateUtils.encrypt("test");
+		});
 	}
-	
-	@Test(expected=RuntimeException.class)
+
+	@Test
 	public void test_encrypt_invalid_key() {
 		// given
 		System.getProperties().put(ConfigKey.ENCRYPTION_KEY.getValue(), "123");
 		// when
-		TemplateUtils.encrypt("test");
+		assertThrows(RuntimeException.class, () -> {
+			TemplateUtils.encrypt("test");
+		});
 	}
-	
-	
+
 	@Test
 	public void test_decrypt_nullvalue() {
 		// then
 		assertNull(TemplateUtils.decrypt(null));
 	}
-	@Test(expected=RuntimeException.class)
+
+	@Test
 	public void test_decrypt_No_key() {
 		// given
-		System.getProperties().put(ConfigKey.ENCRYPTION_KEY.getValue(), null);
+		assertNull(System.getProperties().get(ConfigKey.ENCRYPTION_KEY.getValue()));
 		// when
-		TemplateUtils.decrypt("test");
+		assertThrows(RuntimeException.class, () -> {
+			TemplateUtils.decrypt("test");
+		});
 	}
-	
-	@Test(expected=RuntimeException.class)
+
+	@Test
 	public void test_decrypt_invalid_key() {
 		// given
 		System.getProperties().put(ConfigKey.ENCRYPTION_KEY.getValue(), "123");
 		// when
-		TemplateUtils.decrypt("test");
+		assertThrows(RuntimeException.class, () -> {
+			TemplateUtils.decrypt("test");
+		});
 	}
-	
-	@Test(expected=RuntimeException.class)
+
+	@Test
 	public void test_decrypt_wrong_input() {
 		// given
 		System.getProperties().put(ConfigKey.ENCRYPTION_KEY.getValue(), ENCRYPTION_KEY);
 		// when
-		TemplateUtils.decrypt("test");
+		assertThrows(RuntimeException.class, () -> {
+			TemplateUtils.decrypt("test");
+		});
 	}
 
 }

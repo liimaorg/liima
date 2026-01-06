@@ -20,22 +20,29 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.apache.commons.lang3.time.DateUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceReleaseComparator;
-import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService.ReleaseComparator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceReleaseComparator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 
@@ -54,7 +61,7 @@ public class ResourceDependencyResolverServiceTest {
 	ResourceEntity r4;
 
 
-	@Before
+	@BeforeEach
 	public void before(){
 		service.resourceReleaseComparator = new ResourceReleaseComparator();
 
@@ -150,7 +157,7 @@ public class ResourceDependencyResolverServiceTest {
 		nearestRelease = service.findMostRelevantRelease(releases, new Date(cal.getTimeInMillis()));
 
 		// then
-		Assert.assertEquals(release5.getId(), nearestRelease.getId());
+		assertEquals(release5.getId(), nearestRelease.getId());
 	}
 
 	@Test
@@ -242,7 +249,7 @@ public class ResourceDependencyResolverServiceTest {
 		ReleaseEntity mostRelevantRelease = service.findExactOrClosestPastRelease(releases, relevantDate);
 
 		// then
-		assertThat(release2, is(mostRelevantRelease));
+		assertEquals(release2, mostRelevantRelease);
 	}
 
 	@Test
@@ -262,7 +269,7 @@ public class ResourceDependencyResolverServiceTest {
 		ReleaseEntity mostRelevantRelease = service.findExactOrClosestPastRelease(releases, relevantDate);
 
 		// then
-		assertThat(release2, is(mostRelevantRelease));
+		assertEquals(release2, mostRelevantRelease);
 	}
 
 	@Test
@@ -297,7 +304,7 @@ public class ResourceDependencyResolverServiceTest {
 		ReleaseEntity laterRelease = new ReleaseEntity();
 		laterRelease.setInstallationInProductionAt(DateUtils.addYears(new Date(), 1));
 		
-		Assert.assertEquals(-1, comparator.compare(currentRelease, laterRelease));
+		assertEquals(-1, comparator.compare(currentRelease, laterRelease));
 	}
 	
 	@Test
@@ -308,7 +315,7 @@ public class ResourceDependencyResolverServiceTest {
 		ReleaseEntity currentRelease = new ReleaseEntity();
 		currentRelease.setInstallationInProductionAt(new Date());
 				
-		Assert.assertEquals(0, comparator.compare(currentRelease, currentRelease));
+		assertEquals(0, comparator.compare(currentRelease, currentRelease));
 	}
 	
 	@Test
@@ -319,13 +326,13 @@ public class ResourceDependencyResolverServiceTest {
 		ReleaseEntity currentRelease = new ReleaseEntity();
 		currentRelease.setInstallationInProductionAt(new Date());
 				
-		Assert.assertEquals(1, comparator.compare(currentRelease, null));
+		assertEquals(1, comparator.compare(currentRelease, null));
 	}
 	
 	@Test
 	public void testReleaseEntityComparatorBothNull(){
 		ReleaseComparator comparator = new ReleaseComparator();							
-		Assert.assertEquals(0, comparator.compare(null, null));
+		assertEquals(0, comparator.compare(null, null));
 	}
 	
 	@Test
@@ -351,7 +358,7 @@ public class ResourceDependencyResolverServiceTest {
 		
 		ResourceDependencyResolverService service = new ResourceDependencyResolverService();
 		ResourceEntity resource = service.getResourceEntityForRelease(firstReleaseResource.getResourceGroup(), currentRelease);
-		Assert.assertEquals("There is only one release defined - so this should be returned", firstReleaseResource, resource);
+		assertEquals(firstReleaseResource, resource, "There is only one release defined - so this should be returned");
 				
 		//Add a second release
 		ResourceEntity secondReleaseResource = ResourceFactory.createNewResource(firstReleaseResource.getResourceGroup());
@@ -359,7 +366,7 @@ public class ResourceDependencyResolverServiceTest {
 		secondReleaseResource.getResourceGroup().getResources().add(secondReleaseResource);
 		
 		resource = service.getResourceEntityForRelease(firstReleaseResource.getResourceGroup(), currentRelease);
-		Assert.assertEquals("Now that there is another release with a perfect match, this should be returned", secondReleaseResource, resource);
+		assertEquals(secondReleaseResource, resource, "Now that there is another release with a perfect match, this should be returned");
 		
 		
 		//Add a third release
@@ -368,15 +375,15 @@ public class ResourceDependencyResolverServiceTest {
 		thirdReleaseResource.getResourceGroup().getResources().add(thirdReleaseResource);
 		
 		resource = service.getResourceEntityForRelease(firstReleaseResource.getResourceGroup(), currentRelease);
-		Assert.assertEquals("Even with a third release (in the future), the second release should be returned", secondReleaseResource, resource);
+		assertEquals(secondReleaseResource, resource, "Even with a third release (in the future), the second release should be returned");
 		
 				
 		resource = service.getResourceEntityForRelease(thirdReleaseResource.getResourceGroup(), currentRelease);
-		Assert.assertEquals("We check that we get the right resource even if we ask with a later release", secondReleaseResource, resource);
+		assertEquals(secondReleaseResource, resource, "We check that we get the right resource even if we ask with a later release");
 		
 		
 		resource = service.getResourceEntityForRelease(thirdReleaseResource.getResourceGroup(), firstRelease);
-		Assert.assertEquals("We ask for the first release - so the first resource should be returned", firstReleaseResource, resource);
+		assertEquals(firstReleaseResource, resource, "We ask for the first release - so the first resource should be returned");
 		
 	}
 	
@@ -418,10 +425,10 @@ public class ResourceDependencyResolverServiceTest {
 		/**
 		 * We expect one single result (only the actually matching resource)
 		 */
-		Assert.assertEquals(1, resourcesForFirstRelease.size());
-		Assert.assertEquals(1, resourcesForSecondRelease.size());
-		Assert.assertEquals(firstReleaseResource, resourcesForFirstRelease.toArray()[0]);
-		Assert.assertEquals(secondReleaseResource, resourcesForSecondRelease.toArray()[0]);
+		assertEquals(1, resourcesForFirstRelease.size());
+		assertEquals(1, resourcesForSecondRelease.size());
+		assertEquals(firstReleaseResource, resourcesForFirstRelease.toArray()[0]);
+		assertEquals(secondReleaseResource, resourcesForSecondRelease.toArray()[0]);
 	}
 
 }

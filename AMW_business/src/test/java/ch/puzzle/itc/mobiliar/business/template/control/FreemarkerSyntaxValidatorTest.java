@@ -20,142 +20,145 @@
 
 package ch.puzzle.itc.mobiliar.business.template.control;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 
 public class FreemarkerSyntaxValidatorTest {
 
-	FreemarkerSyntaxValidator validator;
+    FreemarkerSyntaxValidator validator;
 
-	@Before
-	public void setUp() throws Exception {
-		validator = new FreemarkerSyntaxValidator();
-	}
+    @BeforeEach
+    public void setUp() throws Exception {
+        validator = new FreemarkerSyntaxValidator();
+    }
 
-	@Test
-	public void testValidateFreemarkerSyntax() throws AMWException {
-		// given
-		String template = "<#if consumedResTypes.Webservice[webServiceName]??>"
-				+ "<#assign webService = consumedResTypes.Webservice[webServiceName] >"
-				+ "<#else>"
-				+ "<#stop webServiceName+\" not found in \"+.template_name+\" writeURL\" >"
-				+ "</#if>";
-		validator.validateFreemarkerSyntax(template);
-	}
+    @Test
+    public void testValidateFreemarkerSyntax() throws AMWException {
+        // given
+        String template = "<#if consumedResTypes.Webservice[webServiceName]??>"
+                + "<#assign webService = consumedResTypes.Webservice[webServiceName] >"
+                + "<#else>"
+                + "<#stop webServiceName+\" not found in \"+.template_name+\" writeURL\" >"
+                + "</#if>";
+        validator.validateFreemarkerSyntax(template);
+    }
 
-	@Test
-	public void testValidateFreemarkerSyntaxIncompleteIf() {
-		// given
-		String template = "<#if"
-				+ "<#assign webService = consumedResTypes.Webservice[webServiceName] ></#if>";
-		try {
-			validator.validateFreemarkerSyntax(template);
-			Assert.fail("There should have been an exception...");
-		}
-		catch (AMWException e) {
-			String expectedException = "Check if you have a valid #if-#elseif-#else structure.";
-			Assert.assertTrue(e.getMessage().contains(expectedException));
-		}
-	}
-	
-	@Test
-	public void testValidateFreemarkerSyntaxIncompleteArray() {
-		// given
-		String template = "<#assign webService = consumedResTypes.Webservice[webSer >";
-		try {
-			validator.validateFreemarkerSyntax(template);
-			Assert.fail("There should have been an exception...");
-		}
-		catch (AMWException e) {
-			Assert.assertTrue(e.getMessage().contains("Encountered \">\""));
-			Assert.assertTrue(e.getMessage().contains("but was expecting one of"));
-			Assert.assertTrue(e.getMessage().contains("\"]\""));
-		}
-	}
+    @Test
+    public void testValidateFreemarkerSyntaxIncompleteIf() {
+        // given
+        String template = "<#if"
+                + "<#assign webService = consumedResTypes.Webservice[webServiceName] ></#if>";
 
-    @Test(expected = NullPointerException.class)
+        // when/then
+        AMWException e = assertThrows(AMWException.class, () -> {
+            validator.validateFreemarkerSyntax(template);
+        });
+        assertThat(e.getMessage(), containsString("Check if you have a valid #if-#elseif-#else structure."));
+    }
+
+    @Test
+    public void testValidateFreemarkerSyntaxIncompleteArray() {
+        // given
+        String template = "<#assign webService = consumedResTypes.Webservice[webSer >";
+
+        // when/then
+        AMWException e = assertThrows(AMWException.class, () -> {
+            validator.validateFreemarkerSyntax(template);
+        });
+        assertThat(e.getMessage(), containsString("Encountered \">\""));
+        assertThat(e.getMessage(), containsString("but was expecting one of"));
+        assertThat(e.getMessage(), containsString("\"]\""));
+    }
+
+    @Test
     public void testValidateFreemarkerSyntaxWithNull() throws AMWException {
+
         // given
         String template = null;
 
         // when
+        assertThrows(NullPointerException.class, () -> {
+            validator.validateFreemarkerSyntax(template);
+        });
+    }
+
+    /**
+     * If there are no freemarker elements - this is valid as well
+     * 
+     * @throws AMWException
+     */
+    @Test
+    public void testValidateFreemarkerNoFreemarkerContent() throws AMWException {
+        // given
+        String template = "hello world";
         validator.validateFreemarkerSyntax(template);
     }
-	
-	/**
-	 * If there are no freemarker elements - this is valid as well
-	 * @throws AMWException
-	 */
-	@Test
-	public void testValidateFreemarkerNoFreemarkerContent() throws AMWException {
-		// given
-		String template = "hello world";
-		validator.validateFreemarkerSyntax(template);		
-	}
 
-	@Test
-	public void testValidateFreemarkerSyntaxIncorrectIf() {
-		// given
-		String template = "<#if hostName???>";
-		try {
-			validator.validateFreemarkerSyntax(template);
-			Assert.fail("There should have been an exception...");
-		}
-		catch (AMWException e) {
-			Assert.assertTrue(e.getMessage().contains("Encountered \">\""));
-			Assert.assertTrue(e.getMessage().contains("but was expecting"));
-			Assert.assertTrue(e.getMessage().contains("<ID>"));
-		}
-	}
-	
-	@Test
-	public void testValidateFreemarkerSyntaxMacro() throws AMWException {
-		// given
-		String template = "<#macro writeURL webServiceName><#assign loadBalancer=consumedResTypes.JspLoadBalancer.jspLoadBalancer>${url}</#macro>";
-		validator.validateFreemarkerSyntax(template);		
-	}
-	
-	@Test
-	public void testValidateFreemarkerSyntaxNoClosingTag() throws AMWException {
-		// given
-		String template = "<#macro writeURL webServiceName><#assign loadBalancer=consumedResTypes.JspLoadBalancer.jspLoadBalancer>${url}";
-		try {
-			validator.validateFreemarkerSyntax(template);
-			Assert.fail("There should have been an exception...");
-		}
-		catch (AMWException e) {
-			Assert.assertTrue(e.getMessage().contains("Unexpected end of file reached"));
-            Assert.assertTrue(e.getMessage().contains("You have an unclosed"));
-            Assert.assertTrue(e.getMessage().contains("#function"));
-            Assert.assertTrue(e.getMessage().contains("#macro"));
-		}
-	}
-	
-	@Test
-	public void testValidateFreemarkerSyntaxIncompletePlaceholder() throws AMWException {
-		// given
-		String template = "${url";
-		try {
-			validator.validateFreemarkerSyntax(template);
-			Assert.fail("There should have been an exception...");
-		}
-		catch (AMWException e) {
-			Assert.assertTrue(e.getMessage().contains("Unexpected end of file reached"));
-		}
-	}
-	
-	
-	/**
-	 * Although "something" doesn't exist, the syntax validation should pass just fine. 
-	 * @throws AMWException
-	 */
-	@Test
-	public void testValidateFreemarkerSyntaxInclude() throws AMWException {
-		// given
-		String template = "<#include something>";
-		validator.validateFreemarkerSyntax(template);
-	}
+    @Test
+    public void testValidateFreemarkerSyntaxIncorrectIf() {
+        // given
+        String template = "<#if hostName???>";
+
+        // when/then
+        AMWException e = assertThrows(AMWException.class, () -> {
+            validator.validateFreemarkerSyntax(template);
+        });
+        assertThat(e.getMessage(), containsString("Encountered \">\""));
+        assertThat(e.getMessage(), containsString("but was expecting"));
+        assertThat(e.getMessage(), containsString("<ID>"));
+    }
+
+    @Test
+    public void testValidateFreemarkerSyntaxMacro() throws AMWException {
+        // given
+        String template = "<#macro writeURL webServiceName><#assign loadBalancer=consumedResTypes.JspLoadBalancer.jspLoadBalancer>${url}</#macro>";
+        validator.validateFreemarkerSyntax(template);
+    }
+
+    @Test
+    public void testValidateFreemarkerSyntaxNoClosingTag() {
+        // given
+        String template = "<#macro writeURL webServiceName><#assign loadBalancer=consumedResTypes.JspLoadBalancer.jspLoadBalancer>${url}";
+
+        // when/then
+        AMWException e = assertThrows(AMWException.class, () -> {
+            validator.validateFreemarkerSyntax(template);
+        });
+        assertThat(e.getMessage(), containsString("Unexpected end of file reached"));
+        assertThat(e.getMessage(), containsString("You have an unclosed"));
+        assertThat(e.getMessage(), containsString("#function"));
+        assertThat(e.getMessage(), containsString("#macro"));
+    }
+
+    @Test
+    public void testValidateFreemarkerSyntaxIncompletePlaceholder() {
+        // given
+        String template = "${url";
+
+        // when/then
+        AMWException e = assertThrows(AMWException.class, () -> {
+            validator.validateFreemarkerSyntax(template);
+        });
+
+        assertThat(e.getMessage(), containsString("Unexpected end of file reached"));
+    }
+
+    /**
+     * Although "something" doesn't exist, the syntax validation should pass just
+     * fine.
+     * 
+     * @throws AMWException
+     */
+    @Test
+    public void testValidateFreemarkerSyntaxInclude() throws AMWException {
+        // given
+        String template = "<#include something>";
+        validator.validateFreemarkerSyntax(template);
+    }
 }

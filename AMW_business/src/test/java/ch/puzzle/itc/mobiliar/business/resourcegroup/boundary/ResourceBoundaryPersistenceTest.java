@@ -21,8 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,11 +32,9 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -49,13 +47,13 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
-import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
+import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -65,9 +63,9 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class ResourceBoundaryPersistenceTest {
 
     @Spy
@@ -110,10 +108,7 @@ public class ResourceBoundaryPersistenceTest {
     @Mock
     Logger log;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
     }
@@ -148,11 +143,10 @@ public class ResourceBoundaryPersistenceTest {
         when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId()))
                 .thenReturn(r1.getEntity().getResourceGroup());
         when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(r1.getEntity().getResourceGroup());
-        exception.expect(ElementAlreadyExistsException.class);
-        Resource r2 = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1",
-                appType.getId(),
-                release2.getId());
-        assertNull(r2);
+        assertThrows(ElementAlreadyExistsException.class,
+                () -> resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1",
+                        appType.getId(),
+                        release2.getId()));
     }
 
     @Test
@@ -187,12 +181,13 @@ public class ResourceBoundaryPersistenceTest {
         when(resourceGroupRepository.loadUniqueGroupByNameAndType("app1", appType.getId()))
                 .thenReturn(r1.getEntity().getResourceGroup());
         when(resourceGroupRepository.getResourceGroupByName("app1")).thenReturn(r1.getEntity().getResourceGroup());
-        exception.expect(ElementAlreadyExistsException.class);
-        resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1", appType.getName(),
-                release2.getName());
+        assertThrows(ElementAlreadyExistsException.class,
+                () -> resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "app1",
+                        appType.getName(),
+                        release2.getName()));
     }
 
-    @Test(expected = ElementAlreadyExistsException.class)
+    @Test
     public void creationOfNewResourceWithSameNameAsAnExistingOfDifferentTypeShouldFail() throws AMWException {
         // given
         ResourceTypeEntity appType = new ResourceTypeEntity();
@@ -221,8 +216,10 @@ public class ResourceBoundaryPersistenceTest {
         when(resourceGroupRepository.getResourceGroupByName(as.getName())).thenReturn(app);
 
         // when // then
-        resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "test", asType.getId(),
-                release1.getId());
+        assertThrows(ElementAlreadyExistsException.class, () -> {
+            resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), "test", asType.getId(),
+                    release1.getId());
+        });
     }
 
     @Test

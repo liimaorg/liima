@@ -20,8 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.foreignable.control;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
@@ -29,12 +30,13 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
@@ -45,7 +47,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ForeignableServiceTest {
 
     @Mock
@@ -57,12 +59,12 @@ public class ForeignableServiceTest {
     @InjectMocks
     private ForeignableService foreignableService;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         // by default not super role
-        when(permissionServiceMock.hasPermission(Permission.IGNORE_FOREIGNABLE_OWNER)).thenReturn(false);
+        // lenient only because verifyEditableByOwnernWhenCreatingNewObjectShouldNotThrowException2 doesn't need it
+        Mockito.lenient().when(permissionServiceMock.hasPermission(Permission.IGNORE_FOREIGNABLE_OWNER)).thenReturn(false);
     }
-
 
     @Test
     public void isForeignableModifiableByOwnerWhenSameOwnerShouldReturnTrue(){
@@ -136,17 +138,18 @@ public class ForeignableServiceTest {
         assertTrue(true);
     }
 
-    @Test(expected = ForeignableOwnerViolationException.class)
-    public void verifyDeletableByOwnerWhenDifferentOwnerShouldThrowException() throws ForeignableOwnerViolationException {
+    @Test
+    public void verifyDeletableByOwnerWhenDifferentOwnerShouldThrowException() {
         // given
         ForeignableOwner deletingOwner = ForeignableOwner.MAIA;
         ForeignableOwner foreignableOwner = ForeignableOwner.AMW;
         Foreignable<ResourceEntity> foreignable = new ResourceEntityBuilder().withOwner(foreignableOwner).build();
 
-        // when
-        foreignableService.verifyDeletableByOwner(deletingOwner, foreignable);
+        // when / then
+        assertThrows(ForeignableOwnerViolationException.class, () -> {
+            foreignableService.verifyDeletableByOwner(deletingOwner, foreignable);
+        });
     }
-
 
     @Test
     public void verifyEditableByOwnernWhenSameOwnerShouldNotThrowException2() throws ForeignableOwnerViolationException {
@@ -163,7 +166,6 @@ public class ForeignableServiceTest {
         assertTrue(true);
     }
 
-
     @Test
     public void verifyEditableByOwnernWhenCreatingNewObjectShouldNotThrowException2() throws ForeignableOwnerViolationException {
         // given
@@ -178,7 +180,6 @@ public class ForeignableServiceTest {
         // then
         assertTrue(true);
     }
-
 
     @Test
     public void verifyEditableByOwnernWhenNoForeignableFieldsChangedShouldNotThrowException2() throws ForeignableOwnerViolationException {
@@ -197,31 +198,33 @@ public class ForeignableServiceTest {
         assertTrue(true);
     }
 
-    @Test(expected = ForeignableOwnerViolationException.class)
-    public void verifyEditableByOwnernWhenDifferentOwnerIsEditingForeignableFieldOfExistingForeignableObjectShouldThrowException() throws ForeignableOwnerViolationException {
+    @Test
+    public void verifyEditableByOwnernWhenDifferentOwnerIsEditingForeignableFieldOfExistingForeignableObjectShouldThrowException() {
         // given
         ForeignableOwner editableOwner = ForeignableOwner.MAIA;
         ForeignableOwner foreignableOwner = ForeignableOwner.AMW;
         Foreignable<ResourceEntity> foreignable = new ResourceEntityBuilder().withOwner(foreignableOwner).withId(1).build();
         Foreignable<ResourceEntity> changedForeignable = new ResourceEntityBuilder().withOwner(foreignableOwner).withName("changed foreignable field").withId(1).build();
 
-        // when
-        foreignableService.verifyEditableByOwner(editableOwner,changedForeignable.foreignableFieldHashCode(), foreignable);
+        // when / then
+        assertThrows(ForeignableOwnerViolationException.class, () -> {
+            foreignableService.verifyEditableByOwner(editableOwner, changedForeignable.foreignableFieldHashCode(), foreignable);
+        });
     }
 
-    @Test(expected = ForeignableOwnerViolationException.class)
-    public void verifyEditableByOwnernWhenDifferentOwnerIsEditingForeignableFieldOfExistingForeignableObjectShouldThrowException2() throws ForeignableOwnerViolationException {
+    @Test
+    public void verifyEditableByOwnernWhenDifferentOwnerIsEditingForeignableFieldOfExistingForeignableObjectShouldThrowException2() {
         // given
         ForeignableOwner editableOwner = ForeignableOwner.MAIA;
         ForeignableOwner foreignableOwner = ForeignableOwner.AMW;
         int unchangedForeignable = new ResourceEntityBuilder().withOwner(foreignableOwner).withId(1).build().foreignableFieldHashCode();
         Foreignable<ResourceEntity> changedForeignable = new ResourceEntityBuilder().withOwner(foreignableOwner).withName("changed foreignable field").withId(1).build();
 
-        // when
-        foreignableService.verifyEditableByOwner(editableOwner, unchangedForeignable, changedForeignable);
+        // when / then
+        assertThrows(ForeignableOwnerViolationException.class, () -> {
+            foreignableService.verifyEditableByOwner(editableOwner, unchangedForeignable, changedForeignable);
+        });
     }
-
-
 
     @Test
     public void verifyEditableByOwnernWhenDifferentOwnerIsEditingForeignableFieldOfExistingForeignableObjectButHasChuckNorrisRoleShouldNotThrowException2() throws ForeignableOwnerViolationException {
@@ -239,7 +242,4 @@ public class ForeignableServiceTest {
         // then
         assertTrue(true);
     }
-
-
-
 }

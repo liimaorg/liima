@@ -23,14 +23,14 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.AD;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.APP;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.MAIL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.logging.Level;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;

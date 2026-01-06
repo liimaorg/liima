@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -33,11 +33,10 @@ public class EnvironmentGenerationResultTest {
     @Mock
     NodeGenerationResult nodeResult2;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-
 
     @Test
     public void testOmitAllTemplates() throws Exception {

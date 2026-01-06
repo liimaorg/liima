@@ -20,6 +20,26 @@
 
 package ch.puzzle.itc.mobiliar.business.resourceactivation.control;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity;
@@ -27,21 +47,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationContextRepository;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
 
 public class ResourceActivationTest {
 
@@ -57,7 +62,7 @@ public class ResourceActivationTest {
     @InjectMocks
     ResourceActivation resourceActivation;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         MockitoAnnotations.openMocks(this);
     }
@@ -213,8 +218,8 @@ public class ResourceActivationTest {
         List<ResourceActivationEntity> resourceActivations = spiedResourceActivation.getMostRelevantResourceActivationEntities(
                   resourceRelationEntity, Mockito.mock(ContextEntity.class));
 
-        Assert.assertEquals(1, resourceActivations.size());
-        Assert.assertEquals(envResActEnt, resourceActivations.get(0));
+        assertEquals(1, resourceActivations.size());
+        assertEquals(envResActEnt, resourceActivations.get(0));
         verify(envResActEnt, times(1)).setOnlyActivationEntityForResourceRelation(true);
     }
 
@@ -243,8 +248,8 @@ public class ResourceActivationTest {
         List<ResourceRelationContextEntity> result = resourceActivation.getResourceActivationEntitiesForContextHierarchy(relation, env);
 
         //Make sure, the result is sorted correctly (environment context first, global context last).
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals(envContext, result.get(0));
-        Assert.assertEquals(globalContext, result.get(1));
+        assertEquals(2, result.size());
+        assertEquals(envContext, result.get(0));
+        assertEquals(globalContext, result.get(1));
     }
 }

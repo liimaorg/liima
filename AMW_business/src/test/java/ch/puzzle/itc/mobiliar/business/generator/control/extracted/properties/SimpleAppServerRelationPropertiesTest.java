@@ -22,13 +22,13 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.APP;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.WS;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.logging.Level;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;

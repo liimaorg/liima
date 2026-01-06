@@ -1,5 +1,13 @@
 package ch.puzzle.itc.mobiliar.business.utils.database;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
+import java.sql.DriverManager;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import ch.puzzle.itc.mobiliar.business.database.control.EntityManagerProducerIntegrationTestImpl;
 import liquibase.Contexts;
 import liquibase.LabelExpression;
@@ -10,21 +18,11 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import org.junit.Test;
-
-import java.io.File;
-import java.sql.DriverManager;
-import java.util.List;
-
-import static junit.framework.TestCase.fail;
-
 
 public class LiquibaseChangeSetTest {
 
-
     private Database database;
     private java.sql.Connection conn = null;
-
 
     @Test
     public void shouldLoadInitialDataSetInEmptyDatabase() throws Exception {
@@ -33,14 +31,15 @@ public class LiquibaseChangeSetTest {
         conn = DriverManager.getConnection("jdbc:h2:mem:testdata", "sa", "");
 
         database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
-        Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog.xml", new ClassLoaderResourceAccessor(), database);
+        Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog.xml", new ClassLoaderResourceAccessor(),
+                database);
 
-        //when
+        // when
         liquibase.update(new Contexts(), new LabelExpression());
 
         liquibase.close();
         // then must not fail
-        if(conn !=null) {
+        if (conn != null) {
             conn.close();
         }
     }
@@ -48,22 +47,25 @@ public class LiquibaseChangeSetTest {
     @Test
     public void shouldNotHaveAnyOpenChangeSets() throws Exception {
         // given
-        File testDB = EntityManagerProducerIntegrationTestImpl.copyIntegrationTestDB("amwFileDbIntegrationOpenChangeSets.mv.db");
-        conn = DriverManager.getConnection("jdbc:h2:file:" + testDB.getParent().toString() + "/amwFileDbIntegrationOpenChangeSets", "sa", "");
+        File testDB = EntityManagerProducerIntegrationTestImpl
+                .copyIntegrationTestDB("amwFileDbIntegrationOpenChangeSets.mv.db");
+        conn = DriverManager.getConnection(
+                "jdbc:h2:file:" + testDB.getParent().toString() + "/amwFileDbIntegrationOpenChangeSets", "sa", "");
         database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(conn));
-        Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog.xml", new ClassLoaderResourceAccessor(), database);
+        Liquibase liquibase = new Liquibase("liquibase/auto.db.changelog.xml", new ClassLoaderResourceAccessor(),
+                database);
 
-        //when
+        // when
         List<ChangeSet> unrunChangeSets = liquibase.listUnrunChangeSets(new Contexts(), new LabelExpression());
 
         // if there are open Changesets apply them and look for errors
-        if(unrunChangeSets.size()>0){
+        if (unrunChangeSets.size() > 0) {
             try {
                 liquibase.update(new Contexts(), new LabelExpression());
-            }catch (LiquibaseException e){
+            } catch (LiquibaseException e) {
                 fail("There are open Database Changesets on the local H2 Database, which fail when you apply them, you need to fix that and apply them afterwards with: AMW_db_scripts/update_h2_test_db.sh");
-            }finally {
-                if(conn !=null) {
+            } finally {
+                if (conn != null) {
                     conn.close();
                 }
             }
@@ -71,7 +73,7 @@ public class LiquibaseChangeSetTest {
         }
 
         liquibase.close();
-        if(conn != null) {
+        if (conn != null) {
             conn.close();
         }
     }

@@ -20,10 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Properties;
@@ -32,9 +32,9 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -75,7 +75,7 @@ public class ResourceLocatorTest {
     @InjectMocks
     private ResourceLocator resourceLocator;
 
-    @Before
+    @BeforeEach
     public void before() {
         MockitoAnnotations.openMocks(this);
 
@@ -87,7 +87,7 @@ public class ResourceLocatorTest {
         System.setProperties(props);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Properties props = System.getProperties();
         props.remove(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES.getValue());

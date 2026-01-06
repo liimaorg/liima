@@ -23,7 +23,7 @@ package ch.puzzle.itc.mobiliar.business.generator.control.templateutils;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -97,7 +97,7 @@ public abstract class AbstractTemplateUtilsTest {
 	private int idCounter = 0;
 	
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		
 		applicationType = new ResourceTypeEntity();

@@ -23,11 +23,11 @@ package ch.puzzle.itc.mobiliar.business.deploy.boundary;
 import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
@@ -49,9 +49,9 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -80,9 +80,9 @@ import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class DeploymentBoundaryPersistenceTest {
 
 	@InjectMocks
@@ -108,7 +108,7 @@ public class DeploymentBoundaryPersistenceTest {
 
 	private DeploymentEntity d;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 
 		MockitoAnnotations.openMocks(this);
@@ -128,10 +128,9 @@ public class DeploymentBoundaryPersistenceTest {
 		when(dbUtil.isOracle()).thenReturn(false);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
 	public void test_changeDeploymentTime_exception_noId() throws DeploymentStateException {
 		// when
-		deploymentBoundary.changeDeploymentDate(null, new Date());
+		assertThrows(IllegalArgumentException.class, () -> deploymentBoundary.changeDeploymentDate(null, new Date()));
 	}
 
 	@Test
@@ -150,13 +149,11 @@ public class DeploymentBoundaryPersistenceTest {
 				detachedEntity.getDeploymentDate());
 
 		// then
-		assertNotNull("Deployment should not be started or been executed so far", result);
-		assertEquals("Deploymentdate should be set to " + deploymentDate.toString(),
-				getDetachedEntityFromDb(d).getDeploymentDate(), deploymentDate);
+		assertNotNull(result, "Deployment should not be started or been executed so far");
+		assertEquals(getDetachedEntityFromDb(d).getDeploymentDate(), deploymentDate, "Deploymentdate should be set to " + deploymentDate.toString());
 
 	}
 
-	@Test(expected = DeploymentStateException.class)
 	public void test_changeDeploymentTime_failed_alreadyExecuted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.canceled);
@@ -167,10 +164,9 @@ public class DeploymentBoundaryPersistenceTest {
 		Date deploymentDate = new Date();
 		detachedEntity.setDeploymentDate(deploymentDate);
 
-		deploymentBoundary.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
+		assertThrows(DeploymentStateException.class, () -> deploymentBoundary.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate()));
 	}
 
-	@Test(expected = DeploymentStateException.class)
 	public void test_changeDeploymentTime_failed_alreadyStarted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.progress);
@@ -181,25 +177,22 @@ public class DeploymentBoundaryPersistenceTest {
 		Date deploymentDate = new Date();
 		detachedEntity.setDeploymentDate(deploymentDate);
 
-		deploymentBoundary.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate());
+		assertThrows(DeploymentStateException.class, () -> deploymentBoundary.changeDeploymentDate(detachedEntity.getId(), detachedEntity.getDeploymentDate()));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
 	public void test_cancelDeployment_failed_nullvalue() throws DeploymentStateException {
-		assertNull("", deploymentBoundary.cancelDeployment(null));
+		assertThrows(IllegalArgumentException.class, () -> deploymentBoundary.cancelDeployment(null));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
 	public void test_cancelDeployment_exception_noId() throws DeploymentStateException {
 		// given
 		d.setId(null);
 
 		// when
-		deploymentBoundary.cancelDeployment(d.getId());
+		assertThrows(IllegalArgumentException.class, () ->  deploymentBoundary.cancelDeployment(d.getId()));
 
 	}
 
-	@Test(expected = DeploymentStateException.class)
 	public void test_cancelDeployment_failed_alreadyExecuted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.failed);
@@ -208,11 +201,9 @@ public class DeploymentBoundaryPersistenceTest {
 		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);
 
 		// when
-		deploymentBoundary.cancelDeployment(detachedEntity.getId());
-
+		assertThrows(DeploymentStateException.class, () -> deploymentBoundary.cancelDeployment(detachedEntity.getId()));
 	}
 
-	@Test(expected = DeploymentStateException.class)
 	public void test_cancelDeployment_failed_alreadyStarted() throws DeploymentStateException {
 		// given
 		d.setDeploymentState(DeploymentState.progress);
@@ -222,8 +213,7 @@ public class DeploymentBoundaryPersistenceTest {
 
 		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);
 
-		deploymentBoundary.cancelDeployment(detachedEntity.getId());
-
+		assertThrows(DeploymentStateException.class, () -> deploymentBoundary.cancelDeployment(detachedEntity.getId()));
 	}
 
 	@Test
@@ -243,12 +233,11 @@ public class DeploymentBoundaryPersistenceTest {
 		DeploymentEntity cancelDeployment = deploymentBoundary.cancelDeployment(detachedEntity.getId());
 
 		// then
-		assertTrue("Deployment executed must be set to true after cancelling", cancelDeployment.isExecuted());
-		assertEquals("State must be set to canceled", DeploymentState.canceled, cancelDeployment.getDeploymentState());
-		assertNotNull("A statemessage must be set", cancelDeployment.getStateMessage());
-		assertEquals("A cancel user must be set to " + cancelUserName, cancelUserName,
-				cancelDeployment.getDeploymentCancelUser());
-		assertNotNull("A cancel date be set", cancelDeployment.getDeploymentCancelDate());
+		assertTrue(cancelDeployment.isExecuted(), "Deployment executed must be set to true after cancelling");
+		assertEquals(DeploymentState.canceled, cancelDeployment.getDeploymentState(), "State must be set to canceled");
+		assertNotNull(cancelDeployment.getStateMessage(), "A statemessage must be set");
+		assertEquals(cancelUserName, cancelDeployment.getDeploymentCancelUser(), "A cancel user must be set to " + cancelUserName);
+		assertNotNull(cancelDeployment.getDeploymentCancelDate(), "A cancel date be set");
 
 	}
 

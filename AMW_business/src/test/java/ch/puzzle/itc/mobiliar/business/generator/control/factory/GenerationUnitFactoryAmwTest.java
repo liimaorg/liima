@@ -28,9 +28,9 @@ import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.AS;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.DB2;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.MAIL;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderUtils.resourceByName;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -40,7 +40,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorUtils;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationOptions;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationPackage;
+import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnitFactory;
+import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -60,16 +68,47 @@ import com.google.common.collect.Iterables;
 
 import freemarker.template.TemplateModelException;
 
-public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<AmwEntityBuilder> {
+import ch.puzzle.itc.mobiliar.test.CustomLogging;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.MockitoAnnotations;
+import java.util.logging.Level;
 
-	@Override
+public class GenerationUnitFactoryAmwTest {
+
+	@InjectMocks
+	GenerationUnitFactory factory;
+
+	@Spy
+	java.util.logging.Logger log = java.util.logging.Logger.getLogger(GenerationUnitFactoryAmwTest.class.getSimpleName());
+
+	@Mock
+	GeneratorUtils utils;
+
+	@Mock
+	ResourceDependencyResolverService dependencyResolver;
+
+	@Mock
+	ResourceTypeProvider resourceTypeProvider;
+
+	@Mock
+	FunctionService FunctionService;
+
+	AmwEntityBuilder builder;
+
+	GenerationOptions options;
+
+	@BeforeEach
 	public void before() {
+		CustomLogging.setup(Level.OFF);
+		MockitoAnnotations.openMocks(this);
 		builder = new AmwEntityBuilder();
-		super.before();
 	}
 
 	@Test
 	public void testSize() {
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		assertEquals(13, work.getAsSet().size());
 	}
 
@@ -81,7 +120,7 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 		builder.buildConsumedRelation(app, ws, ForeignableOwner.AMW);
 		builder.buildConsumedRelation(ws, lb, ForeignableOwner.AMW);
 
-		initialize();
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		List<GenerationUnit> wsUnits = unitsFor(work.getAsSet(), EntityBuilderType.WS);
 		assertEquals(2, wsUnits.size());
 
@@ -93,12 +132,14 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 
 	@Test
 	public void testFirstItem() {
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		assertEquals(Iterables.getFirst(work.getAsSet(), null).getSlaveResource(), resourceByName(builder, AD));
 		assertNotNull(Iterables.getFirst(work.getAsSet(), null).getPropertiesAsModel());
 	}
 
 	@Test
 	public void testLastItem() {
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		assertEquals(Iterables.getLast(work.getAsSet()).getSlaveResource(), resourceByName(builder, AS));
 		assertNotNull(Iterables.getLast(work.getAsSet()).getPropertiesAsModel());
 	}
@@ -112,7 +153,7 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 	public void testPropertyIdentifierWhenSetOnType() throws TemplateModelException {
 		builder.buildConsumedRelation(DB2, MAIL, ForeignableOwner.AMW);
 		builder.relationFor(DB2, MAIL).setIdentifier("mail_1");
-		initialize();
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
 		AmwResourceTemplateModel properties = propertiesFor(work.getAsSet(), DB2).transformModel();
 		assertEquals("mailrelay", TestUtils.asHashModel(properties, "consumedResTypes", "Mail", "mail_1").get("name").toString());
@@ -123,8 +164,8 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 	@Test
 	public void testPropertyIdentifierWhenNullIdentifierOnType() throws TemplateModelException {
 		builder.buildConsumedRelation(DB2, MAIL, ForeignableOwner.AMW);
-		initialize();
-
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
+		
         AmwResourceTemplateModel properties = propertiesFor(work.getAsSet(), DB2).transformModel();
         assertEquals("mailrelay", TestUtils.asHashModel(properties, "consumedResTypes", "Mail", "mail").get("name").toString());
         assertEquals("mailrelay", TestUtils.asHashModel(properties, "mail").get("name").toString());
@@ -143,7 +184,7 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 		otherInstanceRelation.setResourceRelationType(otherTypeRelation);
 		otherTypeRelation.setIdentifier("other_instance_identifier");
 
-		initialize();
+		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		
 		AmwResourceTemplateModel properties = propertiesFor(work.getAsSet(), DB2).transformModel();
 
@@ -157,6 +198,7 @@ public class GenerationUnitFactoryAmwTest extends GenerationUnitFactoryBaseTest<
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testTemplateLoading() {
+		GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		verify(utils, times(13)).getTemplates(any(ResourceEntity.class), any(ContextEntity.class), any(Set.class), eq(builder.platform.getId()));
 		verify(utils, times(12)).getTemplates(any(ContextEntity.class), any(AbstractResourceRelationEntity.class), any(Set.class), eq(builder.platform.getId()));
 	}

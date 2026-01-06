@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.environment.entity;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.Set;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * The abstract HasContexts class is tested with the ResourceTypeEntity

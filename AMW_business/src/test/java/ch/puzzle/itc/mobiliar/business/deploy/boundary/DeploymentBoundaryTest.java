@@ -37,12 +37,12 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import java.nio.file.Path;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -63,11 +63,11 @@ import static ch.puzzle.itc.mobiliar.business.domain.commons.Sort.SortingDirecti
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeploymentBoundaryTest
 {
 	
@@ -90,13 +90,13 @@ public class DeploymentBoundaryTest
 	@Mock
 	private EntityManager em;
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
+	@TempDir
+	public Path tempFolder;
 
 	@Test
 	public void deploymentCleanupEmptyFolder() throws Exception {
 		Properties properties = System.getProperties();
-		File generatorFolder = tempFolder.newFolder();
+		File generatorFolder = tempFolder.toFile();
 		
 		// given
 		Integer cleanupAge = 10;
@@ -117,7 +117,7 @@ public class DeploymentBoundaryTest
 	public void deploymentCleanup() throws Exception {
 		Date now = new Date();
 		Properties properties = System.getProperties();
-		File generatorFolder = tempFolder.newFolder();
+		File generatorFolder = tempFolder.toFile();
 		
 		// given
 		Integer cleanupAge = 10;

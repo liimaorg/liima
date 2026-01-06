@@ -26,8 +26,8 @@ import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.times;
@@ -44,11 +44,10 @@ public class MailServiceTest {
 	@Mock
 	Logger log;
 	
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		MockitoAnnotations.openMocks(this);
 	}
-
 	
 	@Test
 	public void test_createMessageAndSend_logging_null() throws MessagingException {

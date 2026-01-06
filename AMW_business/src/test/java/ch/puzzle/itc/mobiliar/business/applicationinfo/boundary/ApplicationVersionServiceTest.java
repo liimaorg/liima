@@ -1,8 +1,8 @@
 package ch.puzzle.itc.mobiliar.business.applicationinfo.boundary;
 
 import ch.puzzle.itc.mobiliar.business.applicationinfo.entity.ConfigurationKeyValuePair;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 
@@ -17,7 +17,7 @@ public class ApplicationVersionServiceTest {
     @InjectMocks
     ApplicationVersionService applicationVersionService;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
     }

@@ -20,12 +20,12 @@
 
 package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
@@ -38,7 +38,7 @@ public class EditPropertiesTableTest {
 
 	private EditPropertiesTable editPropertiesTable;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		editPropertiesTable = new EditPropertiesTable();
 	}

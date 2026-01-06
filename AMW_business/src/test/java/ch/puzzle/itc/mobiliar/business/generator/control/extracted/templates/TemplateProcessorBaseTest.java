@@ -23,6 +23,7 @@ package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -34,8 +35,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -69,8 +69,8 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 
 	List<GenerationUnitGenerationResult> generationResults;
 
-	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+	@TempDir
+	public Path folder;
 
 	@Spy
 	Logger log = Logger.getLogger(AppServerRelationsTemplateProcessor.class.getSimpleName());
@@ -152,8 +152,8 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 	}
 
 	protected void writeFiles() throws FileExistsException, IOException {
-		writer.generateFileStructure(generationResults, folder.getRoot().toString(), null);
-		files = Lists.newArrayList(new File(folder.getRoot().toString()).listFiles());
+		writer.generateFileStructure(generationResults, folder.toString(), null);
+		files = Lists.newArrayList(new File(folder.toString()).listFiles());
 	}
 
 	protected String readFile(String name) throws IOException {
