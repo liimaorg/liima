@@ -22,11 +22,11 @@ package ch.puzzle.itc.mobiliar.test;
 
 import javax.persistence.EntityManager;
 
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceEnversTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@RunWith(PersistenceEnversTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public abstract class AbstractPersistenceEnverseTest {
 
 	protected abstract EntityManager getEntityManager();

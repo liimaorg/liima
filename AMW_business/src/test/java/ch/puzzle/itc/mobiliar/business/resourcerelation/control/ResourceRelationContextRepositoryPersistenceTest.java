@@ -25,13 +25,12 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -40,9 +39,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ResourceRelationContextRepositoryPersistenceTest {
 
 	@Spy
@@ -54,11 +53,6 @@ public class ResourceRelationContextRepositoryPersistenceTest {
 
 	@InjectMocks
 	ResourceRelationContextRepository resourceRelationContextRepository;
-
-	@Before
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void test_getResourceRelationContextEntitiesByContextIds() {

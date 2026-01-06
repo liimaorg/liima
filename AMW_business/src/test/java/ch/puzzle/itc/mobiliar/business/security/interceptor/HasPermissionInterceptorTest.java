@@ -20,6 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.security.interceptor;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
@@ -31,11 +32,11 @@ import java.util.logging.Logger;
 
 import javax.interceptor.InvocationContext;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -46,6 +47,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.test.TestBoundary;
 
+@ExtendWith(MockitoExtension.class)
 public class HasPermissionInterceptorTest {
 
     @Mock
@@ -55,58 +57,57 @@ public class HasPermissionInterceptorTest {
     PermissionService permissionService;
 
     @Mock
-	Logger log;
+    Logger log;
 
     @InjectMocks
     HasPermissionInterceptor hasPermissionInterceptor;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.openMocks(this);
-        when(context.getTarget()).thenReturn(new TestBoundary());
-    }
-
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotCallPermissionService() throws Exception {
-        //given
+        // when
         when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("noPermissionNeeded"));
-        //when
-        hasPermissionInterceptor.roleCall(context);
-        //then
+        // then
+        assertThrows(NullPointerException.class, () -> {
+            hasPermissionInterceptor.roleCall(context);
+        });
         verify(hasPermissionInterceptor.permissionService, never()).hasPermission(any(Permission.class),
-                any(ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class));
+                any(ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class),
+                any(ResourceTypeEntity.class));
         verify(hasPermissionInterceptor.permissionService, never()).throwNotAuthorizedException(null);
     }
 
     @Test
     public void shouldCallPermissionServiceWithPermission() throws Exception {
-        //given
+        // given
         when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployPermissionNeeded"));
-        //when
+        // when
         hasPermissionInterceptor.roleCall(context);
-        //then
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null, null ,null, null);
+        // then
+        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null, null,
+                null, null);
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
     }
 
     @Test
     public void shouldCallPermissionServiceWithPermissionAndAction() throws Exception {
-        //given
+        // given
         when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployPermissionActionCreateNeeded"));
-        //when
+        // when
         hasPermissionInterceptor.roleCall(context);
-        //then
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, null, null);
+        // then
+        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null,
+                Action.CREATE, null, null);
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
     }
 
     @Test
     public void shouldCallPermissionServiceWithPermissionAndEveryAnnotatedActions() throws Exception {
-        //given
-        when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployPermissionActionCreateOrUpdateNeeded"));
-        //when
+        // given
+        when(context.getMethod())
+                .thenReturn(TestBoundary.class.getMethod("deployPermissionActionCreateOrUpdateNeeded"));
+        // when
         hasPermissionInterceptor.roleCall(context);
-        //then
+        // then
         verify(hasPermissionInterceptor.permissionService, times(2)).hasPermission(any(Permission.class),
                 isNull(), any(Action.class), isNull(), isNull());
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
@@ -114,58 +115,76 @@ public class HasPermissionInterceptorTest {
 
     @Test
     public void shouldCallPermissionServiceWithPermissionAndActionButSkipAsSoonAsACheckReturnsTrue() throws Exception {
-        //given
-        when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployPermissionActionCreateOrUpdateNeeded"));
-        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, null, null)).thenReturn(true);
-        //when
+        // given
+        when(context.getMethod())
+                .thenReturn(TestBoundary.class.getMethod("deployPermissionActionCreateOrUpdateNeeded"));
+        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, null,
+                null)).thenReturn(true);
+        // when
         hasPermissionInterceptor.roleCall(context);
-        //then
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, null, null);
-        verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null, Action.UPDATE, null, null);
+        // then
+        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null,
+                Action.CREATE, null, null);
+        verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null,
+                Action.UPDATE, null, null);
         verify(hasPermissionInterceptor.permissionService, never()).throwNotAuthorizedException(null);
     }
 
     @Test
     public void shouldCallPermissionServiceWithEveryAnnotatedPermissionAndEveryAnnotatedActions() throws Exception {
-        //given
-        when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployOrCopyFromPermissionActionCreateOrUpdateNeeded"));
-        //when
+        // given
+        when(context.getMethod())
+                .thenReturn(TestBoundary.class.getMethod("deployOrCopyFromPermissionActionCreateOrUpdateNeeded"));
+        // when
         hasPermissionInterceptor.roleCall(context);
-        //then
-        verify(hasPermissionInterceptor.permissionService, times(4)).hasPermission(any(Permission.class), isNull(), any(Action.class), isNull(), isNull());
+        // then
+        verify(hasPermissionInterceptor.permissionService, times(4)).hasPermission(any(Permission.class), isNull(),
+                any(Action.class), isNull(), isNull());
         verify(hasPermissionInterceptor.permissionService, times(1)).throwNotAuthorizedException(null);
     }
 
     @Test
-    public void shouldCallPermissionServiceWithMultipleAnnotatedPermissionsAndActionsButSkipAsSoonACheckReturnsTrue() throws Exception {
-        //given
-        when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployOrCopyFromPermissionActionCreateOrUpdateNeeded"));
-        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, null, null)).thenReturn(true);
-        //when
+    public void shouldCallPermissionServiceWithMultipleAnnotatedPermissionsAndActionsButSkipAsSoonACheckReturnsTrue()
+            throws Exception {
+        // given
+        when(context.getMethod())
+                .thenReturn(TestBoundary.class.getMethod("deployOrCopyFromPermissionActionCreateOrUpdateNeeded"));
+        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE,
+                null, Action.CREATE, null, null)).thenReturn(false);
+        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE,
+                null, Action.UPDATE, null, null)).thenReturn(true);
+        // when
         hasPermissionInterceptor.roleCall(context);
-        //then
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.CREATE, null, null);
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, null, null);
-        verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, null, null);
-        verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null, Action.UPDATE, null, null);
+        // then
+        verify(hasPermissionInterceptor.permissionService, times(1))
+                .hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.CREATE, null, null);
+        verify(hasPermissionInterceptor.permissionService, times(1))
+                .hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE, null, Action.UPDATE, null, null);
+        verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null,
+                Action.CREATE, null, null);
+        verify(hasPermissionInterceptor.permissionService, never()).hasPermission(Permission.DEPLOYMENT, null,
+                Action.UPDATE, null, null);
         verify(hasPermissionInterceptor.permissionService, never()).throwNotAuthorizedException(null);
     }
 
     @Test
     public void shouldCallPermissionServiceWithPermissionsAndResource() throws Exception {
-        //given
+        // given
         ResourceEntity resource = new ResourceEntity();
         ResourceGroupEntity resGroup = new ResourceGroupEntity();
         resource.setResourceGroup(resGroup);
-        ResourceEntity[] resources = {resource};
+        ResourceEntity[] resources = { resource };
         context.setParameters(resources);
-        when(context.getMethod()).thenReturn(TestBoundary.class.getMethod("deployPermissionActionCreateForSpecificResourceNeeded"));
+        when(context.getMethod())
+                .thenReturn(TestBoundary.class.getMethod("deployPermissionActionCreateForSpecificResourceNeeded"));
         when(context.getParameters()).thenReturn(resources);
-        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, resGroup, null)).thenReturn(true);
-        //when
+        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.DEPLOYMENT, null, Action.CREATE,
+                resGroup, null)).thenReturn(true);
+        // when
         hasPermissionInterceptor.roleCall(context);
-        //then
-        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null, Action.CREATE, resGroup, null);
+        // then
+        verify(hasPermissionInterceptor.permissionService, times(1)).hasPermission(Permission.DEPLOYMENT, null,
+                Action.CREATE, resGroup, null);
         verify(hasPermissionInterceptor.permissionService, never()).throwNotAuthorizedException(null);
     }
 

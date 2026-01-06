@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -82,22 +82,22 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 	public PropertyDescriptorEntity mockPropertyDescriptorEntity(Set<PropertyEntity> properties, String name, String comment, boolean encrypted, boolean nullable,
 			boolean readOnly, PropertyTypeEntity propType, String defaultValue, String exampleValue, String machineInterpretationKey, boolean optional, String displayName) {
 		PropertyDescriptorEntity mock = Mockito.mock(PropertyDescriptorEntity.class);
-		when(mock.getId()).thenReturn(1);
-		when(mock.getProperties()).thenReturn(properties != null ? properties : new HashSet<PropertyEntity>());
+		lenient().when(mock.getId()).thenReturn(1);
+		lenient().when(mock.getProperties()).thenReturn(properties != null ? properties : new HashSet<PropertyEntity>());
 		int nextId = getNextId();
-		when(mock.getId()).thenReturn(nextId);
-		when(mock.getPropertyName()).thenReturn(!StringUtils.isEmpty(name) ? name : "propDesc" + nextId);
-		when(mock.getPropertyComment()).thenReturn(!StringUtils.isEmpty(comment) ? comment : COMMENT);
-		when(mock.isEncrypt()).thenReturn(encrypted);
-		when(mock.isNullable()).thenReturn(nullable);
-		when(mock.getValidationLogic()).thenReturn(VALIDATION_LOGIC);
-		when(mock.getPropertyTypeEntity()).thenReturn(propType);
-        when(mock.getDefaultValue()).thenReturn(defaultValue);
-        when(mock.getExampleValue()).thenReturn(exampleValue);
-        when(mock.getMachineInterpretationKey()).thenReturn(machineInterpretationKey);
-        when(mock.isOptional()).thenReturn(optional);
-        when(mock.getDisplayName()).thenReturn(displayName);
-        when(mock.getOwner()).thenReturn(owner);
+		lenient().when(mock.getId()).thenReturn(nextId);
+		lenient().when(mock.getPropertyName()).thenReturn(!StringUtils.isEmpty(name) ? name : "propDesc" + nextId);
+		lenient().when(mock.getPropertyComment()).thenReturn(!StringUtils.isEmpty(comment) ? comment : COMMENT);
+		lenient().when(mock.isEncrypt()).thenReturn(encrypted);
+		lenient().when(mock.isNullable()).thenReturn(nullable);
+		lenient().when(mock.getValidationLogic()).thenReturn(VALIDATION_LOGIC);
+		lenient().when(mock.getPropertyTypeEntity()).thenReturn(propType);
+        lenient().when(mock.getDefaultValue()).thenReturn(defaultValue);
+        lenient().when(mock.getExampleValue()).thenReturn(exampleValue);
+        lenient().when(mock.getMachineInterpretationKey()).thenReturn(machineInterpretationKey);
+        lenient().when(mock.isOptional()).thenReturn(optional);
+        lenient().when(mock.getDisplayName()).thenReturn(displayName);
+        lenient().when(mock.getOwner()).thenReturn(owner);
 
 
 		return mock;
@@ -272,8 +272,8 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 
 	public PropertyTypeEntity mockPropertyTypeEntity(String typeName){
 		PropertyTypeEntity mock = Mockito.mock(PropertyTypeEntity.class);
-		when(mock.getId()).thenReturn(getNextId());
-		when(mock.getPropertyTypeName()).thenReturn(typeName);
+		lenient().when(mock.getId()).thenReturn(getNextId());
+		lenient().when(mock.getPropertyTypeName()).thenReturn(typeName);
 		return mock;
 	}
 

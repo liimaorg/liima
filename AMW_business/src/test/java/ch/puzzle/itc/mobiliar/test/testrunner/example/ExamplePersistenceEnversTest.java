@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.test.testrunner.example;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
@@ -30,14 +30,14 @@ import javax.persistence.PersistenceContext;
 
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.test.AbstractPersistenceEnverseTest;
 
-@Ignore("is failing on sonar")
+@Disabled("is failing on sonar")
 public class ExamplePersistenceEnversTest extends AbstractPersistenceEnverseTest{
 
 	@PersistenceContext
@@ -49,7 +49,7 @@ public class ExamplePersistenceEnversTest extends AbstractPersistenceEnverseTest
 		return entityManager;
 	}
 	
-	@Before
+	@BeforeEach
     public void setup() throws Exception {
 		// set up Envers Data with a commit for each persist
         PropertyDescriptorEntity property = new PropertyDescriptorEntity();

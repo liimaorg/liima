@@ -1,53 +1,38 @@
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 public class TagCommandTest {
 
-
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldNotValidateIfTagNameIsNull() throws ValidationException {
-        // given
-
-        // when
-        new TagCommand(null);
-
-        // then
-        fail("should have thrown exception");
+        assertThrows(ValidationException.class, () -> {
+            new TagCommand(null);
+        });
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldNotValidateIfTagNameIsBlank() throws ValidationException {
-        // given
-
-        // when
-        new TagCommand("");
-
-        // then
-        fail("should have thrown exception");
+        assertThrows(ValidationException.class, () -> {
+            new TagCommand("");
+        });
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldNotValidateIfTagNameIsOnlyWhiteSpace() throws ValidationException {
-        // given
-
-        // when
-        new TagCommand("    ");
-
-        // then
+        assertThrows(ValidationException.class, () -> {
+            new TagCommand("    ");
+        });
     }
 
     @Test
     public void shouldCreateTagCommand() throws ValidationException {
-        // given
-
-        // when
         TagCommand tagCommand = new TagCommand("tagName");
-
-        // then
         assertEquals("tagName", tagCommand.getName());
     }
 }

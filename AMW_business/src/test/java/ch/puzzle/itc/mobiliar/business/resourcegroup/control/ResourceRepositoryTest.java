@@ -18,37 +18,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
+
+import static java.util.Collections.EMPTY_SET;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import javax.persistence.EntityManager;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.DeploymentEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
-import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import javax.persistence.EntityManager;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Logger;
-
-import static java.util.Collections.EMPTY_SET;
-import static junit.framework.TestCase.assertNull;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
-
+@ExtendWith(MockitoExtension.class)
 public class ResourceRepositoryTest {
 
     @InjectMocks
@@ -60,14 +61,8 @@ public class ResourceRepositoryTest {
     @Mock
     Logger log;
 
-    @Before
-    public void before() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     public void shouldPreserveDeploymentOnResourceRemoval() {
-
         // given
         ResourceTypeEntity appType = new ResourceTypeEntity();
         appType.setName("application");
@@ -77,7 +72,7 @@ public class ResourceRepositoryTest {
         resGroup.setName("test");
         resGroup.setId(12);
 
-        ResourceEntity resource =  new ResourceEntity();
+        ResourceEntity resource = new ResourceEntity();
         resource.setResourceGroup(resGroup);
         resource.setName(resGroup.getName());
         resource.setResourceType(appType);
@@ -87,7 +82,8 @@ public class ResourceRepositoryTest {
         ContextEntity global = new ContextEntityBuilder().buildContextEntity("global", null, EMPTY_SET, true);
         ContextEntity aContext = new ContextEntityBuilder().buildContextEntity("aContext", global, EMPTY_SET, true);
 
-        DeploymentEntity deployment = new DeploymentEntityBuilder().buildDeploymentEntity(123, release, resource.getResourceGroup(), resource, true, aContext, true);
+        DeploymentEntity deployment = new DeploymentEntityBuilder().buildDeploymentEntity(123, release,
+                resource.getResourceGroup(), resource, true, aContext, true);
         Set<DeploymentEntity> deployments = new HashSet<>();
         deployments.add(deployment);
         resource.setDeployments(deployments);
@@ -102,7 +98,6 @@ public class ResourceRepositoryTest {
 
     @Test
     public void shouldPreserveDeploymentOnRuntimeRemoval() {
-
         // given
         ResourceTypeEntity runtimeType = new ResourceTypeEntity();
         runtimeType.setName("RUNTIME");
@@ -113,15 +108,17 @@ public class ResourceRepositoryTest {
         resGroup.setId(13);
 
         ReleaseEntity release = ReleaseEntityBuilder.createMainReleaseEntity("release", null);
-        ResourceEntity runtimeResourceMock = new ResourceEntityBuilder().mockRuntimeEntity(resGroup.getName(), resGroup, release);
+        ResourceEntity runtimeResourceMock = mock(ResourceEntity.class);
         ContextEntity global = new ContextEntityBuilder().buildContextEntity("global", null, EMPTY_SET, true);
         ContextEntity aContext = new ContextEntityBuilder().buildContextEntity("aContext", global, EMPTY_SET, true);
 
-        DeploymentEntity deployment = new DeploymentEntityBuilder().buildDeploymentEntity(1234, release, runtimeResourceMock.getResourceGroup(), runtimeResourceMock, true, aContext, true);
+        DeploymentEntity deployment = new DeploymentEntityBuilder().buildDeploymentEntity(1234, release,
+                resGroup, runtimeResourceMock, true, aContext, true);
         Set<DeploymentEntity> deployments = new HashSet<>();
         deployments.add(deployment);
 
         when(runtimeResourceMock.getId()).thenReturn(31);
+        when(runtimeResourceMock.getResourceType()).thenReturn(runtimeType);
         when(runtimeResourceMock.getDeploymentsOfRuntime()).thenReturn(deployments);
 
         // when

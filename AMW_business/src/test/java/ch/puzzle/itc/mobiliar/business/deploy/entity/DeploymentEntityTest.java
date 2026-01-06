@@ -20,16 +20,22 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
-import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
+import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
+
 
 /**
  * Tests {@link ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity}
@@ -74,17 +80,18 @@ public class DeploymentEntityTest {
 		// then
 		assertNotNull(applicationsWithVersionResult);
 		assertEquals(0, applicationsWithVersionResult.size());
-
 	}
 
-	@Test(expected=DeploymentStateException.class)
+	@Test
 	public void setDeploymentConfirmed_shouldNotChangeDeployment(){
 		// given
 		DeploymentEntity deploymentEntity = new DeploymentEntity();
 		deploymentEntity.confirm("foo");
 
 		// when
-		deploymentEntity.confirm("bar");
+        assertThrows(DeploymentStateException.class, () -> {
+			deploymentEntity.confirm("bar");
+        });
 	}
 
 	@Test
@@ -94,7 +101,6 @@ public class DeploymentEntityTest {
 
 		// when
 		deploymentEntity.confirm("foo");
-
 
 		// then
 		assertTrue(deploymentEntity.getDeploymentConfirmed());
@@ -109,7 +115,6 @@ public class DeploymentEntityTest {
 
 		// when
 		deploymentEntity.reject("foo");
-
 
 		// then
 		assertFalse(deploymentEntity.getDeploymentConfirmed());
@@ -174,7 +179,7 @@ public class DeploymentEntityTest {
 		assertEquals(true, deploymentEntity.isPredeploymentFinished());
 	}
 
-		public void testIsPredeploymentSuccessful() throws DeploymentStateException {
+	public void testIsPredeploymentSuccessful() throws DeploymentStateException {
 		// setup
 		DeploymentEntity deploymentEntity = new DeploymentEntity();
 		NodeJobEntity nodJob1 = new NodeJobEntity();

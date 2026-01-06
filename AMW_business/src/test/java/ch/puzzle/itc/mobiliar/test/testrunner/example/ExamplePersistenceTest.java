@@ -20,26 +20,26 @@
 
 package ch.puzzle.itc.mobiliar.test.testrunner.example;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class ExamplePersistenceTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		PropertyDescriptorEntity property = new PropertyDescriptorEntity();
 		property.setPropertyComment("comment");

@@ -20,15 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.database.entity;
 
-import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
-import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
-import org.hibernate.envers.RevisionListener;
-import org.junit.Before;
-import org.junit.Test;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+
+import org.hibernate.envers.RevisionListener;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
+import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
 
 public class MyRevisionEntityListenerTest {
 
@@ -36,7 +37,7 @@ public class MyRevisionEntityListenerTest {
 
     AuditService auditService = new AuditService();
 
-    @Before
+    @BeforeEach
     public void init() {
         ThreadLocalUtil.destroy();
     }

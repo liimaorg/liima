@@ -21,14 +21,14 @@
 package ch.puzzle.itc.mobiliar.business.issues;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.AD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.AmwTemplateProcessorTest;
@@ -51,7 +51,7 @@ public class Issue6110AppServerRelationsTemplateProcessorTest extends AmwTemplat
 	ConsumedResourceRelationEntity asJbossRelation;
 
 	@Override
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		super.before();
 

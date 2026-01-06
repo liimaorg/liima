@@ -20,12 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.utils;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +34,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 public class SecureFileLoaderTest {
 	Path dir;
 	Path f;
@@ -42,7 +46,7 @@ public class SecureFileLoaderTest {
 	
 	SecureFileLoader fileLoader = new SecureFileLoader();
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		dir = Paths.get(FileUtils.getTempDirectoryPath(), "/test/foo");
 		Files.createDirectories(dir);
@@ -50,29 +54,29 @@ public class SecureFileLoaderTest {
 		Files.createFile(f);
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown() throws IOException{
 		Files.delete(f);		
 	}
 
 	@Test
 	public void testIsFileLocatedInDirectory() throws IOException {
-		Assert.assertTrue(fileLoader.isFileLocatedInDirectory(dir, f));		
+		assertTrue(fileLoader.isFileLocatedInDirectory(dir, f));		
 	}
 	
 	@Test
 	public void testIsFileLocatedInDirectoryWithManipulatedPath() throws IOException {
-		Assert.assertTrue(fileLoader.isFileLocatedInDirectory(dir, Paths.get(dir.toString(), "../foo/test.txt")));		
+		assertTrue(fileLoader.isFileLocatedInDirectory(dir, Paths.get(dir.toString(), "../foo/test.txt")));		
 	}
 	
 	@Test
 	public void testIsFileLocatedInDirectoryInexistentFile() throws IOException {
-		Assert.assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get(dir.toString(), "something")));		
+		assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get(dir.toString(), "something")));		
 	}
 	
 	@Test
 	public void testIsFileLocatedInDirectoryHomeNok() throws IOException {
-		Assert.assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get("~/test.txt")));		
+		assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get("~/test.txt")));		
 	}
 	
 	@Test
@@ -84,61 +88,57 @@ public class SecureFileLoaderTest {
 			//Only thrown on Windows
 		}
 		
-		Assert.assertFalse(fileLoader.isFileLocatedInDirectory(dir, f2));
+		assertFalse(fileLoader.isFileLocatedInDirectory(dir, f2));
 		Files.delete(f2);
 	}
 	
 	
 	@Test
 	public void testIsFileLocatedInDirectoryAbsoluteNok() throws IOException {
-		Assert.assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get("/test.txt")));		
+		assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get("/test.txt")));		
 	}
 	
 	@Test
 	public void testIsFileLocatedInDirectoryParentDirNok() throws IOException {
-		Assert.assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get("../test.txt")));		
+		assertFalse(fileLoader.isFileLocatedInDirectory(dir, Paths.get("../test.txt")));		
 	}
 
 	@Test
 	public void testIsFileLocatedInDirectorySymbolicLinkOk() throws IOException {
 		//symlinks work only on unix
-		Assume.assumeTrue
-        (isUnix());
+		assumeTrue(isUnix());
 		Path symlink = Paths.get(dir.toString(), "symlink.txt");
 		//We create a symbolic link inside of the permitted folder pointing to a file inside of the permitted folder. This should be ok.
 		Files.createSymbolicLink(symlink, f);		
-		Assert.assertTrue(fileLoader.isFileLocatedInDirectory(dir, symlink));		
+		assertTrue(fileLoader.isFileLocatedInDirectory(dir, symlink));		
 		Files.delete(symlink);
 	}
 	
 	@Test
 	public void testIsFileLocatedInDirectorySymbolicLinkFromOutsideOk() throws IOException {
 		//symlinks work only on unix
-		Assume.assumeTrue
-        (isUnix());
+		assumeTrue(isUnix());
 		Path symlink = Paths.get(FileUtils.getTempDirectoryPath(), "symlink.txt");
 		//TODO check: is this statement true? I can't think of any harm this could do...
 		//We create a symbolic link outside of the permitted folder pointing to a file inside of the permitted folder. This should be ok as well.
 		Files.createSymbolicLink(symlink, f);		
-		Assert.assertTrue(fileLoader.isFileLocatedInDirectory(dir, symlink));		
+		assertTrue(fileLoader.isFileLocatedInDirectory(dir, symlink));		
 		Files.delete(symlink);
 	}
 	
 	@Test
 	public void testIsFileLocatedInDirectorySymbolicLinkNok() throws IOException {
 		//symlinks work only on unix
-		Assume.assumeTrue
-        (isUnix());
+		assumeTrue(isUnix());
 		Path f2 = Paths.get(FileUtils.getTempDirectoryPath(), "test.txt");
 		Files.createFile(f2);
 		
 		Path symlink = Paths.get(dir.toString(), "symlink.txt");
 		//We create a symbolic link inside of the permitted folder pointing to a file outside of the permitted folder. This should be failing.
 		Files.createSymbolicLink(symlink, f2);		
-		Assert.assertFalse(fileLoader.isFileLocatedInDirectory(dir, symlink));	
+		assertFalse(fileLoader.isFileLocatedInDirectory(dir, symlink));	
 		Files.delete(symlink);
 		Files.delete(f2);
-		
 	}
 	
 	
@@ -148,20 +148,19 @@ public class SecureFileLoaderTest {
 		Files.write(f, Arrays.asList(s.split(System.lineSeparator())), StandardCharsets.UTF_8);		
 		String result = fileLoader.loadFileFromFileSystem(dir.toString(), f.toString());
 		
-		Assert.assertEquals(s, result);
-		
+		assertEquals(s, result);
 	}
 	
 	@Test
 	public void testLoadFileFromFileSystemEmpty() throws IOException, IllegalAccessException{		
 		String result = fileLoader.loadFileFromFileSystem(dir.toString(), f.toString());		
-		Assert.assertEquals("", result);		
+		assertEquals("", result);		
 	}
 	
 	@Test
 	public void testLoadFileFromFileSystemNotExisting() throws IOException, IllegalAccessException{		
 		String result = fileLoader.loadFileFromFileSystem(dir.toString(), Paths.get(dir.toString(), "something").toString());		
-		Assert.assertNull(result);
+		assertNull(result);
 	}
 	
 	

@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import org.mockito.Mockito;
 
@@ -31,8 +31,8 @@ public class ResourceRelationContextEntityBuilder extends BaseEntityBuilder {
 
 	public ResourceRelationContextEntity mockResourceRelationContextEntity(ContextEntity context) {
 		ResourceRelationContextEntity resContext = Mockito.mock(ResourceRelationContextEntity.class);
-		when(resContext.getContext()).thenReturn(context);
-		when(resContext.getId()).thenReturn(getNextId());
+		lenient().when(resContext.getContext()).thenReturn(context);
+		lenient().when(resContext.getId()).thenReturn(getNextId());
 
 		return resContext;
 	}

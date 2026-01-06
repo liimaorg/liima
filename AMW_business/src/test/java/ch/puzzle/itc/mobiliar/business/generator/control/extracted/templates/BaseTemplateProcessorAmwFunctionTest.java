@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,8 +29,8 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntityBuilder;
@@ -54,7 +54,7 @@ public class BaseTemplateProcessorAmwFunctionTest {
     
     private AmwModelPreprocessExceptionHandler amwModelPreprocessExceptionHandler;
     
-    @Before
+    @BeforeEach
     public void setUp(){
     	amwModelPreprocessExceptionHandler = new AmwModelPreprocessExceptionHandler();
     }

@@ -24,11 +24,12 @@ import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+@ExtendWith(MockitoExtension.class)
 public class DeploymentExecutionResultHandlerServiceTest {
 
 	@InjectMocks
@@ -50,10 +52,8 @@ public class DeploymentExecutionResultHandlerServiceTest {
 	DeploymentEntity deployment;
 	GenerationResult result;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.openMocks(this);
-
 		deployment = new DeploymentEntity();
 		deployment.setId(Integer.valueOf(100));
 

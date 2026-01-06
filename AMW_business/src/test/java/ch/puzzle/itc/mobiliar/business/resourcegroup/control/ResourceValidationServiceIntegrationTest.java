@@ -20,6 +20,19 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Spy;
+
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.SoftlinkRelationEntityBuilder;
@@ -29,23 +42,12 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import static org.junit.Assert.assertNotNull;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
 /**
  * Tests for {@link ResourceValidationService}
  */
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ResourceValidationServiceIntegrationTest {
 
     @Spy
@@ -58,13 +60,12 @@ public class ResourceValidationServiceIntegrationTest {
     @InjectMocks
     ResourceValidationService service;
 
-    @Before
+    @BeforeEach
     public void before() {
-        MockitoAnnotations.openMocks(this);
         service.queries = queries;
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void testValidateResourceName() throws Exception {
         // given
         ResourceEntity resourceA = new ResourceEntityBuilder().withName("test").build();
@@ -76,7 +77,9 @@ public class ResourceValidationServiceIntegrationTest {
         assertNotNull(entityManager.find(ResourceEntity.class, resourceA.getId()));
 
         // when
-        service.validateResourceName("amw", resourceA.getId());
+        assertThrows(AMWException.class, () -> {
+            service.validateResourceName("amw", resourceA.getId());
+        });
     }
 
     @Test
@@ -120,38 +123,44 @@ public class ResourceValidationServiceIntegrationTest {
         service.validateResourceName(newResourceName, resourceA.getId());
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void shouldNotAllowToAlterCaseOfDifferentResource() throws AMWException {
         // given
-
         ResourceEntity resourceA = new ResourceEntityBuilder().withName("myapp").build();
         entityManager.persist(resourceA);
 
         ResourceEntity resourceB = new ResourceEntityBuilder().withName("myapp1").build();
         entityManager.persist(resourceB);
-
-        service.validateResourceName("myApp", resourceB.getId());
+        assertThrows(AMWException.class, () -> {
+            service.validateResourceName("myApp", resourceB.getId());
+        });
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void testValidateResourceName_emptyName() throws Exception {
-        // when
-        service.validateResourceName(null, null);
+        assertThrows(AMWException.class, () -> {
+            // when
+            service.validateResourceName(null, null);
+        });
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void testValidateResourceName_emptyId() throws Exception {
-        // when
-        service.validateResourceName("test", null);
+        assertThrows(AMWException.class, () -> {
+            // when
+            service.validateResourceName("test", null);
+        });
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void testValidateResourceTypeName_emptyName() throws Exception {
-        // when
-        service.validateResourceTypeName(null, "oldResourceTypeName");
+        assertThrows(AMWException.class, () -> {
+            // when
+            service.validateResourceTypeName(null, "oldResourceTypeName");
+        });
     }
 
-    @Test(expected = ElementAlreadyExistsException.class)
+    @Test
     public void testValidateResourceTypeName() throws Exception {
         // given
         String typeNameA = "typeA";
@@ -167,7 +176,9 @@ public class ResourceValidationServiceIntegrationTest {
         assertNotNull(entityManager.find(ResourceTypeEntity.class, typeB.getId()));
 
         // when
-        service.validateResourceTypeName(typeNameB, typeNameA);
+        assertThrows(ElementAlreadyExistsException.class, () -> {
+            service.validateResourceTypeName(typeNameB, typeNameA);
+        });
     }
 
     @Test
@@ -198,19 +209,23 @@ public class ResourceValidationServiceIntegrationTest {
         service.validateResourceTypeName(newTypeName, typeName);
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void testValidateSoftlinkId() throws Exception {
         // given
         String softlinkref = "softlinkRef";
-        ResourceTypeEntity cpiType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(ResourceLocator.WS_CPI_TYPE, null, false);
+        ResourceTypeEntity cpiType = new ResourceTypeEntityBuilder()
+                .buildResourceTypeEntity(ResourceLocator.WS_CPI_TYPE, null, false);
         entityManager.persist(cpiType);
-        ResourceTypeEntity ppiType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(ResourceLocator.WS_PPI_TYPE, null, false);
+        ResourceTypeEntity ppiType = new ResourceTypeEntityBuilder()
+                .buildResourceTypeEntity(ResourceLocator.WS_PPI_TYPE, null, false);
         entityManager.persist(ppiType);
         ResourceEntity cpi = new ResourceEntityBuilder().withType(cpiType).withName("cpi").build();
         entityManager.persist(cpi);
-        ResourceEntity ppi = new ResourceEntityBuilder().withType(cpiType).withName("ppi").withSoftlinkId(softlinkref).build();
+        ResourceEntity ppi = new ResourceEntityBuilder().withType(cpiType).withName("ppi").withSoftlinkId(softlinkref)
+                .build();
         entityManager.persist(ppi);
-        SoftlinkRelationEntity softlinkRel = new SoftlinkRelationEntityBuilder().withSoftlinkRef("softlinkref").withCpiResource(cpi).build();
+        SoftlinkRelationEntity softlinkRel = new SoftlinkRelationEntityBuilder().withSoftlinkRef("softlinkref")
+                .withCpiResource(cpi).build();
         entityManager.persist(softlinkRel);
         ResourceEntity ppi2 = new ResourceEntityBuilder().withType(cpiType).withName("ppi2").build();
         entityManager.persist(ppi2);
@@ -218,23 +233,28 @@ public class ResourceValidationServiceIntegrationTest {
         assertNotNull(entityManager.find(SoftlinkRelationEntity.class, softlinkRel.getId()));
 
         // when
-        service.validateSoftlinkId(softlinkref, ppi2.getResourceGroup().getId());
+        assertThrows(AMWException.class, () -> {
+            service.validateSoftlinkId(softlinkref, ppi2.getResourceGroup().getId());
+        });
     }
-
 
     @Test
     public void testValidateSoftlinkId_emptySoftlinkId() throws Exception {
         // given
         String softlinkref = "softlinkRef";
-        ResourceTypeEntity cpiType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(ResourceLocator.WS_CPI_TYPE, null, false);
+        ResourceTypeEntity cpiType = new ResourceTypeEntityBuilder()
+                .buildResourceTypeEntity(ResourceLocator.WS_CPI_TYPE, null, false);
         entityManager.persist(cpiType);
-        ResourceTypeEntity ppiType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(ResourceLocator.WS_PPI_TYPE, null, false);
+        ResourceTypeEntity ppiType = new ResourceTypeEntityBuilder()
+                .buildResourceTypeEntity(ResourceLocator.WS_PPI_TYPE, null, false);
         entityManager.persist(ppiType);
         ResourceEntity cpi = new ResourceEntityBuilder().withType(cpiType).withName("cpi").build();
         entityManager.persist(cpi);
-        ResourceEntity ppi = new ResourceEntityBuilder().withType(cpiType).withName("ppi").withSoftlinkId(softlinkref).build();
+        ResourceEntity ppi = new ResourceEntityBuilder().withType(cpiType).withName("ppi").withSoftlinkId(softlinkref)
+                .build();
         entityManager.persist(ppi);
-        SoftlinkRelationEntity softlinkRel = new SoftlinkRelationEntityBuilder().withSoftlinkRef("softlinkref").withCpiResource(cpi).build();
+        SoftlinkRelationEntity softlinkRel = new SoftlinkRelationEntityBuilder().withSoftlinkRef("softlinkref")
+                .withCpiResource(cpi).build();
         entityManager.persist(softlinkRel);
 
         assertNotNull(entityManager.find(SoftlinkRelationEntity.class, softlinkRel.getId()));
@@ -243,24 +263,30 @@ public class ResourceValidationServiceIntegrationTest {
         service.validateSoftlinkId(null, ppi.getResourceGroup().getId());
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void testValidateSoftlinkId_emptyResourceGroupId() throws Exception {
         // given
         String softlinkref = "softlinkRef";
-        ResourceTypeEntity cpiType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(ResourceLocator.WS_CPI_TYPE, null, false);
+        ResourceTypeEntity cpiType = new ResourceTypeEntityBuilder()
+                .buildResourceTypeEntity(ResourceLocator.WS_CPI_TYPE, null, false);
         entityManager.persist(cpiType);
-        ResourceTypeEntity ppiType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(ResourceLocator.WS_PPI_TYPE, null, false);
+        ResourceTypeEntity ppiType = new ResourceTypeEntityBuilder()
+                .buildResourceTypeEntity(ResourceLocator.WS_PPI_TYPE, null, false);
         entityManager.persist(ppiType);
         ResourceEntity cpi = new ResourceEntityBuilder().withType(cpiType).withName("cpi").build();
         entityManager.persist(cpi);
-        ResourceEntity ppi = new ResourceEntityBuilder().withType(cpiType).withName("ppi").withSoftlinkId(softlinkref).build();
+        ResourceEntity ppi = new ResourceEntityBuilder().withType(cpiType).withName("ppi").withSoftlinkId(softlinkref)
+                .build();
         entityManager.persist(ppi);
-        SoftlinkRelationEntity softlinkRel = new SoftlinkRelationEntityBuilder().withSoftlinkRef("softlinkref").withCpiResource(cpi).build();
+        SoftlinkRelationEntity softlinkRel = new SoftlinkRelationEntityBuilder().withSoftlinkRef("softlinkref")
+                .withCpiResource(cpi).build();
         entityManager.persist(softlinkRel);
 
         assertNotNull(entityManager.find(SoftlinkRelationEntity.class, softlinkRel.getId()));
 
         // when
-        service.validateSoftlinkId(softlinkref, null);
+        assertThrows(AMWException.class, () -> {
+            service.validateSoftlinkId(softlinkref, null);
+        });
     }
 }

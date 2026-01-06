@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,12 +29,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
@@ -42,7 +40,6 @@ import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceRelationContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -72,7 +69,7 @@ public class CopyResourceDomainServiceTest {
     private ResourceEntity targetResource;
     ContextEntity globalContextMock;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         globalContextMock = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);

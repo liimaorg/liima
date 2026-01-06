@@ -33,8 +33,8 @@ import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
 import ch.puzzle.itc.mobiliar.test.GeneratorObjectFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.Set;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.AD;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.APP;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GeneratorUtilsTest {
 
@@ -55,7 +55,7 @@ public class GeneratorUtilsTest {
 	private ContextEntity context;
 	private AMWTemplateExceptionHandler templateExceptionHandler;
 
-	@Before
+	@BeforeEach
 	public void setUp() throws Exception {
 		// Add property descriptor to applicationServer-global context
 		targetPlatformId = 1;

@@ -12,11 +12,12 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class ResourceRelationServiceTest {
 
     @Mock
@@ -43,10 +45,9 @@ public class ResourceRelationServiceTest {
     @InjectMocks
     ResourceRelationService resourceRelationService = spy(new ResourceRelationService());
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ThreadLocalUtil.destroy();
-        MockitoAnnotations.openMocks(this);
     }
 
     @Test

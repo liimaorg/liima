@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.issues;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,12 +30,12 @@ import java.util.logging.Level;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
@@ -50,12 +50,12 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.Tem
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 import freemarker.template.TemplateModelException;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest extends
-		TemplateProcessorBaseTest<ApplicationResolverEntityBuilder> {
+	TemplateProcessorBaseTest<ApplicationResolverEntityBuilder> {
 
 	@Spy
 	@PersistenceContext
@@ -68,13 +68,12 @@ public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest ex
 	@Spy
 	ResourceDependencyResolverService dependencyResolverService;
 
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		CustomLogging.setup(Level.OFF);
 
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();
 		context = builder.context;
-		MockitoAnnotations.openMocks(this);
 
 	}
 

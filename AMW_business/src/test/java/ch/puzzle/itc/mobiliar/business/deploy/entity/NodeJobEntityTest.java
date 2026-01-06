@@ -20,18 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.NodeJobEntity.NodeJobStatus;
 import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 
 public class NodeJobEntityTest {
-	
-	@Rule
-	public final ExpectedException exception = ExpectedException.none();
-	
+
 	@Test
 	public void testStatusChangeFailed() throws DeploymentStateException {
 		NodeJobEntity nodJob = new NodeJobEntity();
@@ -39,8 +35,7 @@ public class NodeJobEntityTest {
 		nodJob.setStatus(NodeJobStatus.RUNNING);
 		nodJob.setStatus(NodeJobStatus.FAILED);
 		
-		exception.expect(DeploymentStateException.class);
-		nodJob.setStatus(NodeJobStatus.SUCCESS);
+		assertThrows(DeploymentStateException.class, () -> nodJob.setStatus(NodeJobStatus.SUCCESS));
 	}
 	
 	
@@ -51,8 +46,7 @@ public class NodeJobEntityTest {
 		nodJob.setStatus(NodeJobStatus.RUNNING);
 		nodJob.setStatus(NodeJobStatus.SUCCESS);
 		
-		exception.expect(DeploymentStateException.class);
-		nodJob.setStatus(NodeJobStatus.FAILED);
+		assertThrows(DeploymentStateException.class, () -> nodJob.setStatus(NodeJobStatus.FAILED));
 	}
 
 	
@@ -63,7 +57,6 @@ public class NodeJobEntityTest {
 		nodJob.setStatus(NodeJobStatus.RUNNING);
 		nodJob.setStatus(NodeJobStatus.SUCCESS);
 		
-		exception.expect(DeploymentStateException.class);
-		nodJob.setStatus(NodeJobStatus.RUNNING);
+		assertThrows(DeploymentStateException.class, () -> nodJob.setStatus(NodeJobStatus.RUNNING));
 	}
 }

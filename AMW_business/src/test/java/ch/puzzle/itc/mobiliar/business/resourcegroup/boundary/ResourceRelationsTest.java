@@ -20,6 +20,21 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
 import ch.puzzle.itc.mobiliar.business.domain.applist.ApplistScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -28,18 +43,9 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.*;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import java.util.Arrays;
-import java.util.List;
-
+@ExtendWith(MockitoExtension.class)
 public class ResourceRelationsTest {
 
     @Mock
@@ -58,30 +64,21 @@ public class ResourceRelationsTest {
     @InjectMocks
     ResourceRelations service;
 
+    @Mock
     ReleaseEntity release;
+    @Mock
     ResourceGroupEntity asGrp;
+    @Mock
     ResourceEntity as;
+    @Mock
     ResourceEntity app;
+    @Mock
     ResourceGroupEntity appGrp;
-
-    @Before
-    public void before() {
-        MockitoAnnotations.openMocks(this);
-        release = Mockito.mock(ReleaseEntity.class);
-        as = Mockito.mock(ResourceEntity.class);
-        asGrp = Mockito.mock(ResourceGroupEntity.class);
-        app = Mockito.mock(ResourceEntity.class);
-        appGrp = Mockito.mock(ResourceGroupEntity.class);
-        Mockito.when(as.getResourceGroup()).thenReturn(asGrp);
-        Mockito.when(app.getResourceGroup()).thenReturn(appGrp);
-        Mockito.when(dependencyResolverService
-                  .getResourceEntityForRelease(Mockito.any(ResourceGroupEntity.class),
-                            Mockito.any(ReleaseEntity.class))).thenReturn(app);
-
-    }
 
     @Test
     public void testGetAppServersWithApplications() throws Exception {
+        Mockito.when(as.getResourceGroup()).thenReturn(asGrp);
+
         ResourceEntity as2 = Mockito.mock(ResourceEntity.class);
         Mockito.when(as2.getResourceGroup()).thenReturn(asGrp);
 
@@ -91,61 +88,63 @@ public class ResourceRelationsTest {
         ResourceEntity as4 = Mockito.mock(ResourceEntity.class);
         Mockito.when(as4.getResourceGroup()).thenReturn(asGrp);
 
-        UserSettingsEntity userSettings = Mockito.mock(UserSettingsEntity.class);
-        Mockito.when(userSettingsService.getUserSettings(Mockito.anyString())).thenReturn(userSettings);
-        List<ResourceEntity> aslist = Arrays.asList(as,as2,as3,as4);
-        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull())).thenReturn(aslist);
+        List<ResourceEntity> aslist = Arrays.asList(as, as2, as3, as4);
+        Mockito.when(applistScreenDomainService.getAppServerResourcesWithApplications(Mockito.isNull()))
+                .thenReturn(aslist);
         service.getAppServersWithApplications(null, release);
         Mockito.verify(service).filterAppServersByRelease(release, aslist);
     }
 
     @Test
     public void testFilterAppServersByRelease() throws Exception {
-        //given
+        // given
+        Mockito.when(as.getResourceGroup()).thenReturn(asGrp);
+
         List<ResourceEntity> applicationServers = Arrays.asList(as);
         Mockito.when(dependencyResolverService
-                  .getResourceEntityForRelease(Mockito.any(ResourceGroupEntity.class),
-                            Mockito.any(ReleaseEntity.class))).thenReturn(as);
+                .getResourceEntityForRelease(Mockito.any(ResourceGroupEntity.class),
+                        Mockito.any(ReleaseEntity.class)))
+                .thenReturn(as);
 
         Mockito.doAnswer(new Answer<Void>() {
             public Void answer(InvocationOnMock invocation) {
                 return null;
             }
         }).when(service).filterApplicationsByRelease(Mockito.any(ReleaseEntity.class),
-                  Mockito.any(ResourceEntity.class), Mockito.any(ResourceWithRelations.class));
+                Mockito.any(ResourceEntity.class), Mockito.any(ResourceWithRelations.class));
 
-        //when
+        // when
         List<ResourceWithRelations> resources = service.filterAppServersByRelease(release, applicationServers);
 
-        //then
-        Assert.assertEquals(1, resources.size());
-        Assert.assertEquals(0, resources.get(0).getRelatedResources().size());
-        Assert.assertEquals(as, resources.get(0).getResource());
+        // then
+        assertEquals(1, resources.size());
+        assertEquals(0, resources.get(0).getRelatedResources().size());
+        assertEquals(as, resources.get(0).getResource());
     }
 
     @Test
     public void testFilterApplicationsByRelease() throws Exception {
         ResourceWithRelations resourceWithRelations = doTestFilterApplicationsByRelease(5);
-
-        //then
-        Assert.assertEquals(1, resourceWithRelations.getRelatedResources().size());
-        Assert.assertEquals(resourceWithRelations.getRelatedResources().get(0), app);
+        // then
+        assertEquals(1, resourceWithRelations.getRelatedResources().size());
+        assertEquals(resourceWithRelations.getRelatedResources().get(0), app);
     }
 
     private ResourceWithRelations doTestFilterApplicationsByRelease(int appId)
-              throws Exception {
-        //given
+            throws Exception {
+        // given
         Mockito.when(as.getConsumedRelatedResourcesByResourceType(Mockito.any(
-                  DefaultResourceTypeDefinition.class))).thenReturn(Arrays.asList(app));
+                DefaultResourceTypeDefinition.class))).thenReturn(Arrays.asList(app));
+
+        Mockito.when(app.getResourceGroup()).thenReturn(appGrp);
 
         ResourceWithRelations resourceWithRelations = new ResourceWithRelations(as);
         Mockito.when(dependencyResolverService
-                  .getResourceEntityForRelease(Mockito.any(ResourceGroupEntity.class),
-                            Mockito.any(ReleaseEntity.class))).thenReturn(app);
+                .getResourceEntityForRelease(Mockito.eq(appGrp),
+                        Mockito.eq(release)))
+                .thenReturn(app);
 
-        Mockito.when(appGrp.getId()).thenReturn(appId);
-
-        //when
+        // when
         service.filterApplicationsByRelease(release, as, resourceWithRelations);
         return resourceWithRelations;
     }

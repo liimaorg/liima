@@ -20,14 +20,14 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -56,7 +56,7 @@ public class ResourceImportServiceTest {
 
     private Set<ResourceEntity> resourcesInGroupNotOrderedByRelease = new HashSet<>(Arrays.asList(RESOURCE_MINOR_RELEASE_A_1, RESOURCE_MAIN_RELEASE_C, RESOURCE_MAIN_RELEASE_A, RESOURCE_MAIN_RELEASE_B, RESOURCE_MINOR_RELEASE_B_1, RESOURCE_MINOR_RELEASE_B_2, RESOURCE_MINOR_RELEASE_B_3));
 
-    @Before
+    @BeforeEach
     public void setUp(){
         resourceImportService = new ResourceImportService();
         resourceImportService.resourceReleaseComparator = new ResourceReleaseComparator();

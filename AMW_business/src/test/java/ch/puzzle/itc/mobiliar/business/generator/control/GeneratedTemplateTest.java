@@ -20,15 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
-import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException.CAUSE;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
+import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException.CAUSE;
 
 public class GeneratedTemplateTest {
 	
@@ -83,14 +85,14 @@ public class GeneratedTemplateTest {
     public void test_sameContent(){
 	   GeneratedTemplate thisTemplate = new GeneratedTemplate("name", "path", "content");
 	   GeneratedTemplate otherTemplate = new GeneratedTemplate("name2", "path2", "content");
-	   Assert.assertTrue(thisTemplate.isSameContent(otherTemplate));
+	   assertTrue(thisTemplate.isSameContent(otherTemplate));
     }
 
     @Test
     public void test_sameContent_NOK(){
 	   GeneratedTemplate thisTemplate = new GeneratedTemplate("name", "path", "content");
 	   GeneratedTemplate otherTemplate = new GeneratedTemplate("name2", "path2", "contentX");
-	   Assert.assertFalse(thisTemplate.isSameContent(otherTemplate));
+	   assertFalse(thisTemplate.isSameContent(otherTemplate));
     }
 
     @Test
@@ -99,7 +101,7 @@ public class GeneratedTemplateTest {
 	   thisTemplate.setOmitted(true);
 	   GeneratedTemplate otherTemplate = new GeneratedTemplate("name2", "path2", "content");
 	   otherTemplate.setOmitted(true);
-	   Assert.assertTrue(thisTemplate.isSameContent(otherTemplate));
+	   assertTrue(thisTemplate.isSameContent(otherTemplate));
     }
 
     @Test
@@ -108,21 +110,21 @@ public class GeneratedTemplateTest {
 	   thisTemplate.setOmitted(true);
 	   GeneratedTemplate otherTemplate = new GeneratedTemplate("name2", "path2", "contentX");
 	   otherTemplate.setOmitted(true);
-	   Assert.assertFalse(thisTemplate.isSameContent(otherTemplate));
+	   assertFalse(thisTemplate.isSameContent(otherTemplate));
     }
 
     @Test
     public void testGetOmittedContent(){
 	   GeneratedTemplate thisTemplate = new GeneratedTemplate("name", "path", "content");
 	   thisTemplate.setOmitted(true);
-	   Assert.assertTrue(thisTemplate.getContent().contains("omitted"));
-	   Assert.assertTrue(thisTemplate.isOmitted());
+	   assertTrue(thisTemplate.getContent().contains("omitted"));
+	   assertTrue(thisTemplate.isOmitted());
     }
 
     @Test
     public void testGetNotOmittedContent(){
 	   GeneratedTemplate thisTemplate = new GeneratedTemplate("name", "path", "content");
-	   Assert.assertFalse(thisTemplate.getContent().contains("omitted"));
-	   Assert.assertFalse(thisTemplate.isOmitted());
+	   assertFalse(thisTemplate.getContent().contains("omitted"));
+	   assertFalse(thisTemplate.isOmitted());
     }
 }

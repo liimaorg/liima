@@ -25,13 +25,13 @@ import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
 import com.google.common.collect.ImmutableSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.Set;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GenerationUnitTest {
 

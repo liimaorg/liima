@@ -20,19 +20,30 @@
 
 package ch.puzzle.itc.mobiliar.business.function.control;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceTypeEntityBuilder;
@@ -43,7 +54,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FunctionServiceTest {
 
 	private static final String FUNCTION_NAME_A = "functionNameA";
@@ -96,17 +107,16 @@ public class FunctionServiceTest {
 	private FunctionService functionService;
 
 
-	@Before
+	@BeforeEach
 	public void setUp(){
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_A.getId())).thenReturn(FUNCTION_A);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_A_OVERWRITE.getId())).thenReturn(FUNCTION_A_OVERWRITE);
-        when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(OTHER_FUNCTION_A.getId())).thenReturn(OTHER_FUNCTION_A);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_B.getId())).thenReturn(FUNCTION_B);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_B_OVERWRITE.getId())).thenReturn(FUNCTION_B_OVERWRITE);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_C.getId())).thenReturn(FUNCTION_C);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_D.getId())).thenReturn(FUNCTION_D);
-		when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_E.getId())).thenReturn(FUNCTION_E);
-
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_A.getId())).thenReturn(FUNCTION_A);
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_A_OVERWRITE.getId())).thenReturn(FUNCTION_A_OVERWRITE);
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(OTHER_FUNCTION_A.getId())).thenReturn(OTHER_FUNCTION_A);
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_B.getId())).thenReturn(FUNCTION_B);
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_B_OVERWRITE.getId())).thenReturn(FUNCTION_B_OVERWRITE);
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_C.getId())).thenReturn(FUNCTION_C);
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_D.getId())).thenReturn(FUNCTION_D);
+        Mockito.lenient().when(functionRepositoryMock.getFunctionByIdWithMiksAndParentChildFunctions(FUNCTION_E.getId())).thenReturn(FUNCTION_E);
 	}
 
 
@@ -1062,14 +1072,15 @@ public class FunctionServiceTest {
         assertTrue(rootFunction.getOverwritingChildFunction().contains(otherOverwritingFunction));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void overwriteResourceTypeFunctionOnRootResourceTypeShouldThrowException() {
         // given
         AmwFunctionEntity rootResourceTypeFunction = createFunctionForResourceType(FUNCTION_NAME_A, FUNCTION_ID_1, rootResourceType, "mik1Name");
 
         // when
-        functionService.overwriteResourceTypeFunction("functionBody", rootResourceTypeFunction, rootResourceType);
-
+        assertThrows(RuntimeException.class, () -> {
+            functionService.overwriteResourceTypeFunction("functionBody", rootResourceTypeFunction, rootResourceType);
+        });
     }
 
     @Test
@@ -1152,7 +1163,7 @@ public class FunctionServiceTest {
         assertTrue(overwritingSubSubResourceTypFunction.getOverwritingChildFunction().isEmpty());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void overwriteResourceTypeFunctionOnSubSubResourceTypeWhenOverwrittenInSubSubResourceTypeShouldReplaceOverwriteFunction() {
         // given
         AmwFunctionEntity rootResourceTypeFunction = createFunctionForResourceType(FUNCTION_NAME_A, FUNCTION_ID_1, rootResourceType, "mik1Name");
@@ -1167,8 +1178,9 @@ public class FunctionServiceTest {
         assertTrue(overwritingSubSubResourceTypFunction.getOverwritingChildFunction().isEmpty());
 
         // when
-        functionService.overwriteResourceTypeFunction("functionBody", rootResourceTypeFunction, subSubResourceType);
-
+        assertThrows(RuntimeException.class, () -> {
+            functionService.overwriteResourceTypeFunction("functionBody", rootResourceTypeFunction, subSubResourceType);
+        });
     }
 
     @Test

@@ -20,8 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.deploy.entity;
 
-import java.util.Set;
-
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.QLConstants.*;
 
 public enum DeploymentFilterTypes implements SortableColumn {

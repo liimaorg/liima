@@ -20,10 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.business.softlinkRelation.entity;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.SoftlinkRelationEntityBuilder;

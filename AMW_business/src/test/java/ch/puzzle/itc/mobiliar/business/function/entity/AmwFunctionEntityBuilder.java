@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 public class AmwFunctionEntityBuilder {
 
@@ -88,13 +88,13 @@ public class AmwFunctionEntityBuilder {
 
 	public AmwFunctionEntity mock(){
 		AmwFunctionEntity amwFunctionEntity = Mockito.mock(AmwFunctionEntity.class);
-		when(amwFunctionEntity.getName()).thenReturn(name);
-		when(amwFunctionEntity.getId()).thenReturn(id);
-		when(amwFunctionEntity.getImplementation()).thenReturn(implementation);
+		lenient().when(amwFunctionEntity.getName()).thenReturn(name);
+		lenient().when(amwFunctionEntity.getId()).thenReturn(id);
+		lenient().when(amwFunctionEntity.getImplementation()).thenReturn(implementation);
 		if (resource != null) {
-			when(amwFunctionEntity.getResource()).thenReturn(resource);
+			lenient().when(amwFunctionEntity.getResource()).thenReturn(resource);
 		} else if (resourceType != null) {
-			when(amwFunctionEntity.getResourceType()).thenReturn(resourceType);
+			lenient().when(amwFunctionEntity.getResourceType()).thenReturn(resourceType);
 		}
 
 		Set<String> mikNames = new HashSet<>();
@@ -103,8 +103,8 @@ public class AmwFunctionEntityBuilder {
 				mikNames.add(mik.getName());
 			}
 		}
-		when(amwFunctionEntity.getMikNames()).thenReturn(mikNames);
-		when(amwFunctionEntity.getOverwrittenParent()).thenReturn(overwrittenParent);
+		lenient().when(amwFunctionEntity.getMikNames()).thenReturn(mikNames);
+		lenient().when(amwFunctionEntity.getOverwrittenParent()).thenReturn(overwrittenParent);
 		return amwFunctionEntity;
 	}
 

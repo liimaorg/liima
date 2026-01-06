@@ -20,12 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import freemarker.cache.StringTemplateLoader;
-import freemarker.core.InvalidReferenceException;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -33,8 +29,13 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import freemarker.cache.StringTemplateLoader;
+import freemarker.core.InvalidReferenceException;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 public class FreeMarkerPropertyGenerationTest {
 
@@ -73,7 +74,7 @@ public class FreeMarkerPropertyGenerationTest {
         assertEquals("Value: value", result);
     }
 
-    @Test(expected = InvalidReferenceException.class)
+    @Test
     public void testCurrentNullProperties() throws Exception {
         // given
         String testTemplateContent = "Value: ${property.test}";
@@ -85,10 +86,10 @@ public class FreeMarkerPropertyGenerationTest {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("property", p);
 
-        // when
-        generate(testTemplateContent, data);
         // then
-        fail();
+        assertThrows(InvalidReferenceException.class, () -> {
+            generate(testTemplateContent, data);
+        });
     }
 
     private String generate(String testTemplateContent, Map<String, Object> data) throws IOException, TemplateException {

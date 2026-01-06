@@ -20,6 +20,26 @@
 
 package ch.puzzle.itc.mobiliar.business.resourceactivation.control;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity;
@@ -27,22 +47,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationContextRepository;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
-
+@ExtendWith(MockitoExtension.class)
 public class ResourceActivationTest {
 
     @Mock
@@ -56,11 +62,6 @@ public class ResourceActivationTest {
 
     @InjectMocks
     ResourceActivation resourceActivation;
-
-    @Before
-    public void before() throws Exception {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testSetResourceActivation_new_inactive() throws Exception {
@@ -153,19 +154,23 @@ public class ResourceActivationTest {
         verify(entityManager, times(0)).remove(Mockito.any(ResourceActivationEntity.class));
     }
 
-
-
     private void setResourceActivation(Boolean shallBeActive, Boolean wasActive, boolean isOnlyResourceActivation, boolean definedOnSameContext) throws Exception {
         ResourceRelationContextEntity resRelCtx = Mockito.mock(ResourceRelationContextEntity.class);
         ContextEntity ctx = Mockito.mock(ContextEntity.class);
-        when(resRelCtx.getContext()).thenReturn(ctx);
-        when(ctx.getId()).thenReturn(1);
         ResourceGroupEntity resGrp = Mockito.mock(ResourceGroupEntity.class);
-        if(wasActive!=null) {
+        if(wasActive != null) {
             ResourceRelationContextEntity resRelCtx2 = Mockito.mock(ResourceRelationContextEntity.class);
             ContextEntity ctx2 = Mockito.mock(ContextEntity.class);
-            when(resRelCtx2.getContext()).thenReturn(ctx2);
-            when(ctx2.getId()).thenReturn(2);
+            if (definedOnSameContext) {
+                when(resRelCtx.getContext()).thenReturn(ctx);
+                when(ctx.getId()).thenReturn(1);
+            }
+            else {
+                when(resRelCtx.getContext()).thenReturn(ctx);
+                when(ctx.getId()).thenReturn(1);
+                when(resRelCtx2.getContext()).thenReturn(ctx2);
+                when(ctx2.getId()).thenReturn(2);
+            }
 
             ResourceActivationEntity resActEnt = Mockito.mock(ResourceActivationEntity.class);
             if (definedOnSameContext) {
@@ -175,12 +180,18 @@ public class ResourceActivationTest {
                 when(resActEnt.getResourceRelationContext()).thenReturn(resRelCtx2);
             }
 
-            when(resActEnt.isActive()).thenReturn(wasActive);
-            when(resActEnt.isOnlyActivationEntityForResourceRelation()).thenReturn(isOnlyResourceActivation);
+            if (definedOnSameContext && shallBeActive != null) {
+                when(resActEnt.isActive()).thenReturn(wasActive);
+                // only stub when the code could read this flag: active changes to true
+                if (Boolean.TRUE.equals(shallBeActive) && !Boolean.TRUE.equals(wasActive)) {
+                    when(resActEnt.isOnlyActivationEntityForResourceRelation()).thenReturn(isOnlyResourceActivation);
+                }
+            }
 
             resourceActivation.setResourceActivation(resRelCtx, resGrp, resActEnt, shallBeActive);
         }
         else{
+            // no stubbing needed when existing activation is null; the mocks are unused
             resourceActivation.setResourceActivation(resRelCtx, resGrp, null, shallBeActive);
         }
     }
@@ -213,8 +224,8 @@ public class ResourceActivationTest {
         List<ResourceActivationEntity> resourceActivations = spiedResourceActivation.getMostRelevantResourceActivationEntities(
                   resourceRelationEntity, Mockito.mock(ContextEntity.class));
 
-        Assert.assertEquals(1, resourceActivations.size());
-        Assert.assertEquals(envResActEnt, resourceActivations.get(0));
+        assertEquals(1, resourceActivations.size());
+        assertEquals(envResActEnt, resourceActivations.get(0));
         verify(envResActEnt, times(1)).setOnlyActivationEntityForResourceRelation(true);
     }
 
@@ -243,8 +254,8 @@ public class ResourceActivationTest {
         List<ResourceRelationContextEntity> result = resourceActivation.getResourceActivationEntitiesForContextHierarchy(relation, env);
 
         //Make sure, the result is sorted correctly (environment context first, global context last).
-        Assert.assertEquals(2, result.size());
-        Assert.assertEquals(envContext, result.get(0));
-        Assert.assertEquals(globalContext, result.get(1));
+        assertEquals(2, result.size());
+        assertEquals(envContext, result.get(0));
+        assertEquals(globalContext, result.get(1));
     }
 }

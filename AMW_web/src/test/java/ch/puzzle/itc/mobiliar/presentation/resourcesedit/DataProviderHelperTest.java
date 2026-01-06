@@ -22,7 +22,7 @@ package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,36 +30,36 @@ import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataProviderHelperTest {
 
-	private DataProviderHelper helper = new DataProviderHelper();
+    private DataProviderHelper helper = new DataProviderHelper();
 
-	@Test
-	public void testNextFreeIdentifier2() {
-		// without postfix
-		assertEquals("db2", helper.nextFreeIdentifier(Collections.<String> emptyList(), "db2", null));
+    @Test
+    public void testNextFreeIdentifier2() {
+        // without postfix
+        assertEquals("db2", helper.nextFreeIdentifier(Collections.<String>emptyList(), "db2", null));
 
-		// first with postfix
-		List<String> list = new ArrayList<String>();
-		list.add("db2");
-		assertEquals("db2_1", helper.nextFreeIdentifier(list, "db2", null));
+        // first with postfix
+        List<String> list = new ArrayList<String>();
+        list.add("db2");
+        assertEquals("db2_1", helper.nextFreeIdentifier(list, "db2", null));
 
-		// second with postfix
-		list = new ArrayList<String>();
-		list.add("db2");
-		list.add("db2_4");
-		assertEquals("db2_2", helper.nextFreeIdentifier(list, "db2", null));
+        // second with postfix
+        list = new ArrayList<String>();
+        list.add("db2");
+        list.add("db2_4");
+        assertEquals("db2_2", helper.nextFreeIdentifier(list, "db2", null));
 
-		// null prefix
-		assertEquals("_2", helper.nextFreeIdentifier(list, null, null));
+        // null prefix
+        assertEquals("_2", helper.nextFreeIdentifier(list, null, null));
 
-		// to lower case
-		assertEquals("NODE_2", helper.nextFreeIdentifier(list, "NODE", null));
-	}
+        // to lower case
+        assertEquals("NODE_2", helper.nextFreeIdentifier(list, "NODE", null));
+    }
 
-	@Test
+    @Test
     public void shouldReturnNullIfResourceEditRelationListIsEmpty() {
         // given
         List<ResourceEditRelation> relations = Collections.<ResourceEditRelation>emptyList();
@@ -82,7 +82,8 @@ public class DataProviderHelperTest {
         relations.add(rel0);
 
         // when // then
-        assertEquals("slaveName_1", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
+        assertEquals("slaveName_1",
+                helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
     }
 
@@ -99,7 +100,8 @@ public class DataProviderHelperTest {
         relations.add(rel1);
 
         // when // then
-        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
+        assertEquals("slaveName_2",
+                helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
     }
 
@@ -119,7 +121,8 @@ public class DataProviderHelperTest {
         relations.add(rel2);
 
         // when // then
-        assertEquals("slaveName_3", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
+        assertEquals("slaveName_3",
+                helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
     }
 
@@ -139,10 +142,10 @@ public class DataProviderHelperTest {
         relations.add(rel2);
 
         // when // then
-        assertEquals("slaveName_2", helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
+        assertEquals("slaveName_2",
+                helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
 
     }
-
 
     @Test
     public void shouldUseGivenPrefixWhenNoRelations() {

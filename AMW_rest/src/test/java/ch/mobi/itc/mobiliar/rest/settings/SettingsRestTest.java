@@ -2,12 +2,11 @@ package ch.mobi.itc.mobiliar.rest.settings;
 
 import ch.puzzle.itc.mobiliar.business.applicationinfo.boundary.ApplicationVersionService;
 import ch.puzzle.itc.mobiliar.business.applicationinfo.entity.ConfigurationKeyValuePair;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@Ignore
+@ExtendWith(MockitoExtension.class)
 public class SettingsRestTest {
 
     @InjectMocks
@@ -25,11 +24,6 @@ public class SettingsRestTest {
 
     @Mock
     ApplicationVersionService applicationVersionService;
-
-    @Before
-    public void configure() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void  shouldReturnConfigurationPairsWithExpectedContentOnGetAppConfig() {

@@ -20,12 +20,13 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class EnvironmentGenerationResultTest {
 
     @Mock
@@ -33,10 +34,6 @@ public class EnvironmentGenerationResultTest {
     @Mock
     NodeGenerationResult nodeResult2;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
 
     @Test

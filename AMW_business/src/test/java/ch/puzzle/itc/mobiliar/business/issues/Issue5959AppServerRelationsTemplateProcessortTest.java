@@ -22,17 +22,18 @@ package ch.puzzle.itc.mobiliar.business.issues;
 
 import static ch.puzzle.itc.mobiliar.business.domain.TestUtils.readRecursionTemplate;
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.APP;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.logging.Level;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.TemplateProcessorBaseTest;
@@ -40,17 +41,17 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.SimpleEntityBuilder;
 
+@ExtendWith(MockitoExtension.class)
 public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateProcessorBaseTest<SimpleEntityBuilder> {
 
 	String appTemplate = "name=${providedResTypes.Webservice.ws.name}";
 	String expected = "name=ws";
 
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		CustomLogging.setup(Level.OFF);
 		builder = new SimpleEntityBuilder();
 		context = builder.context;
-		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
@@ -32,9 +32,9 @@ public class ReleaseEntityBuilder extends BaseEntityBuilder {
 	public ReleaseEntity mockReleaseEntity(String name, Date installationDate) {
 		ReleaseEntity mock = mock(ReleaseEntity.class);
 		int id = getNextId();
-		when(mock.getId()).thenReturn(id);
-		when(mock.getName()).thenReturn(getName(name, ReleaseEntity.class, id));
-		when(mock.getInstallationInProductionAt()).thenReturn(installationDate);
+		lenient().when(mock.getId()).thenReturn(id);
+		lenient().when(mock.getName()).thenReturn(getName(name, ReleaseEntity.class, id));
+		lenient().when(mock.getInstallationInProductionAt()).thenReturn(installationDate);
 		return mock;
 	}
 

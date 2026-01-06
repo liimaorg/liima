@@ -20,9 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GenerationModusTest {
 
@@ -41,7 +41,4 @@ public class GenerationModusTest {
         assertFalse(GenerationModus.SIMULATE.isSendNotificationOnSuccessGenerationModus());
         assertFalse(GenerationModus.TEST.isSendNotificationOnSuccessGenerationModus());
     }
-
-
-
 }

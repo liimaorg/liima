@@ -21,9 +21,9 @@
 package ch.puzzle.itc.mobiliar.business.releasing.control;
 
 import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
 import java.util.List;
@@ -33,21 +33,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService}
  */
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ReleaseMgmtPersistenceServiceTest {
 
 	@Spy
@@ -59,11 +58,6 @@ public class ReleaseMgmtPersistenceServiceTest {
 
 	@InjectMocks
 	ReleaseMgmtPersistenceService service;
-
-	@Before
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void test_getById() {

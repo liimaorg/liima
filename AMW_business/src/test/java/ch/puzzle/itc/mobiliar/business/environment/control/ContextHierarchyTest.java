@@ -21,27 +21,25 @@
 package ch.puzzle.itc.mobiliar.business.environment.control;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class ContextHierarchyTest {
 
     @InjectMocks
     ContextHierarchy contextHierarchy;
 
-    @Before
-    public void before() throws Exception {
-        MockitoAnnotations.openMocks(this);
-    }
+
 
     @Test
     public void testGetContextWithParentIds() throws Exception {
@@ -59,6 +57,5 @@ public class ContextHierarchyTest {
 
         assertEquals(3, result.size());
         assertEquals(Arrays.asList(3000, 1002, 2000), result);
-
     }
 }

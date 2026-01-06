@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 /**
  * Builds {@link ResourceEntityBuilder} for testing.
@@ -74,35 +74,35 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 	public ResourceEntity mockResourceEntity(String name, ResourceGroupEntity group, ResourceTypeEntity type, ReleaseEntity release, ResourceGroupEntity runtime) {
 		ResourceEntity mock = Mockito.mock(ResourceEntity.class);
 		int id = getNextId();
-		when(mock.getId()).thenReturn(id);
+		lenient().when(mock.getId()).thenReturn(id);
 		if (group != null && !StringUtils.isEmpty(group.getName())) {
-			when(mock.getName()).thenReturn(group.getName());
+			lenient().when(mock.getName()).thenReturn(group.getName());
 		} else if (StringUtils.isEmpty(name)) {
-			when(mock.getName()).thenReturn(name);
+			lenient().when(mock.getName()).thenReturn(name);
 		} else {
-			when(mock.getName()).thenReturn("resourceEntity" + id);
+			lenient().when(mock.getName()).thenReturn("resourceEntity" + id);
 		}
 
 		if (group != null) {
-			when(mock.getResourceGroup()).thenReturn(group);
+			lenient().when(mock.getResourceGroup()).thenReturn(group);
 		} else {
 			Set<ResourceEntity> resources = new HashSet<ResourceEntity>();
 			resources.add(mock);
 			groupEntityBuilder.mockResourceGroupEntity(mock.getName(), resources);
 		}
 
-		when(mock.getResourceType()).thenReturn(type);
+		lenient().when(mock.getResourceType()).thenReturn(type);
 		if (type != null && Mockito.mockingDetails(type).isMock()) {
 			Set<ResourceEntity> resources = type.getResources() != null ? type.getResources() : new HashSet<ResourceEntity>();
 			resources.add(mock);
-			when(type.getResources()).thenReturn(resources);
+			lenient().when(type.getResources()).thenReturn(resources);
 		}
-		when(mock.getRelease()).thenReturn(release);
-		when(mock.getConsumedMasterRelations()).thenReturn(new HashSet<ConsumedResourceRelationEntity>());
-		when(mock.getConsumedSlaveRelations()).thenReturn(new HashSet<ConsumedResourceRelationEntity>());
-		when(mock.getProvidedMasterRelations()).thenReturn(new HashSet<ProvidedResourceRelationEntity>());
-		when(mock.getProvidedSlaveRelations()).thenReturn(new HashSet<ProvidedResourceRelationEntity>());
-		when(mock.getRuntime()).thenReturn(runtime);
+		lenient().when(mock.getRelease()).thenReturn(release);
+		lenient().when(mock.getConsumedMasterRelations()).thenReturn(new HashSet<ConsumedResourceRelationEntity>());
+		lenient().when(mock.getConsumedSlaveRelations()).thenReturn(new HashSet<ConsumedResourceRelationEntity>());
+		lenient().when(mock.getProvidedMasterRelations()).thenReturn(new HashSet<ProvidedResourceRelationEntity>());
+		lenient().when(mock.getProvidedSlaveRelations()).thenReturn(new HashSet<ProvidedResourceRelationEntity>());
+		lenient().when(mock.getRuntime()).thenReturn(runtime);
 
 		return mock;
 	}
@@ -355,17 +355,17 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 			resourceEntity = mockResourceEntity(name, group, type, release, null);
 		}
 
-		when(resourceEntity.getId()).thenReturn(id);
-		when(resourceEntity.getOwner()).thenReturn(owner);
-		when(resourceEntity.getFunctions()).thenReturn(functions);
-		when(resourceEntity.isDeletable()).thenReturn(isDeletable);
-		when(resourceEntity.getSoftlinkId()).thenReturn(softlinkId);
-		when(resourceEntity.getContexts()).thenReturn(contexts);
-		when(resourceEntity.getLocalPortId()).thenReturn(localPortId);
+		lenient().when(resourceEntity.getId()).thenReturn(id);
+		lenient().when(resourceEntity.getOwner()).thenReturn(owner);
+		lenient().when(resourceEntity.getFunctions()).thenReturn(functions);
+		lenient().when(resourceEntity.isDeletable()).thenReturn(isDeletable);
+		lenient().when(resourceEntity.getSoftlinkId()).thenReturn(softlinkId);
+		lenient().when(resourceEntity.getContexts()).thenReturn(contexts);
+		lenient().when(resourceEntity.getLocalPortId()).thenReturn(localPortId);
 		if(softlinkRelation != null){
-			when(resourceEntity.getSoftlinkRelation()).thenReturn(softlinkRelation);
+			lenient().when(resourceEntity.getSoftlinkRelation()).thenReturn(softlinkRelation);
 			if (Mockito.mockingDetails(softlinkRelation).isMock()) {
-				when(softlinkRelation.getCpiResource()).thenReturn(resourceEntity);
+				lenient().when(softlinkRelation.getCpiResource()).thenReturn(resourceEntity);
 			}else{
 				softlinkRelation.setCpiResource(resourceEntity);
 			}

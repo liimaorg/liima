@@ -28,17 +28,18 @@ import javax.ws.rs.core.Response;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * This is a typical rest interface test: It checks, if the underlying business logic is called with
  * appropriate (expected) parameters but not the business logic itself (this is the duty of the business
  * method test).
  */
+@ExtendWith(MockitoExtension.class)
 public class ResourceRelationPropertiesRestTest {
 
     @InjectMocks
@@ -46,11 +47,6 @@ public class ResourceRelationPropertiesRestTest {
 
     @Mock
     ResourceRelationLocator resourceRelationLocator;
-
-    @Before
-    public void configure() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void shouldReturnNotFoundStatusIfNoRelationsHaveBeenFound() throws ValidationException {

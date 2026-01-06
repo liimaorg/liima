@@ -21,9 +21,9 @@
 package ch.puzzle.itc.mobiliar.business.utils;
 
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
@@ -35,8 +35,8 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Tests {@link CopyHelper}
@@ -45,7 +45,7 @@ public class CopyHelperTest {
 
     ResourceGroupEntityBuilder resourceGroupEntityBuilder;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         resourceGroupEntityBuilder = new ResourceGroupEntityBuilder();
     }
@@ -72,7 +72,7 @@ public class CopyHelperTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void copyForeignable_release() throws AMWException{
         // TODO: cweber FIXME!
         // given

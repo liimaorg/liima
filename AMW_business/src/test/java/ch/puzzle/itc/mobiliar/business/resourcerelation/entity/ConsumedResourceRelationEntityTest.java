@@ -20,22 +20,28 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Map;
+import java.util.Set;
+
+import org.junit.jupiter.api.Test;
+
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainServiceTestHelper;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import org.junit.Test;
-
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class ConsumedResourceRelationEntityTest {
 
@@ -66,13 +72,15 @@ public class ConsumedResourceRelationEntityTest {
 		assertEquals(owner, consumedResourceRelationEntity.getOwner());
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void constructorWithNullShouldThrowException() {
 		// given
 		ForeignableOwner owner = null;
 
 		// when
-		consumedResourceRelationEntity = new ConsumedResourceRelationEntity(owner);
+        assertThrows(NullPointerException.class, () -> {
+			consumedResourceRelationEntity = new ConsumedResourceRelationEntity(owner);
+        });
 	}
 
 	@Test

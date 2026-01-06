@@ -20,7 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -29,13 +30,14 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
@@ -46,6 +48,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
+@ExtendWith(MockitoExtension.class)
 public class GeneratorFileWriterTest {
 	
 	@InjectMocks
@@ -54,16 +57,14 @@ public class GeneratorFileWriterTest {
 	@Mock
 	Logger log;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
-		MockitoAnnotations.openMocks(this);
-		
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH.getValue());
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH_SIMULATION.getValue());
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH_TEST.getValue());
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown(){
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH.getValue());
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH_SIMULATION.getValue());
@@ -71,24 +72,26 @@ public class GeneratorFileWriterTest {
 	}
 	
 
-	@Test(expected=GeneratorException.class)
+	@Test
 	public void should_throwAnException() throws GeneratorException {
-		//given
-		// no Properties are set
-		
-		//when
-		generatorFileWriter.getGeneratorTargetPath(null);
+		// given - no Properties are set
+		assertThrows(GeneratorException.class, () -> {
+			generatorFileWriter.getGeneratorTargetPath(null);
+		});
 	}
 	
-	@Test(expected=GeneratorException.class)
+	@Test
 	public void should_throwAnException_with_context() throws GeneratorException {
 		//given
 		// no Properties are set
-		GenerationContext context =Mockito.mock(GenerationContext.class);
+		GenerationContext context = Mockito.mock(GenerationContext.class);
 		
 		//when
-		generatorFileWriter.getGeneratorTargetPath(context);
+        assertThrows(GeneratorException.class, () -> {
+			generatorFileWriter.getGeneratorTargetPath(context);
+        });
 	}
+
 	@Test
 	public void should_returnGenerationPath_with_defaultDeploy() throws GeneratorException {
 		//given

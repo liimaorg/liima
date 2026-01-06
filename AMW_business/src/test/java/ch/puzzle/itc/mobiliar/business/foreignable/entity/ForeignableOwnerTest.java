@@ -20,9 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.foreignable.entity;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ForeignableOwnerTest {
 
@@ -30,7 +30,6 @@ public class ForeignableOwnerTest {
 
     @Test
     public void getSystemOwnerShouldReturnTrueWhenAmwOwner(){
-
         // when
         ForeignableOwner systemOwner = ForeignableOwner.getSystemOwner();
 

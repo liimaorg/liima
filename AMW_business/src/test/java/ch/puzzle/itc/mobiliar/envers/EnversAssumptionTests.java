@@ -20,6 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.envers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Date;
 
 import javax.persistence.EntityManager;
@@ -27,9 +32,8 @@ import javax.persistence.PersistenceContext;
 
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
@@ -55,7 +59,7 @@ public class EnversAssumptionTests extends AbstractPersistenceEnverseTest {
 		return entityManager;
 	}
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		auditReader = AuditReaderFactory.get(entityManager);
 
@@ -82,23 +86,23 @@ public class EnversAssumptionTests extends AbstractPersistenceEnverseTest {
 	public void propertyDescriptorDoesNotExistInEarlierRevision() {
 		PropertyDescriptorEntity propertyDescriptor = auditReader.find(PropertyDescriptorEntity.class,
 				property.getId(), revisionInBetween);
-		Assert.assertNull(propertyDescriptor);
+		assertNull(propertyDescriptor);
 	}
 
 	@Test
 	public void propertyDescriptorIsNotAttachedInEarlierRevision() {
 		ContextEntity contextInFirstRevision = auditReader.find(ContextEntity.class, c.getId(),
 				revisionInBetween);
-		Assert.assertNotNull(contextInFirstRevision);
-		Assert.assertTrue(contextInFirstRevision.getPropertyDescriptors().isEmpty());
+		assertNotNull(contextInFirstRevision);
+		assertTrue(contextInFirstRevision.getPropertyDescriptors().isEmpty());
 	}
 
 	@Test
 	public void propertyDescriptorDoesExistInLaterRevision() {
 		PropertyDescriptorEntity propertyDescriptor = auditReader.find(PropertyDescriptorEntity.class,
 				property.getId(), revisionAfter);
-		Assert.assertNotNull(propertyDescriptor);
-		Assert.assertEquals("comment", propertyDescriptor.getPropertyComment());
+		assertNotNull(propertyDescriptor);
+		assertEquals("comment", propertyDescriptor.getPropertyComment());
 	}
 
 	/**
@@ -112,18 +116,18 @@ public class EnversAssumptionTests extends AbstractPersistenceEnverseTest {
 	public void propertyDescriptorIsAttachedInLaterRevision() {
 		ContextEntity contextInLastRevision = auditReader.find(ContextEntity.class, c.getId(),
 				revisionAfter);
-		Assert.assertNotNull(contextInLastRevision);
-		Assert.assertEquals(1, contextInLastRevision.getPropertyDescriptors().size());
-		Assert.assertEquals("comment", contextInLastRevision.getPropertyDescriptors().iterator().next().getPropertyComment());
+		assertNotNull(contextInLastRevision);
+		assertEquals(1, contextInLastRevision.getPropertyDescriptors().size());
+		assertEquals("comment", contextInLastRevision.getPropertyDescriptors().iterator().next().getPropertyComment());
 	}
 	
 	@Test
 	public void propertyDescriptorIsAttachedInLatestRevisionAndHasUpdatedComment() {
 		ContextEntity contextInLastRevision = auditReader.find(ContextEntity.class, c.getId(),
 				revisionLatest);
-		Assert.assertNotNull(contextInLastRevision);
-		Assert.assertEquals(1, contextInLastRevision.getPropertyDescriptors().size());
-		Assert.assertEquals("newComment", contextInLastRevision.getPropertyDescriptors().iterator().next().getPropertyComment());
+		assertNotNull(contextInLastRevision);
+		assertEquals(1, contextInLastRevision.getPropertyDescriptors().size());
+		assertEquals("newComment", contextInLastRevision.getPropertyDescriptors().iterator().next().getPropertyComment());
 	}
 
 }

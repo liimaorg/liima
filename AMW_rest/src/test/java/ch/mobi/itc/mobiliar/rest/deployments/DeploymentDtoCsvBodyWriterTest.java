@@ -2,25 +2,21 @@ package ch.mobi.itc.mobiliar.rest.deployments;
 
 import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.DeploymentParameterDTO;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@ExtendWith(MockitoExtension.class)
 public class DeploymentDtoCsvBodyWriterTest {
 
     @InjectMocks
     DeploymentDtoCsvBodyWriter writer;
-
-    @Before
-    public void configure() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void shouldFormatAppsWithVersion() {

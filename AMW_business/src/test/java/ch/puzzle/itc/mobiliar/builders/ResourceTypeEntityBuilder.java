@@ -21,8 +21,8 @@
 package ch.puzzle.itc.mobiliar.builders;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,26 +48,26 @@ public class ResourceTypeEntityBuilder extends BaseEntityBuilder {
 	public ResourceTypeEntity mockResourceTypeEntity(String name, Set<ResourceEntity> resources) {
 		ResourceTypeEntity mock = mock(ResourceTypeEntity.class);
 		int id = getNextId();
-		when(mock.getId()).thenReturn(id);
+		lenient().when(mock.getId()).thenReturn(id);
 		if (!StringUtils.isEmpty(name)) {
-			when(mock.getName()).thenReturn(name);
+			lenient().when(mock.getName()).thenReturn(name);
 		} else {
-			when(mock.getName()).thenReturn("type" + id);
+			lenient().when(mock.getName()).thenReturn("type" + id);
 		}
-		when(mock.isDefaultResourceType()).thenReturn(false);
-		when(mock.isApplicationServerResourceType()).thenReturn(false);
-		when(mock.isApplicationResourceType()).thenReturn(false);
-		when(mock.isNodeResourceType()).thenReturn(false);
+		lenient().when(mock.isDefaultResourceType()).thenReturn(false);
+		lenient().when(mock.isApplicationServerResourceType()).thenReturn(false);
+		lenient().when(mock.isApplicationResourceType()).thenReturn(false);
+		lenient().when(mock.isNodeResourceType()).thenReturn(false);
 
 		if (resources != null) {
-			when(mock.getResources()).thenReturn(resources);
+			lenient().when(mock.getResources()).thenReturn(resources);
 			for (ResourceEntity resource : resources) {
 				if (Mockito.mockingDetails(resource).isMock()) {
-					when(resource.getResourceType()).thenReturn(mock);
+					lenient().when(resource.getResourceType()).thenReturn(mock);
 				}
 			}
 		} else {
-			when(mock.getResources()).thenReturn(new HashSet<ResourceEntity>());
+			lenient().when(mock.getResources()).thenReturn(new HashSet<ResourceEntity>());
 		}
 
 		return mock;
@@ -75,38 +75,38 @@ public class ResourceTypeEntityBuilder extends BaseEntityBuilder {
 
 	public ResourceTypeEntity mockAppServerResourceTypeEntity(Set<ResourceEntity> resources) {
 		ResourceTypeEntity mock = mockResourceTypeEntity(DefaultResourceTypeDefinition.APPLICATIONSERVER.getDisplayName(), resources);
-		when(mock.isApplicationServerResourceType()).thenReturn(true);
-		when(mock.isDefaultResourceType()).thenReturn(true);
-		when(mock.isResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER)).thenReturn(true);
-		when(mock.getId()).thenReturn(AS_TYPE_ID);
+		lenient().when(mock.isApplicationServerResourceType()).thenReturn(true);
+		lenient().when(mock.isDefaultResourceType()).thenReturn(true);
+		lenient().when(mock.isResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER)).thenReturn(true);
+		lenient().when(mock.getId()).thenReturn(AS_TYPE_ID);
 		return mock;
 	}
 
 	public ResourceTypeEntity mockApplicationResourceTypeEntity(Set<ResourceEntity> resources) {
 		ResourceTypeEntity mock = mockResourceTypeEntity(DefaultResourceTypeDefinition.APPLICATION.getDisplayName(), resources);
-		when(mock.isApplicationResourceType()).thenReturn(true);
-		when(mock.isDefaultResourceType()).thenReturn(true);
-		when(mock.isResourceType(DefaultResourceTypeDefinition.APPLICATION)).thenReturn(true);
-		when(mock.getId()).thenReturn(APP_TYPE_ID);
+		lenient().when(mock.isApplicationResourceType()).thenReturn(true);
+		lenient().when(mock.isDefaultResourceType()).thenReturn(true);
+		lenient().when(mock.isResourceType(DefaultResourceTypeDefinition.APPLICATION)).thenReturn(true);
+		lenient().when(mock.getId()).thenReturn(APP_TYPE_ID);
 		return mock;
 	}
 
 	public ResourceTypeEntity mockNodeResourceTypeEntity(Set<ResourceEntity> resources) {
 		ResourceTypeEntity mock = mockResourceTypeEntity(DefaultResourceTypeDefinition.NODE.getDisplayName(), resources);
-		when(mock.isNodeResourceType()).thenReturn(true);
-		when(mock.isDefaultResourceType()).thenReturn(true);
-		when(mock.isResourceType(DefaultResourceTypeDefinition.NODE)).thenReturn(true);
-		when(mock.getId()).thenReturn(NODE_TYPE_ID);
+		lenient().when(mock.isNodeResourceType()).thenReturn(true);
+		lenient().when(mock.isDefaultResourceType()).thenReturn(true);
+		lenient().when(mock.isResourceType(DefaultResourceTypeDefinition.NODE)).thenReturn(true);
+		lenient().when(mock.getId()).thenReturn(NODE_TYPE_ID);
 		return mock;
 	}
 
     public ResourceTypeEntity mockRuntimeResourceTypeEntity(Set<ResourceEntity> resources) {
         ResourceTypeEntity mock = mockResourceTypeEntity(DefaultResourceTypeDefinition.RUNTIME.getDisplayName(), resources);
-        when(mock.isNodeResourceType()).thenReturn(false);
-        when(mock.isDefaultResourceType()).thenReturn(false);
-        when(mock.isRuntimeType()).thenReturn(true);
-        when(mock.isResourceType(any(DefaultResourceTypeDefinition.class))).thenReturn(false);
-        when(mock.getId()).thenReturn(NODE_TYPE_ID);
+        lenient().when(mock.isNodeResourceType()).thenReturn(false);
+        lenient().when(mock.isDefaultResourceType()).thenReturn(false);
+        lenient().when(mock.isRuntimeType()).thenReturn(true);
+        lenient().when(mock.isResourceType(any(DefaultResourceTypeDefinition.class))).thenReturn(false);
+        lenient().when(mock.getId()).thenReturn(NODE_TYPE_ID);
         return mock;
     }
 

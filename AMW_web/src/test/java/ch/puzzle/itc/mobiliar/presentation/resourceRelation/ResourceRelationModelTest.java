@@ -1,8 +1,8 @@
 package ch.puzzle.itc.mobiliar.presentation.resourceRelation;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -11,7 +11,7 @@ public class ResourceRelationModelTest {
 
     private ResourceRelationModel relationModel;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         relationModel = new ResourceRelationModel();
     }

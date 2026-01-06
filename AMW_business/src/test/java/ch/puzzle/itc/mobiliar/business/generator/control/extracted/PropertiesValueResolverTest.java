@@ -20,16 +20,16 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PropertiesValueResolverTest {
 
@@ -38,7 +38,7 @@ public class PropertiesValueResolverTest {
 	private Map<String, String> leave = new TreeMap<String, String>();
 	private Map<String, Object> nested = new TreeMap<String, Object>();
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		env.put("name", "test");
 		leave.put("name", "DB2_leave_${env.name?capitalize}");

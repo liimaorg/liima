@@ -1,16 +1,17 @@
 package ch.mobi.itc.mobiliar.rest.releases;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
@@ -18,17 +19,13 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ConcurrentModificationException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
+@ExtendWith(MockitoExtension.class)
 public class ReleasesRestTest {
 
     @InjectMocks
     private ReleasesRest releasesRest;
     @Mock
     private ReleaseLocator releaseLocator;
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void updateRelease_shouldReturnOK_whenUpdateSucceeds() throws Exception {
@@ -54,16 +51,16 @@ public class ReleasesRestTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateRelease_shouldThrowNotFoundException_whenReleaseNotFound() throws Exception {
         Integer id = 42;
         ReleaseEntity request = new ReleaseEntity();
         when(releaseLocator.getReleaseById(id)).thenThrow(new NotFoundException("not found"));
 
-        releasesRest.updateRelease(id, request);
+        assertThrows(NotFoundException.class, () -> releasesRest.updateRelease(id, request));
     }
 
-    @Test(expected = ConcurrentModificationException.class)
+    @Test
     public void updateRelease_shouldThrowConcurrentModificationException_whenUpdateThrows() throws Exception {
         Integer id = 42;
         ReleaseEntity request = new ReleaseEntity();
@@ -71,7 +68,7 @@ public class ReleasesRestTest {
         when(releaseLocator.update(any(ReleaseEntity.class)))
                 .thenThrow(new ConcurrentModificationException("concurrent"));
 
-        releasesRest.updateRelease(id, request);
+        assertThrows(ConcurrentModificationException.class, () -> releasesRest.updateRelease(id, request));
     }
 
     @Test

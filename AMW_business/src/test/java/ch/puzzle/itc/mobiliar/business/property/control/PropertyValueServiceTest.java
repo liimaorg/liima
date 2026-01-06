@@ -20,7 +20,36 @@
 
 package ch.puzzle.itc.mobiliar.business.property.control;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+
+import org.hamcrest.CoreMatchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import ch.puzzle.itc.mobiliar.builders.ResourceEditPropertyBuilder;
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
+import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
@@ -29,31 +58,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
-import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class PropertyValueServiceTest {
 
 
@@ -75,7 +81,7 @@ public class PropertyValueServiceTest {
     @InjectMocks
     PropertyValueService service = spy(new PropertyValueService());
 
-    @Before
+    @BeforeEach
     public void init() {
         ThreadLocalUtil.destroy();
     }
@@ -100,14 +106,15 @@ public class PropertyValueServiceTest {
         return property;
     }
 
-    @Test(expected = NoResultException.class)
+    @Test
     public void resetPropertyValueShouldThrowExceptionWhenPropertyNotFound(){
         // given
         Mockito.when(resourceContextMock.getPropertyForDescriptor(propertyDescriptorId)).thenReturn(null);
 
         //when
-        service.resetPropertyValue(resourceContextMock, propertyDescriptorId);
-
+        assertThrows(NoResultException.class, () -> {
+            service.resetPropertyValue(resourceContextMock, propertyDescriptorId);
+        });
     }
 
     @Test
@@ -148,7 +155,7 @@ public class PropertyValueServiceTest {
         Mockito.verify(propertyMock).setValue(unobfuscatedValue);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void setPropertyValueShouldThrowValidationExceptionWhenPropertyIsNotAllowedToSetOnContext() throws ValidationException {
         // given
         String unobfuscatedValue = "some value";
@@ -158,11 +165,12 @@ public class PropertyValueServiceTest {
         Mockito.when(resourceContextMock.getPropertyForDescriptor(propertyDescriptorId)).thenReturn(propertyMock);
 
         //when
-        service.setPropertyValue(resourceContextMock, propertyDescriptorId, unobfuscatedValue);
-
+        assertThrows(ValidationException.class, () -> {
+            service.setPropertyValue(resourceContextMock, propertyDescriptorId, unobfuscatedValue);
+        });
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void verifyDefaultPropertyCanBeSetWhenValueEqualsDefaultValueOnGlobalContextShouldThrowException() throws ValidationException {
         // given
         String defaultValue = "defaultValue";
@@ -178,7 +186,9 @@ public class PropertyValueServiceTest {
         Mockito.when(resourceEditPropertyMock.getOriginalValue()).thenReturn(null);
 
         //when
-        service.verifyDefaultPropertyCanBeSet(resourceEditPropertyMock, contextEntity);
+        assertThrows(ValidationException.class, () -> {
+            service.verifyDefaultPropertyCanBeSet(resourceEditPropertyMock, contextEntity);
+        });
     }
 
     @Test
@@ -202,7 +212,7 @@ public class PropertyValueServiceTest {
         assertTrue(true);
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void verifyDefaultPropertyCanBeSetWhenValueEqualsDefaultValueWhenNoParentContextSetShouldThrowException() throws ValidationException {
         // given
         String defaultValue = "defaultValue";
@@ -218,7 +228,9 @@ public class PropertyValueServiceTest {
         Mockito.when(resourceEditPropertyMock.getOriginalValue()).thenReturn(null);
 
         //when
-        service.verifyDefaultPropertyCanBeSet(resourceEditPropertyMock, contextEntity);
+        assertThrows(ValidationException.class, () -> {
+            service.verifyDefaultPropertyCanBeSet(resourceEditPropertyMock, contextEntity);
+        });
     }
 
     @Test

@@ -3,10 +3,10 @@ package ch.puzzle.itc.mobiliar.business.property.boundary;
 import ch.puzzle.itc.mobiliar.business.property.boundary.ListTagsUseCase;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyTagEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,11 +15,11 @@ import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType.GLOBAL;
 import static ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType.LOCAL;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class ListTagsUseCaseTest {
 
     @PersistenceContext
@@ -27,7 +27,7 @@ public class ListTagsUseCaseTest {
 
     private ListTagsUseCase useCase;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         PropertyTagEditingService propertyTagEditingService = new PropertyTagEditingService(em, Logger.getLogger(
                 ListTagsUseCase.class.getName()));

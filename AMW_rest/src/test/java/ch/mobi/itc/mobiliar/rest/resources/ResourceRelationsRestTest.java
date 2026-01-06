@@ -20,6 +20,24 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CREATED;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import javax.ws.rs.core.Response;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -27,20 +45,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.ws.rs.core.Response;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static junit.framework.TestCase.assertEquals;
-import static org.mockito.Mockito.*;
-
+@ExtendWith(MockitoExtension.class)
 public class ResourceRelationsRestTest {
 
     @InjectMocks
@@ -51,11 +56,6 @@ public class ResourceRelationsRestTest {
 
     @Mock
     private ResourceLocator resourceLocatorMock;
-
-    @Before
-    public void configure() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void shouldReturnBadRequestIfSlaveResourceGroupNameIsNull() {

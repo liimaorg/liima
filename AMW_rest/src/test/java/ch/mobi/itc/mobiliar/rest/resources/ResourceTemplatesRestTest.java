@@ -1,7 +1,8 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -9,11 +10,11 @@ import java.util.ArrayList;
 
 import javax.ws.rs.core.Response;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
@@ -24,6 +25,7 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
+@ExtendWith(MockitoExtension.class)
 public class ResourceTemplatesRestTest {
 
     @InjectMocks
@@ -38,11 +40,6 @@ public class ResourceTemplatesRestTest {
     @Mock
     private TemplatesScreenDomainService templateService;
 
-    @Before
-    public void configure() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     public void idShouldBeResetOnCreateResourceTemplates() throws AMWException {
         TemplateDTO templateDTO = new TemplateDTO();
@@ -56,9 +53,11 @@ public class ResourceTemplatesRestTest {
         assertEquals("test", result.getName());
     }
 
-    @Test(expected = NotFoundException.class)
-    public void shouldRaisNotFoundExceptionOnGetResourceTemplate() throws ValidationException, NotFoundException {
-        resourceTemplatesRest.getResourceTemplate("resourceGroupName", "releaseName", "templateName");
+    @Test
+    public void shouldRaisNotFoundExceptionOnGetResourceTemplate() throws ValidationException {
+        assertThrows(NotFoundException.class, () -> {
+            resourceTemplatesRest.getResourceTemplate("resourceGroupName", "releaseName", "templateName");
+        });
     }
 
     @Test

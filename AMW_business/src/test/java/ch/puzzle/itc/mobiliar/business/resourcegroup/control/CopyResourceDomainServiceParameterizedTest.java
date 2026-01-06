@@ -20,7 +20,49 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.builders.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import javax.persistence.EntityManager;
+
+import org.hamcrest.core.Is;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceRelationContextEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.TargetPlatformEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.TemplateDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
@@ -30,13 +72,16 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.property.entity.*;
+import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService.CopyMode;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -47,30 +92,13 @@ import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainSer
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import org.hamcrest.core.Is;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import javax.persistence.EntityManager;
-import java.util.*;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Tests {@link ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService}
  * 
  * @author cweber
  */
-@RunWith(Parameterized.class)
+@ExtendWith(MockitoExtension.class)
 public class CopyResourceDomainServiceParameterizedTest {
 
 	@Mock
@@ -93,7 +121,6 @@ public class CopyResourceDomainServiceParameterizedTest {
 	@InjectMocks
 	private CopyResourceDomainService copyDomainService = new CopyResourceDomainService();
 
-	private ResourceTypeEntityBuilder resourceTypeEntityBuilder = new ResourceTypeEntityBuilder();
 	private ResourceRelationEntityBuilder relationEntityBuilder = new ResourceRelationEntityBuilder();
 	private TemplateDescriptorEntityBuilder templateDescriptorEntityBuilder = new TemplateDescriptorEntityBuilder();
 	private TargetPlatformEntityBuilder targetPlatformEntityBuilder = new TargetPlatformEntityBuilder();
@@ -108,42 +135,25 @@ public class CopyResourceDomainServiceParameterizedTest {
 
 	ContextEntity globalContextMock;
 
-	private CopyMode copyMode;
-	private ForeignableOwner actingOwner;
-
-	@Before
+	@BeforeEach
 	public void before() {
-		MockitoAnnotations.openMocks(this);
-
 		globalContextMock = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);
-
-		ResourceTypeEntity appType = resourceTypeEntityBuilder.mockApplicationResourceTypeEntity(null);
-		when(resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATION)).thenReturn(appType);
 
 		originResource = new ResourceEntityBuilder().mockAppServerEntity("originResource", null, null,
 				targetPlatformEntityBuilder.mockTargetPlatformEntity("EAP 6"));
-		when(originResource.isDeletable()).thenReturn(true);
-		Set<AmwFunctionEntity> originFunctions = new HashSet<>();
-		originFunctions.add(new AmwFunctionEntityBuilder("origFct1", 1).forResource(originResource).build());
-		originFunctions.add(new AmwFunctionEntityBuilder("origFct2", 2).forResource(originResource).build());
-		when(originResource.getFunctions()).thenReturn(originFunctions);
 
 		targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null,
 				true);
 	}
 
-	public CopyResourceDomainServiceParameterizedTest(CopyMode copyMode, ForeignableOwner actingOwner) {
-		this.copyMode = copyMode;
-		this.actingOwner = actingOwner;
+	public static Stream<Arguments> data() {
+		return Arrays.stream(CopyHelper.VALID_MODE_OWNER_COMBINATIONS)
+				.map(arr -> Arguments.of((CopyMode) arr[0], (ForeignableOwner) arr[1]));
 	}
 
-	@Parameterized.Parameters(name = "{index}: copyMode({0}), actingOwner({1})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(CopyHelper.VALID_MODE_OWNER_COMBINATIONS);
-	}
-
-	@Test
-	public void copyResourceEntity_consumedRelations() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void copyResourceEntity_consumedRelations(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		TemplateDescriptorEntity origTemp = templateDescriptorEntityBuilder.withName("bla").withTargetPath("/bla").withFileContent("foo").build();
 		ResourceRelationContextEntity resRelContex = resRelContextBuilder.mockResourceRelationContextEntity(globalContextMock);
@@ -180,12 +190,13 @@ public class CopyResourceDomainServiceParameterizedTest {
 		}
 	}
 
-	@Test
-	public void copyResourceEntity_providedRelations() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void copyResourceEntity_providedRelations(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		TemplateDescriptorEntity origTemp = templateDescriptorEntityBuilder.withName("bla").withTargetPath("/bla").withFileContent("foo").build();
 		ResourceRelationContextEntity resRelContex = resRelContextBuilder.mockResourceRelationContextEntity(globalContextMock);
-		when(resRelContex.getTemplates()).thenReturn(Collections.singleton(origTemp));
+		lenient().when(resRelContex.getTemplates()).thenReturn(Collections.singleton(origTemp));
 
 		ResourceEntity appOrigin = new ResourceEntityBuilder().withName("appOrigin").withTypeOfName("APPLICATION").build();
 		ResourceEntity appTarget = new ResourceEntityBuilder().withName("appTarget").withTypeOfName("APPLICATION").build();
@@ -218,8 +229,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		}
 	}
 
-	@Test
-	public void copyContextDependency_new_created() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void copyContextDependency_new_created(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ContextEntity context = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);
 		ResourceRelationContextEntity origin = resRelContextBuilder.mockResourceRelationContextEntity(context);
@@ -238,8 +250,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertThat(copy.getId(), Is.is(context.getId()));
 	}
 
-	@Test
-	public void copyContextDependency_existing() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void copyContextDependency_existing(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ContextEntity context = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);
 		ResourceRelationContextEntity origin = resRelContextBuilder.mockResourceRelationContextEntity(context);
@@ -258,8 +271,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertEquals(target.getId(), copy.getId());
 	}
 
-	@Test
-	public void copyTags() {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void copyTags(CopyMode copyMode, ForeignableOwner actingOwner) {
 		// given
 		String origName = "foo";
 		String origComment = "origComment";
@@ -304,8 +318,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertEquals(allTagNames, target.getPropertyTagsNameSet());
 	}
 
-	@Test
-	public void should_copyTemplates() throws AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void should_copyTemplates(CopyMode copyMode, ForeignableOwner actingOwner) throws AMWException {
 		// given
 		Set<TemplateDescriptorEntity> targets = new HashSet<>();
 		TemplateDescriptorEntity targetTemplate = new TemplateDescriptorEntityBuilder().withName(
@@ -329,8 +344,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertEquals(1, copy.size());
 	}
 
-	@Test
-	public void shouldCopyTemplatesIfTargetDoesNotExist() throws AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void shouldCopyTemplatesIfTargetDoesNotExist(CopyMode copyMode, ForeignableOwner actingOwner) throws AMWException {
 		// given
 		Set<TemplateDescriptorEntity> origins = new HashSet<>();
 		TemplateDescriptorEntity originTemplate = new TemplateDescriptorEntityBuilder()
@@ -363,8 +379,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 	 * @throws ForeignableOwnerViolationException
 	 * @throws AMWException
 	 */
-	@Test
-	public void copyProperties() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void copyProperties(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		for (ForeignableOwner propDescOwner : ForeignableOwner.values()) {
 			shouldNotOverwriteTargetProps(new CopyUnit(originResource, targetResource, copyMode, actingOwner), propDescOwner);
 			shouldSetTargetPropsFromOriginIfTargetDoesNotExist(new CopyUnit(originResource, targetResource, copyMode, actingOwner), propDescOwner);
@@ -516,8 +533,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		}
 	}
 
-	@Test
-	public void shouldCopyFunctions() throws AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void shouldCopyFunctions(CopyMode copyMode, ForeignableOwner actingOwner) throws AMWException {
 		// given
 		AmwFunctionEntity originParent = new AmwFunctionEntityBuilder("orig1", 3)
 				.withImplementation("fooBar")
@@ -527,7 +545,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 				.with(new MikEntity("mik1", null), new MikEntity("mik2", null))
 				.forResource(originResource).withOverwrittenParent(originParent).mock();
 
-		Set<AmwFunctionEntity> originFunctions = new HashSet<>(originResource.getFunctions());
+		Set<AmwFunctionEntity> originFunctions = new HashSet<>();
 		originFunctions.add(origin);
 		when(originResource.getFunctions()).thenReturn(originFunctions);
 
@@ -535,7 +553,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 				.with(new MikEntity("mik10", null), new MikEntity("mik20", null))
 				.forResource(targetResource).build();
 		targetResource.addFunction(target);
-		int targetResourceFctSizeBeforeCopy = targetResource.getFunctions().size();
+		int targetResourceFctSizeBeforeCopy = targetResource.getFunctions() == null ? 0 : targetResource.getFunctions().size();
 
 		CopyUnit copyUnit = new CopyUnit(originResource, targetResource, copyMode, actingOwner);
 
@@ -545,21 +563,26 @@ public class CopyResourceDomainServiceParameterizedTest {
 		// then
 		verify(origin).getCopy(null, copyUnit);
 		verify(origin, never()).getCopy(target, copyUnit);
-		assertEquals(originResource.getFunctions().size() + targetResourceFctSizeBeforeCopy, targetResource.getFunctions().size());
+		int resultingTargetFunctions = targetResource.getFunctions() == null ? 0 : targetResource.getFunctions().size();
+		assertEquals(originFunctions.size() + targetResourceFctSizeBeforeCopy, resultingTargetFunctions);
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void copyFromOriginToTargetResourceWhenTragetNullShouldThrowException() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void copyFromOriginToTargetResourceWhenTragetNullShouldThrowException(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ResourceEntity origin = new ResourceEntityBuilder().withId(1).build();
 		ResourceEntity target = null;
 
 		// when
-		copyDomainService.copyFromOriginToTargetResource(origin, target, ForeignableOwner.AMW);
+        assertThrows(RuntimeException.class, () -> {
+			copyDomainService.copyFromOriginToTargetResource(origin, target, ForeignableOwner.AMW);
+        });
 	}
 
-	@Test
-	public void doCopyResourceAndSaveWhenTargetResourceHasNoIdVerifyForeignable() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void doCopyResourceAndSaveWhenTargetResourceHasNoIdVerifyForeignable(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ForeignableOwner copyingOwner = ForeignableOwner.AMW;
 		ResourceEntity origin = new ResourceEntityBuilder().withId(1).withOwner(ForeignableOwner.AMW).build();
@@ -574,8 +597,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		verify(foreignableServiceMock).verifyEditableByOwner(copyUnit.getActingOwner(), targetHashCodeBeforeChange, target);
 	}
 
-	@Test
-	public void doCopyResourceAndSaveWhenTargetResourceHasIdVerifyForeignable() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void doCopyResourceAndSaveWhenTargetResourceHasIdVerifyForeignable(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ForeignableOwner copyingOwner = ForeignableOwner.AMW;
 		ResourceEntity origin = new ResourceEntityBuilder().withId(1)
@@ -594,8 +618,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		verify(auditService).storeIdInThreadLocalForAuditLog(target);
 	}
 
-	@Test
-	public void createReleaseFromOriginResourceWhenTargetExistOnDbShouldCopyToThisTarget() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void createReleaseFromOriginResourceWhenTargetExistOnDbShouldCopyToThisTarget(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ReleaseEntity release = releaseEntityBuilder.mockReleaseEntity("Past", new Date());
 		ResourceEntity origin = new ResourceEntityBuilder().withId(1).build();
@@ -610,15 +635,13 @@ public class CopyResourceDomainServiceParameterizedTest {
 		verify(entityManager).persist(target);
 	}
 
-	@Test
-	public void createCopyFromOriginResourceWhenTargetExistOnDbShouldCopyToThisTarget()
-			throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void createCopyFromOriginResourceWhenTargetExistOnDbShouldCopyToThisTarget(CopyMode copyMode, ForeignableOwner actingOwner)
+		    throws ForeignableOwnerViolationException, AMWException {
 		// given
-		ReleaseEntity release = releaseEntityBuilder.mockReleaseEntity("Past", new Date());
 		ResourceEntity origin = new ResourceEntityBuilder().withId(1).build();
 		ResourceEntity target = new ResourceEntityBuilder().withId(2).withOwner(ForeignableOwner.MAIA).build();
-
-		when(commonDomainService.getResourceEntityByGroupAndRelease(origin.getResourceGroup().getId(), release.getId())).thenReturn(target);
 
 		// when
 		copyDomainService.copyFromOriginToTargetResource(origin, target, ForeignableOwner.AMW);
@@ -627,9 +650,10 @@ public class CopyResourceDomainServiceParameterizedTest {
 		verify(entityManager).persist(target);
 	}
 
-	@Test
-	public void createReleaseFromOriginResourceWhenTargetNotExistOnDbShouldCreateNewTargetWithCopyingOwner()
-			throws ForeignableOwnerViolationException, AMWException {
+	    @ParameterizedTest
+	    @MethodSource("data")
+	    public void createReleaseFromOriginResourceWhenTargetNotExistOnDbShouldCreateNewTargetWithCopyingOwner(CopyMode copyMode, ForeignableOwner actingOwner)
+		    throws ForeignableOwnerViolationException, AMWException {
 		// given
 		ReleaseEntity release = releaseEntityBuilder.mockReleaseEntity("Past", new Date());
 		ResourceEntity origin = new ResourceEntityBuilder().withId(1).build();
@@ -647,8 +671,9 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertEquals(copyingOwner, argCapt.getValue().getOwner());
 	}
 
-	@Test
-	public void test_copySoftlinkRelation() throws ForeignableOwnerViolationException, AMWException {
+	@ParameterizedTest
+	@MethodSource("data")
+	public void test_copySoftlinkRelation(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
 		// given
 		String origSoftlinkRef = "origSoftlinkRef";
 		SoftlinkRelationEntity originSoftlink = new SoftlinkRelationEntity();
@@ -691,16 +716,14 @@ public class CopyResourceDomainServiceParameterizedTest {
 		assertEquals(target, result.getCpiResource());
 	}
 
-	@Test
+	@ParameterizedTest
+	@MethodSource("data")
 	// TODO: #12406 PropertyWerte von Relationen müssen übernommen werden wenn PropertyDescriptor auf dem Nachfolger noch existiert.
-	public void shouldCopyPropertyValueFromRelationIfCopyModeMaiaPredecessor() throws AMWException, ForeignableOwnerViolationException {
+	public void shouldCopyPropertyValueFromRelationIfCopyModeMaiaPredecessor(CopyMode copyMode, ForeignableOwner actingOwner) throws AMWException, ForeignableOwnerViolationException {
 		// given
 		String identifier = "foo";
 		String resourcePropValue = "abc";
 		String relationPropValue = "xyz";
-
-		when(resourceLocatorMock.hasResourceConsumableSoftlinkType(originResource)).thenReturn(true);
-		when(resourceLocatorMock.hasResourceConsumableSoftlinkType(targetResource)).thenReturn(true);
 
         // create two identical descriptors/properties on origin and target
 

@@ -25,14 +25,14 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ResourceTest {
@@ -79,7 +79,7 @@ public class ResourceTest {
 		return e;
 	}
 	
-	@Before
+	@BeforeEach
 	public void setUp() {
 		resTypeMaster = createResourceTypeEntity(DefaultResourceTypeDefinition.APPLICATIONSERVER);
 		
@@ -93,7 +93,7 @@ public class ResourceTest {
 		master.addConsumedRelation(resourceRelation);
 	}	
 
-	@After
+	@AfterEach
 	public void tearDown() {
 	}
 			

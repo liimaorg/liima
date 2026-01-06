@@ -21,6 +21,19 @@
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Collections;
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
@@ -28,14 +41,6 @@ import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Collections;
-import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class PropertyDescriptorEntityTest {
 	
@@ -44,7 +49,7 @@ public class PropertyDescriptorEntityTest {
     private PropertyDescriptorEntityBuilder propDescBuilder = new PropertyDescriptorEntityBuilder();
     private PropertyEntityBuilder propBuilder = new PropertyEntityBuilder();
 
-    @Before
+    @BeforeEach
     public void setUp(){
         propertyDescriptorEntity = new PropertyDescriptorEntity();
     }
@@ -76,7 +81,7 @@ public class PropertyDescriptorEntityTest {
         // given
         String tagName = "tag1";
         PropertyTagEntity tag1 = createTagWithName(tagName);
-        Assert.assertTrue(propertyDescriptorEntity.getPropertyTags().isEmpty());
+        assertTrue(propertyDescriptorEntity.getPropertyTags().isEmpty());
 
         // when
         propertyDescriptorEntity.addPropertyTag(tag1);
@@ -91,7 +96,7 @@ public class PropertyDescriptorEntityTest {
         String tagName = "tag1";
         PropertyTagEntity tag1 = createTagWithName(tagName);
         propertyDescriptorEntity.addPropertyTag(tag1);
-        Assert.assertFalse(propertyDescriptorEntity.getPropertyTags().isEmpty());
+        assertFalse(propertyDescriptorEntity.getPropertyTags().isEmpty());
 
         // when
         propertyDescriptorEntity.addPropertyTag(tag1);
@@ -106,7 +111,7 @@ public class PropertyDescriptorEntityTest {
         String tagName = "tag1";
         PropertyTagEntity tag1 = createTagWithName(tagName);
         propertyDescriptorEntity.addPropertyTag(tag1);
-        Assert.assertFalse(propertyDescriptorEntity.getPropertyTags().isEmpty());
+        assertFalse(propertyDescriptorEntity.getPropertyTags().isEmpty());
 
         // when
         propertyDescriptorEntity.addPropertyTag(createTagWithName("otherTagName"));
@@ -187,13 +192,15 @@ public class PropertyDescriptorEntityTest {
         assertEquals(owner,propertyDescriptorEntity.getOwner());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void constructorWithNullShouldThrowException(){
         // given
         ForeignableOwner owner = null;
 
         // when
-        propertyDescriptorEntity = new PropertyDescriptorEntity(owner);
+        assertThrows(NullPointerException.class, () -> {
+            propertyDescriptorEntity = new PropertyDescriptorEntity(owner);
+        });
     }
 
     @Test

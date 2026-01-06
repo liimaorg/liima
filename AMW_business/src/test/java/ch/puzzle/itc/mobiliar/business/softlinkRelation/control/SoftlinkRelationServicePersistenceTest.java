@@ -31,13 +31,13 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -47,15 +47,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.verify;
 
 /**
  * Tests {@link SoftlinkRelationService}
  */
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class SoftlinkRelationServicePersistenceTest {
 
     @Spy
@@ -92,9 +92,8 @@ public class SoftlinkRelationServicePersistenceTest {
     ReleaseEntity release2;
 
 
-    @Before
+    @BeforeEach
     public void before() {
-        MockitoAnnotations.openMocks(this);
         service.dependencyResolverService = dependencyResolverService;
         init();
         EntityTransaction transaction = entityManager.getTransaction();

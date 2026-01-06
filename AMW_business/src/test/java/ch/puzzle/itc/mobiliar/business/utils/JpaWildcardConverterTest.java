@@ -20,9 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@link JpaWildcardConverter}
@@ -36,7 +36,6 @@ public class JpaWildcardConverterTest {
     	String convertedTestString = JpaWildcardConverter.convertWildCards(testString);
     	
         assertEquals(convertedTestString, resultString);
-
     }
     
     @Test
@@ -46,7 +45,6 @@ public class JpaWildcardConverterTest {
     	String convertedTestString = JpaWildcardConverter.convertWildCards(testString);
     	
         assertEquals(convertedTestString, resultString);
-
     }
     
     @Test
@@ -56,7 +54,6 @@ public class JpaWildcardConverterTest {
     	String convertedTestString = JpaWildcardConverter.convertWildCards(testString);
     	
         assertEquals(convertedTestString, resultString);
-
     }
     
 }

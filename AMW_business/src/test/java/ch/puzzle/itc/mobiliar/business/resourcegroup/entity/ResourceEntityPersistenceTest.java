@@ -1,17 +1,17 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class ResourceEntityPersistenceTest {
     @PersistenceContext
     EntityManager entityManager;
@@ -40,7 +40,6 @@ public class ResourceEntityPersistenceTest {
         // then
         assertNull(entityManager.find(ResourceEntity.class, resourceEntityId));
         assertNull(entityManager.find(AmwFunctionEntity.class, functionId));
-
     }
 
 }

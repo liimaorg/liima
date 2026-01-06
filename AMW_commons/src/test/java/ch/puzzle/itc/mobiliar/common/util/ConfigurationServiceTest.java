@@ -20,23 +20,23 @@
 
 package ch.puzzle.itc.mobiliar.common.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Properties;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 
 public class ConfigurationServiceTest {
 
-	@Before
+	@BeforeEach
 	public void setUp(){
 		Properties props = System.getProperties();
 		props.setProperty(ConfigKey.LOGS_PATH.getValue(), "/dev/");
@@ -50,7 +50,7 @@ public class ConfigurationServiceTest {
 		Mockito.when(runtimeEnv.getValueOfEnvironmentVariable(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getEnvName())).thenReturn("envvalue");
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown(){
 		Properties props = System.getProperties();
 		props.remove(ConfigKey.LOGS_PATH.getValue());

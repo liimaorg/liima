@@ -21,21 +21,21 @@
 package ch.puzzle.itc.mobiliar.business.utils;
 
 import ch.puzzle.itc.mobiliar.test.Entity.Color;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith(PersistenceTestExtension.class)
 public class BaseRepositoryTest {
 
     @PersistenceContext
@@ -43,7 +43,7 @@ public class BaseRepositoryTest {
     private ColorRepository repository;
     private Color blue, red;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
 
         repository = new ColorRepository();

@@ -32,14 +32,14 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class PropertyEntityTest {
@@ -50,13 +50,13 @@ public class PropertyEntityTest {
 	private PropertyDescriptorEntityBuilder propDescBuilder = new PropertyDescriptorEntityBuilder();
 	private PropertyEntityBuilder propBuilder = new PropertyEntityBuilder();
 
-	@Before
+	@BeforeEach
 	public void setUp(){
 		// set Up Encription Key
 		System.getProperties().put(ConfigKey.ENCRYPTION_KEY.getValue(), "78E76138D98F00BBF713136BC13DEE4B");
 	}
 	
-	@After
+	@AfterEach
 	public void tearDown(){
 		// set Up Encription Key
 		System.getProperties().remove(ConfigKey.ENCRYPTION_KEY.getValue());

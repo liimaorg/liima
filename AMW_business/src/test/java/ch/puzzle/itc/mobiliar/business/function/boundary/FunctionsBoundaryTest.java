@@ -20,21 +20,28 @@
 
 package ch.puzzle.itc.mobiliar.business.function.boundary;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceTypeEntityBuilder;
@@ -46,11 +53,13 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidator;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
-
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class FunctionsBoundaryTest {
 
     private static final Integer ID_1 = 1;
@@ -87,12 +96,6 @@ public class FunctionsBoundaryTest {
     @InjectMocks
     private FunctionsBoundary functionsBoundary;
 
-    @Before
-    public void setUp() {
-        when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
-        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
-    }
-
     @Test
     public void getInstanceFunctionsForResourceShouldDelegateResultFromRepository() {
         // given
@@ -106,22 +109,26 @@ public class FunctionsBoundaryTest {
         assertTrue(resourceFunctions.contains(functionA_ID_3));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getInstanceFunctionsForResourceNullShouldThrowException() {
         // given
         ResourceEntity resource = null;
 
         // when
-        functionsBoundary.getInstanceFunctions(resource);
+        assertThrows(NullPointerException.class, () -> {
+            functionsBoundary.getInstanceFunctions(resource);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getInstanceFunctionsForResourceTypeNullShouldThrowException() {
         // given
         ResourceTypeEntity resource = null;
 
         // when
-        functionsBoundary.getInstanceFunctions(resource);
+        assertThrows(NullPointerException.class, () -> {
+            functionsBoundary.getInstanceFunctions(resource);
+        });
     }
 
     @Test
@@ -148,90 +155,93 @@ public class FunctionsBoundaryTest {
 
         // then
         verify(functionServiceMock).getAllOverwritableSupertypeFunctions(resource);
-
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getAllOverwritableSupertypeFunctionsForResourceNullShouldThrowException() {
         // given
         ResourceEntity resource = null;
 
         // when
-        functionsBoundary.getAllOverwritableSupertypeFunctions(resource);
+        assertThrows(NullPointerException.class, () -> {
+            functionsBoundary.getAllOverwritableSupertypeFunctions(resource);
+        });
     }
 
     @Test
     public void getAllOverwritableSupertypeFunctionsForResourceTypeShouldDelegateToService() {
         // given
         ResourceTypeEntity rootResourceType = createResourceType("ResourceType", 1);
-        when(resourceTypeRepositoryMock.loadWithFunctionsAndMiksForId(rootResourceType.getId())).thenReturn(rootResourceType);
+        when(resourceTypeRepositoryMock.loadWithFunctionsAndMiksForId(rootResourceType.getId()))
+                .thenReturn(rootResourceType);
 
         // when
         functionsBoundary.getAllOverwritableSupertypeFunctions(rootResourceType);
 
         // then
         verify(functionServiceMock).getAllOverwritableSupertypeFunctions(rootResourceType);
-
     }
 
-
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getAllOverwritableSupertypeFunctionsForResourceTypeNullShouldThrowException() {
         // given
         ResourceTypeEntity resourceType = null;
 
         // when
-        functionsBoundary.getAllOverwritableSupertypeFunctions(resourceType);
+        assertThrows(NullPointerException.class, () -> {
+            functionsBoundary.getAllOverwritableSupertypeFunctions(resourceType);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void removeWhenIdIsNullShouldThrowException() throws ValidationException, NotFoundException {
-
         // given
         Integer selectedFunctionIdToBeRemoved = null;
 
         // when
-        functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
-
+        assertThrows(NullPointerException.class, () -> {
+            functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void removeWhenFunctionForIdIsNullShouldThrowException() throws ValidationException, NotFoundException {
-
         // given
         Integer selectedFunctionIdToBeRemoved = 1;
         when(functionRepositoryMock.find(selectedFunctionIdToBeRemoved)).thenReturn(null);
 
         // when
-        functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
-
+        assertThrows(NotFoundException.class, () -> {
+            functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+        });
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void deleteFunctionWhenArgumentNullShouldThrowException() throws ValidationException, NotFoundException {
-
         // given
         Integer selectedFunctionIdToBeRemoved = null;
 
         // when
-        functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+        assertThrows(NullPointerException.class, () -> {
+            functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
-    public void deleteFunctionWhenNoEntityFoundForIdShouldThrowException() throws ValidationException, NotFoundException {
-
+    @Test
+    public void deleteFunctionWhenNoEntityFoundForIdShouldThrowException()
+            throws ValidationException, NotFoundException {
         // given
         Integer selectedFunctionIdToBeRemoved = 1;
         when(functionRepositoryMock.find(selectedFunctionIdToBeRemoved)).thenReturn(null);
 
         // when
-        functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
-
+        assertThrows(NotFoundException.class, () -> {
+            functionsBoundary.deleteFunction(selectedFunctionIdToBeRemoved);
+        });
     }
 
     @Test
     public void deleteFunctionWhenOverwrittenByFunctionShouldNotDeleteFunction() throws NotFoundException {
-
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
         functionA_ID_3.setResource(resource);
@@ -239,31 +249,32 @@ public class FunctionsBoundaryTest {
         when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
 
         // when
-        try {
+        assertThrows(ValidationException.class, () -> {
             functionsBoundary.deleteFunction(functionA_ID_3.getId());
+        });
 
-            // then
-            verify(functionServiceMock, never()).deleteFunction(functionA_ID_3);
-        } catch (ValidationException e) {
-            assertTrue("should throw exception", true);
-        }
-    }
-
-    @Test(expected = ValidationException.class)
-    public void deleteFunctionWhenOverwrittenByFunctionShouldThrowException() throws ValidationException, NotFoundException {
-
-        // given
-        functionA_ID_4.overwrite(functionA_ID_3);
-        functionA_ID_3.setResource(resource);
-        assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
-        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
-
-        // when
-        functionsBoundary.deleteFunction(functionA_ID_3.getId());
+        // then
+        verify(functionServiceMock, never()).deleteFunction(functionA_ID_3);
     }
 
     @Test
-    public void deleteFunctionWhenOverwrittenByFunctionShouldAddOverwritingFunctionToException() throws NotFoundException {
+    public void deleteFunctionWhenOverwrittenByFunctionShouldThrowException()
+            throws ValidationException, NotFoundException {
+        // given
+        functionA_ID_4.overwrite(functionA_ID_3);
+        functionA_ID_3.setResource(resource);
+        assertTrue(functionA_ID_3.isOverwrittenBySubTypeOrResourceFunction());
+        when(functionRepositoryMock.find(ID_3)).thenReturn(functionA_ID_3);
+
+        // when
+        assertThrows(ValidationException.class, () -> {
+            functionsBoundary.deleteFunction(functionA_ID_3.getId());
+        });
+    }
+
+    @Test
+    public void deleteFunctionWhenOverwrittenByFunctionShouldAddOverwritingFunctionToException()
+            throws NotFoundException {
 
         // given
         functionA_ID_4.overwrite(functionA_ID_3);
@@ -284,7 +295,8 @@ public class FunctionsBoundaryTest {
     public void deleteFunctionWhenNotOverwrittenShouldDelegateDelete() throws ValidationException, NotFoundException {
 
         // given
-        AmwFunctionEntity resourceTypeFunction = new AmwFunctionEntityBuilder("resourceTypeFunction", 8).forResourceType(resourceType).build();
+        AmwFunctionEntity resourceTypeFunction = new AmwFunctionEntityBuilder("resourceTypeFunction", 8)
+                .forResourceType(resourceType).build();
         assertFalse(resourceTypeFunction.isOverwrittenBySubTypeOrResourceFunction());
         when(functionRepositoryMock.find(8)).thenReturn(resourceTypeFunction);
 
@@ -297,24 +309,21 @@ public class FunctionsBoundaryTest {
 
     @Test
     public void deleteFunctionWhenNotOverwrittenShouldReturnTrue() throws ValidationException, NotFoundException {
-
         // given
-        AmwFunctionEntity resourceFunction = new AmwFunctionEntityBuilder("resourceFunction", 9).forResource(resource).build();
+        AmwFunctionEntity resourceFunction = new AmwFunctionEntityBuilder("resourceFunction", 9).forResource(resource)
+                .build();
         assertFalse(resourceFunction.isOverwrittenBySubTypeOrResourceFunction());
         when(functionRepositoryMock.find(9)).thenReturn(resourceFunction);
 
         // when
         functionsBoundary.deleteFunction(resourceFunction.getId());
-
-        // then
-        assertTrue("No exception thrown, thus function is deleted", true);
     }
 
-
     @Test
-    public void createNewResourceFunctionShouldLoadResourceAndDelegateToService() throws ValidationException, AMWException {
-
+    public void createNewResourceFunctionShouldLoadResourceAndDelegateToService()
+            throws ValidationException, AMWException {
         // when
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
         functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
 
         // then
@@ -322,11 +331,13 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void createNewResourceFunctionWhenNameIsNotYetUsedShouldDelegateSave() throws ValidationException, AMWException {
-
+    public void createNewResourceFunctionWhenNameIsNotYetUsedShouldDelegateSave()
+            throws ValidationException, AMWException {
         // given
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
         List<AmwFunctionEntity> functionsWithSameName = new ArrayList<>();
-        when(functionServiceMock.findFunctionsByNameInNamespace(resource, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
+        when(functionServiceMock.findFunctionsByNameInNamespace(resource, functionA_ID_3.getName()))
+                .thenReturn(functionsWithSameName);
 
         // when
         functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
@@ -335,21 +346,28 @@ public class FunctionsBoundaryTest {
         verify(functionServiceMock).saveFunctionWithMiks(functionA_ID_3, MIKS);
     }
 
-    @Test(expected = ValidationException.class)
-    public void createNewResourceFunctionWhenNameIsAlreadyUsedShouldThrowException() throws ValidationException, AMWException {
-
+    @Test
+    public void createNewResourceFunctionWhenNameIsAlreadyUsedShouldThrowException()
+            throws ValidationException, AMWException {
         // given
-        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {{
-            add(functionA_ID_3);
-        }};
-        when(functionServiceMock.findFunctionsByNameInNamespace(resource, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
+        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {
+            {
+                add(functionA_ID_3);
+            }
+        };
+        when(functionServiceMock.findFunctionsByNameInNamespace(resource, functionA_ID_3.getName()))
+                .thenReturn(functionsWithSameName);
 
         // when
-        functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
+        assertThrows(ValidationException.class, () -> {
+            functionsBoundary.createNewResourceFunction(functionA_ID_3, resource.getId(), MIKS);
+        });
     }
 
     @Test
-    public void createNewResourceFunctionShouldDelegateVerificationToService() throws ValidationException, AMWException {
+    public void createNewResourceFunctionShouldDelegateVerificationToService()
+            throws ValidationException, AMWException {
         // given
         String functionContent = "freemarkerContent";
         AmwFunctionEntity function = createFunction("functionName", 1);
@@ -362,22 +380,27 @@ public class FunctionsBoundaryTest {
         verify(freemarkerValidatorMock).validateFreemarkerSyntax(function.getDecoratedImplementation());
     }
 
-    @Test(expected = AMWException.class)
-    public void createNewResourceFunctionWhenNotValidContentShouldThrowException() throws ValidationException, AMWException {
+    @Test
+    public void createNewResourceFunctionWhenNotValidContentShouldThrowException()
+            throws ValidationException, AMWException {
         // given
         String functionContent = "freemarkerContent";
         AmwFunctionEntity function = createFunction("functionName", 1);
         function.setImplementation(functionContent);
-        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock).validateFreemarkerSyntax(anyString());
+        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock)
+                .validateFreemarkerSyntax(anyString());
 
         // when
-        functionsBoundary.createNewResourceTypeFunction(function, resource.getId(), MIKS);
+        assertThrows(AMWException.class, () -> {
+            functionsBoundary.createNewResourceTypeFunction(function, resource.getId(), MIKS);
+        });
     }
 
     @Test
-    public void createNewResourceTypeFunctionShouldLoadResourceTypeAndDelegateToService() throws ValidationException, AMWException {
-
+    public void createNewResourceTypeFunctionShouldLoadResourceTypeAndDelegateToService()
+            throws ValidationException, AMWException {
         // when
+        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
         functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
 
         // then
@@ -385,7 +408,8 @@ public class FunctionsBoundaryTest {
     }
 
     @Test
-    public void createNewResourceTypeFunctionShouldDelegateVerificationToService() throws ValidationException, AMWException {
+    public void createNewResourceTypeFunctionShouldDelegateVerificationToService()
+            throws ValidationException, AMWException {
         // given
         String functionContent = "freemarkerContent";
         AmwFunctionEntity function = createFunction("functionName", 1);
@@ -398,24 +422,30 @@ public class FunctionsBoundaryTest {
         verify(freemarkerValidatorMock).validateFreemarkerSyntax(function.getDecoratedImplementation());
     }
 
-    @Test(expected = AMWException.class)
-    public void createNewResourceTypeFunctionWhenNotValidContentShouldThrowException() throws ValidationException, AMWException {
+    @Test
+    public void createNewResourceTypeFunctionWhenNotValidContentShouldThrowException()
+            throws ValidationException, AMWException {
         // given
         String functionContent = "freemarkerContent";
         AmwFunctionEntity function = createFunction("functionName", 1);
         function.setImplementation(functionContent);
-        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock).validateFreemarkerSyntax(anyString());
+        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock)
+                .validateFreemarkerSyntax(anyString());
 
         // when
-        functionsBoundary.createNewResourceTypeFunction(function, resourceType.getId(), MIKS);
+        assertThrows(AMWException.class, () -> {
+            functionsBoundary.createNewResourceTypeFunction(function, resourceType.getId(), MIKS);
+        });
     }
 
     @Test
-    public void createNewResourceTypeFunctionWhenNameIsNotYetUsedShouldDelegateSave() throws ValidationException, AMWException {
-
+    public void createNewResourceTypeFunctionWhenNameIsNotYetUsedShouldDelegateSave()
+            throws ValidationException, AMWException {
         // given
+        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
         List<AmwFunctionEntity> functionsWithSameName = new ArrayList<>();
-        when(functionServiceMock.findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
+        when(functionServiceMock.findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName()))
+                .thenReturn(functionsWithSameName);
 
         // when
         functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
@@ -424,23 +454,28 @@ public class FunctionsBoundaryTest {
         verify(functionServiceMock).saveFunctionWithMiks(functionA_ID_3, MIKS);
     }
 
-    @Test(expected = ValidationException.class)
-    public void createNewResourceTypeFunctionWhenNameIsAlreadyUsedShouldThrowException() throws ValidationException, AMWException {
-
+    @Test
+    public void createNewResourceTypeFunctionWhenNameIsAlreadyUsedShouldThrowException()
+            throws ValidationException, AMWException {
+        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
         // given
-        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {{
-            add(functionA_ID_3);
-        }};
-        when(functionServiceMock.findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName())).thenReturn(functionsWithSameName);
+        List<AmwFunctionEntity> functionsWithSameName = new ArrayList<AmwFunctionEntity>() {
+            {
+                add(functionA_ID_3);
+            }
+        };
+        when(functionServiceMock.findFunctionsByNameInNamespace(resourceType, functionA_ID_3.getName()))
+                .thenReturn(functionsWithSameName);
 
         // when
-        functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
-    }
+        assertThrows(ValidationException.class, () -> {
+            functionsBoundary.createNewResourceTypeFunction(functionA_ID_3, resourceType.getId(), MIKS);
 
+        });
+    }
 
     @Test
     public void saveFunctionShouldDelegateToRepository() throws ValidationException, AMWException {
-
         // given
         functionA_ID_3.setResource(resource);
 
@@ -466,59 +501,74 @@ public class FunctionsBoundaryTest {
         verify(freemarkerValidatorMock).validateFreemarkerSyntax(function.getDecoratedImplementation());
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void saveFunctionWhenNotValidContentShouldThrowException() throws ValidationException, AMWException {
         // given
         String functionContent = "freemarkerContent";
         AmwFunctionEntity function = createFunction("functionName", 1);
         function.setImplementation(functionContent);
         function.setResource(resource);
-        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock).validateFreemarkerSyntax(anyString());
+        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock)
+                .validateFreemarkerSyntax(anyString());
 
         // when
-        functionsBoundary.saveFunction(function);
+        assertThrows(AMWException.class, () -> {
+            functionsBoundary.saveFunction(function);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
-    public void overwriteResourceFunctionWhenFunctionForIdNotFoundShouldThrowException() throws ValidationException, AMWException {
-
+    @Test
+    public void overwriteResourceFunctionWhenFunctionForIdNotFoundShouldThrowException()
+            throws ValidationException, AMWException {
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(null);
 
         // when
-        functionsBoundary.overwriteResourceFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void overwriteResourceFunctionWhenResourceForIdNotFoundShouldThrowException() throws AMWException {
-
-        // given
-        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
-        when(resourceRepositoryMock.find(resource.getId())).thenReturn(null);
-
-        // when
-        functionsBoundary.overwriteResourceFunction("functionBody", resource.getId(), functionA_ID_3.getId());
-    }
-
-    @Test(expected = AMWException.class)
-    public void overwriteResourceFunctionWhenInvalidContentShouldThrowException() throws AMWException {
-
-        // given
-        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
-        when(functionServiceMock.overwriteResourceFunction("functionBody", functionA_ID_3, resource)).thenReturn(createFunction(FUNCTION_NAME, 55));
-        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock).validateFreemarkerSyntax(anyString());
-
-        // when
-        functionsBoundary.overwriteResourceFunction("functionBody", resource.getId(), functionA_ID_3.getId());
+        assertThrows(NotFoundException.class, () -> {
+            functionsBoundary.overwriteResourceFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
+        });
     }
 
     @Test
-    public void overwriteResourceFunctionForShouldDelegateOverwriteAndVerification() throws ValidationException, AMWException {
-
+    public void overwriteResourceFunctionWhenResourceForIdNotFoundShouldThrowException() throws AMWException {
         // given
+        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId()))
+                .thenReturn(functionA_ID_3);
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(null);
+
+        // when
+        assertThrows(NotFoundException.class, () -> {
+            functionsBoundary.overwriteResourceFunction("functionBody", resource.getId(), functionA_ID_3.getId());
+        });
+    }
+
+    @Test
+    public void overwriteResourceFunctionWhenInvalidContentShouldThrowException() throws AMWException {
+        // given
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
+        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId()))
+                .thenReturn(functionA_ID_3);
+        when(functionServiceMock.overwriteResourceFunction("functionBody", functionA_ID_3, resource))
+                .thenReturn(createFunction(FUNCTION_NAME, 55));
+        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock)
+                .validateFreemarkerSyntax(anyString());
+
+        // when
+        assertThrows(AMWException.class, () -> {
+            functionsBoundary.overwriteResourceFunction("functionBody", resource.getId(), functionA_ID_3.getId());
+        });
+    }
+
+    @Test
+    public void overwriteResourceFunctionForShouldDelegateOverwriteAndVerification()
+            throws ValidationException, AMWException {
+        // given
+        when(resourceRepositoryMock.find(resource.getId())).thenReturn(resource);
         AmwFunctionEntity overwrittenFunction = createFunction(FUNCTION_NAME, 55);
-        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
-        when(functionServiceMock.overwriteResourceFunction("functionBody", functionA_ID_3, resource)).thenReturn(overwrittenFunction);
+        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId()))
+                .thenReturn(functionA_ID_3);
+        when(functionServiceMock.overwriteResourceFunction("functionBody", functionA_ID_3, resource))
+                .thenReturn(overwrittenFunction);
 
         // when
         functionsBoundary.overwriteResourceFunction("functionBody", resource.getId(), functionA_ID_3.getId());
@@ -527,46 +577,59 @@ public class FunctionsBoundaryTest {
         verify(freemarkerValidatorMock).validateFreemarkerSyntax(overwrittenFunction.getDecoratedImplementation());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void overwriteResourceTypeFunctionWhenFunctionForIdNotFoundShouldThrowException() throws AMWException {
-
         // given
         when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(null);
 
         // when
-        functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
+        assertThrows(NotFoundException.class, () -> {
+            functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(),
+                    functionA_ID_3.getId());
+        });
     }
 
-    @Test(expected = AMWException.class)
+    @Test
     public void overwriteResourceTypeFunctionWhenInvalidContentShouldThrowException() throws AMWException {
-
         // given
-        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
-        when(functionServiceMock.overwriteResourceTypeFunction("functionBody", functionA_ID_3, resourceType)).thenReturn(createFunction(FUNCTION_NAME, 55));
-        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock).validateFreemarkerSyntax(anyString());
+        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
+        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId()))
+                .thenReturn(functionA_ID_3);
+        when(functionServiceMock.overwriteResourceTypeFunction("functionBody", functionA_ID_3, resourceType))
+                .thenReturn(createFunction(FUNCTION_NAME, 55));
+        doThrow(new AMWException("not valid freemarker syntax")).when(freemarkerValidatorMock)
+                .validateFreemarkerSyntax(anyString());
 
         // when
-        functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
+        assertThrows(AMWException.class, () -> {
+            functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(),
+                    functionA_ID_3.getId());
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void overwriteResourceTypeFunctionWhenResourceTypeForIdNotFoundShouldThrowException() throws AMWException {
-
         // given
-        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
+        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId()))
+                .thenReturn(functionA_ID_3);
         when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(null);
 
         // when
-        functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
+        assertThrows(NotFoundException.class, () -> {
+            functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(),
+                    functionA_ID_3.getId());
+        });
     }
 
     @Test
     public void overwriteResourceTypeFunctionForShouldDelegateOverwritingAndVerification() throws AMWException {
-
         // given
         AmwFunctionEntity overwrittenFunction = createFunction(FUNCTION_NAME, 55);
-        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId())).thenReturn(functionA_ID_3);
-        when(functionServiceMock.overwriteResourceTypeFunction("functionBody", functionA_ID_3, resourceType)).thenReturn(overwrittenFunction);
+        when(resourceTypeRepositoryMock.find(resourceType.getId())).thenReturn(resourceType);
+        when(functionRepositoryMock.getFunctionByIdWithChildFunctions(functionA_ID_3.getId()))
+                .thenReturn(functionA_ID_3);
+        when(functionServiceMock.overwriteResourceTypeFunction("functionBody", functionA_ID_3, resourceType))
+                .thenReturn(overwrittenFunction);
 
         // when
         functionsBoundary.overwriteResourceTypeFunction("functionBody", resourceType.getId(), functionA_ID_3.getId());
@@ -574,14 +637,14 @@ public class FunctionsBoundaryTest {
         // then
         verify(freemarkerValidatorMock).validateFreemarkerSyntax(overwrittenFunction.getDecoratedImplementation());
     }
-
 
     private AmwFunctionEntity createFunction(String name, Integer id) {
         return new AmwFunctionEntityBuilder(name, id).build();
     }
 
     private ResourceEntity createResource(String name, int id, AmwFunctionEntity... functions) {
-        ResourceEntity resource = new ResourceEntityBuilder().withName(name).withId(id).withFunctions(new HashSet<>(Arrays.asList(functions))).build();
+        ResourceEntity resource = new ResourceEntityBuilder().withName(name).withId(id)
+                .withFunctions(new HashSet<>(Arrays.asList(functions))).build();
         for (AmwFunctionEntity function : functions) {
             function.setResource(resource);
         }
@@ -589,15 +652,14 @@ public class FunctionsBoundaryTest {
     }
 
     private ResourceTypeEntity createResourceType(String name, int id, AmwFunctionEntity... functions) {
-        ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(name, new HashSet<ResourceEntity>(), false);
+        ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().buildResourceTypeEntity(name,
+                new HashSet<ResourceEntity>(), false);
         resourceType.setId(id);
-
         resourceType.setFunctions(new HashSet<>(Arrays.asList(functions)));
 
         for (AmwFunctionEntity function : functions) {
             function.setResourceType(resourceType);
         }
-
         return resourceType;
     }
 

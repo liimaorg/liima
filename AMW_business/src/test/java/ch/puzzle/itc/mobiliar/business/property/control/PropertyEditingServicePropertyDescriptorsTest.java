@@ -24,36 +24,49 @@
  */
 package ch.puzzle.itc.mobiliar.business.property.control;
 
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
-import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
-import ch.puzzle.itc.mobiliar.common.util.ContextNames;
-import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Spy;
+
+import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.util.ContextNames;
+import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
 /**
  * @author oschmid
  */
-@RunWith(PersistenceTestRunner.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class PropertyEditingServicePropertyDescriptorsTest {
 
     @Spy
@@ -72,14 +85,6 @@ public class PropertyEditingServicePropertyDescriptorsTest {
     ContextHierarchy contextHierarchy = new ContextHierarchy();
     private ProvidedResourceRelationEntity providedResourceRelationEntity;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
     PropertyDescriptorEntity propertyDescriptorEntity;
     PropertyDescriptorEntity controlPropertyDescriptorEntity;
 
@@ -95,9 +100,8 @@ public class PropertyEditingServicePropertyDescriptorsTest {
 
     ContextEntity contextEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() throws ElementAlreadyExistsException {
-        MockitoAnnotations.openMocks(this);
         service.queries = queries;
         service.contextHierarchy = contextHierarchy;
         propertyDescriptorEntity = new PropertyDescriptorEntity();
@@ -130,10 +134,9 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         entityManager.persist(slave);
         entityManager.persist(provided);
         entityManager.flush();
-        when(dbUtil.isOracle()).thenReturn(false);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
     }
 
@@ -157,8 +160,8 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         List<String> propertyNames = getPropertyNames(result.getResultList());
 
         //then
-        Assert.assertEquals(1, propertyNames.size());
-        Assert.assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
+        assertEquals(1, propertyNames.size());
+        assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
     }
 
     /**
@@ -183,9 +186,9 @@ public class PropertyEditingServicePropertyDescriptorsTest {
                             Arrays.asList(contextEntity.getId()));
         List<String> propertyNames = getPropertyNames(result.getResultList());
         //then
-        Assert.assertEquals(2, propertyNames.size());
-        Assert.assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
-        Assert.assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
+        assertEquals(2, propertyNames.size());
+        assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
+        assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
     }
 
     /**
@@ -210,9 +213,9 @@ public class PropertyEditingServicePropertyDescriptorsTest {
                             Arrays.asList(contextEntity.getId()));
         List<String> propertyNames = getPropertyNames(result.getResultList());
         //then
-        Assert.assertEquals(2, propertyNames.size());
-        Assert.assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
-        Assert.assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
+        assertEquals(2, propertyNames.size());
+        assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
+        assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
     }
 
     /**
@@ -239,9 +242,9 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         List<String> propertyNames = getPropertyNames(result.getResultList());
 
         //then
-        Assert.assertEquals(2, propertyNames.size());
-        Assert.assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
-        Assert.assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
+        assertEquals(2, propertyNames.size());
+        assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
+        assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
     }
 
 
@@ -269,9 +272,9 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         List<String> propertyNames = getPropertyNames(result.getResultList());
 
         //then
-        Assert.assertEquals(2, propertyNames.size());
-        Assert.assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
-        Assert.assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
+        assertEquals(2, propertyNames.size());
+        assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
+        assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
     }
 
 
@@ -292,8 +295,8 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         List<String> propertyNames = getPropertyNames(result.getResultList());
 
         //then
-        Assert.assertEquals(1, propertyNames.size());
-        Assert.assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
+        assertEquals(1, propertyNames.size());
+        assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
     }
 
     /**
@@ -316,9 +319,9 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         List<String> propertyNames = getPropertyNames(result.getResultList());
 
         //then
-        Assert.assertEquals(2, propertyNames.size());
-        Assert.assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
-        Assert.assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
+        assertEquals(2, propertyNames.size());
+        assertTrue(propertyNames.contains(controlPropertyDescriptorEntity.getPropertyName()));
+        assertTrue(propertyNames.contains(propertyDescriptorEntity.getPropertyName()));
     }
 
 

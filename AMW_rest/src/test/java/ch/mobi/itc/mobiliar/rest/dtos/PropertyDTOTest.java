@@ -1,7 +1,7 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import static org.hamcrest.CoreMatchers.is;

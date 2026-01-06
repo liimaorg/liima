@@ -24,14 +24,14 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException.CAUSE;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NodeGenerationResultTest {
 
@@ -57,7 +57,7 @@ public class NodeGenerationResultTest {
 	List<GeneratedTemplate> templates1;
 	List<GeneratedTemplate> templates2;
 	
-	@Before
+	@BeforeEach
 	public void setUp(){
 		result = new NodeGenerationResult();
 		
