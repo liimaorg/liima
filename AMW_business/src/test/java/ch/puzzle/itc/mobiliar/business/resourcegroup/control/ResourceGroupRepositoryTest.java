@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ResourceGroupRepositoryTest {
 
 
@@ -77,7 +77,6 @@ public class ResourceGroupRepositoryTest {
 
     @BeforeEach
     public void before() {
-        MockitoAnnotations.openMocks(this);
     }
 
     private void init() {

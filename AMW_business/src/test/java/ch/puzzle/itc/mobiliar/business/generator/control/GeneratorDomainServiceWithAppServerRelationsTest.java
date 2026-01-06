@@ -22,21 +22,20 @@ package ch.puzzle.itc.mobiliar.business.generator.control;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.any;
 
+@ExtendWith(MockitoExtension.class)
 public class GeneratorDomainServiceWithAppServerRelationsTest {
 
     @Mock
@@ -48,16 +47,11 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @InjectMocks
     GeneratorDomainServiceWithAppServerRelations service;
 
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     public void testDoNotOmitTemplateWithPermission() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermission(any(Permission.class), any(
-                  ContextEntity.class), any(Action.class), isNull(), isNull())).thenReturn(true);
+        Mockito.doReturn(true).when(permissionService).hasPermission(any(Permission.class), any(
+                  ContextEntity.class), any(Action.class), isNull(), isNull());
 
         //when
         service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);
@@ -69,8 +63,8 @@ public class GeneratorDomainServiceWithAppServerRelationsTest {
     @Test
     public void testOmitTemplateForLackingPermissions() throws Exception {
         //given
-        Mockito.when(permissionService.hasPermission(any(Permission.class), any(
-                ContextEntity.class), any(Action.class), any(ResourceGroupEntity.class), any(ResourceTypeEntity.class))).thenReturn(false);
+        Mockito.doReturn(false).when(permissionService).hasPermission(any(Permission.class), any(
+                ContextEntity.class), any(Action.class), isNull(), isNull());
 
         //when
         service.omitTemplateForLackingPermissions(new ContextEntity(), new ResourceEntity(), result);

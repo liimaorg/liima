@@ -55,6 +55,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
@@ -83,6 +84,7 @@ import ch.puzzle.itc.mobiliar.common.util.Tuple;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
 @ExtendWith(PersistenceTestExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class DeploymentBoundaryPersistenceTest {
 
 	@InjectMocks
@@ -110,8 +112,6 @@ public class DeploymentBoundaryPersistenceTest {
 
 	@BeforeEach
 	public void setup() {
-
-		MockitoAnnotations.openMocks(this);
 		deploymentBoundary.setEntityManager(entityManager);
 
 		commonFilterService = new CommonFilterService();
@@ -120,12 +120,6 @@ public class DeploymentBoundaryPersistenceTest {
 		commonFilterService.setLog(log);
 		// given
 		d = new DeploymentEntity();
-
-		// disable security
-		when(permissionService.hasPermissionForDeploymentUpdate(any(DeploymentEntity.class))).thenReturn(true);
-		when(permissionService.hasPermissionForCancelDeployment(any(DeploymentEntity.class))).thenReturn(true);
-
-		when(dbUtil.isOracle()).thenReturn(false);
 	}
 
 	public void test_changeDeploymentTime_exception_noId() throws DeploymentStateException {
@@ -143,6 +137,10 @@ public class DeploymentBoundaryPersistenceTest {
 
 		Date deploymentDate = new Date(new Date().getTime() + 100000l);
 		detachedEntity.setDeploymentDate(deploymentDate);
+
+
+		// disable security
+		when(permissionService.hasPermissionForDeploymentUpdate(any(DeploymentEntity.class))).thenReturn(true);
 
 		// when
 		DeploymentEntity result = deploymentBoundary.changeDeploymentDate(detachedEntity.getId(),
@@ -228,6 +226,9 @@ public class DeploymentBoundaryPersistenceTest {
 		DeploymentEntity detachedEntity = getDetachedEntityFromDb(d);
 		String cancelUserName = "jupi";
 
+		// disable security
+		when(permissionService.hasPermissionForCancelDeployment(any(DeploymentEntity.class))).thenReturn(true);
+
 		// when
 		when(permissionService.getCurrentUserName()).thenReturn(cancelUserName);
 		DeploymentEntity cancelDeployment = deploymentBoundary.cancelDeployment(detachedEntity.getId());
@@ -238,7 +239,6 @@ public class DeploymentBoundaryPersistenceTest {
 		assertNotNull(cancelDeployment.getStateMessage(), "A statemessage must be set");
 		assertEquals(cancelUserName, cancelDeployment.getDeploymentCancelUser(), "A cancel user must be set to " + cancelUserName);
 		assertNotNull(cancelDeployment.getDeploymentCancelDate(), "A cancel date be set");
-
 	}
 
 	@Test

@@ -27,12 +27,11 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -41,7 +40,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class CommonDomainServicePersistenceTest {
 
 	@Spy
@@ -53,11 +52,6 @@ public class CommonDomainServicePersistenceTest {
 
 	@InjectMocks
 	CommonDomainService service;
-
-	@BeforeEach
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void test_getUniqueResourceByName() {

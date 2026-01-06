@@ -34,10 +34,11 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +46,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(MockitoExtension.class)
 public class ResourceEntityTest {
 
     @Mock
@@ -59,7 +61,6 @@ public class ResourceEntityTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         providedResourceRelationEntity.setResourceRelationType(relationTypeEntity);
         providedResourceRelationEntity.setMasterResource(masterResource);
         providedResourceRelationEntity.setSlaveResource(slaveResourceEntity);
@@ -118,15 +119,9 @@ public class ResourceEntityTest {
     private ConsumedResourceRelationEntity createConsumedResourceRelation(final int masterResourceId,
             final int slaveResourceId) {
         final ConsumedResourceRelationEntity resourceRelation = Mockito.mock(ConsumedResourceRelationEntity.class);
-
-        final ResourceEntity slaveResource = Mockito.mock(ResourceEntity.class);
-        Mockito.when(slaveResource.getId()).thenReturn(slaveResourceId);
-        Mockito.when(resourceRelation.getSlaveResource()).thenReturn(slaveResource);
-
         final ResourceEntity masterResource = Mockito.mock(ResourceEntity.class);
         Mockito.when(masterResource.getId()).thenReturn(masterResourceId);
         Mockito.when(resourceRelation.getMasterResource()).thenReturn(masterResource);
-
         return resourceRelation;
     }
 

@@ -20,8 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.Set;
 
@@ -37,7 +37,7 @@ public class ResourceGroupEntityBuilder extends BaseEntityBuilder {
 		if (resources != null) {
 			for (ResourceEntity r : resources) {
 				if (Mockito.mockingDetails(r).isMock()) {
-					when(r.getResourceGroup()).thenReturn(mock);
+					lenient().when(r.getResourceGroup()).thenReturn(mock);
 				}
 			}
 		}

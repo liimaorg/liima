@@ -32,10 +32,11 @@ import com.google.common.collect.Lists;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,8 @@ import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import java.util.logging.Logger;
 
+
+@ExtendWith(MockitoExtension.class)
 public class GenerationUnitFactoryTest {
 
 	ResourceEntity node;
@@ -82,7 +85,6 @@ public class GenerationUnitFactoryTest {
 	@BeforeEach
 	public void before() {
 		CustomLogging.setup(Level.OFF);
-		MockitoAnnotations.openMocks(this);
 		builder = new SimpleEntityBuilder();
 		builder.as = builder.buildResource(EntityBuilderType.AS, EntityBuilderType.AS.name);
 		builder.app = builder.buildResource(EntityBuilderType.APP, "app");

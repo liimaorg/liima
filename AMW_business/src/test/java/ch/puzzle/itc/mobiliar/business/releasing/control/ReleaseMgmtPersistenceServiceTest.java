@@ -33,12 +33,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -47,7 +46,7 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService}
  */
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ReleaseMgmtPersistenceServiceTest {
 
 	@Spy
@@ -59,11 +58,6 @@ public class ReleaseMgmtPersistenceServiceTest {
 
 	@InjectMocks
 	ReleaseMgmtPersistenceService service;
-
-	@BeforeEach
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void test_getById() {

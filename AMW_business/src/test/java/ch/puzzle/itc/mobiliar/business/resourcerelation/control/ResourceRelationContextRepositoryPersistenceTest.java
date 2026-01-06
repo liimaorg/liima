@@ -26,12 +26,11 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -42,7 +41,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ResourceRelationContextRepositoryPersistenceTest {
 
 	@Spy
@@ -54,11 +53,6 @@ public class ResourceRelationContextRepositoryPersistenceTest {
 
 	@InjectMocks
 	ResourceRelationContextRepository resourceRelationContextRepository;
-
-	@BeforeEach
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void test_getResourceRelationContextEntitiesByContextIds() {

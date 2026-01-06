@@ -31,10 +31,11 @@ import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationRe
 import ch.puzzle.itc.mobiliar.business.generator.control.NodeGenerationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
@@ -43,6 +44,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationMod
 import ch.puzzle.itc.mobiliar.common.exception.ScriptExecutionException;
 import ch.puzzle.itc.mobiliar.common.exception.ScriptExecutionException.REASON;
 
+@ExtendWith(MockitoExtension.class)
 public class DeploymentAsynchronousExecuterTest {
 
 	@InjectMocks
@@ -59,14 +61,10 @@ public class DeploymentAsynchronousExecuterTest {
 	
 	DeploymentEntity deployment;
 	
-	
 	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.openMocks(this);
-		
 		deployment = new DeploymentEntity();
 		deployment.setId(Integer.valueOf(100));
-		
 	}
 	
 	@Test

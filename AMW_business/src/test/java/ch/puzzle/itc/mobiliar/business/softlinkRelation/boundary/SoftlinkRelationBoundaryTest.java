@@ -37,8 +37,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.SoftlinkRelationEntityBuilder;
@@ -52,7 +50,6 @@ import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelation
 import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 
 // disable Strict Stubbing because of extra mocking of the EntityBuilders
-@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 public class SoftlinkRelationBoundaryTest {
 

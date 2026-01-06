@@ -26,7 +26,6 @@ package ch.puzzle.itc.mobiliar.business.property.control;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
@@ -67,7 +66,7 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * @author oschmid
  */
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class PropertyEditingServicePropertyDescriptorsTest {
 
     @Spy
@@ -103,7 +102,6 @@ public class PropertyEditingServicePropertyDescriptorsTest {
 
     @BeforeEach
     public void setUp() throws ElementAlreadyExistsException {
-        MockitoAnnotations.openMocks(this);
         service.queries = queries;
         service.contextHierarchy = contextHierarchy;
         propertyDescriptorEntity = new PropertyDescriptorEntity();
@@ -136,7 +134,6 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         entityManager.persist(slave);
         entityManager.persist(provided);
         entityManager.flush();
-        when(dbUtil.isOracle()).thenReturn(false);
     }
 
     @AfterEach

@@ -20,14 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 
+@ExtendWith(MockitoExtension.class)
 public class AmwTemplateProcessorTest extends TemplateProcessorBaseTest<AmwEntityBuilder> {
 
+	@BeforeEach
 	public void before() throws Exception {
-		MockitoAnnotations.openMocks(this);
 		builder = new AmwEntityBuilder();
 		context = builder.context;
 	}

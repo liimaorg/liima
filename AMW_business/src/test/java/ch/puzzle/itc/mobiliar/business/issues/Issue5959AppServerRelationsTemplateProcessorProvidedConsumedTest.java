@@ -34,8 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
@@ -53,7 +53,7 @@ import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 import freemarker.template.TemplateModelException;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest extends
 	TemplateProcessorBaseTest<ApplicationResolverEntityBuilder> {
 
@@ -74,7 +74,6 @@ public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest ex
 
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();
 		context = builder.context;
-		MockitoAnnotations.openMocks(this);
 
 	}
 

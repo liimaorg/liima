@@ -32,13 +32,12 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
@@ -65,7 +64,7 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ResourceBoundaryPersistenceTest {
 
     @Spy
@@ -108,10 +107,7 @@ public class ResourceBoundaryPersistenceTest {
     @Mock
     Logger log;
 
-    @BeforeEach
-    public void before() {
-        MockitoAnnotations.openMocks(this);
-    }
+
 
     @Test
     public void test_createNewResourceByName() throws AMWException {

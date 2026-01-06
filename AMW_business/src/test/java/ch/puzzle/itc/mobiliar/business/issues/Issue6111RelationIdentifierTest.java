@@ -29,8 +29,8 @@ import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -45,7 +45,7 @@ import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
 import ch.puzzle.itc.mobiliar.test.PersistingEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<PersistingEntityBuilder> {
 
 	@Spy
@@ -59,7 +59,6 @@ public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<P
 
 	@BeforeEach
 	public void before() {
-		MockitoAnnotations.openMocks(this);
 		builder = new PersistingEntityBuilder(entityManager).buildSimple();
 
 		context = builder.context;

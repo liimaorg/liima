@@ -26,16 +26,17 @@ import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.utils.notification.MailService;
 
+@ExtendWith(MockitoExtension.class)
 public class MailServiceTest {
 
 	@InjectMocks
@@ -44,10 +45,7 @@ public class MailServiceTest {
 	@Mock
 	Logger log;
 	
-	@BeforeEach
-	public void setup() throws Exception {
-		MockitoAnnotations.openMocks(this);
-	}
+
 	
 	@Test
 	public void test_createMessageAndSend_logging_null() throws MessagingException {

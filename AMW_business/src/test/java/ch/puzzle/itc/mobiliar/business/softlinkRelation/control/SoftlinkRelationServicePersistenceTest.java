@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Tests {@link SoftlinkRelationService}
  */
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class SoftlinkRelationServicePersistenceTest {
 
     @Spy
@@ -94,7 +94,6 @@ public class SoftlinkRelationServicePersistenceTest {
 
     @BeforeEach
     public void before() {
-        MockitoAnnotations.openMocks(this);
         service.dependencyResolverService = dependencyResolverService;
         init();
         EntityTransaction transaction = entityManager.getTransaction();

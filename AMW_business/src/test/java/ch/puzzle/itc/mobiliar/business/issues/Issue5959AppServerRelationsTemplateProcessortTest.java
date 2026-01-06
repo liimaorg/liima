@@ -32,7 +32,8 @@ import java.util.logging.Level;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.TemplateProcessorBaseTest;
@@ -40,6 +41,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.SimpleEntityBuilder;
 
+@ExtendWith(MockitoExtension.class)
 public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateProcessorBaseTest<SimpleEntityBuilder> {
 
 	String appTemplate = "name=${providedResTypes.Webservice.ws.name}";
@@ -50,7 +52,6 @@ public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateP
 		CustomLogging.setup(Level.OFF);
 		builder = new SimpleEntityBuilder();
 		context = builder.context;
-		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

@@ -32,11 +32,11 @@ import java.util.logging.Logger;
 
 import javax.interceptor.InvocationContext;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -47,6 +47,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.test.TestBoundary;
 
+@ExtendWith(MockitoExtension.class)
 public class HasPermissionInterceptorTest {
 
     @Mock
@@ -60,12 +61,6 @@ public class HasPermissionInterceptorTest {
 
     @InjectMocks
     HasPermissionInterceptor hasPermissionInterceptor;
-
-    @BeforeEach
-    public void init() {
-        MockitoAnnotations.openMocks(this);
-        when(context.getTarget()).thenReturn(new TestBoundary());
-    }
 
     @Test
     public void shouldNotCallPermissionService() throws Exception {
@@ -154,6 +149,8 @@ public class HasPermissionInterceptorTest {
         // given
         when(context.getMethod())
                 .thenReturn(TestBoundary.class.getMethod("deployOrCopyFromPermissionActionCreateOrUpdateNeeded"));
+        when(hasPermissionInterceptor.permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE,
+                null, Action.CREATE, null, null)).thenReturn(false);
         when(hasPermissionInterceptor.permissionService.hasPermission(Permission.RESOURCE_RELEASE_COPY_FROM_RESOURCE,
                 null, Action.UPDATE, null, null)).thenReturn(true);
         // when

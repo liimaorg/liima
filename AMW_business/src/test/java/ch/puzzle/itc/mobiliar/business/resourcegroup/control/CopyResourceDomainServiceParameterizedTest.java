@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,13 +45,14 @@ import javax.persistence.EntityManager;
 
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
@@ -59,7 +61,6 @@ import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceRelationContextEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
-import ch.puzzle.itc.mobiliar.builders.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.TargetPlatformEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.TemplateDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
@@ -81,7 +82,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService.CopyMode;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -92,13 +92,13 @@ import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainSer
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 /**
  * Tests {@link ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService}
  * 
  * @author cweber
  */
+@ExtendWith(MockitoExtension.class)
 public class CopyResourceDomainServiceParameterizedTest {
 
 	@Mock
@@ -121,7 +121,6 @@ public class CopyResourceDomainServiceParameterizedTest {
 	@InjectMocks
 	private CopyResourceDomainService copyDomainService = new CopyResourceDomainService();
 
-	private ResourceTypeEntityBuilder resourceTypeEntityBuilder = new ResourceTypeEntityBuilder();
 	private ResourceRelationEntityBuilder relationEntityBuilder = new ResourceRelationEntityBuilder();
 	private TemplateDescriptorEntityBuilder templateDescriptorEntityBuilder = new TemplateDescriptorEntityBuilder();
 	private TargetPlatformEntityBuilder targetPlatformEntityBuilder = new TargetPlatformEntityBuilder();
@@ -138,20 +137,10 @@ public class CopyResourceDomainServiceParameterizedTest {
 
 	@BeforeEach
 	public void before() {
-		MockitoAnnotations.openMocks(this);
-
 		globalContextMock = contextEntityBuilder.mockContextEntity("GLOBAL", null, null);
-
-		ResourceTypeEntity appType = resourceTypeEntityBuilder.mockApplicationResourceTypeEntity(null);
-		when(resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATION)).thenReturn(appType);
 
 		originResource = new ResourceEntityBuilder().mockAppServerEntity("originResource", null, null,
 				targetPlatformEntityBuilder.mockTargetPlatformEntity("EAP 6"));
-		when(originResource.isDeletable()).thenReturn(true);
-		Set<AmwFunctionEntity> originFunctions = new HashSet<>();
-		originFunctions.add(new AmwFunctionEntityBuilder("origFct1", 1).forResource(originResource).build());
-		originFunctions.add(new AmwFunctionEntityBuilder("origFct2", 2).forResource(originResource).build());
-		when(originResource.getFunctions()).thenReturn(originFunctions);
 
 		targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null,
 				true);
@@ -207,7 +196,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 		// given
 		TemplateDescriptorEntity origTemp = templateDescriptorEntityBuilder.withName("bla").withTargetPath("/bla").withFileContent("foo").build();
 		ResourceRelationContextEntity resRelContex = resRelContextBuilder.mockResourceRelationContextEntity(globalContextMock);
-		when(resRelContex.getTemplates()).thenReturn(Collections.singleton(origTemp));
+		lenient().when(resRelContex.getTemplates()).thenReturn(Collections.singleton(origTemp));
 
 		ResourceEntity appOrigin = new ResourceEntityBuilder().withName("appOrigin").withTypeOfName("APPLICATION").build();
 		ResourceEntity appTarget = new ResourceEntityBuilder().withName("appTarget").withTypeOfName("APPLICATION").build();
@@ -556,7 +545,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 				.with(new MikEntity("mik1", null), new MikEntity("mik2", null))
 				.forResource(originResource).withOverwrittenParent(originParent).mock();
 
-		Set<AmwFunctionEntity> originFunctions = new HashSet<>(originResource.getFunctions());
+		Set<AmwFunctionEntity> originFunctions = new HashSet<>();
 		originFunctions.add(origin);
 		when(originResource.getFunctions()).thenReturn(originFunctions);
 
@@ -564,7 +553,7 @@ public class CopyResourceDomainServiceParameterizedTest {
 				.with(new MikEntity("mik10", null), new MikEntity("mik20", null))
 				.forResource(targetResource).build();
 		targetResource.addFunction(target);
-		int targetResourceFctSizeBeforeCopy = targetResource.getFunctions().size();
+		int targetResourceFctSizeBeforeCopy = targetResource.getFunctions() == null ? 0 : targetResource.getFunctions().size();
 
 		CopyUnit copyUnit = new CopyUnit(originResource, targetResource, copyMode, actingOwner);
 
@@ -574,7 +563,8 @@ public class CopyResourceDomainServiceParameterizedTest {
 		// then
 		verify(origin).getCopy(null, copyUnit);
 		verify(origin, never()).getCopy(target, copyUnit);
-		assertEquals(originResource.getFunctions().size() + targetResourceFctSizeBeforeCopy, targetResource.getFunctions().size());
+		int resultingTargetFunctions = targetResource.getFunctions() == null ? 0 : targetResource.getFunctions().size();
+		assertEquals(originFunctions.size() + targetResourceFctSizeBeforeCopy, resultingTargetFunctions);
 	}
 
 	@ParameterizedTest
@@ -645,16 +635,13 @@ public class CopyResourceDomainServiceParameterizedTest {
 		verify(entityManager).persist(target);
 	}
 
-	    @ParameterizedTest
-	    @MethodSource("data")
-	    public void createCopyFromOriginResourceWhenTargetExistOnDbShouldCopyToThisTarget(CopyMode copyMode, ForeignableOwner actingOwner)
+	@ParameterizedTest
+	@MethodSource("data")
+	public void createCopyFromOriginResourceWhenTargetExistOnDbShouldCopyToThisTarget(CopyMode copyMode, ForeignableOwner actingOwner)
 		    throws ForeignableOwnerViolationException, AMWException {
 		// given
-		ReleaseEntity release = releaseEntityBuilder.mockReleaseEntity("Past", new Date());
 		ResourceEntity origin = new ResourceEntityBuilder().withId(1).build();
 		ResourceEntity target = new ResourceEntityBuilder().withId(2).withOwner(ForeignableOwner.MAIA).build();
-
-		when(commonDomainService.getResourceEntityByGroupAndRelease(origin.getResourceGroup().getId(), release.getId())).thenReturn(target);
 
 		// when
 		copyDomainService.copyFromOriginToTargetResource(origin, target, ForeignableOwner.AMW);
@@ -737,9 +724,6 @@ public class CopyResourceDomainServiceParameterizedTest {
 		String identifier = "foo";
 		String resourcePropValue = "abc";
 		String relationPropValue = "xyz";
-
-		when(resourceLocatorMock.hasResourceConsumableSoftlinkType(originResource)).thenReturn(true);
-		when(resourceLocatorMock.hasResourceConsumableSoftlinkType(targetResource)).thenReturn(true);
 
         // create two identical descriptors/properties on origin and target
 

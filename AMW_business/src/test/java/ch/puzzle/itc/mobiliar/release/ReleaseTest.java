@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -53,7 +53,7 @@ import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.AS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ReleaseTest {
 
 
@@ -80,7 +80,6 @@ public class ReleaseTest {
 
 	@BeforeEach
 	public void before() {
-		MockitoAnnotations.openMocks(this);
 		builder = new PersistingEntityBuilder(entityManager).buildSimple();
 		as = builder.resourceFor(AS);
 		app = builder.resourceFor(APP);

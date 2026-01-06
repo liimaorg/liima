@@ -35,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -44,7 +45,7 @@ import java.util.logging.Level;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ApplicationResolverTest {
 
 	@Spy
@@ -66,9 +67,6 @@ public class ApplicationResolverTest {
 		CustomLogging.setup(Level.OFF);
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();
 		context = builder.context;
-		MockitoAnnotations.openMocks(this);
-		Mockito.when(resourceDependencyResolverService.getProvidedMasterRelationsForRelease(ArgumentMatchers.<ResourceEntity>any(), ArgumentMatchers.<ReleaseEntity>any()))
-				.thenAnswer(invocation -> ((ResourceEntity) invocation.getArguments()[0]).getProvidedMasterRelations());
 		Mockito.when(resourceDependencyResolverService.getProvidedSlaveRelationsForRelease(ArgumentMatchers.<ResourceEntity>any(), ArgumentMatchers.<ReleaseEntity>any()))
 				.thenAnswer(invocation -> ((ResourceEntity) invocation.getArguments()[0]).getProvidedSlaveRelations());
 		resolver = new ApplicationResolver(builder.options, builder.ws, resourceDependencyResolverService);

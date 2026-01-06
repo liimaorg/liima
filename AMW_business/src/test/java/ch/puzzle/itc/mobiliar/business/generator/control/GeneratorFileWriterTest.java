@@ -33,10 +33,11 @@ import java.util.logging.Logger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
@@ -47,6 +48,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.common.exception.GeneratorException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
+@ExtendWith(MockitoExtension.class)
 public class GeneratorFileWriterTest {
 	
 	@InjectMocks
@@ -57,8 +59,6 @@ public class GeneratorFileWriterTest {
 	
 	@BeforeEach
 	public void setUp(){
-		MockitoAnnotations.openMocks(this);
-		
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH.getValue());
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH_SIMULATION.getValue());
 		System.getProperties().remove(ConfigKey.GENERATOR_PATH_TEST.getValue());

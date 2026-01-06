@@ -30,12 +30,11 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
@@ -49,7 +48,7 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService}
  */
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class TagConfigurationServicePersistenceTest {
 
 	@Spy
@@ -64,12 +63,6 @@ public class TagConfigurationServicePersistenceTest {
 
 	@InjectMocks
 	TagConfigurationService service;
-
-
-	@BeforeEach
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void test_tagConfiguration() throws ResourceNotFoundException, ElementAlreadyExistsException {

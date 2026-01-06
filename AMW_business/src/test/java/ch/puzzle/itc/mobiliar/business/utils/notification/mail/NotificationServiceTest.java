@@ -34,14 +34,15 @@ import javax.mail.internet.InternetAddress;
 
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
 import ch.puzzle.itc.mobiliar.business.utils.notification.MailService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
+@ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
 
 	@InjectMocks
@@ -50,10 +51,7 @@ public class NotificationServiceTest {
 	@Mock
 	MailService mailService;
 	
-	@BeforeEach
-	public void setUp(){
-		MockitoAnnotations.openMocks(this);
-	}
+
 	
 	@Test
 	public void test_createAndSendMail_noEmailRecipients() throws MessagingException {

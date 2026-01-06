@@ -36,12 +36,11 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationT
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
@@ -55,7 +54,7 @@ import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class ResourceRelationServicePersistenceTest {
 
 	@Spy
@@ -73,11 +72,6 @@ public class ResourceRelationServicePersistenceTest {
 
 	@InjectMocks
 	ResourceRelationService service;
-
-	@BeforeEach
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void test_getConsumedRelationsByMasterAndSlave() {

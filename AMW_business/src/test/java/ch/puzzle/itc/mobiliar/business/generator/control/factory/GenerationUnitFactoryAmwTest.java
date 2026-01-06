@@ -72,9 +72,11 @@ import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.logging.Level;
 
+@ExtendWith(MockitoExtension.class)
 public class GenerationUnitFactoryAmwTest {
 
 	@InjectMocks
@@ -102,7 +104,6 @@ public class GenerationUnitFactoryAmwTest {
 	@BeforeEach
 	public void before() {
 		CustomLogging.setup(Level.OFF);
-		MockitoAnnotations.openMocks(this);
 		builder = new AmwEntityBuilder();
 	}
 

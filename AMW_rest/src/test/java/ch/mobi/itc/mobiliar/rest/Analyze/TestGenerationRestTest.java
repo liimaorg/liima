@@ -21,10 +21,11 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class TestGenerationRestTest {
 
     @InjectMocks
@@ -75,7 +77,6 @@ public class TestGenerationRestTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         resourceGroupName = "TestGroup";
         releaseName = "TestRelease";
         env = "T";
@@ -187,7 +188,6 @@ public class TestGenerationRestTest {
         when(resourceEntity.getId()).thenReturn(13);
         when(resourceEntity.getResourceType()).thenReturn(resourceTypeEntity);
         when(resourceLocator.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(resourceEntity);
-        when(resourceLocator.getApplicationServerForApplication(resourceEntity)).thenReturn(resourceEntity);
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
         when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(anyInt(), anyInt(), anyInt(), ArgumentMatchers.<Date>any())).thenThrow(AMWException.class);
@@ -222,7 +222,6 @@ public class TestGenerationRestTest {
         when(contextLocator.getContextByName(env)).thenReturn(context);
         // Mock the EnvironmentGenerationResult and its nested objects
         when(environmentGenerationResult.hasErrors()).thenReturn(true);
-        when(environmentGenerationResult.getErrorMessage()).thenReturn("error");
         when(environmentGenerationResult.getGenerationContext()).thenReturn(generationContext);
         when(generationContext.getApplicationServer()).thenReturn(appServerForResult);
         when(appServerForResult.getRelease()).thenReturn(releaseForResult);

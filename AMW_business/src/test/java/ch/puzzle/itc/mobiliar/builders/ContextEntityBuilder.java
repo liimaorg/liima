@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 public class ContextEntityBuilder extends BaseEntityBuilder {
 
@@ -36,20 +36,20 @@ public class ContextEntityBuilder extends BaseEntityBuilder {
 	public ContextEntity mockContextEntity(String name, ContextEntity parent, Set<ContextEntity> children) {
 		ContextEntity mock = mock(ContextEntity.class);
 		Integer id = getNextId();
-		when(mock.getId()).thenReturn(id);
-		when(mock.getName()).thenReturn(name);
-		when(mock.getParent()).thenReturn(parent);
+		lenient().when(mock.getId()).thenReturn(id);
+		lenient().when(mock.getName()).thenReturn(name);
+		lenient().when(mock.getParent()).thenReturn(parent);
 		if (parent != null && Mockito.mockingDetails(parent).isMock()) {
 			Set<ContextEntity> childs = parent.getChildren();
 			childs.add(mock);
-			when(parent.getChildren()).thenReturn(childs);
+			lenient().when(parent.getChildren()).thenReturn(childs);
 		}
 
-		when(mock.getChildren()).thenReturn(children);
+		lenient().when(mock.getChildren()).thenReturn(children);
 		if (children != null) {
 			for (ContextEntity child : children) {
 				if (Mockito.mockingDetails(child).isMock()) {
-					when(child.getParent()).thenReturn(mock);
+					lenient().when(child.getParent()).thenReturn(mock);
 				}
 			}
 		}

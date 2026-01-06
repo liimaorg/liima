@@ -32,11 +32,11 @@ import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
@@ -54,6 +54,7 @@ import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
+@ExtendWith(MockitoExtension.class)
 public class CopyResourceTest {
 
     @InjectMocks
@@ -71,10 +72,7 @@ public class CopyResourceTest {
     @Mock
     ResourceLocator resourceLocatorMock;
 
-    @BeforeEach
-    public void before() {
-        MockitoAnnotations.openMocks(this);
-    }
+
 
     @Test
     public void shouldNotAllowCopyFromResourceOfDifferentType() throws Exception {

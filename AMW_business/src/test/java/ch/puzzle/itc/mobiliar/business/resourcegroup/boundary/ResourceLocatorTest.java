@@ -35,10 +35,11 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
@@ -49,6 +50,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
+@ExtendWith(MockitoExtension.class)
 public class ResourceLocatorTest {
 
     private static final String PROVIDABLE_SOFTLINK_TYPE_SYSTEM_PROPERTY_1 = "type1";
@@ -77,8 +79,6 @@ public class ResourceLocatorTest {
 
     @BeforeEach
     public void before() {
-        MockitoAnnotations.openMocks(this);
-
         Properties props = System.getProperties();
         props.setProperty(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES.getValue(),
                 PROVIDABLE_SOFTLINK_TYPE_SYSTEM_PROPERTY_1 + "," + PROVIDABLE_SOFTLINK_TYPE_SYSTEM_PROPERTY_2);

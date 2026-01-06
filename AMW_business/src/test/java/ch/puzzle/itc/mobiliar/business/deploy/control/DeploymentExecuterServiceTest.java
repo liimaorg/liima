@@ -33,10 +33,11 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class DeploymentExecuterServiceTest {
 
 	@InjectMocks
@@ -90,8 +92,6 @@ public class DeploymentExecuterServiceTest {
 
 	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.openMocks(this);
-
 		contextEntity = new ContextEntity();
 		contextEntity.setName("testContext");
 		contextEntity.setId(Integer.valueOf(2));
@@ -123,11 +123,6 @@ public class DeploymentExecuterServiceTest {
 
 	@Test
 	public void test_executeDeployment_No_DeploymentFound() {
-		// given
-		when(deploymentBoundary.getDeploymentById(Integer.valueOf(1))).thenReturn(null);
-
-		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(null);
-
 		// when
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(Integer.valueOf(1), GenerationModus.DEPLOY);
 
@@ -141,8 +136,6 @@ public class DeploymentExecuterServiceTest {
 	@Test
 	public void test_executeDeployment_lockingNok() {
 		// given
-		when(deploymentBoundary.getDeploymentById(deployment.getId())).thenReturn(deployment);
-
 		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(false);
 
 		// when
@@ -162,11 +155,8 @@ public class DeploymentExecuterServiceTest {
 	public void test_executeDeployment_No_callable_locking_ok() {
 		// given
 		when(deploymentBoundary.getDeploymentById(deployment.getId())).thenReturn(deployment);
-
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(null);
-
 		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
-		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(deployment.getId(), GenerationModus.DEPLOY);
@@ -187,11 +177,8 @@ public class DeploymentExecuterServiceTest {
 		when(deploymentBoundary.getDeploymentById(deployment.getId())).thenReturn(deployment);
 		// given
 		GenerationResult result = new GenerationResult();
-
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(result);
-
 		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
-		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(deployment.getId(), GenerationModus.DEPLOY);
@@ -213,7 +200,6 @@ public class DeploymentExecuterServiceTest {
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenThrow(e);
 
 		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.DEPLOY)).thenReturn(true);
-		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(deployment.getId(), GenerationModus.DEPLOY);
@@ -236,7 +222,6 @@ public class DeploymentExecuterServiceTest {
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(result);
 
 		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.SIMULATE)).thenReturn(true);
-		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(deployment.getId(), GenerationModus.SIMULATE);
@@ -260,7 +245,6 @@ public class DeploymentExecuterServiceTest {
 		when(generatorDomainServiceWithAppServerRelations.generateConfigurationForDeployment(any(DeploymentEntity.class), any(GenerationModus.class))).thenReturn(result);
 
 		when(locking.markDeploymentAsRunning(deployment.getId(), GenerationModus.SIMULATE)).thenReturn(true);
-		when(entityManager.find(DeploymentEntity.class, deployment.getId())).thenReturn(deployment);
 
 		// when
 		deploymentExecuterService.generateConfigurationAndExecuteDeployment(deployment.getId(), GenerationModus.SIMULATE);

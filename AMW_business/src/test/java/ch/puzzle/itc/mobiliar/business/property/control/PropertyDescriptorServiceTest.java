@@ -51,11 +51,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
@@ -76,10 +76,10 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 
+@ExtendWith(MockitoExtension.class)
 public class PropertyDescriptorServiceTest {
 
     @Mock
@@ -108,11 +108,6 @@ public class PropertyDescriptorServiceTest {
     PropertyDescriptorService service = spy(new PropertyDescriptorService());
 
     int dummyResourceId = 100;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testManageChangeOfEncryptedPropertyDescriptorDecrypt() throws Exception {
@@ -156,18 +151,7 @@ public class PropertyDescriptorServiceTest {
     }
 
     void testManageChangeOfEncryptedPropertyDescriptor(Boolean encrypt, boolean hasPermission) throws Exception {
-        TypedQuery queryMock = mock(TypedQuery.class);
-        when(entityManagerMock.createQuery(anyString(), any(Class.class))).thenReturn(queryMock);
-        when(queryMock.setParameter(anyString(), any())).thenReturn(queryMock);
-        if (hasPermission) {
-            doNothing().when(permissionServiceMock).checkPermissionAndFireException(any(Permission.class),
-                    anyString());
-        } else {
-            doThrow(NotAuthorizedException.class).when(permissionServiceMock)
-                    .checkPermissionAndFireException(any(Permission.class), anyString());
-        }
         PropertyEntity p = mock(PropertyEntity.class);
-        when(queryMock.getResultList()).thenReturn(Arrays.asList(p));
         PropertyDescriptorEntity propertyDescriptorEntity = new PropertyDescriptorEntity();
         if (encrypt != null) {
             propertyDescriptorEntity.setEncrypt(encrypt);
@@ -179,6 +163,16 @@ public class PropertyDescriptorServiceTest {
             encryptedProperties = Collections.emptyList();
         } else {
             encryptedProperties = Arrays.asList(propertyDescriptorEntity.getId());
+        }
+
+        boolean willEncrypt = Boolean.TRUE.equals(encrypt);
+        boolean willDecrypt = Boolean.FALSE.equals(encrypt);
+        if (willEncrypt || willDecrypt) {
+            TypedQuery<PropertyEntity> queryMock = mock(TypedQuery.class);
+            when(entityManagerMock.createQuery(anyString(), eq(PropertyEntity.class)))
+                    .thenReturn(queryMock);
+            when(queryMock.setParameter(eq("descriptor"), any())).thenReturn(queryMock);
+            when(queryMock.getResultList()).thenReturn(Arrays.asList(p));
         }
         service.manageChangeOfEncryptedPropertyDescriptor(propertyDescriptorEntity, encryptedProperties,
                 hasPermission);
@@ -303,8 +297,6 @@ public class PropertyDescriptorServiceTest {
 
         // mocking the manageChangeOfEncryptedPropertyDescriptor
         when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
-        when(entityManagerMock.createQuery("select p from PropertyEntity p where p.descriptor=:descriptor",
-                PropertyEntity.class)).thenReturn(mock(TypedQuery.class));
         ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
 
         // when
@@ -331,10 +323,6 @@ public class PropertyDescriptorServiceTest {
         // mock (implicit verify for merge) merging of descriptor
         PropertyDescriptorEntity mergedPropertyDescriptorMock = mock(PropertyDescriptorEntity.class);
         when(entityManagerMock.merge(descriptor)).thenReturn(mergedPropertyDescriptorMock);
-
-        // mocking the manageChangeOfEncryptedPropertyDescriptor
-        when(entityManagerMock.createQuery("select p from PropertyEntity p where p.descriptor=:descriptor",
-                PropertyEntity.class)).thenReturn(mock(TypedQuery.class));
 
         // return descriptor with same values (not changed fields)
         when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
@@ -496,7 +484,6 @@ public class PropertyDescriptorServiceTest {
                 PropertyDescriptorEntity.class)).thenReturn(queryMock);
         when(queryMock.getSingleResult()).thenReturn(descriptor);
 
-        when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
         when(entityManagerMock.find(PropertyTagEntity.class, tag1.getId())).thenReturn(tag1);
         when(entityManagerMock.find(PropertyTagEntity.class, tag2.getId())).thenReturn(tag2);
 
@@ -604,9 +591,6 @@ public class PropertyDescriptorServiceTest {
         // mock (implicit verify for merge) merging of descriptorToUpdate
         PropertyDescriptorEntity mergedPropertyDescriptorMock = mock(PropertyDescriptorEntity.class);
         when(entityManagerMock.merge(descriptorToUpdate)).thenReturn(mergedPropertyDescriptorMock);
-        // mocking the manageChangeOfEncryptedPropertyDescriptor
-        when(entityManagerMock.createQuery("select p from PropertyEntity p where p.descriptor=:descriptor",
-                PropertyEntity.class)).thenReturn(mock(TypedQuery.class));
         // return descriptorToUpdate with same values (not changed fields)
         when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptorToUpdate.getId()))
                 .thenReturn(descriptorToUpdate);
@@ -738,7 +722,6 @@ public class PropertyDescriptorServiceTest {
                 "from PropertyDescriptorEntity d  left join fetch d.propertyTags where d.id = :propertyDescriptorId ",
                 PropertyDescriptorEntity.class)).thenReturn(queryMock);
         when(queryMock.getSingleResult()).thenReturn(descriptor);
-        when(entityManagerMock.find(PropertyDescriptorEntity.class, descriptor.getId())).thenReturn(descriptor);
         when(resourceTypeEntityMock.getResources()).thenReturn(Collections.singleton(resourceEntityMock));
         when(resourceEntityMock.getContexts()).thenReturn(Collections.singleton(resourceContextEntityMock));
         when(resourceContextEntityMock.getProperties()).thenReturn(properties);

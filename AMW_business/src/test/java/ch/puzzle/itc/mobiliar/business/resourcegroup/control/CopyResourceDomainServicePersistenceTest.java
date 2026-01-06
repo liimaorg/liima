@@ -20,25 +20,25 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
@@ -51,11 +51,12 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntit
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@ExtendWith(PersistenceTestExtension.class)
+@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class CopyResourceDomainServicePersistenceTest {
 
 	@Spy
@@ -79,12 +80,6 @@ public class CopyResourceDomainServicePersistenceTest {
 
 	@Mock
 	Logger log;
-
-
-	@BeforeEach
-	public void before() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	/**
 	 * If there is a property overwritten in context other than Global, this property shoud be copied with
@@ -130,12 +125,10 @@ public class CopyResourceDomainServicePersistenceTest {
 		origin.addContext(resContextB);
 
 		entityManager.persist(origin);
-		when(commonDomainService.getResourceEntityById(origin.getId())).thenReturn(origin);
 
 		ResourceEntity target = ResourceFactory.createNewResource(origin.getResourceGroup());
 		target.setResourceType(appType);
 		entityManager.persist(target);
-		when(commonDomainService.getResourceEntityById(target.getId())).thenReturn(target);
 
 		// when
 		CopyResourceResult result = service.doCopyResourceAndSave(new CopyUnit(origin, target, CopyMode.COPY, ForeignableOwner.AMW));

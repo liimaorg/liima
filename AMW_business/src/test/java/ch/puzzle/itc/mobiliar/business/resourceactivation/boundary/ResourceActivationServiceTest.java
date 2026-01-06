@@ -29,11 +29,11 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelation
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ import java.util.Arrays;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class ResourceActivationServiceTest {
 
     @Mock
@@ -61,10 +62,7 @@ public class ResourceActivationServiceTest {
     @InjectMocks
     ResourceActivationService resourceActivationService;
 
-    @BeforeEach
-    public void before() throws Exception {
-        MockitoAnnotations.openMocks(this);
-    }
+
 
     @Test
     public void testActivateDeactivateResources() throws Exception {

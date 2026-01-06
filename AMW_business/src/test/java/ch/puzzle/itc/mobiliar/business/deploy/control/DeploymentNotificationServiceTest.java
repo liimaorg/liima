@@ -30,9 +30,10 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
@@ -45,6 +46,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class DeploymentNotificationServiceTest {
 
 	@InjectMocks
@@ -66,8 +68,6 @@ public class DeploymentNotificationServiceTest {
 	
 	@BeforeEach
 	public void setUp(){
-		MockitoAnnotations.openMocks(this);
-		
 		applicationServer =  ResourceFactory.createNewResource("appServer");
 		context = new ContextEntity();
 		context.setName("dev");
@@ -134,9 +134,7 @@ public class DeploymentNotificationServiceTest {
 		deployments.add(deployment);
 		
 		when(notificationService.createAndSendMail(anyString(), anyString(), any(Address[].class))).thenReturn(false);
-		
-		when(releaseMgmtService.getDefaultRelease()).thenReturn(defaultRelease);
-		
+				
 		// when
 		String result = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);
 		
@@ -185,7 +183,6 @@ public class DeploymentNotificationServiceTest {
 		deployments.add(deployment);
 		
 		when(notificationService.createAndSendMail(anyString(), anyString(), any(Address[].class))).thenThrow(new MessagingException("ErrorSending"));
-		when(releaseMgmtService.getDefaultRelease()).thenReturn(defaultRelease);
 		// when
 		String result = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);
 		
@@ -213,7 +210,6 @@ public class DeploymentNotificationServiceTest {
 		deployments.add(deployment);
 		
 		when(notificationService.createAndSendMail(anyString(), anyString(), any(Address[].class))).thenReturn(true);
-		when(releaseMgmtService.getDefaultRelease()).thenReturn(defaultRelease);
 		
 		// when
 		String result = deploymentNotificationService.createAndSendMailForDeplyoments(deployments);

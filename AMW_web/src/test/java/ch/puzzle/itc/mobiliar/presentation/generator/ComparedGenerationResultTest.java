@@ -31,9 +31,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.ApplicationGenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationResult;
@@ -43,6 +44,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.NodeGenerationResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 
+@ExtendWith(MockitoExtension.class)
 public class ComparedGenerationResultTest {
 
 	ComparedGenerationResult result;
@@ -71,7 +73,6 @@ public class ComparedGenerationResultTest {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		MockitoAnnotations.openMocks(this);
 		nodeResult = createNewNodeGenerationResultWithNode();
 		nodeResultList = new ArrayList<NodeGenerationResult>();
 		nodeResultList.add(nodeResult);
@@ -86,11 +87,8 @@ public class ComparedGenerationResultTest {
 		Mockito.when(nodeResult.getApplicationServerResults()).thenReturn(appServerResults);
 	}
 
-	
-	
 	@Test
 	public void testGetAppServerResults() {
-		
 		GeneratedTemplate templA = Mockito.mock(GeneratedTemplate.class);
 		Mockito.when(templA.getPath()).thenReturn("templA");		
 		GeneratedTemplate templB = Mockito.mock(GeneratedTemplate.class);				
@@ -110,12 +108,10 @@ public class ComparedGenerationResultTest {
 		//Only templates A and B are returned, since templC and templD belong to the application
 		assertTrue(templates.get(0).getOriginalTemplate() == templA);
 		assertTrue(templates.get(1).getOriginalTemplate() == templB);
-		
 	}
 	
 	@Test
 	public void testGetApplicationResults() {
-
 		GeneratedTemplate templA = Mockito.mock(GeneratedTemplate.class);
 		Mockito.when(templA.getPath()).thenReturn("templA");		
 		GeneratedTemplate templB = Mockito.mock(GeneratedTemplate.class);				
@@ -134,10 +130,8 @@ public class ComparedGenerationResultTest {
 		
 		//Only templates C and D are returned, since templA and templB belong to the application server
 		assertTrue(templates.get(0).getOriginalTemplate() == templC);
-		assertTrue(templates.get(1).getOriginalTemplate() == templD);
-		
+		assertTrue(templates.get(1).getOriginalTemplate() == templD);	
 	}
-	
 
 	@Test
 	public void testGetApplications() {
@@ -163,7 +157,6 @@ public class ComparedGenerationResultTest {
 	private NodeGenerationResult createNewNodeGenerationResultWithNode(){
 		NodeGenerationResult result = Mockito.mock(NodeGenerationResult.class);
 		ResourceEntity node = Mockito.mock(ResourceEntity.class);
-		Mockito.when(node.compareTo(Mockito.any(ResourceEntity.class))).thenCallRealMethod();
 		Mockito.when(result.getNode()).thenReturn(node);
 		return result;
 	}
@@ -172,6 +165,7 @@ public class ComparedGenerationResultTest {
 	public void testMergeNodeGenerationResults() {
 		result = new ComparedGenerationResult(originalResult);		
 		NodeGenerationResult nodeResult2 = createNewNodeGenerationResultWithNode();
+		Mockito.when(nodeResult2.getNode().compareTo(Mockito.any(ResourceEntity.class))).thenCallRealMethod();
 		Mockito.when(nodeResult.getNode().getName()).thenReturn("bbb");		
 		Mockito.when(nodeResult2.getNode().getName()).thenReturn("aaa");
 		nodeResultList.add(nodeResult2);

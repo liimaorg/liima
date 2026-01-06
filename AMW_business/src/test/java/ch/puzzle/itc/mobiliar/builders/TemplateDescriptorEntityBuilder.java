@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 
 import java.util.Set;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 /**
  * Builds {@link TemplateDescriptorEntity} for testing
@@ -88,13 +88,13 @@ public class TemplateDescriptorEntityBuilder extends BaseEntityBuilder {
 	 */
 	public TemplateDescriptorEntity mock() {
 		TemplateDescriptorEntity mock = Mockito.mock(TemplateDescriptorEntity.class);
-		when(mock.getFileContent()).thenReturn(fileContent);
-		when(mock.getId()).thenReturn(id);
-		when(mock.getTargetPath()).thenReturn(targetPath);
-		when(mock.getName()).thenReturn(name);
-		when(mock.getOwnerResource()).thenReturn(ownerResource);
-		when(mock.getTargetPlatforms()).thenReturn(targetPlatforms);
-		when(mock.isRelationTemplate()).thenReturn(relationTemplate);
+		lenient().when(mock.getFileContent()).thenReturn(fileContent);
+		lenient().when(mock.getId()).thenReturn(id);
+		lenient().when(mock.getTargetPath()).thenReturn(targetPath);
+		lenient().when(mock.getName()).thenReturn(name);
+		lenient().when(mock.getOwnerResource()).thenReturn(ownerResource);
+		lenient().when(mock.getTargetPlatforms()).thenReturn(targetPlatforms);
+		lenient().when(mock.isRelationTemplate()).thenReturn(relationTemplate);
 
 		return mock;
 	}
