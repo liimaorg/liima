@@ -48,10 +48,9 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService}
  */
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class TagConfigurationServicePersistenceTest {
 
-	@Spy
 	@PersistenceContext
 	EntityManager entityManager;
 
@@ -61,6 +60,7 @@ public class TagConfigurationServicePersistenceTest {
 	@Mock
 	PermissionService permissionService;
 
+	@Spy
 	@InjectMocks
 	TagConfigurationService service;
 

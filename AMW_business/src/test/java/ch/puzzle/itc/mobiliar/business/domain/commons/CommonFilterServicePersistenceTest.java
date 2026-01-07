@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-import org.hibernate.internal.QueryImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,7 +48,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class CommonFilterServicePersistenceTest {
 
 	@Spy
@@ -192,8 +191,8 @@ public class CommonFilterServicePersistenceTest {
                 true, false);
 
         //then
-        assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
-        assertThat(query.unwrap(QueryImpl.class).getQueryString(), containsString("LOWER(d.deploymentDate)"));
+        assertThat(query.unwrap(org.hibernate.query.Query.class), is(not(nullValue())));
+        assertThat(query.unwrap(org.hibernate.query.Query.class).getQueryString(), containsString("LOWER(d.deploymentDate)"));
 
     }
     @Test
@@ -209,8 +208,8 @@ public class CommonFilterServicePersistenceTest {
         Query query = service.addFilterAndCreateQuery(stringQuery, filters, Sort.builder().order(colToSort).order(uniqueCol).build(), true, false);
 
         //then
-        assertThat(query.unwrap(QueryImpl.class), is(not(nullValue())));
-        assertThat(query.unwrap(QueryImpl.class).getQueryString(), not(containsString("LOWER(")));
+        assertThat(query.unwrap(org.hibernate.query.Query.class), is(not(nullValue())));
+        assertThat(query.unwrap(org.hibernate.query.Query.class).getQueryString(), not(containsString("LOWER(")));
 
     }
 

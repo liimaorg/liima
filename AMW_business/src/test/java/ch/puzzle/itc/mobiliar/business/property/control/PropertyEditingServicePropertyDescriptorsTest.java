@@ -66,7 +66,7 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * @author oschmid
  */
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class PropertyEditingServicePropertyDescriptorsTest {
 
     @Spy

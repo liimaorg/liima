@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class CommonDomainServicePersistenceTest {
 
 	@Spy

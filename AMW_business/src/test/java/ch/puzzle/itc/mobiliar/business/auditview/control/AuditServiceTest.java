@@ -54,7 +54,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class AuditServiceTest {
 
     @InjectMocks

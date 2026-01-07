@@ -47,7 +47,7 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * Tests for {@link ResourceValidationService}
  */
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class ResourceValidationServiceIntegrationTest {
 
     @Spy

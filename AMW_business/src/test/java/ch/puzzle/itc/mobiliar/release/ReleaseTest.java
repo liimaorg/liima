@@ -53,7 +53,7 @@ import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.AS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class ReleaseTest {
 
 

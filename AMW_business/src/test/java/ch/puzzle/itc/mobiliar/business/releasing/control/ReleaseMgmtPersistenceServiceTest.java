@@ -46,7 +46,7 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService}
  */
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class ReleaseMgmtPersistenceServiceTest {
 
 	@Spy

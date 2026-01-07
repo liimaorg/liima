@@ -56,7 +56,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class CopyResourceDomainServicePersistenceTest {
 
 	@Spy

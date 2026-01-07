@@ -34,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
@@ -47,10 +46,9 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService}
  */
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class ResourceGroupPersistenceServiceTest {
 
-	@Spy
 	@PersistenceContext
 	EntityManager entityManager;
 
