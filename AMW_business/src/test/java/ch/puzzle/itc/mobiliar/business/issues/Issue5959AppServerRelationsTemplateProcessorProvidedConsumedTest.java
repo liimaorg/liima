@@ -42,7 +42,6 @@ import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.ApplicationResolverEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationOptions;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnit;
@@ -63,10 +62,7 @@ public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest ex
 
 	@Spy
 	@InjectMocks
-	ResourceTypeProvider resourceTypeProvider = new ResourceTypeProvider();
-
-	@Spy
-	ResourceDependencyResolverService dependencyResolverService;
+	ResourceTypeProvider resourceTypeProvider;
 
 	@BeforeEach
 	public void before() throws Exception {
@@ -74,7 +70,6 @@ public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest ex
 
 		builder = new ApplicationResolverEntityBuilder(entityManager).buildScenario();
 		context = builder.context;
-
 	}
 
 	@Override
@@ -84,7 +79,7 @@ public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest ex
 		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());
 		
 		GenerationContext generationContext = new GenerationContext(context, builder.as, d, null,
-				GenerationModus.SIMULATE, dependencyResolverService);
+				GenerationModus.SIMULATE, dependencyResolver);
 		generationContext.setNode(builder.options.getContext().getNode());
 		return new GenerationOptions(generationContext);
 	}

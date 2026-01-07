@@ -366,10 +366,6 @@ public class CustomFilter {
         return !dropDownItems.isEmpty();
     }
 
-    public void setEnumType(Class<? extends Enum> enumType) {
-        this.enumType = enumType;
-    }
-
     public boolean hasDropDownItemsMap() {
         return !dropDownItemsMap.isEmpty();
     }

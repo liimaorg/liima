@@ -79,7 +79,7 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 	GeneratorUtils utils;
 
 	@Spy
-	ResourceDependencyResolverService dependencyResolverService;
+	protected ResourceDependencyResolverService dependencyResolver;
 
 	@InjectMocks
 	GeneratorFileWriter writer;
@@ -113,7 +113,7 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 			throw new RuntimeException("context is null");
 		}
 		options = createOptions();
-	    	factory.dependencyResolver = dependencyResolverService;
+		factory.dependencyResolver = dependencyResolver;
 		work = factory.createWorkForAppServer(options, builder.as, templateExceptionHandler);
 	}
 
@@ -132,7 +132,7 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 
 	    GenerationContext context = new GenerationContext(this.context, builder.as, d, null,
 			    GenerationModus.SIMULATE,
-			    dependencyResolverService);
+			    dependencyResolver);
 	    context.setNode(builder.buildResource(builder.buildResourceType(EntityBuilderType.NODE1.type), "node"));
 	    builder.buildConsumedRelation(context.getApplicationServer(), context.getNode(), ForeignableOwner.AMW);
 	    return new GenerationOptions(context);
