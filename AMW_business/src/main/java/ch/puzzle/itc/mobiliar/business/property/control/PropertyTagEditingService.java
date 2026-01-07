@@ -167,6 +167,7 @@ public class PropertyTagEditingService {
      * @param type
      * @return
      */
+    @Deprecated
     public PropertyTagEntity createPropertyTagEntity(String tagString, PropertyTagType type) {
         PropertyTagEntity pte = new PropertyTagEntity();
         pte.setName(tagString);

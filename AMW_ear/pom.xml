@@ -25,8 +25,8 @@
 						<artifactId>maven-ear-plugin</artifactId>
 						<configuration>
 
-							<!-- Tell Maven we are using Java EE 6 -->
-							<version>6</version>
+							<!-- Tell Maven we are using Java EE 8 -->
+							<version>8</version>
 							<!-- Use Java EE ear libraries as needed. Java EE ear libraries are 
 								in easy way to package any libraries needed in the ear, and automatically 
 								have any modules (EJB-JARs and WARs) use them -->

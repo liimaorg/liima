@@ -59,7 +59,7 @@ public class FreemarkerSyntaxValidatorTest {
         AMWException e = assertThrows(AMWException.class, () -> {
             validator.validateFreemarkerSyntax(template);
         });
-        assertThat(e.getMessage(), containsString("Check if you have a valid #if-#elseif-#else structure."));
+        assertThat(e.getMessage(), containsString("Encountered \"</#if>\", but was expecting one of these patterns:"));
     }
 
     @Test
