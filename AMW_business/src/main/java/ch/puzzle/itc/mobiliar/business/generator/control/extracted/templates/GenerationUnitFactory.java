@@ -43,7 +43,6 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -199,7 +198,7 @@ public class GenerationUnitFactory {
 				consumedMasterRelations);
 		Collections.sort(consumedMasterRelationsSorted,
 				AbstractResourceRelationEntity.COMPARE_BY_SLAVE_NAME);
-		Set<TemplateDescriptorEntity> relationTemplates = Sets.newLinkedHashSet();
+		Set<TemplateDescriptorEntity> relationTemplates = new LinkedHashSet<>();
 
 		for (ConsumedResourceRelationEntity resourceRelation : consumedMasterRelationsSorted) {
 
@@ -446,7 +445,7 @@ public class GenerationUnitFactory {
 
 	protected Set<TemplateDescriptorEntity> templatesForResource(GenerationOptions options,
 			ResourceEntity resource) {
-		Set<TemplateDescriptorEntity> templates = Sets.newLinkedHashSet();
+		Set<TemplateDescriptorEntity> templates = new LinkedHashSet<>();
 		utils.getTemplates(resource, options.getContext().getContext(), templates, options.getContext()
 				.getTargetPlatformId());
 		return templates;
@@ -454,7 +453,7 @@ public class GenerationUnitFactory {
 
 	protected Set<TemplateDescriptorEntity> templatesForRelation(GenerationOptions options,
 			AbstractResourceRelationEntity resourceRelation) {
-		Set<TemplateDescriptorEntity> templates = Sets.newLinkedHashSet();
+		Set<TemplateDescriptorEntity> templates = new LinkedHashSet<>();
 		if (resourceRelation != null) {
 			// relation is null when handed a ASR base on TYPES
 			utils.getTemplates(options.getContext().getContext(), resourceRelation, templates, options

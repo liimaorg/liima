@@ -31,8 +31,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,8 +76,8 @@ public class BaseTemplateProcessorTest {
     @Test
 	public void test() throws IOException {
 		// given
-		Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-		Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+		Set<TemplateDescriptorEntity> templates = new HashSet<>();
+		Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("bar",des1));
 
 		TemplateDescriptorEntity templateDescriptorEntity = createTemplate("asdf ${foo}");
@@ -98,8 +98,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void testPropertynotfound() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("bar",des1));
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("${asdf}");
@@ -120,8 +120,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void testPropertynotfound_descriptor() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("bar",des1));
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("${asdf._descriptor.encrypt}");
@@ -142,8 +142,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void testFreemarkerFunction_has_content() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", null);
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#if foo?has_content>has_content</#if>");
@@ -163,8 +163,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void testFreemarkerFunction_length_onAMW_Property() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
 
         thisProperties.put("foo", new FreeMarkerProperty("",des1));
 
@@ -186,8 +186,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void testFreemarkerFunction_has_content_onAMW_Property() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
 
         thisProperties.put("foo", new FreeMarkerProperty("",des1));
 
@@ -209,7 +209,7 @@ public class BaseTemplateProcessorTest {
     @Test
     public void testFreemarkerFunction_has_content_on_nonexisting_AMW_Property() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#if ((foo.currentValue)?has_content)>has_content</#if>");
 
         templates.add(templateDescriptorEntity);
@@ -229,8 +229,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void testFreemarkerTemplate_NoParse() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#noparse>${test}</#noparse>");
 
@@ -250,8 +250,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void shouldFormatNumberCorrectly() throws IOException {
     	// given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("1000000", des1));
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("asdf ${foo}");
@@ -272,8 +272,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void emptyString() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("", des1));
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("asdf ${foo}");
@@ -295,8 +295,8 @@ public class BaseTemplateProcessorTest {
     @Test
     public void shouldReplaceInnerProperty() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("1000000", des1));
         thisProperties.put("bar", new FreeMarkerProperty("${foo}", des2));
 
@@ -318,9 +318,9 @@ public class BaseTemplateProcessorTest {
     @Test
     public void shouldReplaceInnerInnerProperty() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("1000000", des1));
         dataProperties.put("bar", new FreeMarkerProperty("${foo}", des2));
         dataProperties.put("bar2", new FreeMarkerProperty("${bar}", des3));
@@ -350,9 +350,9 @@ public class BaseTemplateProcessorTest {
     	
 		GlobalFunctionEntity globalFunction = createGlobalFunctionTemplateEntity("function1", content);
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("1", des1));
         dataProperties.put("bar", new FreeMarkerProperty("2", des2));
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#include \"function1\">asdf ${add(foo?number,bar?number)}");
@@ -383,9 +383,9 @@ public class BaseTemplateProcessorTest {
 
         GlobalFunctionEntity globalFunction = createGlobalFunctionTemplateEntity("function1", content);
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("1", des1));
         dataProperties.put("bar", new FreeMarkerProperty("2", des2));
 
@@ -417,11 +417,11 @@ public class BaseTemplateProcessorTest {
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#include \"function\">value=${add()}");
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("1", des1));
         dataProperties.put("bar", new FreeMarkerProperty("2", des2));
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         templates.add(templateDescriptorEntity);
 
         GenerationUnit unit = new GenerationUnit(null, null, templates, null);
@@ -447,12 +447,12 @@ public class BaseTemplateProcessorTest {
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#include \"function\">value=<#list getList() as entry>${entry}</#list>");
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("value1", des1));
         dataProperties.put("bar", new FreeMarkerProperty("value2", des2));
 
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         templates.add(templateDescriptorEntity);
 
         GenerationUnit unit = new GenerationUnit(null, null, templates, null);
@@ -478,11 +478,11 @@ public class BaseTemplateProcessorTest {
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#include \"function\"><#list getList() as entry>${entry._descriptor.technicalKey}=${entry}\n</#list>");
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("fmp1",des1));
         dataProperties.put("bar", new FreeMarkerProperty("fmp2",des2));
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         templates.add(templateDescriptorEntity);
 
         GenerationUnit unit = new GenerationUnit(null, null, templates, null);
@@ -508,12 +508,12 @@ public class BaseTemplateProcessorTest {
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#include \"function\">foo=${getHash().foo}\nbar=${getHash().bar}");
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("value1",des1));
         dataProperties.put("bar", new FreeMarkerProperty("value2",des2));
 
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         templates.add(templateDescriptorEntity);
 
         GenerationUnit unit = new GenerationUnit(null, null, templates, null);
@@ -544,7 +544,7 @@ public class BaseTemplateProcessorTest {
         dataProperties.put("bar", new FreeMarkerProperty("value2",des2));
 
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         templates.add(templateDescriptorEntity);
 
         GenerationUnit unit = new GenerationUnit(null, null, templates, null);
@@ -583,7 +583,7 @@ public class BaseTemplateProcessorTest {
         dataProperties.put("bar", new FreeMarkerProperty("value2",des2));
 
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         templates.add(templateDescriptorEntity);
 
         GenerationUnit unit = new GenerationUnit(null, null, templates, null);
@@ -613,7 +613,7 @@ public class BaseTemplateProcessorTest {
         thisProperties.put("foo", new FreeMarkerProperty("value1", des1));
         thisProperties.put("bar", new FreeMarkerProperty("value2",des2));
 
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
         templates.add(templateDescriptorEntity);
 
         GenerationUnit unit = new GenerationUnit(null, null, templates, null);
@@ -634,7 +634,7 @@ public class BaseTemplateProcessorTest {
     @Test
     public void shouldFailCallingNewBuiltIn() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#assign ex = \"freemarker.template.utility.Execute\"?new()>${ex(\"id\")}");
 
@@ -654,7 +654,7 @@ public class BaseTemplateProcessorTest {
     @Test
     public void shouldFailCallingApiBuiltIn() throws IOException {
         // given
-        Set<TemplateDescriptorEntity> templates = Sets.newHashSet();
+        Set<TemplateDescriptorEntity> templates = new HashSet<>();
 
         TemplateDescriptorEntity templateDescriptorEntity = createTemplate("<#assign uri=object?api.class.getResource(\"/\").toURI()>${uri}");
 
@@ -688,7 +688,7 @@ public class BaseTemplateProcessorTest {
 
 
     private AmwTemplateModel getAmwTemplateModel(Map<String, FreeMarkerProperty> thisProperties, Map<String, FreeMarkerProperty> asProperties) {
-        Map<String, FreeMarkerProperty> contextProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> contextProperties = new HashMap<>();
 
         AmwTemplateModel model = new AmwTemplateModel();
         model.setAsProperties(new AmwResourceTemplateModel());

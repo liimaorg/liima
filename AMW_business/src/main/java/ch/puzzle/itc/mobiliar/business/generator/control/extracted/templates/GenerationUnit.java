@@ -20,6 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,9 +35,6 @@ import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntit
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * Data Unit for Template generation.
@@ -198,7 +198,7 @@ public class GenerationUnit {
 				return batches.get(app);
 			}
 		}
-		return Sets.newLinkedHashSet();
+		return new LinkedHashSet<>();
 	}
 
 	
@@ -221,9 +221,10 @@ public class GenerationUnit {
 	}
 
 	public static Set<GenerationUnit> forAppServer(Set<GenerationUnit> work, ResourceEntity node) {
-		List<GenerationUnit> current = Lists.newArrayList();
+		List<GenerationUnit> current = new ArrayList<>();
 
-		List<GenerationUnit> reverse = Lists.reverse(Lists.newArrayList(work));
+		List<GenerationUnit> reverse = new ArrayList<>(work);
+		Collections.reverse(reverse);
 		for (GenerationUnit unit : reverse) {
 			// break as soon as we hit app level
 			if (unit.getSlaveResource().getResourceType().isApplicationResourceType()) {
@@ -238,7 +239,8 @@ public class GenerationUnit {
 			}
 			current.add(unit);
 		}
-		return Sets.newLinkedHashSet(Lists.reverse(current));
+		Collections.reverse(current);
+		return new LinkedHashSet<>(current);
 	}
 
 	@Override

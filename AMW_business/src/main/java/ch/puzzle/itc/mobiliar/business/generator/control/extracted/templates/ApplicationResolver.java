@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
-import com.google.common.collect.Lists;
 
 import java.util.*;
 
@@ -114,7 +113,7 @@ public class ApplicationResolver {
 		model.setAppProperties(app.getProperties());
 		model.setAppServerProperties(appServer.getProperties());
 
-		List<Map<String, FreeMarkerProperty>> nodePropertyList = Lists.newArrayList();
+		List<Map<String, FreeMarkerProperty>> nodePropertyList = new ArrayList<>();
 
 		model.setNodePropertyList(nodePropertyList);
 	}

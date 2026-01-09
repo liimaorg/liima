@@ -20,8 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
@@ -30,7 +33,6 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.Applicatio
 
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
-import com.google.common.collect.Maps;
 
 /**
  * Provides a context for common objects used during generation.
@@ -46,15 +48,15 @@ public class GenerationOptions{
 	public GenerationOptions(GenerationContext context) {
 		
 		this.context = context;
-		this.versions = Maps.newHashMap();
+		this.versions = new HashMap<>();
 		populateVersions(context.getApplicationsWithVersion());
 		populateProperties();
 	}
 
 	private void populateProperties() {
-		templateFiles = Maps.newLinkedHashMap();
-		this.applications = Maps.newLinkedHashMap();
-		this.contextProperties = Maps.newTreeMap();
+		templateFiles = new LinkedHashMap<>();
+		this.applications = new LinkedHashMap<>();
+		this.contextProperties = new TreeMap<>();
 		contextProperties.putAll(new BasePropertyCollector().propertiesForContext(context.getContext()));
 	}
 

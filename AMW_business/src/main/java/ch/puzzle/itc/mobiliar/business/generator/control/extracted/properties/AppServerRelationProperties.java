@@ -20,7 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,10 +47,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.SetMultimap;
 
 /**
  * Loads properties for {@link ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity}.
@@ -82,14 +80,14 @@ public class AppServerRelationProperties {
 	@Setter
 	private Set<TemplateDescriptorEntity> resourceRelationTemplates;
 
-	private List<AppServerRelationProperties> consumed = Lists.newArrayList();
-	private List<AppServerRelationProperties> provided = Lists.newArrayList();
+	private List<AppServerRelationProperties> consumed = new ArrayList<>();
+	private List<AppServerRelationProperties> provided = new ArrayList<>();
 	
 	@Getter
 	@Setter
 	private SoftlinkGenerationPackage softlinkPPIGenerationPackage;
 
-	private SetMultimap<ResourceEntity, GeneratedTemplate> templatesCache;
+	private Map<ResourceEntity, Set<GeneratedTemplate>> templatesCache;
 
 	private boolean supportNesting = true;
 	private ApplicationResolver resolver;
@@ -194,7 +192,7 @@ public class AppServerRelationProperties {
 		return provided;
 	}
 
-	public void setTemplatesCache(SetMultimap<ResourceEntity, GeneratedTemplate> templatesCache) {
+	public void setTemplatesCache(Map<ResourceEntity, Set<GeneratedTemplate>> templatesCache) {
 		this.templatesCache = templatesCache;
 	}
 
@@ -210,13 +208,16 @@ public class AppServerRelationProperties {
         return model;
 	}
 
-    private Map<String, GeneratedTemplate> getGeneratedTemplates() {
-		Map<String, GeneratedTemplate> templates = Maps.newLinkedHashMap();
-        if (templatesCache != null && getOwner() != null) {
-            for (GeneratedTemplate template : templatesCache.get(getOwner())) {
-                templates.put(template.getName(), template);
-            }
-        }
+	private Map<String, GeneratedTemplate> getGeneratedTemplates() {
+		Map<String, GeneratedTemplate> templates = new LinkedHashMap<>();
+		if (templatesCache != null && getOwner() != null) {
+			Set<GeneratedTemplate> generatedTemplates = templatesCache.get(getOwner());
+			if (generatedTemplates != null) {
+				for (GeneratedTemplate template : generatedTemplates) {
+					templates.put(template.getName(), template);
+				}
+			}
+		}
 		return templates;
     }
 
@@ -228,8 +229,8 @@ public class AppServerRelationProperties {
 		return transformRelatedInternal(relations, false, parent);
 	}
 
-	private Map<String, Map<String,AmwResourceTemplateModel>> transformRelatedInternal(List<AppServerRelationProperties> relations, boolean transformNested, AmwResourceTemplateModel parent) {
-		Map<String, Map<String,AmwResourceTemplateModel>> map = Maps.newLinkedHashMap();
+	private Map<String, Map<String, AmwResourceTemplateModel>> transformRelatedInternal(List<AppServerRelationProperties> relations, boolean transformNested, AmwResourceTemplateModel parent) {
+		Map<String, Map<String,AmwResourceTemplateModel>> map = new LinkedHashMap<>();
 		for (AppServerRelationProperties relation : relations) {
 			ResourceEntity slave = relation.getOwner();
 
@@ -239,7 +240,7 @@ public class AppServerRelationProperties {
 			
 			if (!map.containsKey(typeName)) {
 
-                Map<String,AmwResourceTemplateModel> typeMap = Maps.newLinkedHashMap();
+                Map<String,AmwResourceTemplateModel> typeMap = new LinkedHashMap<>();
 				map.put(typeName, typeMap);
 			}
             Map<String,AmwResourceTemplateModel> typeMap = map.get(typeName);

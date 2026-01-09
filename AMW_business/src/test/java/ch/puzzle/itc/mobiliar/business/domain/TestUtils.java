@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.domain;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -33,16 +34,17 @@ import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
 
-import com.google.common.io.Resources;
-
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
 public class TestUtils {
 	public static String readRecursionTemplate() {
-		try {
-			return Resources.toString(Resources.getResource("rekursiv_macro_4.txt"), StandardCharsets.UTF_8);
+		try (InputStream in = TestUtils.class.getClassLoader().getResourceAsStream("rekursiv_macro_4.txt")) {
+			if (in == null) {
+				return null;
+			}
+			return new String(in.readAllBytes(), StandardCharsets.UTF_8);
 		}
 		catch (IOException e) {
 			e.printStackTrace();

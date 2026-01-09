@@ -25,19 +25,18 @@ import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.Applicatio
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class DeploymentInfo implements Comparable<DeploymentInfo> {
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -98,7 +97,7 @@ public class DeploymentInfo implements Comparable<DeploymentInfo> {
 		Query query = entityManager
 				.createQuery("select distinct d.resource, d.context, d.applicationsWithVersion from DeploymentEntity d where d.buildSuccess = true");
 		List<Object[]> resultList = query.getResultList();
-		List<DeploymentInfo> list = Lists.newArrayList();
+		List<DeploymentInfo> list = new ArrayList<>();
 
 		for (Object[] objects : resultList) {
 			ResourceEntity resource = (ResourceEntity) objects[0];
@@ -119,18 +118,14 @@ public class DeploymentInfo implements Comparable<DeploymentInfo> {
 	}
 
 	public static List<DeploymentInfo> lastForContext(List<DeploymentInfo> allMos) {
-		final Set<String> contextNames = Sets.newHashSet();
-		return Lists.newArrayList(Collections2.filter(allMos, new Predicate<DeploymentInfo>() {
-
-			@Override
-			public boolean apply(DeploymentInfo input) {
-				if (contextNames.add(input.context.getName())) {
-					return true;
-				}
-				return false;
+		Set<String> contextNames = new HashSet<>();
+		List<DeploymentInfo> result = new ArrayList<>();
+		for (DeploymentInfo info : allMos) {
+			if (contextNames.add(info.context.getName())) {
+				result.add(info);
 			}
-
-		}));
+		}
+		return result;
 	}
 
 	public static List<DeploymentInfo> latest(List<DeploymentInfo> deployments, String server) {
@@ -138,16 +133,17 @@ public class DeploymentInfo implements Comparable<DeploymentInfo> {
 	}
 
 	public static List<DeploymentInfo> filter(List<DeploymentInfo> deployments, final String serverName) {
-		return Lists.newArrayList(Collections2.filter(deployments, new Predicate<DeploymentInfo>() {
-			@Override
-			public boolean apply(DeploymentInfo input) {
-				return input.appServer.getName().equals(serverName);
+		List<DeploymentInfo> result = new ArrayList<>();
+		for (DeploymentInfo deployment : deployments) {
+			if (deployment.appServer.getName().equals(serverName)) {
+				result.add(deployment);
 			}
-		}));
+		}
+		return result;
 	}
 
 	public static Set<String> serverNames(List<DeploymentInfo> deployments) {
-		Set<String> serverNames = Sets.newTreeSet();
+		Set<String> serverNames = new TreeSet<>();
 		for (DeploymentInfo info : deployments) {
 			serverNames.add(info.appServer.getName());
 		}
