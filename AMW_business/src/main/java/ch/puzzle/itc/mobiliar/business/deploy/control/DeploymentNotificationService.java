@@ -23,7 +23,6 @@ package ch.puzzle.itc.mobiliar.business.deploy.control;
 import java.util.ArrayList;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
-import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.utils.notification.NotificationService;
@@ -50,9 +49,6 @@ public class DeploymentNotificationService {
 	private NotificationService notificationService;
 
 	@Inject
-	private UserSettingsService userSettingsService;
-
-	@Inject
 	private ResourceDependencyResolverService resourceDependencyResolverService;
 
 	@Inject
@@ -76,12 +72,13 @@ public class DeploymentNotificationService {
 		}
 		String subjectMessage = "Liima-Deploy for tracking id: " + deployments.get(0).getTrackingId();
 		List<DeploymentEntity> filteredDeployments = new ArrayList<>();
-		// skip notification if deployment is preserved. Can happen if old deployments are stuck in progress that the scheduler tries to clean up.
 		for (DeploymentEntity deployment : deployments) {
-			if (!deployment.isPreserved()) {
-				log.log(Level.INFO, "Deployment notification for deployment %s will not be sent because it's preserved", deployment.getId());
-				filteredDeployments.add(deployment);
+			// skip notification if deployment is preserved. Can happen if old deployments are stuck in progress that the scheduler tries to clean up.
+			if (deployment.isPreserved()) {
+				log.log(Level.INFO, "Deployment notification for deployment {0} will not be sent because it's preserved", deployment.getId());
+				continue;
 			}
+			filteredDeployments.add(deployment);
 		}
 		if (filteredDeployments.isEmpty()) {
 			return message;

@@ -23,27 +23,24 @@ package ch.puzzle.itc.mobiliar.test;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity.ApplicationWithVersion;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
 public class DeploymentInfo implements Comparable<DeploymentInfo> {
-	private Gson gson = new GsonBuilder().create();
-	private Type collectionType = new TypeToken<List<ApplicationWithVersion>>() {
-	}.getType();
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public List<ApplicationWithVersion> apps;
 	public ContextEntity context;
@@ -52,7 +49,12 @@ public class DeploymentInfo implements Comparable<DeploymentInfo> {
 	public DeploymentInfo(ContextEntity context, ResourceEntity appServer, String appInfo) {
 		this.context = context;
 		this.appServer = appServer;
-		this.apps = gson.fromJson(appInfo, collectionType);
+		try {
+			CollectionType collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, ApplicationWithVersion.class);
+			this.apps = objectMapper.readValue(appInfo, collectionType);
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to parse application info JSON", e);
+		}
 		sortApps();
 	}
 

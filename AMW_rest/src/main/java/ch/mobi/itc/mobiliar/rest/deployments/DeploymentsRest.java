@@ -50,8 +50,7 @@ import ch.puzzle.itc.mobiliar.common.exception.DeploymentStateException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import ch.puzzle.itc.mobiliar.common.util.Tuple;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -96,8 +95,6 @@ public class DeploymentsRest {
     @Inject
     private GeneratorDomainServiceWithAppServerRelations generatorDomainServiceWithAppServerRelations;
     @Inject
-    private KeyRepository keyRepository;
-    @Inject
     private PermissionBoundary permissionBoundary;
     @Inject
     private ContextLocator contextLocator;
@@ -106,6 +103,8 @@ public class DeploymentsRest {
 
     @Inject
     Logger log;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @GET
     @Path("/filter")
@@ -118,14 +117,11 @@ public class DeploymentsRest {
                                    @QueryParam("offset") Integer offset) {
         DeploymentFilterDTO[] filterDTOs;
         try {
-            filterDTOs = new Gson().fromJson(jsonListOfFilters, DeploymentFilterDTO[].class);
-        } catch (JsonSyntaxException e) {
+            filterDTOs = objectMapper.readValue(jsonListOfFilters, DeploymentFilterDTO[].class);
+        } catch (Exception e) {
             String msg = String.format("json is not a valid representation for an object of type %s", DeploymentFilterDTO.class.getSimpleName());
             String detail = "example: [{\"name\":\"Application\",\"comp\":\"eq\",\"val\":\"Latest\"},{\"name\":\"Id\",\"comp\":\"eq\",\"val\":\"25\"}]";
             return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto(msg, detail)).build();
-        }
-        if (filterDTOs == null) {
-            return Response.status(Status.BAD_REQUEST).entity(new ExceptionDto("at least one filter must be set")).build();
         }
         Sort.SortingDirectionType sortingDirectionType = getSortingDirectionType(sortDirection);
         LinkedList<CustomFilter> filters = createCustomFilters(filterDTOs);
