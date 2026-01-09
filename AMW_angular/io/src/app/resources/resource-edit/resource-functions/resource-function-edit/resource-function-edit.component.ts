@@ -50,9 +50,10 @@ export class ResourceFunctionEditComponent {
 
   @Output() saveFunction: EventEmitter<ResourceFunction> = new EventEmitter<ResourceFunction>();
 
+  public wrapLinesEnabled: false;
   private functionsService = inject(ResourceFunctionsService);
   public revisions: WritableSignal<RevisionInformation[]> = signal([]);
-  public revision: ResourceFunction;
+  public revision: WritableSignal<ResourceFunction> = signal(null);
   public selectedRevisionName: string;
   public newMik: string = '';
   public diffValue = {
@@ -69,7 +70,7 @@ export class ResourceFunctionEditComponent {
   }
 
   save() {
-    if (this.revision) this.function.content = this.diffValue.original;
+    if (this.revision()) this.function.content = this.diffValue.original;
     if (this.newMik !== '') this.addMik();
     this.saveFunction.emit(this.function);
     this.activeModal.close();
@@ -84,13 +85,13 @@ export class ResourceFunctionEditComponent {
   selectRevision(revisionId: number, displayName: string): void {
     if (revisionId && displayName) {
       this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
-        this.revision = revision;
+        this.revision.set(revision);
         this.selectedRevisionName = displayName;
-        this.diffValue = { original: this.function.content, modified: this.revision.content };
+        this.diffValue = { original: this.function.content, modified: this.revision().content };
       });
     } else {
       //reset selected revision
-      this.revision = null;
+      this.revision.set(null);
       this.selectedRevisionName = null;
     }
   }
