@@ -1,4 +1,14 @@
-import { Component, computed, EventEmitter, inject, Input, Output, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
@@ -59,7 +69,7 @@ export class ResourceTemplateEditComponent {
 
   public wrapLinesEnabled: false;
   public revisions: WritableSignal<RevisionInformation[]> = signal([]);
-  public revision: ResourceTemplate;
+  public revision: WritableSignal<ResourceTemplate> = signal(null);
   public selectedRevisionName: string;
   public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
     return this.loadTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
@@ -82,7 +92,7 @@ export class ResourceTemplateEditComponent {
 
   save() {
     if (this.isValidForm()) {
-      if (this.revision) this.template.fileContent = this.diffValue.original;
+      if (this.revision()) this.template.fileContent = this.diffValue.original;
       this.saveTemplate.emit(this.template);
       this.activeModal.close();
     }
@@ -102,11 +112,11 @@ export class ResourceTemplateEditComponent {
   }
 
   private loadRevisionTargetPlatformModelsForTemplate(allTargetPlatforms: string[]): TargetPlatformModel[] {
-    if (!this.revision) return;
+    if (!this.revision()) return;
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.revision.targetPlatforms.includes(name),
+        selected: this.revision().targetPlatforms.includes(name),
       };
     });
   }
@@ -129,13 +139,13 @@ export class ResourceTemplateEditComponent {
   selectRevision(revisionId: number, displayName: string): void {
     if (revisionId && displayName) {
       this.templatesService.getTemplateByIdAndRevision(this.template.id, revisionId).subscribe((revision) => {
-        this.revision = revision;
+        this.revision.set(revision);
         this.selectedRevisionName = displayName;
-        this.diffValue = { original: this.template.fileContent, modified: this.revision.fileContent };
+        this.diffValue = { original: this.template.fileContent, modified: this.revision().fileContent };
       });
     } else {
       //reset selected revision
-      this.revision = null;
+      this.revision.set(null);
       this.selectedRevisionName = null;
     }
   }

@@ -45,6 +45,7 @@ export class FunctionEditComponent {
   @Input() canManage: boolean;
   @Output() saveFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();
 
+  public wrapLinesEnabled: false;
   private functionsService = inject(FunctionsService);
   public revisions: WritableSignal<RevisionInformation[]> = signal([]);
   public revision: WritableSignal<AppFunction | null> = signal(null);
@@ -86,7 +87,7 @@ export class FunctionEditComponent {
       error: (err) => {
         console.error('Failed to load revisions:', err);
         this.revisions.set([]);
-      }
+      },
     });
   }
 
