@@ -20,10 +20,10 @@
 
 package ch.puzzle.itc.mobiliar.test;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public enum EntityBuilderType {
 
@@ -40,16 +40,13 @@ public enum EntityBuilderType {
 	}
 
 	public static List<String> typeNames() {
-		return Lists.transform(vals(), new Function<EntityBuilderType, String>() {
-			public String apply(EntityBuilderType input) {
-				return input.type;
-			}
-
-		});
+		return vals().stream()
+				.map(input -> input.type)
+				.collect(Collectors.toList());
 	}
 
 	static List<EntityBuilderType> vals() {
-		return Lists.newArrayList(EntityBuilderType.values());
+		return new ArrayList<>(Arrays.asList(EntityBuilderType.values()));
 	}
 
 }

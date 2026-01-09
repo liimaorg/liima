@@ -33,8 +33,8 @@ import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
-import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -47,12 +47,12 @@ import java.util.List;
  * @see {@link PersistingEntityBuilder} for building model in DB.
  */
 public class EntityBuilder {
-	private List<ResourceTypeEntity> types = Lists.newArrayList();
-	private List<ResourceEntity> resources = Lists.newArrayList();
-	private List<ProvidedResourceRelationEntity> providedRelations = Lists.newArrayList();
-	private List<ConsumedResourceRelationEntity> consumedRelations = Lists.newArrayList();
-	private List<ResourceRelationTypeEntity> typeRelations = Lists.newArrayList();
-	private List<ContextEntity> contexts = Lists.newArrayList();
+	private List<ResourceTypeEntity> types = new ArrayList<>();
+	private List<ResourceEntity> resources = new ArrayList<>();
+	private List<ProvidedResourceRelationEntity> providedRelations = new ArrayList<>();
+	private List<ConsumedResourceRelationEntity> consumedRelations = new ArrayList<>();
+	private List<ResourceRelationTypeEntity> typeRelations = new ArrayList<>();
+	private List<ContextEntity> contexts = new ArrayList<>();
 
 	private int resourceContextId = 0;
 	private int contextTypeId = 0;

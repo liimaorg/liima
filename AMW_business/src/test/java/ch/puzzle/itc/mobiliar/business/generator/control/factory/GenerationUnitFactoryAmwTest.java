@@ -37,6 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -63,8 +64,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationT
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
-
-import com.google.common.collect.Iterables;
 
 import freemarker.template.TemplateModelException;
 
@@ -134,15 +133,17 @@ public class GenerationUnitFactoryAmwTest {
 	@Test
 	public void testFirstItem() {
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
-		assertEquals(Iterables.getFirst(work.getAsSet(), null).getSlaveResource(), resourceByName(builder, AD));
-		assertNotNull(Iterables.getFirst(work.getAsSet(), null).getPropertiesAsModel());
+		GenerationUnit firstUnit = work.getAsSet().iterator().next();
+		assertEquals(firstUnit.getSlaveResource(), resourceByName(builder, AD));
+		assertNotNull(firstUnit.getPropertiesAsModel());
 	}
 
 	@Test
 	public void testLastItem() {
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
-		assertEquals(Iterables.getLast(work.getAsSet()).getSlaveResource(), resourceByName(builder, AS));
-		assertNotNull(Iterables.getLast(work.getAsSet()).getPropertiesAsModel());
+		List<GenerationUnit> workList = new ArrayList<>(work.getAsSet());
+		assertEquals(workList.get(workList.size() - 1).getSlaveResource(), resourceByName(builder, AS));
+		assertNotNull(workList.get(workList.size() - 1).getPropertiesAsModel());
 	}
 
 	@Test

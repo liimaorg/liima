@@ -159,10 +159,6 @@
 			<version>1.20.0</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mailapi</artifactId>
 			<version>1.4.3</version>

@@ -1,6 +1,5 @@
 package ch.puzzle.itc.mobiliar.business.domain.commons;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Singular;
 
@@ -8,10 +7,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 
 @Builder
@@ -22,8 +17,8 @@ public final class Sort implements Iterable<Sort.Order> {
     private final List<Order> orders;
 
     private Sort(List<Order> orders) {
-        checkNotNull(orders, "orders may not be null");
-        this.orders = ImmutableList.copyOf(orders);
+        Objects.requireNonNull(orders, "orders may not be null");
+        this.orders = List.copyOf(orders);
     }
 
     public static Sort nothing() {
@@ -68,7 +63,9 @@ public final class Sort implements Iterable<Sort.Order> {
 
 
         protected Order(String property, SortingDirectionType direction, boolean ignoreCase) {
-            checkArgument(!isNullOrEmpty(property), "Property must not be null or empty!");
+            if (property == null || property.isEmpty()) {
+                throw new IllegalArgumentException("Property must not be null or empty!");
+            }
 
             this.property = property;
             this.direction = direction == null ? DEFAULT_DIRECTION : direction;

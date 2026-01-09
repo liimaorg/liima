@@ -34,7 +34,6 @@ import ch.puzzle.itc.mobiliar.presentation.ViewBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -132,7 +131,8 @@ public class EditTemplateView implements Serializable {
      */
     public void setTemplateId(Integer templateId) {
         template = templateEditor.getTemplateById(templateId);
-        revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(templateId));
+        revisionInformations = new ArrayList<>(templateEditor.getTemplateRevisions(templateId));
+        Collections.reverse(revisionInformations);
     }
 
     public boolean isNewTemplate() {
@@ -227,7 +227,8 @@ public class EditTemplateView implements Serializable {
 
     void succeed() {
         GlobalMessageAppender.addSuccessMessage("Template successfully saved.");
-        revisionInformations = Lists.reverse(templateEditor.getTemplateRevisions(template.getId()));
+        revisionInformations = new ArrayList<>(templateEditor.getTemplateRevisions(template.getId()));
+        Collections.reverse(revisionInformations);
     }
 
     boolean fail(AMWException e) {

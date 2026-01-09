@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import ch.puzzle.itc.mobiliar.business.function.boundary.FunctionsBoundary;
@@ -207,7 +206,8 @@ public class EditFunctionView implements Serializable {
     }
 
     private void refreshRevisionInformation(Integer funId){
-        revisionInformations = Lists.reverse(functionsBoundary.getFunctionRevisions(funId));
+        revisionInformations = new java.util.ArrayList<>(functionsBoundary.getFunctionRevisions(funId));
+        java.util.Collections.reverse(revisionInformations);
     }
 
     /**

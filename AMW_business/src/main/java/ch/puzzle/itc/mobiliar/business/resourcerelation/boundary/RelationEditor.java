@@ -33,9 +33,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-import com.google.common.base.Enums;
-
 import org.apache.commons.lang3.StringUtils;
+import java.util.Arrays;
 
 import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
 import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
@@ -265,7 +264,8 @@ public class RelationEditor {
 		if (StringUtils.isEmpty(resourceRelationTypeString)) {
 			return false;
 		}
-		return (Enums.getIfPresent(ResourceRelationType.class, resourceRelationTypeString.toUpperCase()).isPresent());
+		return Arrays.stream(ResourceRelationType.values())
+				.anyMatch(type -> type.name().equalsIgnoreCase(resourceRelationTypeString));
 	}
 
 }

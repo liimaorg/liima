@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,8 +42,6 @@ import ch.puzzle.itc.mobiliar.business.generator.control.AmwModelPreprocessExcep
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.BaseTemplateProcessor;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 
-import com.google.common.collect.Maps;
-
 import freemarker.cache.StringTemplateLoader;
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
@@ -55,7 +54,7 @@ public class AmwResourceTemplateModelTest {
 	@Test
 	public void testEvaluateFunction() throws Exception{
 		// given
-		Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
 		thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
 		thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
 
@@ -80,7 +79,7 @@ public class AmwResourceTemplateModelTest {
 	@Test
 	public void testEvaluateFunction_in_function() throws Exception{
 		// given
-		Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
 		thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
 		thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
 
@@ -110,11 +109,11 @@ public class AmwResourceTemplateModelTest {
 	@Test
 	public void testEvaluateFunction_deep() throws Exception{
 		// given
-		Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
 		thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
 		thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
 		
-		Map<String, FreeMarkerProperty> adProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> adProperties = new HashMap<>();
 		adProperties.put("foo", new FreeMarkerProperty("val11", "foo"));
 		adProperties.put("bar", new FreeMarkerProperty("val22", "bar"));
 
@@ -127,8 +126,8 @@ public class AmwResourceTemplateModelTest {
 		AmwResourceTemplateModel resourceModel = new AmwResourceTemplateModel();
 		resourceModel.setProperties(thisProperties);
 		
-		Map<String, Map<String, AmwResourceTemplateModel>> consumedResTypes = Maps.newHashMap();
-		Map<String, AmwResourceTemplateModel> consumedPerType= Maps.newHashMap();
+        Map<String, Map<String, AmwResourceTemplateModel>> consumedResTypes = new HashMap<>();
+        Map<String, AmwResourceTemplateModel> consumedPerType= new HashMap<>();
 		AmwResourceTemplateModel ad = new AmwResourceTemplateModel();
 		ad.setProperties(adProperties);
 		ad.setFunctions(functions);
@@ -148,11 +147,11 @@ public class AmwResourceTemplateModelTest {
 	@Test
 	public void testEvaluateFunction_fullTemplateModel() throws Exception{
 		// given
-		Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
 		thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
 		thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
 		
-		Map<String, FreeMarkerProperty> adProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> adProperties = new HashMap<>();
 		adProperties.put("foo", new FreeMarkerProperty("val11", "foo"));
 		adProperties.put("bar", new FreeMarkerProperty("val22", "bar"));
 
@@ -165,8 +164,8 @@ public class AmwResourceTemplateModelTest {
 		AmwResourceTemplateModel resourceModel = new AmwResourceTemplateModel();
 		resourceModel.setProperties(thisProperties);
 		
-		Map<String, Map<String, AmwResourceTemplateModel>> consumedResTypes = Maps.newHashMap();
-		Map<String, AmwResourceTemplateModel> consumedPerType= Maps.newHashMap();
+        Map<String, Map<String, AmwResourceTemplateModel>> consumedResTypes = new HashMap<>();
+        Map<String, AmwResourceTemplateModel> consumedPerType= new HashMap<>();
 		AmwResourceTemplateModel ad = new AmwResourceTemplateModel();
 		ad.setProperties(adProperties);
 		ad.setFunctions(functions);
@@ -179,19 +178,19 @@ public class AmwResourceTemplateModelTest {
 		AmwTemplateModel model = new AmwTemplateModel();
 		model.setAmwModelPreprocessExceptionHandler(new AmwModelPreprocessExceptionHandler());
 
-        Map<String, FreeMarkerProperty> properties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> properties = new HashMap<>();
 		properties.put("foo", new FreeMarkerProperty("val111", "foo"));
 		properties.put("bar", new FreeMarkerProperty("val222", "bar"));
         resourceModel.setProperties(properties);
 		
 		AmwResourceTemplateModel asPropertiesModel = new AmwResourceTemplateModel();
-		Map<String, FreeMarkerProperty> asProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> asProperties = new HashMap<>();
 		asProperties.put("asName", new FreeMarkerProperty("asNameVal", "asName"));
 		asPropertiesModel.setProperties(asProperties);
 		model.setAsProperties(asPropertiesModel);
 		
 		AmwResourceTemplateModel nodePropertiesModel = new AmwResourceTemplateModel();
-		Map<String, FreeMarkerProperty> nodeProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> nodeProperties = new HashMap<>();
 		nodeProperties.put("nodeName", new FreeMarkerProperty("nodeNameVal", "nodeName"));
 		nodePropertiesModel.setProperties(nodeProperties);
 		model.setNodeProperties(nodePropertiesModel);
@@ -209,7 +208,7 @@ public class AmwResourceTemplateModelTest {
     @Test
     public void testEvaluatePropertyInProperty() throws Exception{
         // given
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
         thisProperties.put("bar", new FreeMarkerProperty("${foo}", "bar"));
 
@@ -233,7 +232,7 @@ public class AmwResourceTemplateModelTest {
     @Test
     public void testAccessPropertiesAsHash() throws Exception{
         // given
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
         thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
 
@@ -256,7 +255,7 @@ public class AmwResourceTemplateModelTest {
     @Test
     public void testAccessPropertiesAsHashListAccess() throws Exception{
         // given
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newLinkedHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new LinkedHashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
         thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
 
@@ -323,7 +322,7 @@ public class AmwResourceTemplateModelTest {
     @Test
     public void testEvaluatePropertyInPropertyOnConsumedResource() throws Exception{
         // given
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
         thisProperties.put("bar", new FreeMarkerProperty("${foo}", "bar"));
 
@@ -363,7 +362,7 @@ public class AmwResourceTemplateModelTest {
         desc.setMachineInterpretationKey("MIK1");
         FreeMarkerProperty mik = new FreeMarkerProperty(null, desc);
 
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
         thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
         thisProperties.put("mikProperty", mik);
@@ -400,7 +399,7 @@ public class AmwResourceTemplateModelTest {
         desc.setMachineInterpretationKey("MIK1");
         FreeMarkerProperty mik = new FreeMarkerProperty(null, desc);
 
-        Map<String, FreeMarkerProperty> thisProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> thisProperties = new HashMap<>();
         thisProperties.put("foo", new FreeMarkerProperty("val1", "foo"));
         thisProperties.put("bar", new FreeMarkerProperty("val2", "bar"));
         thisProperties.put("mikProperty", mik);

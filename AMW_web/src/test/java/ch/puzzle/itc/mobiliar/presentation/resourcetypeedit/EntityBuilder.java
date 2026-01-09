@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.presentation.resourcetypeedit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -29,8 +30,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-
-import com.google.common.collect.Lists;
 
 public class EntityBuilder {
 
@@ -100,8 +99,8 @@ public class EntityBuilder {
 		child.setParentResourceType(base);
 	}
 
-	private ArrayList<String> amwTypes() {
-		return Lists.newArrayList("APPLICATIONSERVER", "NODE", "APPLICATION", "ActiveDirectory", "CertLoginModule", "DB2",
+	private List<String> amwTypes() {
+		return Arrays.asList("APPLICATIONSERVER", "NODE", "APPLICATION", "ActiveDirectory", "CertLoginModule", "DB2",
 				"JBoss7Management", "Keystore", "Mail", "ModCluster", "Truststore");
 	}
 

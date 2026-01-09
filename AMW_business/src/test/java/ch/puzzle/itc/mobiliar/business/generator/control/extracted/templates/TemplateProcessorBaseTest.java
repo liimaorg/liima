@@ -36,11 +36,12 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.io.TempDir;
+
+import java.util.Arrays;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-
-import com.google.common.collect.Lists;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
@@ -153,7 +154,7 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 
 	protected void writeFiles() throws FileExistsException, IOException {
 		writer.generateFileStructure(generationResults, folder.toString(), null);
-		files = Lists.newArrayList(new File(folder.toString()).listFiles());
+		files = new ArrayList<>(Arrays.asList(new File(folder.toString()).listFiles()));
 	}
 
 	protected String readFile(String name) throws IOException {
@@ -166,7 +167,7 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 	}
 	
 	public static List<GenerationUnitGenerationResult> generateTemplates(GenerationOptions options, GenerationPackage work, AppServerRelationsTemplateProcessor processor) throws IOException{
-		List<GenerationUnitGenerationResult> templates = Lists.newArrayList();
+		List<GenerationUnitGenerationResult> templates = new ArrayList<>();
 		work.setGenerationOptions(options);
 		processor.setGlobals(work);
 		processor.setGenerationContext(options.getContext());
