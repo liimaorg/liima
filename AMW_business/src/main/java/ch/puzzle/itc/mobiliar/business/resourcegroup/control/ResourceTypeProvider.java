@@ -43,10 +43,10 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 public class ResourceTypeProvider {
 
 	@Inject
-	EntityManager entityManager;
+	public EntityManager entityManager;
 
 	@Inject
-	ResourceTypeRepository resourceTypeRepository;
+	public ResourceTypeRepository resourceTypeRepository;
 
 	public ResourceTypeEntity getOrCreateDefaultResourceType(DefaultResourceTypeDefinition definition) {
 		if (definition != null) {

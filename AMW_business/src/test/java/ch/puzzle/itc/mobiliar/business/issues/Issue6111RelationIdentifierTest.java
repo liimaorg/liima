@@ -29,7 +29,6 @@ import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
@@ -48,7 +47,6 @@ import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 @ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
 public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<PersistingEntityBuilder> {
 
-	@Spy
 	@PersistenceContext
 	EntityManager entityManager;
 	

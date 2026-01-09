@@ -52,11 +52,10 @@ import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 import freemarker.template.TemplateModelException;
 
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class Issue5959AppServerRelationsTemplateProcessorProvidedConsumedTest extends
 	TemplateProcessorBaseTest<ApplicationResolverEntityBuilder> {
 
-	@Spy
 	@PersistenceContext
 	EntityManager entityManager;
 

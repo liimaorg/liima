@@ -71,9 +71,7 @@ public class CommonFilterService {
 
 			if (afterWhere.length() > 0) {
 				if (filterQuery.length() > 0) {
-					filterQuery.append(" and (").append(afterWhere).append("))");
-				} else {
-					filterQuery.append(afterWhere);
+					filterQuery.append(" and (").append(afterWhere).append(")");
 				}
 			}
 

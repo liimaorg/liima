@@ -50,15 +50,13 @@ import java.util.logging.Logger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests {@link SoftlinkRelationService}
  */
-@ExtendWith({PersistenceTestExtension.class, MockitoExtension.class})
+@ExtendWith({MockitoExtension.class, PersistenceTestExtension.class})
 public class SoftlinkRelationServicePersistenceTest {
 
-    @Spy
     @PersistenceContext
     EntityManager entityManager;
 
@@ -71,14 +69,15 @@ public class SoftlinkRelationServicePersistenceTest {
     @InjectMocks
     ResourceDependencyResolverService dependencyResolverService;
 
-    @InjectMocks
-    SoftlinkRelationService service;
+    @Spy
+    ResourceTypeRepository resourceTypeRepository;
 
     @InjectMocks
     ResourceTypeProvider resourceTypeProvider;
 
-    @Mock
-    ResourceTypeRepository resourceTypeRepository;
+    @Spy
+    @InjectMocks
+    SoftlinkRelationService service;
 
 
     ResourceTypeEntity type1;
@@ -181,10 +180,9 @@ public class SoftlinkRelationServicePersistenceTest {
         service.setSoftlinkRelation(cpiResource, softlinkRelation2);
         entityManager.flush();
 
-        // then
-        verify(entityManager).remove(softlinkRelation);
-        verify(entityManager).persist(softlinkRelation2);
-
+        // then - verify database state, not mock calls (real persistence test)
+        assertNull(entityManager.find(SoftlinkRelationEntity.class, softlinkRelation.getId()), "Old softlink relation should be removed");
+        assertNotNull(entityManager.find(SoftlinkRelationEntity.class, softlinkRelation2.getId()), "New softlink relation should be persisted");
     }
 
     @Test
