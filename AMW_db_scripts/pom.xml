@@ -63,48 +63,48 @@
 			</dependencies>
 		</profile>
 
-        <profile>
-            <id>liquibasecompare</id>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <filtering>true</filtering>
-                    </resource>
-                </resources>
+		<profile>
+			<id>liquibasecompare</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+				</resources>
 
-                <plugins>
-                    <plugin>
-                        <groupId>de.juplo</groupId>
-                        <artifactId>hibernate4-maven-plugin</artifactId>
-                        <version>${version.hibernate4-maven-plugin}</version>
-                        <executions>
-                            <execution>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>export</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <force>true</force>
-                            <hibernateDialect>org.hibernate.dialect.Oracle10gDialect</hibernateDialect>
-                            <hibernateProperties>${project.build.outputDirectory}/liquibase/hibernate.maven-plugin.properties</hibernateProperties>
-                            <target>EXPORT</target>
-                            <envers>true</envers>
-                            <outputDirectory>../AMW_business/build/classes</outputDirectory>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>ch.puzzle.itc.mobiliar</groupId>
-                                <artifactId>AMW_business</artifactId>
-                                <version>1.17.23-SNAPSHOT</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+				<plugins>
+					<plugin>
+						<groupId>de.juplo</groupId>
+						<artifactId>hibernate4-maven-plugin</artifactId>
+						<version>${version.hibernate4-maven-plugin}</version>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>export</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<force>true</force>
+							<hibernateDialect>org.hibernate.dialect.Oracle10gDialect</hibernateDialect>
+							<hibernateProperties>${project.build.outputDirectory}/liquibase/hibernate.maven-plugin.properties</hibernateProperties>
+							<target>EXPORT</target>
+							<envers>true</envers>
+							<outputDirectory>../AMW_business/build/classes</outputDirectory>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>ch.puzzle.itc.mobiliar</groupId>
+								<artifactId>AMW_business</artifactId>
+								<version>1.17.23-SNAPSHOT</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>liquibase</id>
 			<build>
@@ -114,9 +114,9 @@
 						<filtering>true</filtering>
 					</resource>
 					<!-- liquibase sets the changelog path in the changelog, use classpath to make it constant -->
-                                        <resource>
-                                                <directory>${basedir}/../AMW_business/src/main/resources</directory>
-                                        </resource>
+					<resource>
+						<directory>${basedir}/../AMW_business/src/main/resources</directory>
+					</resource>
 				</resources>
 
 				<plugins>
@@ -131,7 +131,7 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<tasks>
+									<target>
 										<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath" />
 										<mkdir dir="${project.build.directory}/liquibase" />
 										<if>
@@ -150,7 +150,7 @@
 												</delete>
 											</then>
 										</if>
-									</tasks>
+									</target>
 								</configuration>
 							</execution>
 						</executions>
@@ -169,7 +169,8 @@
 						<version>${version.liquibase}</version>
 						<configuration>
 							<propertyFileWillOverride>true</propertyFileWillOverride>
-							<propertyFile>${project.build.outputDirectory}/liquibase/liquibase-${db}.properties</propertyFile>
+							<propertyFile>liquibase/liquibase-${db}.properties</propertyFile>
+							<searchPath>${project.build.outputDirectory}</searchPath>
 							<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
 							<migrationSqlOutputFile>${project.build.directory}/liquibase/migrate${project.artifactId}-${project.version}.sql</migrationSqlOutputFile>
 						</configuration>

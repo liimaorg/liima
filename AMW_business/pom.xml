@@ -66,11 +66,6 @@
 			<artifactId>liquibase-core</artifactId>
 			<version>${version.liquibase}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-cdi</artifactId>
-			<version>${version.liquibase}</version>
-		</dependency>
 		<!-- Project dependency -->
 		<dependency>
 			<groupId>ch.puzzle.itc.mobiliar</groupId>
