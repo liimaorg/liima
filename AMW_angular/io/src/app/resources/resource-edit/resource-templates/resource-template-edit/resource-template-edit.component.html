@@ -11,7 +11,7 @@
         </div>
       </div>
     }
-    @if (revision) {
+    @if (revision()) {
       <div class="mx-0 row">
         <label class="col badge bg-info">Current version</label>
         <label class="col badge bg-secondary">Version: {{ selectedRevisionName }}</label>
@@ -39,9 +39,9 @@
             </div>
           }
         </div>
-        @if (revision) {
+        @if (revision()) {
           <div class="col-sm-6">
-            <p class="form-control-plaintext">{{ revision.name }}</p>
+            <p class="form-control-plaintext">{{ revision().name }}</p>
           </div>
         }
       </div>
@@ -70,9 +70,9 @@
             </div>
           }
         </div>
-        @if (revision) {
+        @if (revision()) {
           <div class="col-sm-6">
-            <p class="form-control-plaintext">{{ revision.targetPath }}</p>
+            <p class="form-control-plaintext">{{ revision().targetPath }}</p>
           </div>
         }
       </div>
@@ -90,7 +90,7 @@
           <app-fullscreen-toggle (fullscreenChange)="toggleFullscreen($event)"></app-fullscreen-toggle>
         </div>
       </div>
-      @if (!revision) {
+      @if (!revision()) {
         <div class="editor border border-primary-subtle rounded">
           <app-code-editor
             [theme]="'light'"
@@ -110,9 +110,9 @@
       }
     </div>
     <div class="container mb-3 p-0">
-      <label class="form-label">Valid for:</label>
+      <label class="form-label" for="targetPlatforms">Valid for:</label>
       <div class="row align-items-center">
-        <div class="col-sm-6">
+        <div [class]="revision() ? 'col-sm-6' : 'col-sm-12'">
           @for (targetPlatform of targetPlatformModels(); track targetPlatform.name) {
             <div class="form-check form-check-inline">
               <input
@@ -126,7 +126,7 @@
             </div>
           }
         </div>
-        @if (revision) {
+        @if (revision()) {
           <div class="col-sm-6">
             @for (revisionTargetPlatform of revisionTargetPlatformModels(); track revisionTargetPlatform.name) {
               <div class="form-check form-check-inline">
