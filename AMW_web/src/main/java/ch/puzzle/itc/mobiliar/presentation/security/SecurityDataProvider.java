@@ -23,7 +23,6 @@ package ch.puzzle.itc.mobiliar.presentation.security;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.SessionScoped;

@@ -27,7 +27,6 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ejb.EJBException;
