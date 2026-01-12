@@ -33,8 +33,7 @@
         <version.site.maven.plugin>3.21.0</version.site.maven.plugin>
         <version.release.maven.plugin>3.3.1</version.release.maven.plugin>
 
-        <!-- Not updating to latest version because of logging issue: https://github.com/liquibase/liquibase/pull/4032 -->
-        <version.liquibase>4.21.0</version.liquibase>
+        <version.liquibase>4.33.0</version.liquibase>
         <version.assertj-core>3.27.6</version.assertj-core>
         <version.swagger>2.2.41</version.swagger>
         <version.hamcrest>3.0</version.hamcrest>
