@@ -23,7 +23,6 @@ package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 import java.io.Serializable;
 
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 
 import lombok.Getter;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;

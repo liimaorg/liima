@@ -17,9 +17,9 @@ RUN $JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/standalone/configuration/wil
 
 # add jsf 2.2 for RichFaces
 RUN mkdir -p $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2 && \
-    curl  https://repo1.maven.org/maven2/com/sun/faces/jsf-impl/2.2.20/jsf-impl-2.2.20.jar > $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2/jsf-impl.jar && \
+    curl -k  https://repo1.maven.org/maven2/com/sun/faces/jsf-impl/2.2.20/jsf-impl-2.2.20.jar > $JBOSS_HOME/modules/com/sun/jsf-impl/mojarra-2.2/jsf-impl.jar && \
     mkdir -p $JBOSS_HOME/modules/javax/faces/api/mojarra-2.2 && \
-    curl  https://repo1.maven.org/maven2/com/sun/faces/jsf-api/2.2.20/jsf-api-2.2.20.jar> $JBOSS_HOME/modules/javax/faces/api/mojarra-2.2/jsf-api.jar && \
+    curl -k  https://repo1.maven.org/maven2/com/sun/faces/jsf-api/2.2.20/jsf-api-2.2.20.jar> $JBOSS_HOME/modules/javax/faces/api/mojarra-2.2/jsf-api.jar && \
     mkdir -p $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2 && \
     INJECTION=$(find $JBOSS_HOME/modules/system/layers/base -name jsf-injection | sort | head -n 1) && \
     cp $INJECTION/main/wildfly-jsf-injection*.jar $JBOSS_HOME/modules/org/jboss/as/jsf-injection/mojarra-2.2/wildfly-jsf-injection.jar && \

@@ -41,8 +41,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 
@@ -134,8 +132,7 @@ public class CopyResourceDomainService {
     @Inject
     ForeignableService foreignableService;
 
-    @Inject
-    SoftlinkRelationService softlinkService;
+    
 
     @Inject
     ResourceLocator resourceLocator;
@@ -210,7 +207,6 @@ public class CopyResourceDomainService {
             copyProvidedSlaveRelations(copyUnit);
         }
         copyFunctions(copyUnit);
-        copySoftlinkRelation(copyUnit);
         copyUnit.getResult().setTargetResource(copyUnit.getTargetResource());
     }
 
@@ -337,18 +333,7 @@ public class CopyResourceDomainService {
         }
     }
 
-    protected SoftlinkRelationEntity copySoftlinkRelation(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
-        SoftlinkRelationEntity originSoftlink = copyUnit.getOriginResource().getSoftlinkRelation();
-        SoftlinkRelationEntity targetSoftlink = copyUnit.getTargetResource().getSoftlinkRelation();
-        if (originSoftlink != null) {
-            int softlinkRelationForeignableHashCodeBeforeChange = targetSoftlink != null ? targetSoftlink.foreignableFieldHashCode() : 0;
-
-            targetSoftlink = originSoftlink.getCopy(targetSoftlink, copyUnit);
-            foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), softlinkRelationForeignableHashCodeBeforeChange, targetSoftlink);
-            softlinkService.setSoftlinkRelation(copyUnit.getTargetResource(), targetSoftlink);
-        }
-        return targetSoftlink;
-    }
+    
 
     /**
      * iterate and copy
@@ -471,25 +456,7 @@ public class CopyResourceDomainService {
             }
         }
 
-        if (copyUnit.getMode() == CopyMode.MAIA_PREDECESSOR && targetResRel.getSlaveResource() != null && (resourceLocator.hasResourceConsumableSoftlinkType(targetResRel.getSlaveResource()) || resourceLocator
-                .hasResourceProvidableSoftlinkType(targetResRel.getSlaveResource()))) {
-
-            // propertyValue from relations has to be copied if PropertyDescriptor exists on target (successor)
-            for (ResourceContextEntity resourceContextEntity : copyUnit.getTargetResource().getContexts()) {
-                for (PropertyDescriptorEntity propertyDescriptorEntity : resourceContextEntity.getPropertyDescriptors()) {
-                    String key = createDescriptorKey(propertyDescriptorEntity);
-                    allPropertyDescriptorsMap.put(key, propertyDescriptorEntity);
-                }
-            }
-            // add PropertyDescriptor from ProvidedMasterRelations
-            for (ProvidedResourceRelationEntity providedResourceRelationEntity : copyUnit.getTargetResource().getProvidedMasterRelations()) {
-                addRelationPropertyDescriptors(allPropertyDescriptorsMap, providedResourceRelationEntity);
-            }
-            // add PropertyDescriptor from ConsumedMasterRelations
-            for (ConsumedResourceRelationEntity consumedResourceRelationEntity : copyUnit.getTargetResource().getConsumedMasterRelations()) {
-                addRelationPropertyDescriptors(allPropertyDescriptorsMap, consumedResourceRelationEntity);
-            }
-        }
+        
 
         // do copy for all contexts
         for (ResourceRelationContextEntity origin : origins) {
@@ -497,17 +464,6 @@ public class CopyResourceDomainService {
             ResourceRelationContextEntity target = targetsMap.containsKey(key) ? targetsMap.get(key) : new ResourceRelationContextEntity();
             copyContextDependency(origin, target, copyUnit, allPropertyDescriptorsMap);
             target.setContextualizedObject(targetResRel);
-        }
-    }
-
-    private <T extends AbstractResourceRelationEntity> void addRelationPropertyDescriptors(Map<String, PropertyDescriptorEntity> allPropertyDescriptorsMap, T relationEntity) {
-        for (ResourceContextEntity resourceContextEntity : relationEntity.getSlaveResource().getContexts()) {
-            if (resourceContextEntity.getPropertyDescriptors() != null) {
-                for (PropertyDescriptorEntity propertyDescriptorEntity : resourceContextEntity.getPropertyDescriptors()) {
-                    String key = createDescriptorKey(propertyDescriptorEntity);
-                    allPropertyDescriptorsMap.put(key, propertyDescriptorEntity);
-                }
-            }
         }
     }
 

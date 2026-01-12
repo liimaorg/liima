@@ -102,9 +102,7 @@ public class RelationDataProvider implements Serializable {
 
     private String identifier;
 
-    @Setter
-    @Getter
-    private String softlinkReferenceName;
+    
 
     @Getter
     private List<ResourceType> resourceTypes;

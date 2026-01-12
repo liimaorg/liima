@@ -27,7 +27,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupReposi
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
@@ -216,58 +215,6 @@ public class ResourceLocator {
         }
         return null;
     }
-
-    /**
-     * returns true if one of the resourcetypes (within tree up until root resource type) has the same name as one of the comma separated values of the system property {@link ch.puzzle.itc.mobiliar.common.util.ConfigKey#PROVIDABLE_SOFTLINK_RESOURCE_TYPES}
-     * @param resource
-     * @return
-     */
-    public boolean hasResourceProvidableSoftlinkType(ResourceEntity resource){
-        List<String> providableSoftlinkResourceTypes;
-        providableSoftlinkResourceTypes = extractResourceTypeSystemProperties(ConfigKey.PROVIDABLE_SOFTLINK_RESOURCE_TYPES, WS_PPI_TYPE);
-        return isTypeOrHasTypeAsSuperType(providableSoftlinkResourceTypes, resource.getResourceType());
-    }
-
-
-    /**
-     * returns true if one of the resourcetypes (within tree up until root resource type) has the same name as one of the comma separated values of the system property {@link ch.puzzle.itc.mobiliar.common.util.ConfigKey#PROVIDABLE_SOFTLINK_RESOURCE_TYPES}
-     * @param resourceId
-     * @return
-     */
-    public boolean hasResourceProvidableSoftlinkType(Integer resourceId){
-        return hasResourceProvidableSoftlinkType(entityManager.find(ResourceEntity.class, resourceId));
-    }
-
-    /**
-     * returns true if one of the resourcetypes (within tree up until root resource type) has the same name as one of the comma separated values of the system property {@link ch.puzzle.itc.mobiliar.common.util.ConfigKey#CONSUMABLE_SOFTLINK_RESOURCE_TYPES}
-     */
-    public boolean hasResourceConsumableSoftlinkType(Integer resourceId){
-        return hasResourceConsumableSoftlinkType(entityManager.find(ResourceEntity.class, resourceId));
-    }
-
-    /**
-     * returns true if one of the resourcetypes (within tree up until root resource type) has the same name as one of the comma separated values of the system property {@link ch.puzzle.itc.mobiliar.common.util.ConfigKey#CONSUMABLE_SOFTLINK_RESOURCE_TYPES}
-     * @param resource
-     * @return
-     */
-    public boolean hasResourceConsumableSoftlinkType(ResourceEntity resource){
-        List<String> consumableSoftlinkResourceTypes = extractResourceTypeSystemProperties(ConfigKey.CONSUMABLE_SOFTLINK_RESOURCE_TYPES, WS_CPI_TYPE);
-        return isTypeOrHasTypeAsSuperType(consumableSoftlinkResourceTypes, resource.getResourceType());
-    }
-
-    private boolean isTypeOrHasTypeAsSuperType(List<String> resourceTypes, ResourceTypeEntity resourceType){
-        if (resourceType != null){
-            if (resourceTypes.contains(resourceType.getName().toLowerCase())){
-                return true;
-            }
-
-            if (!resourceType.isRootResourceType()){
-                return isTypeOrHasTypeAsSuperType(resourceTypes, resourceType.getParentResourceType());
-            }
-        }
-        return false;
-    }
-
 
     protected List<String> extractResourceTypeSystemProperties(ConfigKey systemProperty, String defaultValue) {
         String commaseperatedProperties;

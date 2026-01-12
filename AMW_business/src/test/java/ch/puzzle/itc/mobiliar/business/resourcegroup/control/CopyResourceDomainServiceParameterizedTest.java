@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -86,8 +85,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
@@ -111,8 +108,6 @@ public class CopyResourceDomainServiceParameterizedTest {
 	private EntityManager entityManager;
 	@Mock
 	private ForeignableService foreignableServiceMock;
-	@Mock
-	private SoftlinkRelationService softlinkRelationServiceMock;
 	@Mock
 	private ResourceLocator resourceLocatorMock;
 	@Mock
@@ -669,51 +664,6 @@ public class CopyResourceDomainServiceParameterizedTest {
 		verify(entityManager).persist(argCapt.capture());
 
 		assertEquals(copyingOwner, argCapt.getValue().getOwner());
-	}
-
-	@ParameterizedTest
-	@MethodSource("data")
-	public void test_copySoftlinkRelation(CopyMode copyMode, ForeignableOwner actingOwner) throws ForeignableOwnerViolationException, AMWException {
-		// given
-		String origSoftlinkRef = "origSoftlinkRef";
-		SoftlinkRelationEntity originSoftlink = new SoftlinkRelationEntity();
-		originSoftlink.setOwner(ForeignableOwner.MAIA);
-		originSoftlink.setSoftlinkRef(origSoftlinkRef);
-		originSoftlink.setId(111);
-		ResourceEntity origin = new ResourceEntityBuilder().withId(1).withOwner(ForeignableOwner.MAIA)
-				.withSoftlinkRelation(originSoftlink).mock();
-
-		String targetSoftlinkRef = "targetSoftlinkRef";
-		SoftlinkRelationEntity targetSoftlink;
-		ResourceEntity target;
-		int targetHashCodeBeforeChange = 0;
-		if (copyMode == CopyMode.COPY || copyMode == CopyMode.MAIA_PREDECESSOR) {
-			targetSoftlink = new SoftlinkRelationEntity();
-			targetSoftlink.setOwner(ForeignableOwner.MAIA);
-			targetSoftlink.setSoftlinkRef(targetSoftlinkRef);
-			targetSoftlink.setId(222);
-			target = new ResourceEntityBuilder().withId(2).withOwner(ForeignableOwner.MAIA)
-					.withSoftlinkRelation(targetSoftlink).mock();
-			targetHashCodeBeforeChange = targetSoftlink.foreignableFieldHashCode();
-		} else {
-			target = new ResourceEntityBuilder().withId(2).withOwner(ForeignableOwner.MAIA).mock();
-		}
-
-		CopyUnit copyUnit = new CopyUnit(origin, target, copyMode, actingOwner);
-
-		// when
-		SoftlinkRelationEntity result = copyDomainService.copySoftlinkRelation(copyUnit);
-
-		// then
-		verify(softlinkRelationServiceMock).setSoftlinkRelation(any(ResourceEntity.class), any(SoftlinkRelationEntity.class));
-		verify(foreignableServiceMock).verifyEditableByOwner(copyUnit.getActingOwner(), targetHashCodeBeforeChange, result);
-		if(copyMode == CopyMode.MAIA_PREDECESSOR){
-			assertEquals(targetSoftlinkRef, result.getSoftlinkRef());
-		}else{
-			assertEquals(origSoftlinkRef, result.getSoftlinkRef());
-		}
-
-		assertEquals(target, result.getCpiResource());
 	}
 
 	@ParameterizedTest

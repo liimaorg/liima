@@ -119,4 +119,7 @@
     <!--1.18.3-->
     <include file="changesets/model/refactoring/add_angular_edit_resource_permission.xml" relativeToChangelogFile="true"/>
 
+    <!--1.18.9-->
+    <include file="changesets/model/maiaSoftlink/removeSoftlink.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

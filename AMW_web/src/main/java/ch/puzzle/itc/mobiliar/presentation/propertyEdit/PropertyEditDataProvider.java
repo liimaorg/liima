@@ -36,7 +36,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.SoftlinkRelationBoundary;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
@@ -116,8 +115,6 @@ public class PropertyEditDataProvider implements Serializable {
     @Inject
     ActiveApplicationsDataProvider activeApplications;
 
-    @Inject
-    SoftlinkRelationBoundary softlinkRelationBoundary;
 
     @Getter
     private ResourceGroup group;

@@ -515,14 +515,6 @@ public class ResourceRelationModel implements Serializable {
         }
     }
 
-    private List<ResourceEditRelation> unmapToList(Collection<List<ResourceEditRelation>> values) {
-        List<ResourceEditRelation> allReleaseRelations = new ArrayList<>();
-        for (List<ResourceEditRelation> relations : new ArrayList<>(values)) {
-            allReleaseRelations.addAll(relations);
-        }
-        return allReleaseRelations;
-    }
-
     private List<ResourceEditRelation> findBestMatchingOrSelectedReleaseRelationsForType(Collection<List<ResourceEditRelation>> values) {
 
         List<ResourceEditRelation> allReleaseRelations = new ArrayList<>();

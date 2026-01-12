@@ -38,7 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -169,20 +168,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@Getter
 	@Setter
 	private String localPortId;
-
-	/**
-	 * Only for PPI resources
-	 */
-	@Setter
-	@Getter
-	private String softlinkId;
-
-	/**
-	 * Only for CPI resources
-	 */
-	@OneToMany(cascade = ALL, mappedBy = "cpiResource")
-	@BatchSize(size = 15)
-	private Set<SoftlinkRelationEntity> softlinkRelations;
 
 	public void setName(final String name) {
 		// delegate set name to resourceGroup guarantees that all resources in the group have the same name
@@ -461,43 +446,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	}
 
 
-	/**
-	 * Only for hibernate - do not make public<br>
-	 *     Workaround because so far softlinkrelation is a one-to-one relation
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	private Set<SoftlinkRelationEntity> getSoftlinkRelations() {
-		return softlinkRelations;
-	}
 
-	public void clearSoftlinkRelations() {
-		if (softlinkRelations != null) {
-			softlinkRelations.clear();
-		}
-	}
-
-	/**
-	 * Only for hibernate - do not make public <br>
-	 *     Workaround because so far softlinkrelation is a one-to-one relation
-	 * @param softlinkRelations
-	 */
-	@SuppressWarnings("unused")
-	private void setSoftlinkRelations(Set<SoftlinkRelationEntity> softlinkRelations) {
-		this.softlinkRelations = softlinkRelations;
-	}
-
-	public SoftlinkRelationEntity getSoftlinkRelation(){
-		// workaround because so far softlinkrelation is a one-to-one relation
-		if ( softlinkRelations != null && !softlinkRelations.isEmpty()) {
-			return softlinkRelations.iterator().next();
-		}
-		return null;
-	}
-
-	public void setSoftlinkRelation(SoftlinkRelationEntity softlinkRelation){
-		throw new UnsupportedOperationException("You can not directly add a softlinkrelation to the resource. Use SoftlinkRelationService.setSoftlinkRelation(ResourceEntity cpiResource, String softlinkRef) instead");
-	}
 
 	public ProvidedResourceRelationEntity addProvidedResourceRelation(final ResourceEntity relatedResource,
 			final ResourceRelationTypeEntity resourceRelationTypeOfRelation, ForeignableOwner changingOwner)
@@ -732,10 +681,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 			copyUnit.getResult().addChangedResourceParam(CopyResourceResult.CopyInfo.DELETABLE_CHANGED);
 		}
 		target.setDeletable(this.isDeletable());
-		// only set softlink rel on target if not in Predecessor mode
-		if(!CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR.equals(copyUnit.getMode())){
-			target.setSoftlinkId(this.getSoftlinkId());
-		}
+
 
 		CopyHelper.copyForeignable(target, this, copyUnit);
 		return target;
@@ -753,7 +699,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
         eb.append(this.deletable);
         eb.append(this.name);
 		eb.append(this.localPortId);
-        eb.append(this.softlinkId);
+
 
         eb.append(this.resourceType != null ? this.resourceType.getId() : null);
         eb.append(this.resourceGroup != null ? this.resourceGroup.getId() : null);

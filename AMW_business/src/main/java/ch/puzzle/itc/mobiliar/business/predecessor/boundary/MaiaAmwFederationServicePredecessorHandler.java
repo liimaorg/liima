@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.predecessor.entity.PredecessorResult;
 import ch.puzzle.itc.mobiliar.business.predecessor.entity.PredecessorResultMessage;
 import ch.puzzle.itc.mobiliar.business.predecessor.entity.ProcessingState;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
@@ -39,7 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.control.RelationImportSe
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -57,9 +55,6 @@ import java.util.logging.Logger;
 
 @Stateless
 public class MaiaAmwFederationServicePredecessorHandler {
-
-    @Inject
-    private ResourceLocator resourceLocator;
 
     @Inject
     ResourceRepository resourceRepository;
@@ -102,8 +97,6 @@ public class MaiaAmwFederationServicePredecessorHandler {
             ResourceEntity predecessorResource = findPredecessor(predecessorCandidates, successorResource, predecessorResult);
 
             if (copyPredecessorApplicationToSuccessor(successorResource, actingOwner, predecessorResult, predecessorResource)
-                    && copyCpisFromPredecessorToSuccessor(successorResource, actingOwner, predecessorResult, predecessorResource)
-                    && copyPpisFromPredecessorToSuccessor(successorResource, actingOwner, predecessorResult, predecessorResource)
                     && handleApplicationServerRelations(successorResource, predecessorResult, predecessorResource)) {
 
                 predecessorSuccessfullyReplacedResult(successorResource, predecessorName, predecessorResult);
@@ -135,68 +128,6 @@ public class MaiaAmwFederationServicePredecessorHandler {
                 predecessorResult.addMessage(predecessorResultMessage);
             }
             return false;
-        }
-        return true;
-    }
-
-    private boolean copyPpisFromPredecessorToSuccessor(ResourceEntity successorResource, ForeignableOwner actingOwner, PredecessorResult predecessorResult, ResourceEntity predecessorResource) {
-        // copy PPIs
-        for (ProvidedResourceRelationEntity providedResourceRelationEntity : successorResource.getProvidedMasterRelations()) {
-            if (predecessorResource != null && resourceLocator.hasResourceProvidableSoftlinkType(providedResourceRelationEntity.getSlaveResource())) {
-                ResourceEntity successorPpi = providedResourceRelationEntity.getSlaveResource();
-                try {
-                    final ResourceEntity predecessorPpi = getPredecessorForCpiOrPpi(successorPpi, predecessorResource.getProvidedMasterRelations());
-                    if (predecessorPpi != null) {
-                        try {
-                            copyService.copyFromPredecessorToSuccessorResource(predecessorPpi, successorPpi, actingOwner);
-                        } catch (ForeignableOwnerViolationException e) {
-                            log.warning(e.getMessage());
-                            predecessorResult.addMessage(new PredecessorResultMessage(MessageSeverity.ERROR, e.getMessage()));
-                            return false;
-                        } catch (AMWException e) {
-                            log.warning(e.getMessage());
-                            predecessorResult.setProcessingState(ProcessingState.OK);
-                            predecessorResult.addMessage(new PredecessorResultMessage(MessageSeverity.WARNING, e.getMessage()));
-                            return false;
-                        }
-                    }
-                } catch (AMWRuntimeException e) {
-                    predecessorResult.setProcessingState(ProcessingState.OK);
-                    predecessorResult.addMessage(new PredecessorResultMessage(MessageSeverity.WARNING, e.getMessage()));
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private boolean copyCpisFromPredecessorToSuccessor(ResourceEntity successorResource, ForeignableOwner actingOwner, PredecessorResult predecessorResult, ResourceEntity predecessorResource) {
-        // copy CPIs
-        for (ConsumedResourceRelationEntity consumedResourceRelationEntity : successorResource.getConsumedMasterRelations()) {
-            if (predecessorResource != null && resourceLocator.hasResourceConsumableSoftlinkType(consumedResourceRelationEntity.getSlaveResource())) {
-                ResourceEntity successorCpi = consumedResourceRelationEntity.getSlaveResource();
-                try {
-                    final ResourceEntity predecessorCpi = getPredecessorForCpiOrPpi(successorCpi, predecessorResource.getConsumedMasterRelations());
-                    if (predecessorCpi != null) {
-                        try {
-                            copyService.copyFromPredecessorToSuccessorResource(predecessorCpi, successorCpi, actingOwner);
-                        } catch (ForeignableOwnerViolationException e) {
-                            log.warning(e.getMessage());
-                            predecessorResult.addMessage(new PredecessorResultMessage(MessageSeverity.ERROR, e.getMessage()));
-                            return false;
-                        } catch (AMWException e) {
-                            log.warning(e.getMessage());
-                            predecessorResult.setProcessingState(ProcessingState.OK);
-                            predecessorResult.addMessage(new PredecessorResultMessage(MessageSeverity.WARNING, e.getMessage()));
-                            return false;
-                        }
-                    }
-                } catch (AMWRuntimeException e) {
-                    predecessorResult.setProcessingState(ProcessingState.OK);
-                    predecessorResult.addMessage(new PredecessorResultMessage(MessageSeverity.WARNING, e.getMessage()));
-                    return false;
-                }
-            }
         }
         return true;
     }
