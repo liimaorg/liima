@@ -22,81 +22,28 @@ package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService.CopyMode;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainServiceTestHelper;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 
 public class ProvidedResourceRelationEntityTest {
 
-    private ProvidedResourceRelationEntity providedResourceRelationEntity;
-    private ResourceRelationEntityBuilder relationEntityBuilder = new ResourceRelationEntityBuilder();
+    public ResourceRelationEntityBuilder relationEntityBuilder = new ResourceRelationEntityBuilder();
 
-    @Test
-    public void defaultConstructorShouldSetDefaultSystemOwner() {
-
-        // when
-        providedResourceRelationEntity = new ProvidedResourceRelationEntity();
-
-        // then
-        assertNotNull(providedResourceRelationEntity.getOwner());
-        assertEquals(ForeignableOwner.getSystemOwner(), providedResourceRelationEntity.getOwner());
-    }
-
-    @Test
-    public void constructorWithOwnerShouldSetOwner() {
-        // given
-        ForeignableOwner owner = ForeignableOwner.MAIA;
-
-        // when
-        providedResourceRelationEntity = new ProvidedResourceRelationEntity(owner);
-
-        // then
-        assertEquals(owner, providedResourceRelationEntity.getOwner());
-    }
-
-    @Test
-    public void constructorWithNullShouldThrowException() {
-        // given
-        ForeignableOwner owner = null;
-
-        // when
-        assertThrows(NullPointerException.class, () -> {
-            providedResourceRelationEntity = new ProvidedResourceRelationEntity(owner);
-        });
-    }
-
-    @Test
-    public void test_getCopy() throws AMWException {
-        Map<CopyResourceDomainService.CopyMode, Set<ForeignableOwner>> validModeOwnerCombinationsMap = CopyHelper
-                .getValidModeOwnerCombinationsMap();
-        for (CopyResourceDomainService.CopyMode copyMode : validModeOwnerCombinationsMap.keySet()) {
-            for (ForeignableOwner actingOwner : validModeOwnerCombinationsMap.get(copyMode)) {
-                shouldCopyMasterRelations_emptyTarget(copyMode, actingOwner);
-                shouldCopyMasterRelations_existingTarget(copyMode, actingOwner);
-                shouldCopySlaveRelations_emptyTarget(copyMode, actingOwner);
-                shouldCopySlaveRelations_existingTarget(copyMode, actingOwner);
-            }
-        }
-    }
-
-    private void shouldCopyMasterRelations_emptyTarget(CopyResourceDomainService.CopyMode mode,
-            ForeignableOwner actingOwner) throws AMWException {
+    @ParameterizedTest
+    @EnumSource(CopyMode.class)
+    public void shouldCopyMasterRelations_emptyTarget(CopyResourceDomainService.CopyMode mode) throws AMWException {
         // given
         ResourceEntity originMaster = CopyResourceDomainServiceTestHelper.mockOriginResource();
         ResourceEntity targetMaster = new ResourceEntityBuilder().buildAppServerEntity("targetResource",
@@ -107,7 +54,7 @@ public class ProvidedResourceRelationEntityTest {
                 "webservice", null);
         ProvidedResourceRelationEntity origin = relationEntityBuilder.buildProvidedResRelEntity(originMaster,
                 originSlave, identifier, 1);
-        CopyUnit copyUnit = new CopyUnit(originMaster, targetMaster, mode, actingOwner);
+        CopyUnit copyUnit = new CopyUnit(originMaster, targetMaster, mode);
 
         // when
         ProvidedResourceRelationEntity copy = origin.getCopy(null, copyUnit);
@@ -119,8 +66,9 @@ public class ProvidedResourceRelationEntityTest {
         assertNotEquals(origin.getId(), copy.getId());
     }
 
-    private void shouldCopyMasterRelations_existingTarget(CopyResourceDomainService.CopyMode mode,
-            ForeignableOwner actingOwner) throws AMWException {
+    @ParameterizedTest
+    @EnumSource(CopyMode.class)
+    public void shouldCopyMasterRelations_existingTarget(CopyResourceDomainService.CopyMode mode) throws AMWException {
         // given
         ResourceEntity originMaster = CopyResourceDomainServiceTestHelper.mockOriginResource();
         ResourceEntity targetMaster = new ResourceEntityBuilder().buildAppServerEntity("targetResource",
@@ -137,7 +85,7 @@ public class ProvidedResourceRelationEntityTest {
         ProvidedResourceRelationEntity target = relationEntityBuilder.buildProvidedResRelEntity(
                 targetMaster, targetSlave, identifier, 2);
 
-        CopyUnit copyUnit = new CopyUnit(originMaster, targetMaster, mode, actingOwner);
+        CopyUnit copyUnit = new CopyUnit(originMaster, targetMaster, mode);
 
         // when
         ProvidedResourceRelationEntity copy = origin.getCopy(target, copyUnit);
@@ -145,18 +93,13 @@ public class ProvidedResourceRelationEntityTest {
         // then
         assertTrue(copyUnit.getResult().isSuccess());
         assertEquals(targetMaster, copy.getMasterResource());
-        // Predecessor Mode the target Slaveresource is copied
-        if (mode.equals(CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR)) {
-            assertEquals(target.getSlaveResource(), copy.getSlaveResource());
-        } else {
-            assertEquals(originSlave, copy.getSlaveResource());
-        }
-
+        assertEquals(originSlave, copy.getSlaveResource());
         assertNotEquals(origin.getId(), copy.getId());
     }
 
-    private void shouldCopySlaveRelations_emptyTarget(CopyResourceDomainService.CopyMode mode,
-            ForeignableOwner actingOwner) throws AMWException {
+    @ParameterizedTest
+    @EnumSource(CopyMode.class)
+    public void shouldCopySlaveRelations_emptyTarget(CopyResourceDomainService.CopyMode mode) throws AMWException {
         // given
         ResourceEntity originMaster = CopyResourceDomainServiceTestHelper.mockOriginResource();
 
@@ -169,7 +112,7 @@ public class ProvidedResourceRelationEntityTest {
         ResourceEntity targetSlave = new ResourceEntityBuilder().buildResourceEntity("wsTarget", null,
                 "webservice", null, true);
 
-        CopyUnit copyUnit = new CopyUnit(originSlave, targetSlave, mode, actingOwner);
+        CopyUnit copyUnit = new CopyUnit(originSlave, targetSlave, mode);
 
         // when
         ProvidedResourceRelationEntity copy = origin.getCopy(null, copyUnit);
@@ -185,8 +128,9 @@ public class ProvidedResourceRelationEntityTest {
         }
     }
 
-    private void shouldCopySlaveRelations_existingTarget(CopyResourceDomainService.CopyMode mode,
-            ForeignableOwner actingOwner) throws AMWException {
+    @ParameterizedTest
+    @EnumSource(CopyMode.class)
+    public void shouldCopySlaveRelations_existingTarget(CopyResourceDomainService.CopyMode mode) throws AMWException {
         // given
         ResourceEntity originMaster = CopyResourceDomainServiceTestHelper.mockOriginResource();
         ResourceEntity targetMaster = new ResourceEntityBuilder().buildAppServerEntity("targetResource",
@@ -203,7 +147,7 @@ public class ProvidedResourceRelationEntityTest {
         ProvidedResourceRelationEntity target = relationEntityBuilder.buildProvidedResRelEntity(
                 targetMaster, targetSlave, identifier, 2);
 
-        CopyUnit copyUnit = new CopyUnit(originSlave, targetSlave, mode, actingOwner);
+        CopyUnit copyUnit = new CopyUnit(originSlave, targetSlave, mode);
 
         // when
         ProvidedResourceRelationEntity copy = origin.getCopy(target, copyUnit);

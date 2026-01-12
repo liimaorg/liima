@@ -25,7 +25,6 @@ import static javax.persistence.CascadeType.PERSIST;
 
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Objects;
 
 import javax.persistence.*;
 
@@ -33,15 +32,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasTypeContext;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
@@ -49,7 +45,7 @@ import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 @Audited
 @MappedSuperclass
 public abstract class AbstractResourceRelationEntity extends HasContexts<ResourceRelationContextEntity>
-		implements Identifiable, HasTypeContext<ResourceRelationTypeEntity>, Foreignable<AbstractResourceRelationEntity> {
+		implements Identifiable, HasTypeContext<ResourceRelationTypeEntity> {
 
 	/**
 	 * This is the ID for all subclasses. ATTENTION: The application code assumes, that ids for subclasses are
@@ -87,32 +83,8 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 	@Column(nullable = true)
 	private String identifier;
 
-	@Enumerated(EnumType.STRING)
-	private ForeignableOwner fcOwner;
-
-	private String fcExternalKey;
-	private String fcExternalLink;
-
-	public ForeignableOwner getOwner() {
-		return fcOwner;
-	}
-
-	public void setOwner(ForeignableOwner owner) {
-		this.fcOwner = owner;
-	}
-
-	/**
-	 * Creates new entity object with default system owner
-	 */
 	public AbstractResourceRelationEntity() {
-		this(ForeignableOwner.getSystemOwner());
 	}
-
-	public AbstractResourceRelationEntity(ForeignableOwner owner) {
-		this.fcOwner = Objects.requireNonNull(owner, "Owner must not be null");
-	}
-
-    protected abstract int foreignableRelationFieldHashCode();
 
 	public final static Comparator<AbstractResourceRelationEntity> COMPARE_BY_SLAVE_NAME = new Comparator<AbstractResourceRelationEntity>(){
 
@@ -195,8 +167,7 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 		if (StringUtils.isNotBlank(getIdentifier()) && !StringUtils.isNumeric(getIdentifier())){
 			return getIdentifier();
 		} else if (masterResource.getResourceType().isDefaultResourceType()) {
-			// use localPortId if available
-			typeIdentifier = (slaveResource.getLocalPortId() != null) ? slaveResource.getLocalPortId() : slaveResource.getName();
+			typeIdentifier = slaveResource.getName();
 		}
 
 		if (StringUtils.isNotBlank(getIdentifier()) && StringUtils.isNumeric(getIdentifier())) {
@@ -214,47 +185,5 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 		return resourceRelationType;
 	}
 
-	@Override
-	public String getExternalLink() {
-		return fcExternalLink;
-	}
-
-	@Override
-	public void setExternalLink(String externalLink) {
-		this.fcExternalLink = externalLink;
-	}
-
-	@Override
-	public String getExternalKey() {
-		return fcExternalKey;
-	}
-
-	@Override
-	public void setExternalKey(String externalKey) {
-		this.fcExternalKey = externalKey;
-	}
-
-	@Override
-	public String getForeignableObjectName() {
-		return this.getClass().getSimpleName();
-	}
-
-	@Override
 	public abstract AbstractResourceRelationEntity getCopy(AbstractResourceRelationEntity target, CopyUnit copyUnit);
-
-
-    @Override
-    public int foreignableFieldHashCode() {
-        HashCodeBuilder eb = new HashCodeBuilder();
-
-        eb.append(this.id);
-        eb.append(this.fcOwner);
-        eb.append(this.fcExternalKey);
-        eb.append(this.fcExternalLink);
-        eb.append(this.identifier);
-        eb.append(this.masterResource != null ? this.masterResource.getId() : null);
-        eb.append(this.slaveResource != null ? this.slaveResource.getId() : null);
-        eb.append(foreignableRelationFieldHashCode());
-        return eb.toHashCode();
-    }
 }

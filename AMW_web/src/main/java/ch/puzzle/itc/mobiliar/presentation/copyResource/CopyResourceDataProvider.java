@@ -20,31 +20,29 @@
 
 package ch.puzzle.itc.mobiliar.presentation.copyResource;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
-import ch.puzzle.itc.mobiliar.business.predecessor.boundary.MaiaAmwFederationServicePredecessorHandler;
-import ch.puzzle.itc.mobiliar.business.predecessor.entity.PredecessorResult;
-import ch.puzzle.itc.mobiliar.business.predecessor.entity.PredecessorResultMessage;
-import ch.puzzle.itc.mobiliar.business.predecessor.entity.ProcessingState;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.common.ResourceTypeDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
-
-import javax.faces.bean.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * For copy resource usecase
@@ -64,13 +62,7 @@ public class CopyResourceDataProvider implements Serializable {
 	private CopyResource copyResource;
 
 	@Inject
-	private MaiaAmwFederationServicePredecessorHandler maiaAmwFederationServicePredecessorHandler;
-
-	@Inject
     PermissionBoundary permissionBoundary;
-
-    @Inject
-    ForeignableBoundary foreignableBoundary;
 
 	@Inject
 	EditResourceView editResourceView;
@@ -140,16 +132,10 @@ public class CopyResourceDataProvider implements Serializable {
 		try {
 			copyFromResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup).getSelectedResourceId());
 			editResourceView.forceReload();
-		} catch (ForeignableOwnerViolationException e) {
-            GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy from selected resource because of violating "+e.getViolatedForeignableObject().getForeignableObjectName()+" with id "+ ((Identifiable)e.getViolatedForeignableObject()).getId());
-        }
+		}
 		catch (AMWException e){
 			GlobalMessageAppender.addErrorMessage(e.getMessage());
 		}
-	}
-
-	public void copyFromPredecessorResource(Integer selectedGroup) {
-		copyFromPredecessorResourceAction(resource.getResource(), resourceGroupMap.get(selectedGroup));
 	}
 
 	/**
@@ -160,7 +146,7 @@ public class CopyResourceDataProvider implements Serializable {
 	 * @throws AMWException
 	 */
 	private boolean copyFromResourceAction(ResourceEntity resourceToOverwrite, Integer copyFromResourceId)
-			throws AMWException, ForeignableOwnerViolationException {
+			throws AMWException {
 		if (resourceToOverwrite == null) {
 			String message = "No resource selected.";
 			GlobalMessageAppender.addErrorMessage(message);
@@ -172,7 +158,7 @@ public class CopyResourceDataProvider implements Serializable {
 			return false;
 		}
 		
-		CopyResourceResult result = copyResource.doCopyResource(resourceToOverwrite.getId(), copyFromResourceId, ForeignableOwner.getSystemOwner());
+		CopyResourceResult result = copyResource.doCopyResource(resourceToOverwrite.getId(), copyFromResourceId);
 		if (result != null && !result.isSuccess()) {
 			for (String error : result.getExceptions()) {
 				GlobalMessageAppender.addErrorMessage(error);
@@ -182,36 +168,6 @@ public class CopyResourceDataProvider implements Serializable {
 
 		GlobalMessageAppender.addSuccessMessage("Copy successful");
 		return true;
-	}
-
-	/**
-	 * @param resourceToOverwrite
-	 * @param predecessor
-	 * @return true if copy was successful, false otherwise
-	 */
-	private boolean copyFromPredecessorResourceAction(ResourceEntity resourceToOverwrite, ResourceGroup predecessor) {
-		if (resourceToOverwrite == null) {
-			String message = "No resource selected.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else if (predecessor == null) {
-			String message = "No resource to copy from selected.";
-			GlobalMessageAppender.addErrorMessage(message);
-		}
-		else {
-
-			PredecessorResult predecessorResult = maiaAmwFederationServicePredecessorHandler.handlePredecessor(resourceToOverwrite.getName(), resourceToOverwrite.getRelease(), predecessor.getName(), ForeignableOwner.MAIA);
-
-			if (predecessorResult != null && ProcessingState.FAILED.equals(predecessorResult.getProcessingState())) {
-				for (PredecessorResultMessage error : predecessorResult.getMessages()) {
-					GlobalMessageAppender.addErrorMessage(error.getHumanReadableMessage());
-				}
-			}
-			else {
-				GlobalMessageAppender.addSuccessMessage("Predecessor Copy was successful");
-			}
-		}
-		return false;
 	}
 
     /**
@@ -229,10 +185,6 @@ public class CopyResourceDataProvider implements Serializable {
     public boolean isCanCopyResource() {
         return permissionBoundary.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
     }
-
-	public boolean isCanCopyFromPredecessorResource() {
-		return permissionBoundary.canCopyFromResource(resource.getResource()) && (resource.getResource() != null);
-	}
 
 	public boolean allowedToCopyFromThatResource(ResourceGroup originResourceGroup) {
 		return permissionBoundary.canReadFromResource(originResourceGroup.getEntity()) && (resource.getResource() != null);

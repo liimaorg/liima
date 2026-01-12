@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.test;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
@@ -42,12 +41,11 @@ public class SimpleEntityBuilder extends EntityBuilder {
 	   as = buildResource(buildResourceType(AS.type), "as");
 	   app = buildResource(buildResourceType(APP.type), "app");
 
-	   buildConsumedRelation(as, app, ForeignableOwner.AMW);
+	   buildConsumedRelation(as, app);
 
 	   // two additional resources
 	   ad = buildResource(buildResourceType(AD.type), "ad");
 	   ws = buildResource(buildResourceType(WS.type), "ws");
-
     }
 
     /**

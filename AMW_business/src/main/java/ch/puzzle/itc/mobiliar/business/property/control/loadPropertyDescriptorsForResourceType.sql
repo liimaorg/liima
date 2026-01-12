@@ -50,13 +50,7 @@ prop.origin,
 :loadedFor loadedFor,
 cast(null as VARCHAR(5)) resourceName,
 -- constant to define if the property descriptors origin is defined on  resource context -> 'instance' or resource type -> 'type'
-(CASE WHEN resType.ID IS NOT NULL THEN cast('type' as VARCHAR(8)) WHEN resRelType.ID IS NOT NULL THEN cast('type_rel' as VARCHAR(8)) END) propertyDescriptorOrigin,
--- foreignable owner
-descr.FCOWNER fcOwner,
--- foreignable external key
-descr.FCEXTERNALKEY fcExternalKey,
--- foreignable external link
-descr.FCEXTERNALLINK fcExternalLink
+(CASE WHEN resType.ID IS NOT NULL THEN cast('type' as VARCHAR(8)) WHEN resRelType.ID IS NOT NULL THEN cast('type_rel' as VARCHAR(8)) END) propertyDescriptorOrigin
 
 --we select all property descriptors and join them with their assigned contexts (either resource or resourcetype)
 FROM TAMW_PROPERTYDESCRIPTOR descr

@@ -22,7 +22,6 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.utils.DomainObject;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
@@ -50,10 +49,10 @@ public class Resource extends DomainObject<ResourceEntity> implements Comparable
 		this.globalContext = globalContext;
 	}
 
-	public static Resource createByResource(ForeignableOwner creatingOwner, ResourceEntity r, ResourceTypeEntity resourceTypeEntity, ContextEntity globalContext) {
+	public static Resource createByResource(ResourceEntity r, ResourceTypeEntity resourceTypeEntity, ContextEntity globalContext) {
 		Resource resource = new Resource(resourceTypeEntity, globalContext);
 		if (r == null) {
-			r = ResourceFactory.createNewResourceForOwner(creatingOwner);
+			r = ResourceFactory.createNewResource();
 		}
 		resource.wrap(r);
 		return resource;

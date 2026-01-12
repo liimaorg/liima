@@ -29,10 +29,7 @@ WITH descr_with
                     THEN
                        CAST ('relation' AS VARCHAR (8))
                  END)
-                   propertyDescriptorOrigin,
-                descr.FCOWNER fcOwner,
-                descr.FCEXTERNALKEY fcExternalKey,
-                descr.FCEXTERNALLINK fcExternalLink
+                   propertyDescriptorOrigin
            FROM TAMW_PROPERTYDESCRIPTOR descr
                 LEFT JOIN TAMW_RESOURCECTX_PROPDESC resCont
                    ON resCont.PROPERTYDESCRIPTORS_ID = descr.ID
@@ -124,14 +121,8 @@ SELECT
 -- constant to define if the result is loaded for 'instance' or 'relation'
        :loadedFor loadedFor,
        propResName,
--- constant to define if the property descriptors origin is defined on  resource context -> 'instance' or resource type ->
-       descr_with.propertyDescriptorOrigin,
--- foreignable owner
-       descr_with.fcOwner,
--- foreignable external key
-       descr_with.fcExternalKey,
--- foreignable external link
-       descr_with.fcExternalLink
+-- constant to define if the property descriptors origin is defined on resource context -> 'instance' or resource type ->
+       descr_with.propertyDescriptorOrigin
   FROM prop
        FULL OUTER JOIN descr_with
           ON     prop.propDescrId = descr_with.descID

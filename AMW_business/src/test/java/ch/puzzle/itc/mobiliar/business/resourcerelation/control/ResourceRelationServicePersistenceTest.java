@@ -22,8 +22,6 @@ package ch.puzzle.itc.mobiliar.business.resourcerelation.control;
 
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
@@ -63,9 +61,6 @@ public class ResourceRelationServicePersistenceTest {
 
 	@Mock
 	Logger log;
-
-	@Mock
-	ForeignableService foreignableServiceMock;
 
 	@Mock
 	ResourceTypeProvider resourceTypeProvider;
@@ -286,14 +281,13 @@ public class ResourceRelationServicePersistenceTest {
 		when(resourceTypeProvider.getOrCreateResourceRelationTypeIncludingParents(master.getResourceType(), slave.getResourceType(), null)).thenReturn(resourceRelationType);
 
 		// when
-		service.doAddResourceRelationForAllReleases(master.getId(), slave.getId(), false, null, null, ForeignableOwner.MAIA);
+		service.doAddResourceRelationForAllReleases(master.getId(), slave.getId(), false, null, null);
 
 		// then
 		ConsumedResourceRelationEntity result = entityManager.find(ConsumedResourceRelationEntity.class, master.getConsumedRelationById(slave.getId()).getId());
 		assertNotNull(result);
 		assertEquals(master.getId(), result.getMasterResourceId());
 		assertEquals(slave.getId(), result.getSlaveResourceTypeId());
-		assertEquals(ForeignableOwner.MAIA, result.getOwner());
 	}
 
 }

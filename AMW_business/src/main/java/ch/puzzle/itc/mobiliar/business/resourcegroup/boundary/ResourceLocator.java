@@ -46,9 +46,6 @@ import java.util.logging.Logger;
 @Stateless
 public class ResourceLocator {
 
-    public static final String WS_CPI_TYPE = "wscpi";
-    public static final String WS_PPI_TYPE = "wsppi";
-
 	@Inject
 	ResourceRepository resourceRepository;
 

@@ -20,9 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourceRelation;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation.Mode;
@@ -68,9 +65,6 @@ public class ResourceRelationModel implements Serializable {
 
     @Inject
     PermissionBoundary permissionBoundary;
-
-    @Inject
-    ForeignableBoundary foreignableBoundary;
 
     @Inject
     SessionContext sessionContext;
@@ -628,24 +622,10 @@ public class ResourceRelationModel implements Serializable {
         return null;
     }
 
-    /**
-     * Returns true if a ownership combination is questionable
-     */
-    public boolean isSuspectRelation(ForeignableAttributesDTO sourceForeignables,
-                                     ForeignableAttributesDTO relationForeignables, ForeignableAttributesDTO targetForeignables) {
-        ForeignableOwner sourceOwner = sourceForeignables != null ? sourceForeignables.getOwner() : null;
-        ForeignableOwner relationOwner = relationForeignables != null ? relationForeignables.getOwner()
-                : null;
-        ForeignableOwner targetOwner = targetForeignables != null ? targetForeignables.getOwner() : null;
-        return resourceRelationBoundary.isSuspectRelation(sourceOwner, relationOwner, targetOwner);
-    }
-
     public boolean canDeleteRelation() {
         return sessionContext.getIsGlobal()
                 && (currentSelectedResourceOrType != null && allowedToRemoveRelations)
-                && getCurrentRelationUniqueIdentifier() != null
-                && foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(),
-                currentResourceRelation.getRelationForeignableAttributes());
+                && getCurrentRelationUniqueIdentifier() != null;
     }
 
     public void reloadResource() {
@@ -653,7 +633,6 @@ public class ResourceRelationModel implements Serializable {
             currentSelectedResourceOrType = resourceLocator.getResourceWithGroupAndRelatedResources(
                     currentSelectedResourceOrType.getId());
             reloadValues();
-
         }
     }
 

@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -126,15 +125,6 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
     @Setter
     private ResourceEditProperty parent;
 
-    @Getter
-    private ForeignableOwner fcOwner;
-
-    @Getter
-    private String fcExternalKey;
-
-    @Getter
-    private String fcExternalLink;
-
     protected static final String DEFAULTVALIDATIONEXPRESSION = ".*";
     public static final String UNDECRYPTED = "*******";
 
@@ -209,16 +199,13 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
      * @param loadedFor constant to define if the result is loaded for ({@link ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty.Origin})
      * @param resourceName
      * @param propertyDescriptorOrigin constant to define if the property descriptors origin is defined on  resource context -> 'instance' or resource type -> 'type' ({@link ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty.Origin})
-     * @param fcOwner foreignable owner of propertydescriptor
-     * @param fcExternalKey foreignable external key of propertydescriptor
-     * @param fcExternalLink foreignable external link propertydescriptor
      */
     public ResourceEditProperty(String technicalKey, String displayName, String propertyValue, String exampleValue, String defaultValue,
                                 String propertyComment, boolean isNullable, boolean isOptional, boolean isEncrypted, Integer cardinalityProperty,
             String validationLogic, String machineInterpretationKey, Integer propContextId, Integer typeContextId,
             Integer descriptorId, String propContName, String typeContName, Integer typeId, Integer propertyValueTypeId,
             Integer masterTypeId, String typeName, String validationRegex, Integer propertyId,
-            String origin, String loadedFor, String resourceName, String propertyDescriptorOrigin, String fcOwner, String fcExternalKey, String fcExternalLink) {
+            String origin, String loadedFor, String resourceName, String propertyDescriptorOrigin) {
         this.technicalKey = technicalKey;
         this.displayName = displayName;
         this.propertyValue = propertyValue;
@@ -259,9 +246,6 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
         this.resourceName = resourceName;
         this.reset = false;
         this.propertyDescriptorOrigin = propertyDescriptorOrigin != null ? Origin.valueOf(propertyDescriptorOrigin.toUpperCase()) : null;
-        this.fcOwner = fcOwner != null ? ForeignableOwner.valueOf(fcOwner) : null;
-        this.fcExternalKey = fcExternalKey;
-        this.fcExternalLink = fcExternalLink;
     }
 
     /**

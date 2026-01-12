@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEditPropertyBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 
 /**
  * Purpose of this test is to guarantee that the correct arguments get set within the constructor - since the constructor is used within the native queries
@@ -340,42 +339,6 @@ public class ResourceEditPropertyTest {
 
         // then
         assertEquals(descriptorOrigin, resourceEditProperty.getPropertyDescriptorOrigin());
-    }
-
-    @Test
-    public void constructorFcOwnerInstanceArgumentShouldSetDescriptorFcOwnerValue(){
-        // given
-        ForeignableOwner fcOwner = ForeignableOwner.AMW;
-
-        // when
-        resourceEditProperty = new ResourceEditPropertyBuilder().withFcOwner(fcOwner).build();
-
-        // then
-        assertEquals(fcOwner, resourceEditProperty.getFcOwner());
-    }
-
-    @Test
-    public void constructorFcExternalLinkInstanceArgumentShouldSetDescriptorFcExternalLinkValue(){
-        // given
-        String externalLink = "externalLink";
-
-        // when
-        resourceEditProperty = new ResourceEditPropertyBuilder().withFcExternalLink(externalLink).build();
-
-        // then
-        assertEquals(externalLink, resourceEditProperty.getFcExternalLink());
-    }
-
-    @Test
-    public void constructorFcExternalKeyInstanceArgumentShouldSetDescriptorFcExternalKeyValue(){
-        // given
-        String externalKey = "externalKey";
-
-        // when
-        resourceEditProperty = new ResourceEditPropertyBuilder().withFcExternalKey(externalKey).build();
-
-        // then
-        assertEquals(externalKey, resourceEditProperty.getFcExternalKey());
     }
 
     @Test

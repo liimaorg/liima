@@ -23,17 +23,18 @@ package ch.puzzle.itc.mobiliar.business.template.entity;
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.TemplateDescriptorEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService.CopyMode;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainServiceTestHelper;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -49,20 +50,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TemplateDescriptorEntityTest {
 
-    private ReleaseEntityBuilder releaseEntityBuilder = new ReleaseEntityBuilder();
+    public ReleaseEntityBuilder releaseEntityBuilder = new ReleaseEntityBuilder();
 
-    @Test
-    public void test_getCopy() throws AMWException {
-        Map<CopyResourceDomainService.CopyMode, Set<ForeignableOwner>> validModeOwnerCombinationsMap = CopyHelper.getValidModeOwnerCombinationsMap();
-        for (CopyResourceDomainService.CopyMode copyMode : validModeOwnerCombinationsMap.keySet()) {
-            for (ForeignableOwner actingOwner : validModeOwnerCombinationsMap.get(copyMode)) {
-                shouldCopyTemplateDescriptor_emptyTarget(copyMode, actingOwner);
-                shouldCopyTemplateDescriptor(copyMode, actingOwner);
-            }
-        }
-    }
-
-    private void shouldCopyTemplateDescriptor_emptyTarget(CopyResourceDomainService.CopyMode mode, ForeignableOwner actingOwner) throws AMWException {
+    @ParameterizedTest
+    @EnumSource(CopyMode.class)
+    public void shouldCopyTemplateDescriptor_emptyTarget(CopyResourceDomainService.CopyMode mode) throws AMWException {
         // given
         ResourceEntity originResource = CopyResourceDomainServiceTestHelper.mockOriginResource();
         ResourceEntity targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null, true);
@@ -92,7 +84,7 @@ public class TemplateDescriptorEntityTest {
                 .withTargetPlatforms(targetPlatforms)
                 .build();
 
-        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, mode, actingOwner);
+        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, mode);
 
         // when
         TemplateDescriptorEntity copy = origin.getCopy(null, copyUnit);
@@ -106,7 +98,9 @@ public class TemplateDescriptorEntityTest {
         assertTrue(copy.getTargetPlatforms().containsAll(targetPlatforms));
     }
 
-    private void shouldCopyTemplateDescriptor(CopyResourceDomainService.CopyMode mode, ForeignableOwner actingOwner) throws AMWException {
+    @ParameterizedTest
+    @EnumSource(CopyMode.class)
+    public void shouldCopyTemplateDescriptor(CopyResourceDomainService.CopyMode mode) throws AMWException {
         // given
         ResourceEntity originResource = CopyResourceDomainServiceTestHelper.mockOriginResource();
         ResourceEntity targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null, true);
@@ -142,7 +136,7 @@ public class TemplateDescriptorEntityTest {
                 .withTargetPlatforms(targetPlatforms)
                 .build();
 
-        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, mode, actingOwner);
+        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, mode);
 
         // when
         TemplateDescriptorEntity copy = origin.getCopy(target, copyUnit);

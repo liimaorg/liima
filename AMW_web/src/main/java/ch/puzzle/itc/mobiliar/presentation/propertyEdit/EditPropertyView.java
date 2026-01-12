@@ -20,10 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
@@ -58,9 +54,6 @@ public class EditPropertyView implements Serializable {
 	@Inject
     PermissionBoundary permissionBoundary;
 
-	@Inject
-	ForeignableBoundary foreignableBoundary;
-
 	// next two values are only needed for the back button
 	@Getter
 	@Setter
@@ -88,8 +81,6 @@ public class EditPropertyView implements Serializable {
 	private boolean canDecryptProperties;
 
     private List<PropertyTagEntity> globalPropertyTags;
-
-    private int propertyDescriptorHashBeforeModification = 0;
 
 	@Setter
 	private String propertyTagsString;
@@ -160,8 +151,6 @@ public class EditPropertyView implements Serializable {
 		if (propertyDescriptor == null) {
 			// create a new one
 			propertyDescriptor = new PropertyDescriptorEntity();
-
-            propertyDescriptorHashBeforeModification = propertyDescriptor.foreignableFieldHashCode();
 		}
 		return propertyDescriptor;
 	}
@@ -242,24 +231,17 @@ public class EditPropertyView implements Serializable {
 			loadPropertyDescriptor();
 		}
 		catch (AMWException e) {
-			GlobalMessageAppender.addErrorMessage(e.getMessage());
-		} catch (ForeignableOwnerViolationException e) {
-			GlobalMessageAppender.addErrorMessage(buildErrorMessage(e, "edit", propertyDescriptor.getPropertyDescriptorDisplayName()));
-		}
+			GlobalMessageAppender.addErrorMessage(e.getMessage());		}
 	}
-    
-    private String buildErrorMessage(ForeignableOwnerViolationException exception, String action, String name){
-       return "Owner "+exception.getViolatingOwner()+" not allowed to "+action+ " " +name;
-    }
 
-	private void savePropertyDescriptor() throws AMWException, ForeignableOwnerViolationException {
+	private void savePropertyDescriptor() throws AMWException {
 		if (isEditResource()) {
 			propertyDescriptor = propertyEditor.savePropertyDescriptorForResource(
-					ForeignableOwner.getSystemOwner(), resourceIdFromParam, propertyDescriptor, propertyDescriptorHashBeforeModification,
+					resourceIdFromParam, propertyDescriptor,
 					propertyTagsString);
 		} else {
 			propertyDescriptor = propertyEditor.savePropertyDescriptorForResourceType(
-					ForeignableOwner.getSystemOwner(), resourceTypeIdFromParam, propertyDescriptor, propertyDescriptorHashBeforeModification,
+					resourceTypeIdFromParam, propertyDescriptor,
 					propertyTagsString);
 		}
 	}
@@ -281,10 +263,10 @@ public class EditPropertyView implements Serializable {
 			showForce = false;
 			try {
 				if (isEditResource()) {
-					propertyEditor.deletePropertyDescriptorForResource(ForeignableOwner.getSystemOwner(), resourceIdFromParam, propertyDescriptor, forceDelete);
+					propertyEditor.deletePropertyDescriptorForResource(resourceIdFromParam, propertyDescriptor, forceDelete);
 				}
 				else {
-					propertyEditor.deletePropertyDescriptorForResourceType(ForeignableOwner.getSystemOwner(), resourceTypeIdFromParam, propertyDescriptor, forceDelete);
+					propertyEditor.deletePropertyDescriptorForResourceType(resourceTypeIdFromParam, propertyDescriptor, forceDelete);
 				}
 				GlobalMessageAppender.addSuccessMessage(propertyDescriptor.getPropertyDescriptorDisplayName() + " was successfully deleted");
 				propertyDescriptor = null;
@@ -299,8 +281,6 @@ public class EditPropertyView implements Serializable {
 			}
 			catch (AMWException e) {
 				GlobalMessageAppender.addErrorMessage(e.getMessage());
-			} catch (ForeignableOwnerViolationException e) {
-				GlobalMessageAppender.addErrorMessage(buildErrorMessage(e, "delete", propertyDescriptor.getPropertyDescriptorDisplayName()));
 			}
 		}
 		else {
@@ -312,7 +292,6 @@ public class EditPropertyView implements Serializable {
 	private void loadPropertyDescriptor() {
 		if (propertyDescriptorId != null) {
 			propertyDescriptor = propertyEditor.getPropertyDescriptor(propertyDescriptorId);
-            propertyDescriptorHashBeforeModification = propertyDescriptor.foreignableFieldHashCode();
 		}
 	}
 
@@ -333,16 +312,5 @@ public class EditPropertyView implements Serializable {
 	public boolean isNewDescriptorMode(){
 		return propertyDescriptor == null || propertyDescriptor.getId() == null;
 	}
-
-	public boolean canManageForeignProperty(){
-		return foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), getPropertyDescriptor());
-	}
-
-    public ForeignableAttributesDTO getForeignableToEdit(){
-        if (propertyDescriptor != null){
-            return new ForeignableAttributesDTO(propertyDescriptor.getOwner(), propertyDescriptor.getExternalKey(), propertyDescriptor.getExternalLink());
-        }
-        return new ForeignableAttributesDTO();
-    }
 
 }

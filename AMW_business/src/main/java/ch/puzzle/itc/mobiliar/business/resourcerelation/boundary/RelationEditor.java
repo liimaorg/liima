@@ -36,9 +36,6 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
@@ -86,9 +83,6 @@ public class RelationEditor {
 	@Inject
 	ResourceGroupLocator resourceGroupLocator;
 
-    @Inject
-    ForeignableService foreignableService;
-
 	@Inject
 	private ResourceGroupPersistenceService resourceGroupService;
 
@@ -119,9 +113,9 @@ public class RelationEditor {
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
-	public void addRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
-			ForeignableOwner changingOwner) throws ResourceNotFoundException, ElementAlreadyExistsException {
-		resourceRelationService.addRelationByGroup(masterId, slaveGroupId, provided, relationName, null, changingOwner);
+	public void addRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName)
+			throws ResourceNotFoundException, ElementAlreadyExistsException {
+		resourceRelationService.addRelationByGroup(masterId, slaveGroupId, provided, relationName, null);
 	}
 
 	/**
@@ -138,7 +132,7 @@ public class RelationEditor {
 	 * @throws ValidationException
 	 */
 	public void addResourceRelationForSpecificRelease(String masterGroupName, String slaveGroupName, boolean provided,
-			String relationName, String typeIdentifier, String releaseName, ForeignableOwner changingOwner)
+			String relationName, String typeIdentifier, String releaseName)
 			throws ResourceNotFoundException, ElementAlreadyExistsException, ValidationException {
 
 		ResourceEntity master = resourceLocator.getResourceByGroupNameAndRelease(masterGroupName, releaseName);
@@ -158,7 +152,7 @@ public class RelationEditor {
 		}
 
 		resourceRelationService.addRelationByGroup(master.getId(), slaveGroup.getId(), provided, relationName,
-				typeIdentifier, changingOwner);
+				typeIdentifier);
 	}
 
 	public void addResourceTypeRelation(ResourceTypeEntity masterType, Integer slaveResourceTypeId)
@@ -183,15 +177,14 @@ public class RelationEditor {
 	 * @param relations a Collection containing consumed or provided ResourceRelationEntities (the haystack)
 	 * @param relationName the relation "name" or the name of the slave resource (group)
 	 * @return boolean true if it has been removed, false if it could not be found
-	 * @throws ForeignableOwnerViolationException
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
 	public boolean removeMatchingRelation(Collection<? extends AbstractResourceRelationEntity> relations, String relationName)
-			throws ForeignableOwnerViolationException, ResourceNotFoundException, ElementAlreadyExistsException {
+			throws ResourceNotFoundException, ElementAlreadyExistsException {
 		for (AbstractResourceRelationEntity relation : relations) {
 			if (isMatchingRelationName(relation, relationName)) {
-				removeRelation(ForeignableOwner.getSystemOwner(), relation.getId());
+				removeRelation(relation.getId());
 				return true;
 			}
 		}
@@ -210,10 +203,9 @@ public class RelationEditor {
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 */
-	public void removeRelation(ForeignableOwner deletingOwner, Integer relationId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+	public void removeRelation(Integer relationId) throws ResourceNotFoundException, ElementAlreadyExistsException {
         AbstractResourceRelationEntity resourceRelationEntity = resourceRelationService.getResourceRelation(relationId);
 
-        foreignableService.verifyDeletableByOwner(deletingOwner, resourceRelationEntity);
         resourceRelationService.removeRelation(resourceRelationEntity);
 	}
 

@@ -36,9 +36,6 @@ import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.presentation.common.context.SessionContext;
 import lombok.Getter;
-import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.Releasing;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -71,9 +68,6 @@ public class ReleasingDataProvider implements Serializable {
 
 	@Inject
     PermissionBoundary permissionBoundary;
-
-    @Inject
-    ForeignableBoundary foreignableBoundary;
 
     @Inject
 	Releasing releasing;
@@ -129,11 +123,9 @@ public class ReleasingDataProvider implements Serializable {
 				Action.CREATE, currentSelectedResource, null) 
 				&& permissionBoundary.canCopyFromSpecificResource(currentSelectedResource, currentSelectedResource.getResourceGroup());
 		canChangeRelease = permissionBoundary.hasPermission(Permission.RELEASE, null,
-				Action.UPDATE, currentSelectedResource, null)
-				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
+				Action.UPDATE, currentSelectedResource, null);
 		canRemoveRelease = permissionBoundary.hasPermission(Permission.RESOURCE, null,
-				Action.DELETE, currentSelectedResource, null)
-				&& foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), currentSelectedResource);
+				Action.DELETE, currentSelectedResource, null);
 
 	}
 
@@ -158,7 +150,7 @@ public class ReleasingDataProvider implements Serializable {
 		}
 		try {
 			CopyResourceResult result = copyResource.doCreateResourceRelease(currentSelectedResource.getResourceGroup(),
-					newRelease, currentSelectedResource.getRelease(), ForeignableOwner.getSystemOwner());
+					newRelease, currentSelectedResource.getRelease());
 			if (result.isSuccess()) {
 				GlobalMessageAppender.addSuccessMessage("Copy successful");
 				List<String> infos = result.getCopyResultInfosAsHTMLStrings();
@@ -178,9 +170,6 @@ public class ReleasingDataProvider implements Serializable {
 			String message = "The selected resource can not be found.";
 			GlobalMessageAppender.addErrorMessage(message);
 		}
-        catch (ForeignableOwnerViolationException e) {
-            GlobalMessageAppender.addErrorMessage("Owner "+e.getViolatingOwner()+" is not allowed to copy to create release");
-        }
 		catch (AMWException e) {
 			GlobalMessageAppender.addErrorMessage(e.getMessage());
 		}
@@ -234,10 +223,10 @@ public class ReleasingDataProvider implements Serializable {
 			    }
 			}
 			if (currentSelectedResource.getResourceType().isDefaultResourceType()) {
-				resourceBoundary.removeResourceEntityOfDefaultResType(ForeignableOwner.getSystemOwner(), currentSelectedResource.getId());
+				resourceBoundary.removeResourceEntityOfDefaultResType(currentSelectedResource.getId());
 			}
 			else {
-				resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), currentSelectedResource.getId());
+				resourceBoundary.removeResource(currentSelectedResource.getId());
 			}
 		    GlobalMessageAppender.addSuccessMessage("Release successfully removed!");
 			if (fallbackRelease == null) {
@@ -247,14 +236,10 @@ public class ReleasingDataProvider implements Serializable {
 				return NavigationUtils.getRefreshOutcomeWithResource(fallbackRelease);
 			}
 		}
-        catch (ForeignableOwnerViolationException e) {
-            GlobalMessageAppender.addErrorMessage("Release can not be deleted by owner " + e.getViolatingOwner());
-        }
         catch (ResourceNotFoundException | ElementAlreadyExistsException e) {
 			GlobalMessageAppender.addErrorMessage("It was not possible to remove the release of the given resource: "
 					+ e.getMessage());
 		}
 	    return null;
-
 	}
 }

@@ -29,8 +29,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
@@ -40,7 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
-import ch.puzzle.itc.mobiliar.presentation.util.UserSettings;
 
 /**
  * Controller for the resourceList screen
@@ -54,9 +51,6 @@ public class ResourceListController {
 
 	@Inject
 	private ResourceGroupLocator resourceGroupLocator;
-
-	@Inject
-	private UserSettings userSettings;
 
 	@Inject
 	private ResourceDependencyResolverService dependencyResolver;
@@ -88,10 +82,10 @@ public class ResourceListController {
 		  if (resourceId != null) {
 			 try {
 				if (isDefaultResourceType) {
-				    resourceBoundary.removeResourceEntityOfDefaultResType(ForeignableOwner.getSystemOwner(), resourceId);
+				    resourceBoundary.removeResourceEntityOfDefaultResType(resourceId);
 				}
 				else {
-				    resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), resourceId);
+				    resourceBoundary.removeResource(resourceId);
 				}
 				String message = "Resource " + resourceName + " (" + releaseName + ") "
 						+ " successfully deleted";
@@ -113,9 +107,6 @@ public class ResourceListController {
 			 GlobalMessageAppender.addErrorMessage(message);
 		  }
 	   }
-       catch (ForeignableOwnerViolationException e) {
-           GlobalMessageAppender.addErrorMessage("Resource with id "+resourceId+" can not be deleted by owner " + e.getViolatingOwner());
-       }
 	   catch (ResourceNotFoundException e) {
 		  String message = "Could not find resource.";
 		  GlobalMessageAppender.addErrorMessage(message);

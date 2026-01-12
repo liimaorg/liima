@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.mockito.Mockito;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
@@ -43,7 +42,6 @@ public class ResourceRelationEntityBuilder extends BaseEntityBuilder {
 		setAbstractValues(mock, master, slave, identifier);
 		setConsumedMasterRelations(mock, master);
 		setConsumedSlaveRelations(mock, slave);
-        when(mock.getOwner()).thenReturn(ForeignableOwner.getSystemOwner()); // use systemOwner as default
 		return mock;
 	}
 
@@ -65,18 +63,11 @@ public class ResourceRelationEntityBuilder extends BaseEntityBuilder {
 		return relation;
 	}
 
-    public ConsumedResourceRelationEntity buildConsumedResRelEntity(ForeignableOwner owner, ResourceEntity master, ResourceEntity slave, String identifier) {
-        ConsumedResourceRelationEntity relation = buildConsumedResRelEntity(master, slave, identifier, null);
-        relation.setOwner(owner);
-        return relation;
-    }
-
 	public ProvidedResourceRelationEntity mockProvidedResourceRelationEntity(ResourceEntity master, ResourceEntity slave, String identifier) {
 		ProvidedResourceRelationEntity mock = mock(ProvidedResourceRelationEntity.class);
 		setAbstractValues(mock, master, slave, identifier);
 		setProvidedMasterRelations(mock, master);
 		setProvidedSlaveRelations(mock, slave);
-        when(mock.getOwner()).thenReturn(ForeignableOwner.getSystemOwner()); // use systemOwner as default
 		return mock;
 	}
 

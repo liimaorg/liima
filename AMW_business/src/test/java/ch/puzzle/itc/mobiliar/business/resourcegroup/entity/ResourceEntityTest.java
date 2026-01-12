@@ -21,8 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.builders.ResourceTypeEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
@@ -57,7 +55,6 @@ public class ResourceEntityTest {
     ResourceRelationTypeEntity relationTypeEntity = new ResourceRelationTypeEntity();
     ProvidedResourceRelationEntity providedResourceRelationEntity = new ProvidedResourceRelationEntity();
     private ResourceEntityBuilder resourceEntityBuilder = new ResourceEntityBuilder();
-    private ResourceTypeEntityBuilder typeEntityBuilder = new ResourceTypeEntityBuilder();
 
     @BeforeEach
     public void setUp() {
@@ -182,154 +179,6 @@ public class ResourceEntityTest {
     }
 
     @Test
-    public void getExternalLinkWhenResourceGroupIsNullShouldReturnNull() {
-        // given
-        resourceEntity = new ResourceEntityBuilder().build();
-        resourceEntity.setResourceGroup(null);
-
-        // when
-        String externalLink = resourceEntity.getExternalLink();
-
-        // then
-        assertNull(externalLink);
-    }
-
-    @Test
-    public void getExternalLinkShouldReturnExternalLinkFromGroup() {
-        // given
-        String externalLink = "externalLink";
-        ResourceGroupEntity group = new ResourceGroupEntity();
-        group.setFcExternalLink(externalLink);
-        resourceEntity = new ResourceEntityBuilder().forResourceGroup(group).build();
-
-        // when
-        String delegatedExternalLink = resourceEntity.getExternalLink();
-
-        // then
-        assertEquals(externalLink, delegatedExternalLink);
-    }
-
-    @Test
-    public void getExternalKeyWhenResourceGroupIsNullShouldReturnNull() {
-        // given
-        resourceEntity = new ResourceEntityBuilder().build();
-        resourceEntity.setResourceGroup(null);
-
-        // when
-        String externalLink = resourceEntity.getExternalKey();
-
-        // then
-        assertNull(externalLink);
-    }
-
-    @Test
-    public void getExternalKeyShouldReturnExternalKeyFromGroup() {
-        // given
-        String externalKey = "externalKey";
-        ResourceGroupEntity group = new ResourceGroupEntity();
-        group.setFcExternalKey(externalKey);
-        resourceEntity = new ResourceEntityBuilder().forResourceGroup(group).build();
-
-        // when
-        String delegatedExternalKey = resourceEntity.getExternalKey();
-
-        // then
-        assertEquals(externalKey, delegatedExternalKey);
-    }
-
-    @Test
-    public void setExternalLinkWhenResourceGroupIsNullShouldNotSetLinkInGroup() {
-        // given
-        String externalLink = "externalLink";
-        resourceEntity = new ResourceEntityBuilder().build();
-        resourceEntity.setResourceGroup(null);
-
-        // when
-        resourceEntity.setExternalLink(externalLink);
-
-        // then
-        assertNull(resourceEntity.getExternalLink());
-    }
-
-    @Test
-    public void setExternalLinkShouldSetExternalLinkInGroup() {
-        // given
-        String externalLink = "externalLink";
-        ResourceGroupEntity group = new ResourceGroupEntity();
-        resourceEntity = new ResourceEntityBuilder().forResourceGroup(group).build();
-        assertNull(group.getFcExternalLink());
-
-        // when
-        resourceEntity.setExternalLink(externalLink);
-
-        // then
-        assertEquals(externalLink, group.getFcExternalLink());
-    }
-
-    @Test
-    public void setExternalKeyWhenResourceGroupIsNullShouldNotSetKeyInGroup() {
-        // given
-        String externalKey = "externalKey";
-        resourceEntity = new ResourceEntityBuilder().build();
-        resourceEntity.setResourceGroup(null);
-
-        // when
-        resourceEntity.setExternalKey(externalKey);
-
-        // then
-        assertNull(resourceEntity.getExternalKey());
-    }
-
-    @Test
-    public void setExternalKeyShouldSetExternalKeyInGroup() {
-        // given
-        String externalKey = "externalKey";
-        ResourceGroupEntity group = new ResourceGroupEntity();
-        resourceEntity = new ResourceEntityBuilder().forResourceGroup(group).build();
-        assertNull(group.getFcExternalKey());
-
-        // when
-        resourceEntity.setExternalKey(externalKey);
-
-        // then
-        assertEquals(externalKey, group.getFcExternalKey());
-    }
-
-    @Test
-    public void defaultConstructorShouldSetDefaultSystemOwner() {
-
-        // when
-        resourceEntity = new ResourceEntity();
-
-        // then
-        assertNotNull(resourceEntity.getOwner());
-        assertEquals(ForeignableOwner.getSystemOwner(), resourceEntity.getOwner());
-    }
-
-    @Test
-    public void constructorWithOwnerShouldSetOwner() {
-        // given
-        ForeignableOwner owner = ForeignableOwner.MAIA;
-
-        // when
-        resourceEntity = new ResourceEntity(owner);
-
-        // then
-        assertEquals(owner, resourceEntity.getOwner());
-    }
-
-    @Test
-    public void constructorWithNullShouldThrowException() {
-        // given
-        ForeignableOwner owner = null;
-
-        // when
-        assertThrows(NullPointerException.class, () -> {
-            resourceEntity = new ResourceEntity(owner);
-        });
-    }
-
-    @Test
     public void copyResourceEntity_resources_should_be_same_type_COPY() throws AMWException {
         copyResourceEntity_resources_should_be_same_type(CopyResourceDomainService.CopyMode.COPY);
     }
@@ -345,7 +194,7 @@ public class ResourceEntityTest {
         ResourceEntity originResource = resourceEntityBuilder.buildAppServerEntity("origin", null, null, true);
         ResourceEntity targetResource = resourceEntityBuilder.buildApplicationEntity(
                 "appTargetResource", null, null, true);
-        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, copying, ForeignableOwner.AMW);
+        CopyUnit copyUnit = new CopyUnit(originResource, targetResource, copying);
 
         // when
         originResource.getCopy(targetResource, copyUnit);

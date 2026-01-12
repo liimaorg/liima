@@ -40,8 +40,8 @@
             </li>
             <li class="dropdown">
                 <h:commandLink value="Delete" styleClass="btn primary red"  
-                 	rendered="#{editPropertyView.canEditProperties() and !editPropertyView.newDescriptorMode and editPropertyView.canManageForeignProperty() and !editPropertyView.showForce}"
-                 	action="#{editPropertyView.delete()}" >
+                    rendered="#{editPropertyView.canEditProperties() and !editPropertyView.newDescriptorMode and !editPropertyView.showForce}"
+                    action="#{editPropertyView.delete()}" >
                 </h:commandLink>
                 <h:commandLink value="Force delete" styleClass="btn primary red"
                    rendered="#{editPropertyView.showForce}"
@@ -66,7 +66,6 @@
                 <article>
                         <div class="well">
                             <h2>${editPropertyView.newDescriptorMode ? 'New' : 'Edit'} Property Descriptor</h2>
-                            <mobi:foreignableOwnerTooltip foreignableAttributes="#{editPropertyView.getForeignableToEdit()}"/>
                             <hr/>
                             <br class="clear"/>
 
@@ -76,7 +75,7 @@
 
                                     <div class="controls">
                                         <h:inputText styleClass="propertyInputField changeAware"
-                                                     disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                     disabled="#{!editPropertyView.canEditProperties()}"
                                                      value="#{editPropertyView.propertyDescriptor.propertyName}"><a4j:ajax/>
                                         </h:inputText>
                                     </div>
@@ -86,7 +85,7 @@
 
                                     <div class="controls">
                                         <h:inputText styleClass="propertyInputField changeAware"
-                                                     disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                     disabled="#{!editPropertyView.canEditProperties()}"
                                                      value="#{editPropertyView.propertyDescriptor.displayName}"><a4j:ajax/>
                                         </h:inputText>
                                     </div>
@@ -96,7 +95,7 @@
 
                                     <div class="controls">
                                         <h:selectOneMenu style="width:auto;"
-                                                         disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                         disabled="#{!editPropertyView.canEditProperties()}"
                                                          value="#{editPropertyView.propertyTypeId}">
                                             <f:selectItems var="type" value="#{editPropertyView.propertyTypes}"
                                                            itemLabel="#{type.propertyTypeName}" itemValue="#{type.id}"/>
@@ -113,7 +112,7 @@
 
                                         <div class="controls">
                                             <h:inputText styleClass="propertyInputField changeAware #{!editPropertyView.isSameValidationLogic() ? 'currentContext' : ''}"
-                                                         disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                         disabled="#{!editPropertyView.canEditProperties()}"
                                                          value="#{editPropertyView.propertyDescriptor.validationLogic}"><a4j:ajax/>
                                             </h:inputText>
                                         </div>
@@ -124,21 +123,21 @@
                                         <div class="controls">
                                             <div class="label left width120">
                                                 <h:selectBooleanCheckbox
-                                                        disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                        disabled="#{!editPropertyView.canEditProperties()}"
                                                         value="#{editPropertyView.propertyDescriptor.nullable}"><a4j:ajax/>
                                                 </h:selectBooleanCheckbox>
                                                 <br/>Value optional
                                             </div>
                                             <div class="label left width120">
                                                 <h:selectBooleanCheckbox
-                                                        disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                        disabled="#{!editPropertyView.canEditProperties()}"
                                                         value="#{editPropertyView.propertyDescriptor.optional}"><a4j:ajax/>
                                                 </h:selectBooleanCheckbox>
                                                 <br/>Key optional
                                             </div>
                                             <div class="label left width120 #{!editPropertyView.isSameEncrypted() ? 'currentContext' : ''}">
                                                 <h:selectBooleanCheckbox
-                                                        disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canDecryptProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                        disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canDecryptProperties()}"
                                                         value="#{editPropertyView.propertyDescriptor.encrypt}"><a4j:ajax/>
                                                 </h:selectBooleanCheckbox>
                                                 <br/>Encrypted
@@ -152,7 +151,7 @@
                                     <div class="controls">
                                         <h:inputTextarea
                                                 styleClass="form-control propertyInputField changeAware${editPropertyView.isLongDefaultValue() ? '' : ' oneLine'}"
-                                                disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                disabled="#{!editPropertyView.canEditProperties()}"
                                                 value="#{editPropertyView.propertyDescriptor.machineInterpretationKey}">
                                             <a4j:ajax/>
                                         </h:inputTextarea>
@@ -164,7 +163,7 @@
                                     <div class="controls">
                                         <h:inputTextarea
                                                 styleClass="form-control propertyInputField changeAware${editPropertyView.isLongDefaultValue() ? '' : ' oneLine'}"
-                                                disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                disabled="#{!editPropertyView.canEditProperties()}"
                                                 value="#{editPropertyView.propertyDescriptor.defaultValue}">
                                             <a4j:ajax/>
                                         </h:inputTextarea>
@@ -176,7 +175,7 @@
                                     <div class="controls">
                                         <h:inputTextarea
                                                 styleClass="form-control propertyInputField changeAware${editPropertyView.isLongExampleValue() ? '' : ' oneLine'}"
-                                                disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                disabled="#{!editPropertyView.canEditProperties()}"
                                                 value="#{editPropertyView.propertyDescriptor.exampleValue}">
                                             <a4j:ajax/>
                                         </h:inputTextarea>
@@ -187,7 +186,7 @@
 
                                     <div class="controls">
                                         <h:inputTextarea styleClass="form-control propertyInputField changeAware"
-                                                         disabled="#{!editPropertyView.canEditProperties() or !editPropertyView.canManageForeignProperty()}"
+                                                         disabled="#{!editPropertyView.canEditProperties()}"
                                                          value="#{editPropertyView.propertyDescriptor.propertyComment}">
                                             <a4j:ajax/>
                                         </h:inputTextarea>
@@ -204,7 +203,6 @@
                                         <!-- placeholder does not work with jsf in our actual version -->
                                         <script>
                                             globalTags = [#{editPropertyView.globalTagsString}];
-
                                         </script>
 
                                     </div>

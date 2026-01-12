@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.factory;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnit;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -89,9 +88,9 @@ public class GenerationUnitFactoryTest {
 		builder.app = builder.buildResource(EntityBuilderType.APP, "app");
 		builder.ad = builder.buildResource(EntityBuilderType.AD, "ad");
 		builder.ws = builder.buildResource(EntityBuilderType.WS, "ws");
-		builder.buildConsumedRelation(builder.as, builder.app, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(builder.as, builder.app);
 	    node = builder.buildResource(EntityBuilderType.NODE1, EntityBuilderType.NODE1.name);
-	    builder.buildConsumedRelation(builder.as, node, ForeignableOwner.AMW);
+	    builder.buildConsumedRelation(builder.as, node);
 	}
 
 	@Test
@@ -106,7 +105,7 @@ public class GenerationUnitFactoryTest {
 
 	@Test
 	public void testAsConsumesAppConsumesAd() {
-		builder.buildConsumedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(builder.app, builder.ad);
 
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
@@ -118,7 +117,7 @@ public class GenerationUnitFactoryTest {
 
 	@Test
 	public void testAsConsumesAppProvidesAd() {
-		builder.buildProvidedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
+		builder.buildProvidedRelation(builder.app, builder.ad);
 
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
@@ -131,8 +130,8 @@ public class GenerationUnitFactoryTest {
 	@Test
 	public void testAsConsumesAppConsumesAdAndWs() {
 
-		builder.buildConsumedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
-		builder.buildConsumedRelation(builder.app, builder.ws, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(builder.app, builder.ad);
+		builder.buildConsumedRelation(builder.app, builder.ws);
 
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 

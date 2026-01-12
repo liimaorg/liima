@@ -45,7 +45,6 @@ import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.function.control.FunctionService;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
@@ -135,7 +134,7 @@ public class TemplateProcessorBaseTest<T extends EntityBuilder> {
 			    GenerationModus.SIMULATE,
 			    dependencyResolver);
 	    context.setNode(builder.buildResource(builder.buildResourceType(EntityBuilderType.NODE1.type), "node"));
-	    builder.buildConsumedRelation(context.getApplicationServer(), context.getNode(), ForeignableOwner.AMW);
+	    builder.buildConsumedRelation(context.getApplicationServer(), context.getNode());
 	    return new GenerationOptions(context);
 	}
 

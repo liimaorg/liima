@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
@@ -57,7 +56,7 @@ public class ApplicationResolverEntityBuilder extends PersistingEntityBuilder {
 		as = buildResource(buildResourceType(AS.type), "as");
 		app = buildResource(buildResourceType(APP.type), "app");
 
-		buildConsumedRelation(as, app, ForeignableOwner.AMW);
+		buildConsumedRelation(as, app);
 
 		ws = buildResource(buildResourceType(WS.type), "ws");
 
@@ -69,12 +68,12 @@ public class ApplicationResolverEntityBuilder extends PersistingEntityBuilder {
 		node1 = buildResource(NODE1, "node1");
 		node2 = buildResource(NODE2, "node2");
 
-		buildConsumedRelation(as, node1, ForeignableOwner.AMW);
-		relation = buildConsumedRelation(app, ws, ForeignableOwner.AMW);
+		buildConsumedRelation(as, node1);
+		relation = buildConsumedRelation(app, ws);
 
-		buildConsumedRelation(as2, node1, ForeignableOwner.AMW);
-		buildConsumedRelation(as2, app2, ForeignableOwner.AMW);
-		buildProvidedRelation(app2, ws, ForeignableOwner.AMW);
+		buildConsumedRelation(as2, node1);
+		buildConsumedRelation(as2, app2);
+		buildProvidedRelation(app2, ws);
 
 		DeploymentEntity d = new DeploymentEntity();
 		d.setApplicationsWithVersion(new ArrayList<DeploymentEntity.ApplicationWithVersion>());

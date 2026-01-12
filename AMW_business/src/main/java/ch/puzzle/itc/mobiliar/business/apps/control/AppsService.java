@@ -1,7 +1,6 @@
 package ch.puzzle.itc.mobiliar.business.apps.control;
 
 import ch.puzzle.itc.mobiliar.business.apps.boundary.*;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
@@ -56,14 +55,10 @@ public class AppsService implements ListAppsUseCase, AddAppServerUseCase, AddApp
     @Override
     @HasPermission(permission = Permission.RESOURCE, action = CREATE)
     public Integer add(AddAppCommand command) throws NotFoundException, IllegalStateException {
-
             try {
-                Application app = resourceBoundary.createNewApplicationWithoutAppServerByName(
-                        ForeignableOwner.getSystemOwner(), null, null, command.getAppName(), command.getReleaseId(), false);
+                Application app = resourceBoundary.createNewApplicationWithoutAppServerByName(command.getAppName(), command.getReleaseId(), false);
                 permissionBoundary.createAutoAssignedRestrictions(app.getEntity());
-
                 return app.getId();
-
             } catch (ElementAlreadyExistsException e) {
                 throw new IllegalStateException(e.getMessage());
             } catch (ResourceTypeNotFoundException e) {
@@ -78,7 +73,6 @@ public class AppsService implements ListAppsUseCase, AddAppServerUseCase, AddApp
     public Integer add(AddAppWithServerCommand command) throws NotFoundException, IllegalStateException {
         try {
             Application app = resourceBoundary.createNewUniqueApplicationForAppServer(
-                    ForeignableOwner.getSystemOwner(),
                     command.getAppName(),
                     command.getAppServerId(),
                     command.getReleaseId(),
@@ -105,7 +99,7 @@ public class AppsService implements ListAppsUseCase, AddAppServerUseCase, AddApp
         ResourceTypeEntity resourceType = resourceTypeRepository.getByName(String.valueOf(DefaultResourceTypeDefinition.APPLICATIONSERVER));
         ReleaseEntity release = releaseLocator.getReleaseById(command.getReleaseId());
         try {
-            Resource resource = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), command.getAppServerName(),
+            Resource resource = resourceBoundary.createNewResourceByName(command.getAppServerName(),
                     resourceType.getId(), release.getId());
             permissionBoundary.createAutoAssignedRestrictions(resource.getEntity());
 
@@ -116,7 +110,6 @@ public class AppsService implements ListAppsUseCase, AddAppServerUseCase, AddApp
         } catch (AMWException e) {
             throw new IllegalStateException("Failed to create auto assigned restrictions for app: " + command.getAppServerName(), e);
         }
-
     }
 }
 

@@ -30,7 +30,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
@@ -55,10 +54,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 	private boolean optional;
 	private List<PropertyTagEntity> propertyTags;
 	private String displayName;
-    private String fcExternalLink;
-    private String fcExternalKey;
-
-    private ForeignableOwner owner = ForeignableOwner.getSystemOwner(); // default value is amw
 
 	/**
 	 * @param properties
@@ -97,7 +92,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
         lenient().when(mock.getMachineInterpretationKey()).thenReturn(machineInterpretationKey);
         lenient().when(mock.isOptional()).thenReturn(optional);
         lenient().when(mock.getDisplayName()).thenReturn(displayName);
-        lenient().when(mock.getOwner()).thenReturn(owner);
 
 
 		return mock;
@@ -165,10 +159,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 			}
 		}
 		entity.setProperties(this.properties);
-        entity.setOwner(owner);
-        entity.setExternalKey(fcExternalKey);
-        entity.setExternalLink(fcExternalLink);
-
 		return entity;
 	}
 
@@ -217,11 +207,6 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 		return this;
 	}
 
-    public PropertyDescriptorEntityBuilder withOwner(ForeignableOwner owner){
-        this.owner = owner;
-        return this;
-    }
-
 	public PropertyDescriptorEntityBuilder withPropertyType(PropertyTypeEntity type){
 		this.propertyTypeEntity = type;
 		return this;
@@ -232,18 +217,8 @@ public class PropertyDescriptorEntityBuilder extends BaseEntityBuilder {
 		return this;
 	}
 
-    public PropertyDescriptorEntityBuilder withFcExternalLink(String fcExternalLink){
-        this.fcExternalLink = fcExternalLink;
-        return this;
-    }
-
     public PropertyDescriptorEntityBuilder withValidationLogic(String validationLogic){
         this.validationLogic = validationLogic;
-        return this;
-    }
-
-    public PropertyDescriptorEntityBuilder withFcExternalKey(String fcExternalKey){
-        this.fcExternalKey = fcExternalKey;
         return this;
     }
 

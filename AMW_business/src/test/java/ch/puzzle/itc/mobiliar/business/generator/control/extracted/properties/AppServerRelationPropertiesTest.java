@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
@@ -140,7 +139,7 @@ public class AppServerRelationPropertiesTest {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
 		ResourceEntity ad = builder.resourceFor(AD);
 		ResourceEntity mail = builder.resourceFor(MAIL);
-		ProvidedResourceRelationEntity relation = builder.buildProvidedRelation(ad, mail, ForeignableOwner.AMW);
+		ProvidedResourceRelationEntity relation = builder.buildProvidedRelation(ad, mail);
 		AppServerRelationProperties properties = new AppServerRelationProperties(context, ad, templateExceptionHandler);
 
 		properties.addProvidedRelation("mailrelay", mail, relation);
@@ -157,7 +156,7 @@ public class AppServerRelationPropertiesTest {
 		ResourceEntity mail = builder.resourceFor(MAIL);
 		builder.buildResourceProperty(ad, "foo", "bar");
 
-		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(ad, mail, ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(ad, mail);
 
 		AppServerRelationProperties properties = new AppServerRelationProperties(context, ad, templateExceptionHandler);
 		properties.addConsumedRelation("mailrelay", mail, relation);

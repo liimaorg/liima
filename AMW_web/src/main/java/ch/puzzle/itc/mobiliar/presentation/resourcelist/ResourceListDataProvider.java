@@ -20,10 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourcelist;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.boundary.ForeignableBoundary;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
@@ -71,9 +67,6 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 	@Inject
 	UserSettings userSettings;
 
-    @Inject
-    ForeignableBoundary foreignableBoundary;
-
 	@Inject
 	private ReleaseSelectionDataProvider releaseDataProvider;
 
@@ -83,7 +76,6 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 
 	private ResourceGroup selectedResourceGroup;
 	private String newResourceName;
-	private List<Integer> amwFilter;
 	private ResourceType selectedType;
 	private ReleaseSelector resourceReleaseSelector;
 
@@ -109,27 +101,6 @@ public class ResourceListDataProvider implements Serializable, ApplicationCreato
 		}
 		return resourceGroups;
 	}
-
-	/**
-	 * Returns true if all elements of this resource group are owned by AMW (in the specific release)
-	 */
-	public boolean isAmwOnly(ResourceGroup resourceGroup, Integer releaseId) {
-        ResourceEntity foreignableResource = resourceGroup.getResourceForRelease(releaseId);
-
-        if (foreignableResource != null){
-            return foreignableBoundary.isModifiableByOwner(ForeignableOwner.getSystemOwner(), foreignableResource);
-        }
-        return false;
-	}
-
-    public ForeignableAttributesDTO getForeignableAttribute(ResourceGroup resourceGroup, Integer releaseId){
-        ResourceEntity foreignableResource = resourceGroup.getResourceForRelease(releaseId);
-
-        if (foreignableResource != null){
-            return new ForeignableAttributesDTO(foreignableResource.getOwner(), foreignableResource.getExternalKey(), foreignableResource.getExternalLink());
-        }
-        return new ForeignableAttributesDTO();
-    }
 
 	public ResourceGroup getSelectedResourceGroup() {
 	    return selectedResourceGroup;

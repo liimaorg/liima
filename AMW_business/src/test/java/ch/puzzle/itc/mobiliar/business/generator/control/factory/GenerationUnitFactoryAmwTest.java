@@ -53,7 +53,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties.AppServerRelationProperties;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnit;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
@@ -117,8 +116,8 @@ public class GenerationUnitFactoryAmwTest {
 		ResourceEntity app = builder.resourceFor(EntityBuilderType.APP);
 		ResourceEntity ws = builder.resourceFor(EntityBuilderType.WS);
 		ResourceEntity lb = builder.resourceFor(EntityBuilderType.LB);
-		builder.buildConsumedRelation(app, ws, ForeignableOwner.AMW);
-		builder.buildConsumedRelation(ws, lb, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(app, ws);
+		builder.buildConsumedRelation(ws, lb);
 
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		List<GenerationUnit> wsUnits = unitsFor(work.getAsSet(), EntityBuilderType.WS);
@@ -153,7 +152,7 @@ public class GenerationUnitFactoryAmwTest {
 
 	@Test
 	public void testPropertyIdentifierWhenSetOnType() throws TemplateModelException {
-		builder.buildConsumedRelation(DB2, MAIL, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(DB2, MAIL);
 		builder.relationFor(DB2, MAIL).setIdentifier("mail_1");
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 
@@ -165,7 +164,7 @@ public class GenerationUnitFactoryAmwTest {
 
 	@Test
 	public void testPropertyIdentifierWhenNullIdentifierOnType() throws TemplateModelException {
-		builder.buildConsumedRelation(DB2, MAIL, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(DB2, MAIL);
 		GenerationPackage work = GenerationUnitFactoryTestUtil.createWorkForBuilder(factory, dependencyResolver, builder);
 		
         AmwResourceTemplateModel properties = propertiesFor(work.getAsSet(), DB2).transformModel();
@@ -176,11 +175,11 @@ public class GenerationUnitFactoryAmwTest {
 
 	@Test
 	public void testPropertyIdentifierWhenRelationExistsTwice() throws TemplateModelException {
-		builder.buildConsumedRelation(DB2, MAIL, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(DB2, MAIL);
 		ResourceEntity other = builder.buildResource(MAIL, "the_other_mail");
 
 		ResourceRelationTypeEntity otherTypeRelation = builder.buildTypeRelation(DB2, MAIL);
-		ConsumedResourceRelationEntity otherInstanceRelation = builder.buildConsumedRelation(builder.resourceFor(DB2), other, ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity otherInstanceRelation = builder.buildConsumedRelation(builder.resourceFor(DB2), other);
 
 		otherInstanceRelation.setIdentifier("other_instance_identifier");
 		otherInstanceRelation.setResourceRelationType(otherTypeRelation);

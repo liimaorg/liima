@@ -35,8 +35,6 @@ import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
@@ -96,17 +94,16 @@ public class PropertyDescriptorService {
     }
 
     /**
-     * Verify if the change is allowed by given owner and persists a given PropertyDescriptor, handles its encryption/decryption and manages its PropertyTags
+     * Persists a given PropertyDescriptor, handles its encryption/decryption and manages its PropertyTags
      *
-     * @throws AMWException                       is thrown when technical key is invalid or another PropertyDescriptor with same technical key already exists
-     * @throws ForeignableOwnerViolationException is thrown when the change is not permitted by changing owner
+     * @throws AMWException is thrown when technical key is invalid or another PropertyDescriptor with same technical key already exists
      */
-    public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceEntity resource) throws AMWException {
+    public PropertyDescriptorEntity savePropertyDescriptor(AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceEntity resource) throws AMWException {
         checkForValidTechnicalKey(descriptor);
         auditService.storeIdInThreadLocalForAuditLog(resource);
         if (descriptor.getId() == null) {
             preventDuplicateTechnicalKeys(abstractContext, descriptor);
-            createNewPropertyDescriptor(changingOwner, descriptor, abstractContext, tags);
+            createNewPropertyDescriptor(descriptor, abstractContext, tags);
         } else {
             saveExistingPropertyDescriptor(descriptor, tags, resource);
         }
@@ -115,17 +112,16 @@ public class PropertyDescriptorService {
     }
 
     /**
-     * Verify if the change is allowed by given owner and persists a given PropertyDescriptor, handles its encryption/decryption and manages its PropertyTags
+     * Persists a given PropertyDescriptor, handles its encryption/decryption and manages its PropertyTags
      *
-     * @throws AMWException                       is thrown when technical key is invalid or another PropertyDescriptor with same technical key already exists
-     * @throws ForeignableOwnerViolationException is thrown when the change is not permitted by changing owner
+     * @throws AMWException is thrown when technical key is invalid or another PropertyDescriptor with same technical key already exists
      */
-    public PropertyDescriptorEntity savePropertyDescriptorForOwner(ForeignableOwner changingOwner, AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceTypeEntity resourceType) throws AMWException {
+    public PropertyDescriptorEntity savePropertyDescriptor(AbstractContext abstractContext, PropertyDescriptorEntity descriptor, List<PropertyTagEntity> tags, ResourceTypeEntity resourceType) throws AMWException {
         checkForValidTechnicalKey(descriptor);
         auditService.storeIdInThreadLocalForAuditLog(resourceType);
         if (descriptor.getId() == null) {
             preventDuplicateTechnicalKeys(abstractContext, descriptor);
-            createNewPropertyDescriptor(changingOwner, descriptor, abstractContext, tags);
+            createNewPropertyDescriptor(descriptor, abstractContext, tags);
         } else {
             saveExistingPropertyDescriptor(descriptor, tags, resourceType);
         }
@@ -135,30 +131,27 @@ public class PropertyDescriptorService {
 
     /**
      * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors to be deleted must not have any Properties
-     * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
      */
-    public void deletePropertyDescriptorByOwnerInResourceContext(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, int resourceId) throws AMWException {
+    public void deletePropertyDescriptorInResourceContext(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, int resourceId) throws AMWException {
         auditService.setResourceIdInThreadLocal(resourceId);
         PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptorWithTags(descriptorToDelete.getId());
-        removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, false);
+        removePropertyDescriptor(descriptorToDeleteWithTags, abstractContext, false);
     }
 
-    /**
+        /**
      * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors to be deleted must not have any
      * Properties
-     * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
      */
-    public void deletePropertyDescriptorByOwnerInResourceTypeContext(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, int resourceTypeId) throws AMWException {
+    public void deletePropertyDescriptorInResourceTypeContext(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, int resourceTypeId) throws AMWException {
         auditService.setResourceTypeIdInThreadLocal(resourceTypeId);
         PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptorWithTags(descriptorToDelete.getId());
-        removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, false);
+        removePropertyDescriptor(descriptorToDeleteWithTags, abstractContext, false);
     }
 
     /**
      * Deletes PropertyDescriptors and their PropertyTags PropertyDescriptors including all its Properties
-     * The owner is ignored - therefore this method deletes the property descriptor regardless of the foreignable ownership!
      */
-    public void deletePropertyDescriptorByOwnerIncludingPropertyValues(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, HasContexts attachedResource)
+    public void deletePropertyDescriptorIncludingPropertyValues(PropertyDescriptorEntity descriptorToDelete, AbstractContext abstractContext, HasContexts attachedResource)
             throws AMWException {
         PropertyDescriptorEntity descriptorToDeleteWithTags = getPropertyDescriptorWithTags(descriptorToDelete.getId());
         Set<PropertyEntity> propertiesToBeDeleted = descriptorToDeleteWithTags.getProperties();
@@ -180,7 +173,7 @@ public class PropertyDescriptorService {
             removeInstancePropertyValues((ResourceTypeEntity) attachedResource, propertiesToBeDeleted);
             removeRelationPropertyValues((ResourceTypeEntity) attachedResource, propertiesToBeDeleted);
         }
-        removePropertyDescriptorByOwner(descriptorToDeleteWithTags, abstractContext, true);
+        removePropertyDescriptor(descriptorToDeleteWithTags, abstractContext, true);
     }
 
     private void removeInstancePropertyValues(ResourceTypeEntity attachedResource, Set<PropertyEntity> propertiesToBeDeleted) {
@@ -219,7 +212,7 @@ public class PropertyDescriptorService {
         }
     }
 
-    protected void removePropertyDescriptorByOwner(PropertyDescriptorEntity descriptorToDeleteWithTags, AbstractContext abstractContext, boolean includingPropertyValues)
+    protected void removePropertyDescriptor(PropertyDescriptorEntity descriptorToDeleteWithTags, AbstractContext abstractContext, boolean includingPropertyValues)
             throws AMWException {
         if (descriptorToDeleteWithTags.getProperties().isEmpty() || includingPropertyValues) {
             abstractContext.removePropertyDescriptor(descriptorToDeleteWithTags);
@@ -269,8 +262,7 @@ public class PropertyDescriptorService {
         }
     }
 
-    private void createNewPropertyDescriptor(ForeignableOwner owner, PropertyDescriptorEntity descriptor, AbstractContext abstractContext, List<PropertyTagEntity> tags) {
-        descriptor.setOwner(owner);
+    private void createNewPropertyDescriptor(PropertyDescriptorEntity descriptor, AbstractContext abstractContext, List<PropertyTagEntity> tags) {
         abstractContext.addPropertyDescriptor(descriptor);
         entityManager.persist(descriptor);
         propertyTagEditingService.updateTags(tags, descriptor);

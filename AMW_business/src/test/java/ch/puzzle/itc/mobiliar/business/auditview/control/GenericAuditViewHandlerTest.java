@@ -17,7 +17,6 @@ import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntryContainer;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 
@@ -36,7 +35,7 @@ public class GenericAuditViewHandlerTest {
     @Test
     public void shouldObfuscateValues() {
         // given
-        PropertyDescriptorEntity encryptedDescriptor = new PropertyDescriptorEntity(ForeignableOwner.AMW);
+        PropertyDescriptorEntity encryptedDescriptor = new PropertyDescriptorEntity();
         encryptedDescriptor.setEncrypt(true);
         PropertyEntity propertyEntity = new PropertyEntity();
         propertyEntity.setDescriptor(encryptedDescriptor);

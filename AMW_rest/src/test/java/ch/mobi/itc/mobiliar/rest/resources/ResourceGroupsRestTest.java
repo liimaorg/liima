@@ -52,8 +52,6 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -225,8 +223,8 @@ public class ResourceGroupsRestTest {
         ResourceEntity  resEnt = new ResourceEntity();
         resEnt.setResourceGroup(resGroup);
         resEnt.setName(resGroup.getName());
-        Resource resource = Resource.createByResource(ForeignableOwner.getSystemOwner(), resEnt, resType, new ContextEntity());
-        Mockito.when(resourceBoundaryMock.createNewResourceByName(ForeignableOwner.getSystemOwner(), resGroup.getName(), resType.getName(), release.getName())).thenReturn(resource);
+        Resource resource = Resource.createByResource(resEnt, resType, new ContextEntity());
+        Mockito.when(resourceBoundaryMock.createNewResourceByName(resGroup.getName(), resType.getName(), release.getName())).thenReturn(resource);
 
         // when
         Response response = rest.addResource(resourceReleaseDTO);
@@ -266,7 +264,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceReleaseCreation() throws AMWException, ForeignableOwnerViolationException {
+    public void shouldReturnExpectedLocationHeaderOnSuccessfullResourceReleaseCreation() throws AMWException {
         // given
         ResourceReleaseCopyDTO resourceReleaseCopyDTO = new ResourceReleaseCopyDTO();
         resourceReleaseCopyDTO.setReleaseName("NewRelease");
@@ -275,7 +273,7 @@ public class ResourceGroupsRestTest {
 
         CopyResourceResult copyResourceResult = new CopyResourceResult(resourceGroupName);
         Mockito.when(copyResourceMock.doCreateResourceRelease(resourceGroupName, resourceReleaseCopyDTO.getReleaseName(),
-                resourceReleaseCopyDTO.getSourceReleaseName(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+                resourceReleaseCopyDTO.getSourceReleaseName())).thenReturn(copyResourceResult);
 
         // when
         Response response = rest.addNewResourceRelease(resourceReleaseCopyDTO, resourceGroupName);
@@ -286,7 +284,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldReturnBadRequestIfReleaseCreationFailed() throws AMWException, ForeignableOwnerViolationException {
+    public void shouldReturnBadRequestIfReleaseCreationFailed() throws AMWException {
         // given
         ResourceReleaseCopyDTO resourceReleaseCopyDTO = new ResourceReleaseCopyDTO();
         resourceReleaseCopyDTO.setReleaseName("NewRelease");
@@ -296,7 +294,7 @@ public class ResourceGroupsRestTest {
         CopyResourceResult copyResourceResult = new CopyResourceResult(resourceGroupName);
         copyResourceResult.getExceptions().add("bogus");
         Mockito.when(copyResourceMock.doCreateResourceRelease(resourceGroupName, resourceReleaseCopyDTO.getReleaseName(),
-                resourceReleaseCopyDTO.getSourceReleaseName(), ForeignableOwner.getSystemOwner())).thenReturn(copyResourceResult);
+                resourceReleaseCopyDTO.getSourceReleaseName())).thenReturn(copyResourceResult);
 
         // when
         Response response = rest.addNewResourceRelease(resourceReleaseCopyDTO, resourceGroupName);
@@ -345,7 +343,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenCopyFromDoesNotSucceed() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+    public void shouldReturnBadRequestWhenCopyFromDoesNotSucceed() throws ValidationException, AMWException {
         // given
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(false);
@@ -360,7 +358,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenResourcesOfDifferentTypes() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+    public void shouldReturnBadRequestWhenResourcesOfDifferentTypes() throws ValidationException, AMWException {
         when(copyResourceMock.doCopyResource("targetResourceGroupName", "targetReleaseName", "originResourceGroupName", "originReleaseName")).thenThrow(new AMWException("Target and origin Resource are not of the same ResourceType"));
 
         // when
@@ -371,7 +369,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldAllowCopy() throws ValidationException, ForeignableOwnerViolationException, AMWException {
+    public void shouldAllowCopy() throws ValidationException, AMWException {
         // given
         CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
         when(copyResourceResult.isSuccess()).thenReturn(true);
@@ -404,7 +402,7 @@ public class ResourceGroupsRestTest {
     }
 
     @Test
-    public void shouldDeleteResource() throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+    public void shouldDeleteResource() throws NotFoundException, ElementAlreadyExistsException {
         // given
         Integer resourceGroupId = 8;
         Integer resourceId = 9;
@@ -417,11 +415,11 @@ public class ResourceGroupsRestTest {
         rest.deleteResourceRelease(resourceGroupId, releaseId);
 
         // then
-        verify(resourceBoundaryMock, times(1)).removeResource(ForeignableOwner.getSystemOwner(), resourceId);
+        verify(resourceBoundaryMock, times(1)).removeResource(resourceId);
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteResource() throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+    public void shouldReturnNotFoundWhenDeleteResource() throws NotFoundException, ElementAlreadyExistsException {
         // given
         Integer resourceGroupId = 8;
         Integer releaseId = 10;

@@ -21,9 +21,6 @@
 package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.AppServerRelationsTemplateProcessor;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
@@ -247,7 +244,7 @@ public class PropertyEditDataProvider implements Serializable {
         }
     }
 
-    public void save() throws AMWException, ForeignableOwnerViolationException, ValidationException {
+    public void save() throws AMWException, ValidationException {
         // play back the filtered properties - otherwise they will be deleted.
         resourceEditProperties.addAll(filteredResourceProperties);
         if (currentRelationProperties != null && filteredRelationProperties != null) {
@@ -282,7 +279,7 @@ public class PropertyEditDataProvider implements Serializable {
                 relationIdentifier = null;
             }
 
-            editor.save(ForeignableOwner.getSystemOwner(), getContextId(), getResourceId(), resourceEditProperties,
+            editor.save(getContextId(), getResourceId(), resourceEditProperties,
                     resourceRelation.getCurrentResourceRelation(), relationPropertiesToSave,
                     getNameOfResourceOrResourceType(), relationIdentifier);
 
@@ -370,13 +367,6 @@ public class PropertyEditDataProvider implements Serializable {
 
     public boolean isLongValue(String value) {
         return (value != null && value.length() > 70);
-    }
-
-    public ForeignableAttributesDTO getForeignableToEdit(ResourceEditProperty property) {
-        if (property != null) {
-            return new ForeignableAttributesDTO(property.getFcOwner(), property.getFcExternalKey(), property.getFcExternalLink());
-        }
-        return new ForeignableAttributesDTO();
     }
 
     public List<ResourceEditProperty> getResourceEditProperties() {

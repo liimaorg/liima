@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
@@ -51,10 +50,8 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 	private String resourceTypeName;
 	private ResourceGroupEntity group;
 	private ReleaseEntity release;
-    private ForeignableOwner owner;
 	private Set<AmwFunctionEntity> functions = new HashSet<>();
 	private boolean isDeletable;
-	private String localPortId;
 	private Set<ResourceContextEntity> contexts;
 
 	/**
@@ -245,11 +242,6 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
         return this;
     }
 
-    public ResourceEntityBuilder withOwner(ForeignableOwner owner){
-        this.owner = owner;
-        return this;
-    }
-
 	public ResourceEntityBuilder forResourceGroup(ResourceGroupEntity group){
 		this.group = group;
 		return this;
@@ -290,11 +282,6 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 		return this;
 	}
 
-	public ResourceEntityBuilder withLocalPortId(String localPortId){
-		this.localPortId = localPortId;
-		return this;
-	}
-
 	public ResourceEntity build(){
 		ResourceEntity resourceEntity;
 
@@ -311,19 +298,9 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 		}
 
 		resourceEntity.setId(id);
-
-        if (owner != null){
-            resourceEntity.setOwner(owner);
-        }
-
 		resourceEntity.setFunctions(functions);
-
 		resourceEntity.setDeletable(isDeletable);
-
 		resourceEntity.setContexts(contexts);
-
-		resourceEntity.setLocalPortId(localPortId);
-
 		return resourceEntity;
 	}
 
@@ -337,11 +314,9 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 		}
 
 		lenient().when(resourceEntity.getId()).thenReturn(id);
-		lenient().when(resourceEntity.getOwner()).thenReturn(owner);
 		lenient().when(resourceEntity.getFunctions()).thenReturn(functions);
 		lenient().when(resourceEntity.isDeletable()).thenReturn(isDeletable);
 		lenient().when(resourceEntity.getContexts()).thenReturn(contexts);
-		lenient().when(resourceEntity.getLocalPortId()).thenReturn(localPortId);
 		return resourceEntity;
 	}
 

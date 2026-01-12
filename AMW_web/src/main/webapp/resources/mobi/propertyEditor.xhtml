@@ -23,7 +23,7 @@
             <h:inputTextarea value="#{cc.attrs.property.propertyValue}" disabled="#{!propertyEditDataProvider.editableProperties}"
                              onfocus="this.className = 'propertyInputField currentContext ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'}'"
                              onblur="setUpperContext(this, '${cc.attrs.property.propertyValue}', '${cc.attrs.property.isDefinedInContext(propertyEditDataProvider.contextId)}'); validateInput(this, '${cc.attrs.property.nullable}', '${cc.attrs.property.optional}', '${cc.attrs.property.validationLogic}', '${cc.attrs.property.propertyDefaultValue}', '${cc.attrs.property.mik}'); decorateInput(this, '${cc.attrs.property.mik}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue)}', '${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue)}');"
-                             styleClass="${cc.attrs.property.propertyDisplayName} propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)} ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} ${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue) || propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue) ? '' : ' oneLine'}"
+                             styleClass="property-${cc.attrs.property.propertyDisplayName} propertyInputField ${cc.attrs.property.getClassNameForPropertyInputField(propertyEditDataProvider.contextId)} ${cc.attrs.property.relationProperty ? 'subChangeAware' : 'changeAware'} ${propertyEditDataProvider.isLongValue(cc.attrs.property.propertyValue) || propertyEditDataProvider.isLongValue(cc.attrs.property.propertyDefaultValue) ? '' : ' oneLine'}"
                              autocomplete="off" title="#{cc.attrs.property.propertyDefaultValue}">
                 <f:attribute name="regex" value="#{cc.attrs.property.validationLogic}"/>
                 <f:attribute name="isNullable" value="#{cc.attrs.property.nullable}"/>
@@ -33,15 +33,14 @@
             </h:inputTextarea>
             <script type="text/javascript">
                 (function () {
-                    let input = document.getElementsByClassName('${cc.attrs.property.propertyDisplayName}')[0];
+                    let input = document.getElementsByClassName('property-${cc.attrs.property.propertyDisplayName}')[0];
                     if (input != undefined) {
                         input.setAttribute('placeholder', '${cc.attrs.property.propertyDefaultValue}');
                     }})();
             </script>
             <!-- TOOLTIP -->
             <mobi:propertyTooltip property="#{prop}"/>
-            <mobi:foreignableOwnerTooltip foreignableAttributes="#{propertyEditDataProvider.getForeignableToEdit(cc.attrs.property)}"/>
-
+            
             <!-- Property is overriden by one of the child contexts-->
             <a4j:commandLink id="showConfigOverviewButton"
                              onclick="showLoader();"
@@ -94,7 +93,6 @@
 
             <!-- TOOLTIP -->
             <mobi:propertyTooltip property="#{prop}"/>
-            <mobi:foreignableOwnerTooltip foreignableAttributes="#{propertyEditDataProvider.getForeignableToEdit(cc.attrs.property)}"/>
 
             <!-- RESET -->
             <h:panelGroup

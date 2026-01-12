@@ -21,16 +21,12 @@
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -46,9 +42,7 @@ import static javax.persistence.CascadeType.PERSIST;
 @Entity
 @Audited
 @Table(name = "TAMW_propertyDescriptor")
-public class PropertyDescriptorEntity implements Identifiable, Serializable, PropertyTagEntityHolder, Foreignable<PropertyDescriptorEntity>, Auditable {
-
-    // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
+public class PropertyDescriptorEntity implements Identifiable, Serializable, PropertyTagEntityHolder, Auditable {
 
 	@Getter
 	@Setter
@@ -146,24 +140,6 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
 	private String displayName;
 
 	private static final long serialVersionUID = 1L;
-
-    @Enumerated(EnumType.STRING)
-    private ForeignableOwner fcOwner;
-
-    private String fcExternalKey;
-    private String fcExternalLink;
-
-    /**
-     * Creates new entity object with default system owner
-     */
-    public PropertyDescriptorEntity() {
-        this(ForeignableOwner.getSystemOwner());
-    }
-
-    public PropertyDescriptorEntity(ForeignableOwner owner) {
-        this.fcOwner = Objects.requireNonNull(owner, "Owner must not be null");
-    }
-
 
     public List<PropertyTagEntity> getPropertyTags() {
 		return propertyTags == null ? new ArrayList<PropertyTagEntity>() : propertyTags;
@@ -334,42 +310,6 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
         return displayName;
     }
 
-    @Override
-    public ForeignableOwner getOwner() {
-        return fcOwner;
-    }
-
-    @Override
-    public void setOwner(ForeignableOwner owner) {
-        this.fcOwner = owner;
-    }
-
-    @Override
-    public String getExternalLink() {
-        return fcExternalLink;
-    }
-
-    @Override
-    public void setExternalLink(String externalLink) {
-        this.fcExternalLink = externalLink;
-    }
-
-    @Override
-    public String getExternalKey() {
-        return fcExternalKey;
-    }
-
-    @Override
-    public void setExternalKey(String externalKey) {
-        this.fcExternalKey = externalKey;
-    }
-
-    @Override
-    public String getForeignableObjectName() {
-        return this.getClass().getSimpleName();
-    }
-
-    @Override
 	public PropertyDescriptorEntity getCopy(PropertyDescriptorEntity target, CopyUnit copyUnit) {
 		if (target == null) {
 			target = new PropertyDescriptorEntity();
@@ -387,36 +327,9 @@ public class PropertyDescriptorEntity implements Identifiable, Serializable, Pro
 		target.setMachineInterpretationKey(getMachineInterpretationKey());
 		target.setOptional(isOptional());
 		target.setDisplayName(getDisplayName());
-		CopyHelper.copyForeignable(target, this, copyUnit);
 
 		return target;
 	}
-
-
-    @Override
-    public int foreignableFieldHashCode() {
-        HashCodeBuilder eb = new HashCodeBuilder();
-        eb.append(this.id);
-        eb.append(this.displayName);
-        eb.append(this.fcOwner);
-        eb.append(this.fcExternalKey);
-        eb.append(this.fcExternalLink);
-
-        eb.append(this.defaultValue);
-        eb.append(this.exampleValue);
-        eb.append(this.machineInterpretationKey);
-        eb.append(this.optional);
-        eb.append(this.encrypt);
-        eb.append(this.propertyName);
-        eb.append(this.nullable);
-        eb.append(this.validationLogic);
-        eb.append(this.propertyComment);
-        eb.append(this.cardinalityProperty);
-
-        eb.append(this.propertyTypeEntity != null ? this.propertyTypeEntity.getId() : null);
-
-        return eb.toHashCode();
-    }
 
     @Override
     public String getNewValueForAuditLog() {

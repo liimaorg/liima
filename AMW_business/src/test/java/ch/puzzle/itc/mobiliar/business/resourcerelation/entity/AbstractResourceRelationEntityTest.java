@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,7 +43,6 @@ public class AbstractResourceRelationEntityTest {
 
 	@BeforeEach
 	public void setUp() {
-
 		context = new ContextEntity();
 		context.setId(Integer.valueOf(22));
 
@@ -136,7 +134,7 @@ public class AbstractResourceRelationEntityTest {
 	public void testBuildIdentifierWithNonDefaultEntityType() {
 		EntityBuilder builder = new AmwEntityBuilder();
 		
-		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(builder.resourceFor(WS), builder.resourceFor(AD), ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(builder.resourceFor(WS), builder.resourceFor(AD));
 		assertEquals("activedirectory", relation.buildIdentifer());
 
 		relation.setIdentifier("1");
@@ -147,7 +145,7 @@ public class AbstractResourceRelationEntityTest {
 	public void testBuildIdentifierWithDefaultEntityType() {
 		EntityBuilder builder = new AmwEntityBuilder();
 
-		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(builder.resourceFor(APP), builder.resourceFor(AS), ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(builder.resourceFor(APP), builder.resourceFor(AS));
 		assertEquals("amw", relation.buildIdentifer());
 
 		relation.setIdentifier("testApp");

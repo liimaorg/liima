@@ -56,6 +56,7 @@ public class FreeMarkerPropertyGenerationTest {
         // then
         assertEquals("Value: value TechnicalKey: techkey", result);
     }
+
     @Test
     public void testCurrentValue() throws Exception {
         // given
@@ -75,7 +76,7 @@ public class FreeMarkerPropertyGenerationTest {
     }
 
     @Test
-    public void testCurrentNullProperties() throws Exception {
+    public void testCurrentNullProperties() {
         // given
         String testTemplateContent = "Value: ${property.test}";
         // set up data
@@ -94,6 +95,7 @@ public class FreeMarkerPropertyGenerationTest {
 
     private String generate(String testTemplateContent, Map<String, Object> data) throws IOException, TemplateException {
         Configuration cfg = new Configuration(Configuration.VERSION_2_3_22);
+        cfg.setLogTemplateExceptions(false);
         StringTemplateLoader loader = new StringTemplateLoader();
 
         String testTemplateName = "template";

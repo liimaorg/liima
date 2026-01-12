@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcerelation.control;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -68,9 +67,9 @@ public class RelationImportService {
         return null;
     }
 
-    public void addRelation(ForeignableOwner owner, ResourceEntity application, ResourceEntity relatedResource, Integer releaseId, boolean provided) {
+    public void addRelation(ResourceEntity application, ResourceEntity relatedResource, Integer releaseId, boolean provided) {
         try {
-            relationService.doAddResourceRelationForSpecificRelease(application.getId(), relatedResource.getResourceGroup().getId(), provided, null, null, releaseId, owner);
+            relationService.doAddResourceRelationForSpecificRelease(application.getId(), relatedResource.getResourceGroup().getId(), provided, null, null, releaseId);
             log.info((provided ? "Provided " : "Consumed ") + "port relation between " + application.getName() + " and " + relatedResource.getName() + "successfully created");
         } catch (AMWException e) {
             // TODO message human readable

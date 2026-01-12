@@ -20,27 +20,30 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
-import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
-import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService.CopyMode;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 
 public class PropertyEntityTest {
 
@@ -126,24 +129,18 @@ public class PropertyEntityTest {
 		assertEquals("fooValue", result);
 	}
 
-	@Test
-	public void test_copyPropertyEntity() throws AMWException {
-		Map<CopyResourceDomainService.CopyMode, Set<ForeignableOwner>> validCopyModeOwnerCombinations = CopyHelper.getValidModeOwnerCombinationsMap();
-		for (CopyResourceDomainService.CopyMode copyMode : validCopyModeOwnerCombinations.keySet()) {
-			for(ForeignableOwner foreignableOwner : validCopyModeOwnerCombinations.get(copyMode)){
-				ResourceEntity originResource = new ResourceEntityBuilder().mockAppServerEntity("originResource", null, null, null);
-				when(originResource.isDeletable()).thenReturn(true);
-
-				ResourceEntity targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null, true);
-
-				CopyUnit copyUnit = new CopyUnit(originResource, targetResource, copyMode, foreignableOwner);
-
-				copyPropertyEntity_targetNull(copyUnit);
-				copyPropertyEntity(copyUnit);
-			}
-		}
+	public static Stream<CopyUnit> copyUnits() throws AMWException {
+		return Arrays.stream(CopyMode.values())
+				.map(copyMode -> {
+					ResourceEntity originResource = new ResourceEntityBuilder().mockAppServerEntity("originResource", null, null, null);
+					when(originResource.isDeletable()).thenReturn(true);
+					ResourceEntity targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null, true);
+					return new CopyUnit(originResource, targetResource, copyMode);
+				});
 	}
 
+	@ParameterizedTest
+	@MethodSource("copyUnits")
 	public void copyPropertyEntity_targetNull(CopyUnit copyUnit) {
 		// given
 		PropertyTypeEntity origType = propDescBuilder.buildPropertyTypeEntity("type1");
@@ -162,6 +159,8 @@ public class PropertyEntityTest {
 		assertEquals(origin.getValue(), copy.getValue());
 	}
 
+	@ParameterizedTest
+	@MethodSource("copyUnits")
 	public void copyPropertyEntity(CopyUnit copyUnit) {
 		// given
 		PropertyTypeEntity origType = propDescBuilder.mockPropertyTypeEntity("type1");

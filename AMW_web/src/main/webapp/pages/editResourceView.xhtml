@@ -52,7 +52,7 @@
                 </li>
                 <h:panelGroup rendered="${(taggingDataProvider.canTagCurrentState and propertyEditDataProvider.applicationServer)
                     or copyResourceDataProvider.canCopyResource
-                    or (copyResourceDataProvider.canCopyFromPredecessorResource and editResourceView.resourceType.applicationResourceType)}">
+                    or editResourceView.resourceType.applicationResourceType}">
                 <li class="dropdown">
                     <button class="btn light dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         More
@@ -77,17 +77,6 @@
                                           listener="#{copyResourceDataProvider.enableLoadList()}"
                                           onbegin="showLoader();"
                                           oncomplete="hideLoader();#{rich:component('copyFromResourcePopup')}.show();"/>
-                            </h:commandLink>
-                        </li>
-                        <li>
-                            <h:commandLink id="copyFromPredecessor"
-                                           rendered="#{copyResourceDataProvider.canCopyFromPredecessorResource and editResourceView.resourceType.applicationResourceType}"
-                                           styleClass="btn light dropdown-item">
-                                Copy from Predecessor
-                                <a4j:ajax render="copyFromPredecessorPopup"
-                                          listener="#{copyResourceDataProvider.enableLoadList()}"
-                                          onbegin="showLoader();"
-                                          oncomplete="hideLoader();#{rich:component('copyFromPredecessorPopup')}.show();"/>
                             </h:commandLink>
                         </li>
                     </ul>
@@ -323,7 +312,6 @@
     <ui:define name="component_popups">
         <mobi:tagCurrentState/>
         <mobi:copyFromResourcePopup/>
-        <mobi:copyFromPredecesorPopup/>
         <mobi:createNewReleasePopup/>
         <mobi:removeReleasePopup/>
         <mobi:changeReleasePopup/>

@@ -4,7 +4,6 @@ import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.auditview.control.ThreadLocalUtil;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -58,17 +57,16 @@ public class ResourceRelationServiceTest {
         boolean provided = true;
         String relationName = "ad22";
         String typeIdentifier = "tytype";
-        ForeignableOwner foreignableOwner = ForeignableOwner.getSystemOwner();
         ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().name("typename").build();
         ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(resourceId).withType(resourceType).build();
         ResourceGroupEntity resourceGroupEntity = new ResourceGroupEntityBuilder().buildResourceGroupEntity("myName", Collections.EMPTY_SET, true);
         resourceGroupEntity.setResourceType(resourceType);
         when(entityManager.find(ResourceEntity.class, resourceId)).thenReturn(resourceEntity);
         when(entityManager.find(ResourceGroupEntity.class, slaveId)).thenReturn(resourceGroupEntity);
-        doNothing().when(resourceRelationService).doAddResourceRelationForAllReleases(resourceId, slaveId, provided, relationName, typeIdentifier, foreignableOwner);
+        doNothing().when(resourceRelationService).doAddResourceRelationForAllReleases(resourceId, slaveId, provided, relationName, typeIdentifier);
 
         // when
-        resourceRelationService.addRelationByGroup(resourceId, slaveId, provided, relationName, typeIdentifier, foreignableOwner);
+        resourceRelationService.addRelationByGroup(resourceId, slaveId, provided, relationName, typeIdentifier);
 
         // then
         assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
@@ -82,21 +80,19 @@ public class ResourceRelationServiceTest {
         boolean provided = false;
         String relationName = "ad22";
         String typeIdentifier = "tytype";
-        ForeignableOwner foreignableOwner = ForeignableOwner.getSystemOwner();
         ResourceTypeEntity resourceType = new ResourceTypeEntityBuilder().name("typename").build();
         ResourceEntity resourceEntity = new ResourceEntityBuilder().withId(resourceId).withType(resourceType).build();
         ResourceGroupEntity resourceGroupEntity = new ResourceGroupEntityBuilder().buildResourceGroupEntity("myName", Collections.EMPTY_SET, true);
         resourceGroupEntity.setResourceType(resourceType);
         when(entityManager.find(ResourceEntity.class, resourceId)).thenReturn(resourceEntity);
         when(entityManager.find(ResourceGroupEntity.class, slaveId)).thenReturn(resourceGroupEntity);
-        doNothing().when(resourceRelationService).doAddResourceRelationForAllReleases(resourceId, slaveId, provided, relationName, typeIdentifier, foreignableOwner);
+        doNothing().when(resourceRelationService).doAddResourceRelationForAllReleases(resourceId, slaveId, provided, relationName, typeIdentifier);
 
         // when
-        resourceRelationService.addRelationByGroup(resourceId, slaveId, provided, relationName, typeIdentifier, foreignableOwner);
+        resourceRelationService.addRelationByGroup(resourceId, slaveId, provided, relationName, typeIdentifier);
 
         // then
         assertThat((Integer) ThreadLocalUtil.getThreadVariable(ThreadLocalUtil.KEY_RESOURCE_ID), is(resourceId));
     }
 
-//    storeResourceWhenAddRelationByGroup_consumed
 }

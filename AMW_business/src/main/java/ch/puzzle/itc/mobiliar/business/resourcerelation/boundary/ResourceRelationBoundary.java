@@ -23,9 +23,7 @@ package ch.puzzle.itc.mobiliar.business.resourcerelation.boundary;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationConfigurationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationRepository;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 
@@ -35,17 +33,7 @@ import java.util.List;
 public class ResourceRelationBoundary {
 
     @Inject
-    ResourceRelationConfigurationService resourceRelationConfigurationService;
-
-    @Inject
     ResourceRelationRepository resourceRelationRepository;
-
-    /**
-     *  Returns true if a ownership combination is questionable
-     */
-    public boolean isSuspectRelation(ForeignableOwner sourceOwner, ForeignableOwner relationOwner, ForeignableOwner targetOwner) {
-        return resourceRelationConfigurationService.isSuspectOwnerCombination(sourceOwner,relationOwner,targetOwner);
-    }
 
     /**
      * Checks if a Resource can be added as provided Resource

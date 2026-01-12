@@ -45,9 +45,6 @@
 
                                                 <f:param name="rel" value="#{item.resRelId}"/>
                                             </h:link>
-                                            <a4j:outputPanel ajaxRendered="true">
-                                                <mobi:foreignableOwnerTooltip foreignableAttributes="#{item.relationForeignableAttributes}"/>
-                                            </a4j:outputPanel>
                                         </li>
                                     </ui:repeat>
                                 </ui:repeat>
@@ -67,8 +64,6 @@
                                             value="#{resourceRelationModel.getUnresolvedRelations(key)}"
                                             var="unresolved">
                                         <li>
-
-
                                             <h:commandLink styleClass="ellipsisLeft resourcename-link" value="${unresolved}"
                                                            title="${unresolved}"
                                                            rendered="#{sessionContext.isGlobal and resourceRelationModel.allowedToAddRelations}"
@@ -102,15 +97,8 @@
                                     <ui:repeat value="#{entry.value}" var="item">
                                         <li class="#{resourceRelationModel.isActiveRelation(item) ? 'active' : ''}">
                                             <div class="inOneLine">
-                                                <a4j:outputPanel ajaxRendered="true">
-                                                    <mobi:suspectRelationTooltip sourceForeignableAttributes="#{item.sourceForeignableAttributes}"
-                                                                                 relationForeignableAttributes="#{item.relationForeignableAttributes}"
-                                                                                 targetForeignableAttributes="#{item.targetForeignableAttributes}"/>
-                                                    <mobi:foreignableOwnerTooltip foreignableAttributes="#{item.relationForeignableAttributes}"/>
-                                                </a4j:outputPanel>
-
                                                 <h:link outcome="editResourceView" includeViewParams="true"
-                                                        styleClass="ellipsisLeft resourcename-link ${!resourceRelationModel.isSuspectRelation(item.sourceForeignableAttributes,item.relationForeignableAttributes,item.targetForeignableAttributes) ? '' : 'italic'}"
+                                                        styleClass="ellipsisLeft resourcename-link"
                                                         value="${item.displayName}" title="${item.displayName}">
 
                                                     <f:param name="rel" value="#{item.resRelId}"/>
@@ -139,13 +127,9 @@
                                         <li class="#{resourceRelationModel.isActiveRelation(item) ? 'active' : ''}">
                                             <div class="inOneLine">
                                                 <a4j:outputPanel ajaxRendered="true">
-                                                    <mobi:suspectRelationTooltip sourceForeignableAttributes="#{item.sourceForeignableAttributes}"
-                                                                                 relationForeignableAttributes="#{item.relationForeignableAttributes}"
-                                                                                 targetForeignableAttributes="#{item.targetForeignableAttributes}"/>
-                                                    <mobi:foreignableOwnerTooltip foreignableAttributes="#{item.relationForeignableAttributes}"/>
                                                 </a4j:outputPanel>
                                                 <h:link outcome="editResourceView" includeViewParams="true"
-                                                        styleClass="ellipsisLeft resourcename-link ${!resourceRelationModel.isSuspectRelation(item.sourceForeignableAttributes,item.relationForeignableAttributes,item.targetForeignableAttributes) ? '' : 'italic'}"
+                                                        styleClass="ellipsisLeft resourcename-link"
                                                         value="${item.displayName}" title="${item.displayName}">
                                                     <f:param name="rel" value="#{item.resRelId}"/>
                                                 </h:link>
@@ -214,9 +198,6 @@
                                 </f:selectItems>
 
                             </h:selectOneMenu>
-                            <a4j:outputPanel ajaxRendered="true">
-                                <mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceRelationModel.resourceRelation.targetForeignableAttributes}"/>
-                            </a4j:outputPanel>
                             <!-- There are some issues with JSF executing AJAX from select boxes - therefore, we extract the release-switch functionality to this javascript function -->
                             <a4j:jsFunction name="changeRelease" onbegin="showLoader();" render="relatedResource, contextTreeComp"
                                             oncomplete="updateElements(); hideLoader(); refreshSubChanges();">

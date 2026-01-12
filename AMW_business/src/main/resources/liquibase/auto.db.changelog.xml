@@ -121,5 +121,7 @@
 
     <!--1.18.9-->
     <include file="changesets/model/maiaSoftlink/removeSoftlink.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/maiaForeignables/removeForeignables.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/maiaPropertyChanges/removeLocalPortId.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

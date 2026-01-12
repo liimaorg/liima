@@ -21,18 +21,14 @@
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Objects;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
@@ -42,23 +38,10 @@ import static javax.persistence.CascadeType.ALL;
 @Table(name = "TAMW_consumedResRel")
 public class ConsumedResourceRelationEntity extends AbstractResourceRelationEntity implements Auditable {
 
-    // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
-
-
     @OneToMany(mappedBy = "consumedResourceRelation", cascade = ALL)
     private Set<ResourceRelationContextEntity> contexts;
 
-
-    /**
-     * Creates new entity object with default system owner
-     */
-
     public ConsumedResourceRelationEntity() {
-        super(ForeignableOwner.getSystemOwner());
-    }
-
-    public ConsumedResourceRelationEntity(ForeignableOwner owner) {
-        super(Objects.requireNonNull(owner, "Owner must not be null"));
     }
 
     @Override
@@ -98,19 +81,8 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
     }
 
     @Override
-    protected int foreignableRelationFieldHashCode() {
-        HashCodeBuilder hcb = new HashCodeBuilder();
-        return hcb.toHashCode();
-    }
-
-    @Override
     public ConsumedResourceRelationEntity getCopy(AbstractResourceRelationEntity target, CopyUnit copyUnit) {
         boolean isMasterRelation = isMasterResource(copyUnit.getOriginResource());
-        // only Copy AMW owned Relations and the target is null, if target is set we need to proceed to also add values
-        if (copyUnit.getMode() == CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR
-                && !ForeignableOwner.getSystemOwner().isSameOwner(this.getOwner()) && target == null) {
-            return null;
-        }
 
         // slave relations will be only copied in RELEASE mode
         if (isMasterRelation || copyUnit.getMode() == CopyResourceDomainService.CopyMode.RELEASE) {
@@ -131,22 +103,18 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
                 consumedTarget = (ConsumedResourceRelationEntity) target;
             }
 
-            consumedTarget.setIdentifier(getIdentifier());
+            consumedTarget.setIdentifier(StringUtils.defaultIfBlank(getIdentifier(), null));
 
             if (isMasterRelation) {
                 // master relation
                 consumedTarget.setMasterResource(copyUnit.getTargetResource());
-                if (CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR != copyUnit.getMode()
-                        || consumedTarget.getSlaveResource() == null) {
-                    consumedTarget.setSlaveResource(getSlaveResource());
-                }
+                consumedTarget.setSlaveResource(getSlaveResource());
             } else {
                 // slave relation
                 consumedTarget.setMasterResource(getMasterResource());
                 consumedTarget.setSlaveResource(copyUnit.getTargetResource());
             }
             consumedTarget.setResourceRelationType(getResourceRelationType());
-            CopyHelper.copyForeignable(consumedTarget, this, copyUnit);
 
             return consumedTarget;
         }

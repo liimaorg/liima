@@ -57,7 +57,6 @@
 					<h:outputText value="Resource Name" />
 				</f:facet>
 				<mobi:editResourceLink resId="#{group.selectedResourceId}" linkLabel="#{group.name}" editPermission="RESOURCE" resourceType="#{resourceInstanceListImpl.selectedResourceType.name}"/>
-				<mobi:foreignableOwnerTooltip foreignableAttributes="#{resourceInstanceListImpl.getForeignableAttribute(group,group.selectedReleaseId)}"/>
 			</h:column>
 			<h:column rendered="#{securityDataProvider.hasPermission('RESOURCE_LIST')}">
 				<f:facet name="header">

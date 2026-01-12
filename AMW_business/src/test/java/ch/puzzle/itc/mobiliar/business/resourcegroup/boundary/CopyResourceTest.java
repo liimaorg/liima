@@ -41,8 +41,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceGroupEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -94,12 +92,12 @@ public class CopyResourceTest {
 
         // when // then
         assertThrows(AMWException.class, () -> {
-            copyResource.doCopyResource(targetResourceId, originResourceId, ForeignableOwner.getSystemOwner());
+            copyResource.doCopyResource(targetResourceId, originResourceId);
         });
     }
 
     @Test
-    public void shouldThrowNotAuthorizedExceptionWhenPermissionIsDenied() throws ForeignableOwnerViolationException, AMWException {
+    public void shouldThrowNotAuthorizedExceptionWhenPermissionIsDenied() throws AMWException {
         // given
         ResourceEntity originResourceEntity = mock(ResourceEntity.class);
         ResourceEntity targetResourceEntity = mock(ResourceEntity.class);
@@ -109,11 +107,11 @@ public class CopyResourceTest {
 
         // when
         assertThrows(NotAuthorizedException.class, () -> {
-            copyResource.doCopyResource(targetResourceEntity, originResourceEntity, ForeignableOwner.AMW);
+            copyResource.doCopyResource(targetResourceEntity, originResourceEntity);
         });
 
         // then
-        verify(copyResourceDomainService, never()).copyFromOriginToTargetResource(originResourceEntity, targetResourceEntity, ForeignableOwner.AMW);
+        verify(copyResourceDomainService, never()).copyFromOriginToTargetResource(originResourceEntity, targetResourceEntity);
     }
 
     @Test
@@ -139,11 +137,11 @@ public class CopyResourceTest {
         when(permissionBoundary.canCopyFromSpecificResource(originResource, targetGroup)).thenReturn(true);
 
         // when
-        copyResource.doCopyResource(targetResourceId, originResourceId, ForeignableOwner.getSystemOwner());
+        copyResource.doCopyResource(targetResourceId, originResourceId);
 
         // then
         verify(permissionBoundary, times(1)).canCopyFromSpecificResource(originResource, targetGroup);
-        verify(copyResourceDomainService, times(1)).copyFromOriginToTargetResource(originResource, targetResource, ForeignableOwner.getSystemOwner());
+        verify(copyResourceDomainService, times(1)).copyFromOriginToTargetResource(originResource, targetResource);
     }
 
     @Test

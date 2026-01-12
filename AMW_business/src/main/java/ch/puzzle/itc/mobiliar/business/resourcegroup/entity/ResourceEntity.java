@@ -25,8 +25,6 @@ import ch.puzzle.itc.mobiliar.business.database.control.Constants;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasTypeContext;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.Foreignable;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation.Mode;
@@ -38,7 +36,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
@@ -46,7 +43,6 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.envers.Audited;
@@ -66,9 +62,7 @@ import static javax.persistence.CascadeType.*;
 @Table(name = "TAMW_resource")
 @EqualsAndHashCode(callSuper = false, of = { "id", "name", "release" })
 public class ResourceEntity extends HasContexts<ResourceContextEntity> implements Serializable,
-		NamedIdentifiable, Comparable<ResourceEntity>, HasTypeContext<ResourceTypeEntity>, Foreignable<ResourceEntity> {
-
-    // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
+		NamedIdentifiable, Comparable<ResourceEntity>, HasTypeContext<ResourceTypeEntity> {
 
 	@TableGenerator(name = "resourceIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "resourceId")
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "resourceIdGen")
@@ -143,9 +137,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@Getter
 	private String name;
 
-    @Enumerated(EnumType.STRING)
-    private ForeignableOwner fcOwner;
-
 	/**
 	 * This field is for entity mapping only. It represents the relations between a runtime resource and its
 	 * corresponding deployments.
@@ -160,14 +151,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@OneToMany(mappedBy = "resource", cascade = ALL)
 	@Setter
 	private Set<AmwFunctionEntity> functions;
-
-	/**
-	 * For PPI & CPI resources only
-	 */
-
-	@Getter
-	@Setter
-	private String localPortId;
 
 	public void setName(final String name) {
 		// delegate set name to resourceGroup guarantees that all resources in the group have the same name
@@ -200,16 +183,8 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 
 	private static final long serialVersionUID = 1L;
 
-    /**
-     * Creates new entity object with default system owner
-     */
 	public ResourceEntity() {
-		this(ForeignableOwner.getSystemOwner());
 	}
-
-    ResourceEntity(ForeignableOwner owner) {
-        this.fcOwner = Objects.requireNonNull(owner, "Owner must not be null");
-    }
 
 	public void addConsumedRelation(final ConsumedResourceRelationEntity relation) {
 		if (consumedMasterRelations == null) {
@@ -445,11 +420,8 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		return result;
 	}
 
-
-
-
 	public ProvidedResourceRelationEntity addProvidedResourceRelation(final ResourceEntity relatedResource,
-			final ResourceRelationTypeEntity resourceRelationTypeOfRelation, ForeignableOwner changingOwner)
+			final ResourceRelationTypeEntity resourceRelationTypeOfRelation)
 			throws ElementAlreadyExistsException {
 		if (getProvidedRelation(relatedResource) != null) {
 			throw new ElementAlreadyExistsException();
@@ -458,21 +430,19 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		r.setResourceRelationType(resourceRelationTypeOfRelation);
 		r.setMasterResource(this);
 		r.setSlaveResource(relatedResource);
-		r.setOwner(changingOwner);
 		relatedResource.addProvidedSlaveRelation(r);
 		this.addProvidedRelation(r);
 		return r;
 	}
 
 	public ConsumedResourceRelationEntity addConsumedResourceRelation(final ResourceEntity relatedResource,
-			final ResourceRelationTypeEntity resourceRelationTypeOfRelation, String relationName, ForeignableOwner changingOwner) {
+			final ResourceRelationTypeEntity resourceRelationTypeOfRelation, String relationName) {
 		final ConsumedResourceRelationEntity r = new ConsumedResourceRelationEntity();
 
 		r.setIdentifier(relationName);
 		r.setResourceRelationType(resourceRelationTypeOfRelation);
 		r.setMasterResource(this);
 		r.setSlaveResource(relatedResource);
-		r.setOwner(changingOwner);
 		this.addConsumedRelation(r);
 		return r;
 	}
@@ -608,55 +578,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		functions.add(function);
 	}
 
-    @Override
-    public ForeignableOwner getOwner() {
-        return fcOwner;
-    }
-
-    @Override
-    public void setOwner(ForeignableOwner owner) {
-        this.fcOwner = owner;
-    }
-
-    @Override
-    public String getExternalLink() {
-        if (resourceGroup != null) {
-            return resourceGroup.getFcExternalLink();
-        }
-        return null;
-    }
-
-    @Override
-    public void setExternalLink(String externalLink) {
-        if (resourceGroup != null) {
-            resourceGroup.setFcExternalLink(externalLink);
-        }
-    }
-
-    @Override
-    public String getExternalKey() {
-        if (resourceGroup != null) {
-            return resourceGroup.getFcExternalKey();
-        }
-        return null;
-    }
-
-    @Override
-    public void setExternalKey(String externalKey) {
-        if (resourceGroup != null) {
-            resourceGroup.setFcExternalKey(externalKey);
-        }
-    }
-
-    @Override
-    public String getForeignableObjectName() {
-        return this.getClass().getSimpleName();
-    }
-
-
-
-
-    @Override
 	public ResourceEntity getCopy(ResourceEntity target, CopyUnit copyUnit) {
 		// copy name when releasing
 		if(copyUnit.getMode() == CopyResourceDomainService.CopyMode.RELEASE){
@@ -667,7 +588,7 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		// resource type can not be changed! (both resources must be from the same type/subtype!)
 		Integer origResTypeId = this.getResourceType() != null ? this.getResourceType().getId() : null;
 		Integer targetResTypeId = target.getResourceType() != null ? target.getResourceType().getId() : null;
-		if (targetResTypeId != null && !CopyHelper.equalsWithNullCheck(origResTypeId, targetResTypeId)) {
+		if (targetResTypeId != null && !targetResTypeId.equals(origResTypeId)) {
 			copyUnit.getResult().addCopyResultError(CopyResourceResult.CopyFailure.RESOURCETYPE_DIFF, CopyResourceResult.CopyTarget.RESOURCE,
 					null, target.getResourceType().getName(),
 					this.getResourceType().getName());
@@ -682,29 +603,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		}
 		target.setDeletable(this.isDeletable());
 
-
-		CopyHelper.copyForeignable(target, this, copyUnit);
 		return target;
 	}
-
-
-    @Override
-    public int foreignableFieldHashCode() {
-        HashCodeBuilder eb = new HashCodeBuilder();
-
-        eb.append(this.id);
-        eb.append(this.fcOwner);
-        eb.append(this.getExternalKey());
-        eb.append(this.getExternalLink());
-        eb.append(this.deletable);
-        eb.append(this.name);
-		eb.append(this.localPortId);
-
-
-        eb.append(this.resourceType != null ? this.resourceType.getId() : null);
-        eb.append(this.resourceGroup != null ? this.resourceGroup.getId() : null);
-        eb.append(this.release != null ? this.release.getId() : null);
-
-        return eb.toHashCode();
-    }
 }
