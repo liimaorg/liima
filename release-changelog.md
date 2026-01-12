@@ -1,3 +1,15 @@
+# v1.18.8
+* Bug/select revision as signal [#930](https://github.com/liimaorg/liima/pull/930)
+  * fixes a bug template/function revision compare view
+* migrate to junit 5 [#927](https://github.com/liimaorg/liima/pull/927)
+* Update hibernate [#929](https://github.com/liimaorg/liima/pull/929)
+* update java dependencies, set JEE version to 8 [#928](https://github.com/liimaorg/liima/pull/928)
+* chore: update liquibase [#931](https://github.com/liimaorg/liima/pull/931)
+  * reduces Liima ear file size by 20MB
+* Remove gson Java dependency [#932](https://github.com/liimaorg/liima/pull/932)
+* chore: remove guava Java dependency [#933](https://github.com/liimaorg/liima/pull/933)
+* chore: update JavaScript dependencies [#934](https://github.com/liimaorg/liima/pull/934)
+
 # v1.18.7
 * fix: readd missing fields in ServerTuple to make links on servers page work again [#922](https://github.com/liimaorg/liima/pull/922)
 * Deployment log: warn and error highlighting doesn't work anymore [#914](https://github.com/liimaorg/liima/issues/914)
