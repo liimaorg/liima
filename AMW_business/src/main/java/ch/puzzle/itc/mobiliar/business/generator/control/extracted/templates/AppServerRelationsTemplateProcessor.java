@@ -39,10 +39,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.AmwTemplateModel;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.SetMultimap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 
 /**
  * Generates Templates for {@link GenerationUnit} set.
@@ -69,7 +67,7 @@ public class AppServerRelationsTemplateProcessor {
 
 	private GenerationContext generationContext;
 
-	private SetMultimap<ResourceEntity, GeneratedTemplate> templatesCache;
+	private Map<ResourceEntity, Set<GeneratedTemplate>> templatesCache;
 	private Map<String, GeneratedTemplate> templateFiles;
 
 	public AppServerRelationsTemplateProcessor(Logger log, GenerationContext generationContext) {
@@ -98,7 +96,7 @@ public class AppServerRelationsTemplateProcessor {
 		applications = options.getApplications();
 		templateFiles = options.getTemplateFiles();
 		contextProperties = options.getContextProperties();
-		templatesCache = LinkedHashMultimap.create();
+		templatesCache = new LinkedHashMap<>();
 	}
 
      public void setRuntimeProperties(Set<GenerationUnit> work, ResourceEntity runtime){
@@ -142,7 +140,7 @@ public class AppServerRelationsTemplateProcessor {
 	private List<GenerationUnitGenerationResult> generateInternal(Set<GenerationUnit> work)
 			throws IOException {
 		List<GenerationUnitGenerationResult> results = new ArrayList<GenerationUnitGenerationResult>();
-		Set<String> currentTemplateNames = ImmutableSet.copyOf(templateFiles.keySet());
+		Set<String> currentTemplateNames = Set.copyOf(templateFiles.keySet());
 
 		for (GenerationUnit unit : work) {
 			if(unit.isGenerateTemplates()){
@@ -164,16 +162,16 @@ public class AppServerRelationsTemplateProcessor {
 				}
 
 				if (templateFiles.keySet().size() != currentTemplateNames.size()) {
-					log.info("templates: " + Joiner.on(", ").join(templateFiles.keySet()));
-					currentTemplateNames = ImmutableSet.copyOf(templateFiles.keySet());
+					log.info("templates: " + String.join(", ", templateFiles.keySet()));
+					currentTemplateNames = Set.copyOf(templateFiles.keySet());
 				}
 
 
 			}
 
 			if (templateFiles.keySet().size() != currentTemplateNames.size()) {
-				log.info("templates: " + Joiner.on(", ").join(templateFiles.keySet()));
-				currentTemplateNames = ImmutableSet.copyOf(templateFiles.keySet());
+				log.info("templates: " + String.join(", ", templateFiles.keySet()));
+				currentTemplateNames = Set.copyOf(templateFiles.keySet());
 			}
 		}
 		return results;
@@ -236,12 +234,16 @@ public class AppServerRelationsTemplateProcessor {
 			String key = template.getName();
 
 			if (templateFiles.containsKey(key)) {
-				key += UUID.randomUUID().toString(); // make sure we dont loose any templates, see 4380
+				key += UUID.randomUUID(); // make sure we dont loose any templates, see 4380
 			}
 
-			templatesCache.put(resource, template);
+			getOrCreateTemplateSet(resource).add(template);
 			templateFiles.put(key, template);
 		}
+	}
+
+	private Set<GeneratedTemplate> getOrCreateTemplateSet(ResourceEntity resource) {
+		return templatesCache.computeIfAbsent(resource, r -> new LinkedHashSet<>());
 	}
 
 	/**

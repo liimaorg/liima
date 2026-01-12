@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import static ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentFilterTypes.*;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DeploymentOrder extends Order {
 
@@ -18,8 +17,8 @@ public class DeploymentOrder extends Order {
     }
 
     public static DeploymentOrder of(String colToSort, Sort.SortingDirectionType sortingDirection, boolean lowerSortCol) {
-        checkNotNull(colToSort, "colToSort may not be null");
-        checkNotNull(sortingDirection, "sortingDirection may not be null");
+        Objects.requireNonNull(colToSort, "colToSort may not be null");
+        Objects.requireNonNull(sortingDirection, "sortingDirection may not be null");
         return DEPLOYMENT_FILTER_TYPES_FOR_ORDER.stream()
                 .map(DeploymentFilterTypes::getFilterTabColumnName)
                 .filter(c -> Objects.equals(c, colToSort))

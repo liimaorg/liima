@@ -21,10 +21,10 @@
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +42,7 @@ public class GenerationPackage {
 		for (GenerationSubPackage subPackage : generationSubPackages) {
 			all.addAll(subPackage.getSubGenerationUnitsAsList());
 		}
-		return Sets.newLinkedHashSet(removeDuplicates(all));
+		return new LinkedHashSet<>(removeDuplicates(all));
 	}
 
 	public void addGenerationSubPackage(GenerationSubPackage generationPackage) {
@@ -64,11 +64,11 @@ public class GenerationPackage {
 			}
 		}
 
-		Map<ResourceEntity, Set<GenerationUnit>> map = Maps.newLinkedHashMap();
+		Map<ResourceEntity, Set<GenerationUnit>> map = new LinkedHashMap<>();
 
 		for (GenerationSubPackage generationSubPackage : result) {
 			ResourceEntity resource = generationSubPackage.getPackageGenerationUnit().getSlaveResource();
-			map.put(resource, Sets.newLinkedHashSet(generationSubPackage.getSubGenerationUnitsAsList()));
+			map.put(resource, new LinkedHashSet<>(generationSubPackage.getSubGenerationUnitsAsList()));
 		}
 
 		List<GenerationSubPackage> applicationServerSubPackages = getApplicationServerSubPackages();
@@ -77,7 +77,7 @@ public class GenerationPackage {
 			for (GenerationUnit gu : generationSubPackage.getGenerationUnits()) {
 				if (gu.getSlaveResource().getResourceType().isApplicationResourceType()) {
 					if (!map.containsKey(gu.getSlaveResource())) {
-						Set<GenerationUnit> units = Sets.newLinkedHashSet();
+						Set<GenerationUnit> units = new LinkedHashSet<>();
 						units.add(gu);
 						map.put(gu.getSlaveResource(), units);
 					}
@@ -90,7 +90,7 @@ public class GenerationPackage {
 
 	public Set<GenerationUnit> getAsWithGivenNode(ResourceEntity node) {
 
-		Set<GenerationUnit> result = Sets.newLinkedHashSet();
+		Set<GenerationUnit> result = new LinkedHashSet<>();
 
 		List<GenerationSubPackage> applicationServerSubPackages = getApplicationServerSubPackages();
 		// GenerationSubPackage node = null;
@@ -150,7 +150,7 @@ public class GenerationPackage {
 	 */
 	public Set<GenerationUnit> getNodeGenerationUnits() {
 		Set<GenerationUnit> all = getAsSet();
-		Set<GenerationUnit> result = Sets.newLinkedHashSet();
+		Set<GenerationUnit> result = new LinkedHashSet<>();
 		for (GenerationUnit generationUnit : all) {
 			if (generationUnit.getSlaveResource().getResourceType().isNodeResourceType()) {
 				result.add(generationUnit);

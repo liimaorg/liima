@@ -39,7 +39,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.AmwTemplateModel;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 
-import com.google.common.collect.Maps;
+import java.util.HashMap;
 
 import freemarker.template.TemplateException;
 
@@ -71,11 +71,11 @@ public class BaseTemplateProcessorAmwFunctionTest {
         PropertyDescriptorEntity des2 = new PropertyDescriptorEntity();
         des2.setPropertyName("bar");
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("1", des1));
         dataProperties.put("bar", new FreeMarkerProperty("2",des2));
 
-        Map<String, Object> thisProperties = Maps.newHashMap();
+        Map<String, Object> thisProperties = new HashMap<>();
         thisProperties.put("this", dataProperties);
 
         AmwTemplateModel model = new AmwTemplateModel();
@@ -102,7 +102,7 @@ public class BaseTemplateProcessorAmwFunctionTest {
         PropertyDescriptorEntity des2 = new PropertyDescriptorEntity();
         des2.setPropertyName("bar");
 
-        Map<String, FreeMarkerProperty> dataProperties = Maps.newHashMap();
+        Map<String, FreeMarkerProperty> dataProperties = new HashMap<>();
         dataProperties.put("foo", new FreeMarkerProperty("1", des1));
         dataProperties.put("bar", new FreeMarkerProperty("2",des2));
 

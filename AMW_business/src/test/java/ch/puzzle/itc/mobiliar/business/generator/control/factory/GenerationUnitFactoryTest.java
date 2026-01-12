@@ -28,8 +28,6 @@ import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.EntityBuilderType;
 import ch.puzzle.itc.mobiliar.test.SimpleEntityBuilder;
 
-import com.google.common.collect.Lists;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -151,7 +150,7 @@ public class GenerationUnitFactoryTest {
 	}
 
 	void assertGenerationUnitSequence(GenerationPackage work, ResourceEntity... entities) {
-		List<GenerationUnit> list = Lists.newArrayList(work.getAsSet());
+		List<GenerationUnit> list = new ArrayList<>(work.getAsSet());
 		for (int i = 0; i < entities.length; i++) {
 			assertEquals(entities[i], list.get(i).getSlaveResource());
 		}

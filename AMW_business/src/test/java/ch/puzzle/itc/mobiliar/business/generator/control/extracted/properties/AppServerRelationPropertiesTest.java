@@ -45,8 +45,10 @@ import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.CustomLogging;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
 
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.SetMultimap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModelException;
@@ -120,8 +122,8 @@ public class AppServerRelationPropertiesTest {
 
 		AppServerRelationProperties appServerRelationProperties = new AppServerRelationProperties(context, owner, templateExceptionHandler);
 		appServerRelationProperties.addConsumedRelation("active_directory", ad, relation);
-		SetMultimap<ResourceEntity, GeneratedTemplate> templatesCache = LinkedHashMultimap.create();
-		templatesCache.put(ad, new GeneratedTemplate("name", "path", "content"));
+		Map<ResourceEntity, Set<GeneratedTemplate>> templatesCache = new LinkedHashMap<>();
+		templatesCache.computeIfAbsent(ad, k -> new LinkedHashSet<>()).add(new GeneratedTemplate("name", "path", "content"));
 
 		appServerRelationProperties.getConsumed().get(0).setTemplatesCache(templatesCache);
 		appServerRelationProperties.setTemplatesCache(templatesCache);

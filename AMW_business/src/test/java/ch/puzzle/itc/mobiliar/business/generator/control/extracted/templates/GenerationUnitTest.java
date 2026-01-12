@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.test.AmwEntityBuilder;
 import ch.puzzle.itc.mobiliar.test.EntityBuilder;
-import com.google.common.collect.ImmutableSet;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -37,7 +36,7 @@ public class GenerationUnitTest {
 
 	EntityBuilder builder = new AmwEntityBuilder();
 	GenerationPackage generationPackage = new GenerationPackage();
-	Set<TemplateDescriptorEntity> templates = ImmutableSet.of();
+	Set<TemplateDescriptorEntity> templates = Set.of();
 
 	@Test
 	public void testInsertIntoSet() {
