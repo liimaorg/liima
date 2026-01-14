@@ -266,11 +266,6 @@ public class GenerationUnitFactory {
 
 		Set<TemplateDescriptorEntity> relationTemplates = templatesForRelation(options, resourceRelation);
 
-		ApplicationResolver applicationResolver = new ApplicationResolver(options, slave, dependencyResolver);
-		if (applicationResolver.resolve()) {
-			slaveProperties.addResolver(applicationResolver);
-		}
-				
 		merge(options, mainWorkSet, slaveProperties);
 
 		slaveProperties.setFunctions(functionService.getAllFunctionsForResource(slave));

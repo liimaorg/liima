@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.*;
-import ch.puzzle.itc.mobiliar.business.property.entity.AmwAppServerNodeModel;
 import lombok.Setter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +83,6 @@ public class AppServerRelationProperties {
 	private Map<ResourceEntity, Set<GeneratedTemplate>> templatesCache;
 
 	private boolean supportNesting = true;
-	private ApplicationResolver resolver;
 	private AMWTemplateExceptionHandler templateExceptionHandler;
 
 	public AppServerRelationProperties(ContextEntity context, ResourceEntity owner, AMWTemplateExceptionHandler templateExceptionHandler) {
@@ -118,10 +115,6 @@ public class AppServerRelationProperties {
 		model.setResourceTemplates(resourceTemplates);
 		model.setResourceRelationTemplates(resourceRelationTemplates);
 
-		AmwAppServerNodeModel amwAppServerNodeModel = new AmwAppServerNodeModel();
-		addAppServerNodeViaResolver(amwAppServerNodeModel, resolver);
-		model.setAppServerNodeViaResolver(amwAppServerNodeModel);
-		
 		log.fine("transforming: " + getOwner());
 
 		return model;
@@ -162,12 +155,6 @@ public class AppServerRelationProperties {
 		}
 		if (other.provided.isEmpty()) {
 			other.provided = this.provided;
-		}
-		if (other.resolver != null) {
-			this.resolver = other.resolver;
-		}
-		if (this.resolver != null) {
-			other.resolver = this.resolver;
 		}
 	}
 
@@ -244,24 +231,12 @@ public class AppServerRelationProperties {
 
             typeMap.put(name, relationModel);
 
-			AmwAppServerNodeModel appServerNodeViaResolver = new AmwAppServerNodeModel();
-            addAppServerNodeViaResolver(appServerNodeViaResolver, relation.resolver);
-            relationModel.setAppServerNodeViaResolver(appServerNodeViaResolver);
 			if (transformNested) {
 				addRelated(relationModel, relation, relationModel);
 			}
 		}
 
 		return map;
-	}
-
-	/**
-	 * Adds properties of app, as and node to the map
-	 */
-	private void addAppServerNodeViaResolver(AmwAppServerNodeModel model, ApplicationResolver resolver) {
-		if (resolver != null) {
-			resolver.transform(templateExceptionHandler, model);
-		}
 	}
 
 	private void addRelated(AmwResourceTemplateModel model, AppServerRelationProperties relation, AmwResourceTemplateModel parent) {
@@ -316,11 +291,6 @@ public class AppServerRelationProperties {
 	public String toString() {
 		return "AppServerRelationProperties [properties=" + properties + ", consumed=" + consumed.size() + ", provided="
 				+ provided.size() + "]";
-	}
-
-	public void addResolver(ApplicationResolver applicationResolver) {
-		this.resolver = applicationResolver;
-		log.info("adding resolver to " + getOwner().getName());
 	}
 
 }
