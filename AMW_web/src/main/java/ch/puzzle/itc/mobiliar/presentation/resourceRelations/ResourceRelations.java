@@ -35,7 +35,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.boundary.DisplaySoftlinkDependencies;
 import ch.puzzle.itc.mobiliar.presentation.CompositeBackingBean;
 import ch.puzzle.itc.mobiliar.presentation.resourceDependencies.DependencyModel;
 import ch.puzzle.itc.mobiliar.presentation.resourceDependencies.events.SelectedResourceEvent;
@@ -53,8 +52,7 @@ public class ResourceRelations implements Serializable {
     @Inject
     private ResourceRelationService relationService;
 
-    @Inject
-    DisplaySoftlinkDependencies displaySoftlinkDependencies;
+    
 
     @Getter
     List<DependencyModel> consumedRelations;
@@ -65,19 +63,14 @@ public class ResourceRelations implements Serializable {
     @Getter
     private String resourceName;
 
-    @Getter
-    private String softlinkId;
-
-    @Getter
-    private List<ResourceEntity> consumingSoftlinkResources;
+    
 
 
     public void onChangedResource(@Observes SelectedResourceEvent selectedResourceEvent) {
         consumedRelations = loadConsumedRelations(selectedResourceEvent.getSelectedResource());
         providedRelations = loadProvidedRelations(selectedResourceEvent.getSelectedResource());
         resourceName = selectedResourceEvent.getSelectedResource().getName();
-        consumingSoftlinkResources = displaySoftlinkDependencies.loadConsumingResources(selectedResourceEvent.getSelectedResource());
-        softlinkId = selectedResourceEvent.getSelectedResource().getSoftlinkId();
+        
     }
 
     private List<DependencyModel> loadConsumedRelations(ResourceEntity resource) {

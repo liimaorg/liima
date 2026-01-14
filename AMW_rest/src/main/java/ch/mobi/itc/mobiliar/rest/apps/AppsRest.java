@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;

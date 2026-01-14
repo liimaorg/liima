@@ -22,9 +22,6 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
-import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -83,14 +80,11 @@ public class ResourceBoundary {
     @Inject
     private ResourceTypeRepository resourceTypeRepository;
 
-    @Inject
-    private ForeignableService foreignableService;
-
     /**
      * Create new instance resourceType (any resourceType)
      * @throws AMWException
      */
-    public Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, String resourceTypeName, String releaseName)
+    public Resource createNewResourceByName(String newResourceName, String resourceTypeName, String releaseName)
             throws AMWException {
         ResourceTypeEntity resourceTypeEntity = resourceTypeRepository.getByName(resourceTypeName);
         if (resourceTypeEntity == null) {
@@ -106,28 +100,28 @@ public class ResourceBoundary {
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
-        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, release.getId(), false);
+        return createNewResourceByName(newResourceName, resourceTypeEntity, release.getId(), false);
     }
 
     /**
      * Create new instance resourceType (any resourceType)
      * @throws AMWException
      */
-    public Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, Integer releaseId)
+    public Resource createNewResourceByName(String newResourceName, Integer resourceTypeId, Integer releaseId)
             throws AMWException {
         ResourceTypeEntity resourceTypeEntity = commonService.getResourceTypeEntityById(resourceTypeId);
-        return createNewResourceByName(creatingOwner, newResourceName, resourceTypeEntity, releaseId, false);
+        return createNewResourceByName(newResourceName, resourceTypeEntity, releaseId, false);
     }
 
-    private Resource createNewResourceByName(ForeignableOwner creatingOwner, String newResourceName,
+    private Resource createNewResourceByName(String newResourceName,
                                              ResourceTypeEntity resourceTypeEntity, Integer releaseId, boolean canCreateReleaseOfExisting)
             throws AMWException {
         if (!permissionBoundary.canCreateResourceInstance(resourceTypeEntity)) {
             throw new NotAuthorizedException("Permission Denied");
         }
-        ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, newResourceName,
+        ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(newResourceName,
                 resourceTypeEntity.getId(), releaseId, canCreateReleaseOfExisting);
-        Resource resource = Resource.createByResource(creatingOwner, resourceEntity, resourceTypeEntity, contextDomainService.getGlobalResourceContextEntity());
+        Resource resource = Resource.createByResource(resourceEntity, resourceTypeEntity, contextDomainService.getGlobalResourceContextEntity());
         entityManager.persist(resource.getEntity());
         permissionBoundary.createAutoAssignedRestrictions(resource.getEntity());
         entityManager.flush();
@@ -147,7 +141,7 @@ public class ResourceBoundary {
      * @throws ElementAlreadyExistsException
      * @throws ResourceTypeNotFoundException
      */
-    private ResourceEntity createResourceEntityByNameForResourceType(ForeignableOwner creatingOwner, String newResourceName, Integer resourceTypeId, int releaseId, boolean canCreateReleaseOfExisting) throws ElementAlreadyExistsException,
+    private ResourceEntity createResourceEntityByNameForResourceType(String newResourceName, Integer resourceTypeId, int releaseId, boolean canCreateReleaseOfExisting) throws ElementAlreadyExistsException,
             ResourceTypeNotFoundException {
         ReleaseEntity release = releaseService.getById(releaseId);
         ResourceTypeEntity type = commonService.getResourceTypeEntityById(resourceTypeId);
@@ -162,7 +156,7 @@ public class ResourceBoundary {
         if (group == null) {
             if (anotherGroup == null) {
                 // if group does not exists a new resource with a new group can be created
-                resourceEntity = ResourceFactory.createNewResourceForOwner(newResourceName, creatingOwner);
+                resourceEntity = ResourceFactory.createNewResource(newResourceName);
                 log.info("Created new Resource " + newResourceName + " and group in Release " + release.getName());
             } else {
                 String message = "A " + anotherGroup.getResourceType().getName() + " with the name " + newResourceName + " already exists.";
@@ -179,7 +173,7 @@ public class ResourceBoundary {
             }
             if (resourceEntity == null) {
                 // if resource is null, a new resource for the existing group can be created
-                resourceEntity = ResourceFactory.createNewResourceForOwner(group, creatingOwner);
+                resourceEntity = ResourceFactory.createNewResource(group);
                 log.info("Created new Resource " + newResourceName + " for existing group in Release " + release.getName());
             } else {
                 // if resource with given name, type and release already exists throw an exeption
@@ -205,10 +199,10 @@ public class ResourceBoundary {
      * @throws ResourceTypeNotFoundException
      * @throws ElementAlreadyExistsException
      */
-    private Application createUniqueApplicationByName(ForeignableOwner creatingOwner, String applicationName, int releaseId, boolean canCreateReleaseOfExisting)
+    private Application createUniqueApplicationByName(String applicationName, int releaseId, boolean canCreateReleaseOfExisting)
             throws ResourceTypeNotFoundException, ElementAlreadyExistsException {
         ResourceTypeEntity resourceTypeEntity = resourceTypeProvider.getOrCreateDefaultResourceType(DefaultResourceTypeDefinition.APPLICATION);
-        ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(creatingOwner, applicationName,
+        ResourceEntity resourceEntity = createResourceEntityByNameForResourceType(applicationName,
                 resourceTypeEntity.getId(), releaseId, canCreateReleaseOfExisting);
         return Application.createByResource(resourceEntity, resourceTypeProvider, contextDomainService.getGlobalResourceContextEntity());
     }
@@ -222,7 +216,7 @@ public class ResourceBoundary {
      * @return created application
      * @throws AMWException
      */
-    public Application createNewUniqueApplicationForAppServer(ForeignableOwner creatingOwner, String applicationName, Integer asGroupId, Integer appReleaseId, Integer asReleaseId)
+    public Application createNewUniqueApplicationForAppServer(String applicationName, Integer asGroupId, Integer appReleaseId, Integer asReleaseId)
             throws AMWException {
 
         ResourceEntity asResource = commonService.getResourceEntityByGroupAndRelease(asGroupId, asReleaseId);
@@ -233,8 +227,8 @@ public class ResourceBoundary {
 
         ApplicationServer as = ApplicationServer.createByResource(asResource, resourceTypeProvider,
                 contextDomainService.getGlobalResourceContextEntity());
-        Application app = createUniqueApplicationByName(creatingOwner, applicationName, appReleaseId, false);
-        as.addApplication(app, creatingOwner);
+        Application app = createUniqueApplicationByName(applicationName, appReleaseId, false);
+        as.addApplication(app);
         entityManager.persist(as.getEntity());
         permissionBoundary.createAutoAssignedRestrictions(as.getEntity());
         entityManager.flush();
@@ -245,7 +239,6 @@ public class ResourceBoundary {
     /**
      * Creates an application for the special applicationserver "Applications without application server"
      *
-     * @param creatingOwner
      * @param fceKey
      * @param fceLink
      * @param applicationName
@@ -255,62 +248,32 @@ public class ResourceBoundary {
      * @throws AMWException
      */
     @HasPermission(permission = Permission.RESOURCE, action = Action.CREATE)
-    public Application createNewApplicationWithoutAppServerByName(ForeignableOwner creatingOwner, String fceKey, String fceLink, String applicationName, Integer releaseId, boolean canCreateReleaseOfExisting)
+    public Application createNewApplicationWithoutAppServerByName(String applicationName, Integer releaseId, boolean canCreateReleaseOfExisting)
             throws AMWException {
-        Application app = createUniqueApplicationByName(creatingOwner, applicationName, releaseId, canCreateReleaseOfExisting);
-        app.getEntity().setExternalKey(fceKey);
-        app.getEntity().setExternalLink(fceLink);
+        Application app = createUniqueApplicationByName(applicationName, releaseId, canCreateReleaseOfExisting);
         ApplicationServer applicationCollectorGroup = commonService.createOrGetApplicationCollectorServer();
-        applicationCollectorGroup.addApplication(app, creatingOwner);
+        applicationCollectorGroup.addApplication(app);
         entityManager.persist(applicationCollectorGroup.getEntity());
         permissionBoundary.createAutoAssignedRestrictions(applicationCollectorGroup.getEntity());
         entityManager.flush();
         return app;
     }
 
-    /**
-     * Updates (merges) an existing ResourceEntity
-     * used by MaiaAmwFederationServiceImportHandler
-     *
-     * @param resourceEntity
-     */
-    public void updateResource(ResourceEntity resourceEntity) {
-        if (resourceEntity.getId() != null) {
-            if (permissionBoundary.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity, resourceEntity.getResourceType())) {
-                entityManager.merge(resourceEntity);
-            }
-        }
+    public void removeResource(Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException {
+        doRemoveResourceEntity(resourceId);
     }
 
-    public void deleteApplicationServerById(int id) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(ForeignableOwner.getSystemOwner(), id);
+    public void removeResourceEntityOfDefaultResType(Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException {
+        doRemoveResourceEntity(resourceId);
     }
 
-    public void removeResource(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, resourceId);
-    }
-
-    public void removeResourceEntityOfDefaultResType(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
-        doRemoveResourceEntity(deletingOwner, resourceId);
-    }
-
-    public String getResourceName(int resourceId) {
-        ResourceEntity resourceEntity = resourceRepository.find(resourceId);
-        if (resourceEntity == null) {
-            throw new NoResultException("No Resource with id " + resourceId);
-        }
-        return resourceEntity.getName();
-    }
-
-    private void doRemoveResourceEntity(ForeignableOwner deletingOwner, Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+    private void doRemoveResourceEntity(Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException {
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
         if (resourceEntity == null) {
             String message = "The resource to be removed was not found";
             log.info(message);
             throw new ResourceNotFoundException(message);
         }
-
-        foreignableService.verifyDeletableByOwner(deletingOwner, resourceEntity);
 
         if (!permissionBoundary.hasPermission(Permission.RESOURCE, contextDomainService.getGlobalResourceContextEntity(),
                 Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {

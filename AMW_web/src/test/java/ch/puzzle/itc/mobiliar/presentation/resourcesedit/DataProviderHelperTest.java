@@ -69,53 +69,47 @@ public class DataProviderHelperTest {
 
         // then
         assertEquals(StringUtils.EMPTY, actual);
-
     }
 
     @Test
     public void shouldReturnNameUnderscoreOneIfSlaveGroupContainsOneElement() {
-
         // given
         List<ResourceEditRelation> relations = new ArrayList<>();
-        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, "slaveName",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
         relations.add(rel0);
 
         // when // then
         assertEquals("slaveName_1",
                 helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
-
     }
 
     @Test
     public void shouldReturnNameUnderscoreTwoIfSlaveGroupContainsTwoElements() {
-
         // given
         List<ResourceEditRelation> relations = new ArrayList<>();
-        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName_1", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, "slaveName",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, "slaveName_1",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
         relations.add(rel0);
         relations.add(rel1);
 
         // when // then
         assertEquals("slaveName_2",
                 helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
-
     }
 
     @Test
     public void shouldReturnNameUnderscoreThreeIfSlaveGroupContainsThreeElements() {
-
         // given
         List<ResourceEditRelation> relations = new ArrayList<>();
-        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName_1", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation rel2 = new ResourceEditRelation(null, null, null, null, null, null, "custom", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, "slaveName",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, "slaveName_1",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel2 = new ResourceEditRelation(null, null, null, "custom",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
         relations.add(rel0);
         relations.add(rel1);
         relations.add(rel2);
@@ -123,20 +117,18 @@ public class DataProviderHelperTest {
         // when // then
         assertEquals("slaveName_3",
                 helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
-
     }
 
     @Test
     public void shouldIgnoreElementsWithOtherSlaveGroupId() {
-
         // given
         List<ResourceEditRelation> relations = new ArrayList<>();
-        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName_1", null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation rel2 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
-                null, null, 23, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, "slaveName",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, "slaveName_1",
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel2 = new ResourceEditRelation(null, null, null, "slaveName",
+                        23, null, null, null, null, null, null, null, "CONSUMED", null);
         relations.add(rel0);
         relations.add(rel1);
         relations.add(rel2);
@@ -144,12 +136,10 @@ public class DataProviderHelperTest {
         // when // then
         assertEquals("slaveName_2",
                 helper.nextFreeIdentifierForResourceEditRelations(relations, 21, StringUtils.EMPTY));
-
     }
 
     @Test
     public void shouldUseGivenPrefixWhenNoRelations() {
-
         // given
         List<ResourceEditRelation> relations = new ArrayList<>();
         String prefix = "activemq";
@@ -163,11 +153,10 @@ public class DataProviderHelperTest {
 
     @Test
     public void shouldUseGivenPrefixWhenNoRelationsInSameSlaveGroup() {
-
         // given
         List<ResourceEditRelation> relations = new ArrayList<>();
-        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, "slaveName", null,
-                null, null, 1, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, "slaveName",
+                        1, null, null, null, null, null, null, null,"CONSUMED", null);
         relations.add(rel0);
         String prefix = "activemq";
 
@@ -180,15 +169,14 @@ public class DataProviderHelperTest {
 
     @Test
     public void shouldUseNextIdentifierForRelationInSameSlaveGroup() {
-
         // given
         String slaveName = "activeMq";
         String prefix = slaveName;
         List<ResourceEditRelation> relations = new ArrayList<>();
-        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, null, null, null, slaveName, null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
-        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, null, null, null, slaveName, null,
-                null, null, 21, null, null, null, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel0 = new ResourceEditRelation(null, null, null, slaveName,
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
+        ResourceEditRelation rel1 = new ResourceEditRelation(null, null, null, slaveName,
+                        21, null, null, null, null, null, null, null, "CONSUMED", null);
         relations.add(rel0);
         relations.add(rel1);
 

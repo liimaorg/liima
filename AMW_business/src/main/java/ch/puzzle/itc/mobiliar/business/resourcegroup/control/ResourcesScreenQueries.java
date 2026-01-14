@@ -45,14 +45,4 @@ public class ResourcesScreenQueries {
 				.setParameter("id", id);
 	}
 
-	public Query searchResourceBySoftlinkIdAndHasNotResourceGroupId(String softlinkId, Integer resourceGroupId){
-		if (resourceGroupId != null){
-			return entityManager.createQuery("FROM ResourceEntity r where LOWER(r.softlinkId)=:softlinkId AND RESOURCEGROUP_ID!=:resourceGroupId")
-					.setParameter("softlinkId", softlinkId.toLowerCase()).setParameter("resourceGroupId", resourceGroupId);
-		}
-		return entityManager.createQuery("FROM ResourceEntity r where LOWER(r.softlinkId)=:softlinkId")
-				.setParameter("softlinkId", softlinkId.toLowerCase());
-
-	}
-
 }

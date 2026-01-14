@@ -143,74 +143,10 @@
 		</h:panelGroup>
 	</h:panelGroup>
 
-    <!-- REFERENCING SOFTLINK -->
-    <h:panelGroup id="consumingSoftlink"
-                  rendered="#{!resourceRelations.consumingSoftlinkResources.isEmpty()}">
-
-		<h:dataTable var="soft"
-					 value="#{resourceRelations.consumingSoftlinkResources}"
-					 styleClass="deployTable well caption-top" rowClasses="odd-row,even-row">
-
-			<f:facet name="caption">
-				<h2>
-					<h:outputText
-							value="Resources referencing softlink #{resourceRelations.softlinkId}"/>
-				</h2>
-			</f:facet>
-
-			<h:column index="index">
-				<f:facet name="header">
-                    <h:panelGroup>
-                        <div style="white-space: nowrap;">
-                            <h:outputText value="ResourceType"/>
-                        </div>
-                    </h:panelGroup>
-                </f:facet>
-                <h:outputText value="#{soft.resourceType.name}"/>
-            </h:column>
-
-            <h:column index="index">
-                <f:facet name="header">
-                    <h:panelGroup>
-                        <div style="white-space: nowrap;">
-                            <h:outputText value="ResourceName"/>
-                        </div>
-                    </h:panelGroup>
-                </f:facet>
-                <h:outputText value="#{soft.name}"/>
-            </h:column>
-
-            <h:column index="index">
-                <f:facet name="header">
-                    <h:panelGroup>
-                        <div style="white-space: nowrap;">
-                            <h:outputText value="Release" />
-                        </div>
-                    </h:panelGroup>
-                </f:facet>
-                <h:outputText value="#{soft.release.name}" />
-            </h:column>
-
-            <h:column index="index" rendered="${cc.attrs.enableEdit}">
-                <f:facet name="header">
-                    <h:panelGroup>
-                        <div style="white-space: nowrap;">
-                            <h:outputText value="Edit" />
-                        </div>
-                    </h:panelGroup>
-                </f:facet>
-                <h:link id="editLink" value="Edit" outcome="editResourceView"
-                        onclick="showLoader();">
-                    <f:param name="id" value="#{soft.id}" />
-                    <f:param name="ctx" value="1" />
-                </h:link>
-            </h:column>
-
-        </h:dataTable>
-    </h:panelGroup>
+    
 
 	<h:panelGroup id="consumedTableNon"
-		rendered="#{resourceRelations.consumedRelations.isEmpty() and resourceRelations.consumingSoftlinkResources.isEmpty() and resourceRelations.providedRelations.isEmpty()}">
+		rendered="#{resourceRelations.consumedRelations.isEmpty() and resourceRelations.providedRelations.isEmpty()}">
 				No Dependencies found.
 			</h:panelGroup>
 </composite:implementation>

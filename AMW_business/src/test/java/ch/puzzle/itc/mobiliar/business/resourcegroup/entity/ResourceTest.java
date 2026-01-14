@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -132,9 +131,9 @@ public class ResourceTest {
 	@Test
 	public void canAddResourceRelationTwice() throws ElementAlreadyExistsException{
 		ResourceRelationTypeEntity resRelationType = new ResourceRelationTypeEntity();
-		master.addConsumedResourceRelation(secondSlave, resRelationType, null, ForeignableOwner.AMW);
+		master.addConsumedResourceRelation(secondSlave, resRelationType, null);
 		assertEquals(resRelationType, master.getConsumedRelation(secondSlave).getResourceRelationType());
-		master.addConsumedResourceRelation(secondSlave, resRelationType, null, ForeignableOwner.AMW);
+		master.addConsumedResourceRelation(secondSlave, resRelationType, null);
 	}
 	
 	@Test

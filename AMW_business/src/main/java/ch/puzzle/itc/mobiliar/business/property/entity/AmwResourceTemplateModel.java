@@ -47,10 +47,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
 
     private static final String AMW_PROPERTIES = "amwproperties";
     private static final String AMWFUNCTION = "amwfunction";
-    private static final String SOFTLINK = "softlink";
-    private static final String SOFTLINK_ID = "softlinkid";
-    private static final String SOFTLINK_REF = "softlinkref";
-    private static final String CALLER = "callercpi";
     private static final String RESOURCE_TYPE_NAME = "resourceTypeName";
     public static final String RESERVED_PROPERTY_PROVIDEDRES = "providedResTypes";
     public static final String RESERVED_PROPERTY_CONSUMEDRES = "consumedResTypes";
@@ -67,20 +63,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
     private Map<String, Map<String, AmwResourceTemplateModel>> providedResTypes;
     @Setter
     private AmwAppServerNodeModel appServerNodeViaResolver;
-    /**
-     * contains the ppi Side of a softlink
-     */
-    @Setter
-    private AmwTemplateModel ppiAmwTemplateModel;
-    /**
-     * is used to provide the caller CPI to the ppi when on ppi side
-     */
-    @Setter
-    private AmwTemplateModel callerCpiTemplateModel;
-    @Setter
-    private String softlinkId;
-    @Setter
-    private String softlinkRef;
     @Setter
     private List<AmwFunctionEntity> functions = new ArrayList<>();
     @Setter
@@ -132,18 +114,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
         }
         if (AMWFUNCTION.equals(key)) {
             return new AmwFunctionsModel(functions, this, baseModelForContextSwitch);
-        }
-        if (SOFTLINK.equals(key)) {
-            return ppiAmwTemplateModel;
-        }
-        if (SOFTLINK_ID.equals(key)) {
-            return beansWrapper.wrap(softlinkId);
-        }
-        if (SOFTLINK_REF.equals(key)) {
-            return beansWrapper.wrap(softlinkRef);
-        }
-        if (CALLER.equals(key)) {
-            return callerCpiTemplateModel;
         }
 
         // access Consumed Resources directly like Properties
@@ -234,9 +204,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
         if (appServerNodeViaResolver != null && !appServerNodeViaResolver.isEmpty()) {
             return false;
         }
-        if (ppiAmwTemplateModel != null) {
-            return false;
-        }
         return true;
     }
 
@@ -277,10 +244,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
         }
 
         collection.add(AMWFUNCTION);
-        collection.add(SOFTLINK);
-        collection.add(SOFTLINK_ID);
-        collection.add(SOFTLINK_REF);
-        collection.add(CALLER);
 
         //consumed directAccess to resource
         Map<String, AmwResourceTemplateModel> consumedResourcesAsMap = getConsumedResourcesAsMap();
@@ -314,18 +277,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
         }
         if (appServerNodeViaResolver != null && !appServerNodeViaResolver.isEmpty()) {
             collection.add(appServerNodeViaResolver.values());
-        }
-        if (ppiAmwTemplateModel != null) {
-            collection.add(ppiAmwTemplateModel);
-        }
-        if (softlinkId != null) {
-            collection.add(beansWrapper.wrap(softlinkId));
-        }
-        if (softlinkRef != null) {
-            collection.add(beansWrapper.wrap(softlinkRef));
-        }
-        if (callerCpiTemplateModel != null) {
-            collection.add(callerCpiTemplateModel);
         }
 
         //consumed directAccess to resource
@@ -372,17 +323,7 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
                 populateBaseProperties(map);
             }
         }
-        if (ppiAmwTemplateModel != null) {
-            // set caller (cpi) on ppi side for call back functionality
-            if (ppiAmwTemplateModel.getUnitResourceTemplateModel() != null) {
-                AmwTemplateModel callerAmwTemplateModelContextSwitched = AmwTemplateModelHelper.getAmwTemplateModelContextSwitched(baseModelForContextSwitch, this);
-                ppiAmwTemplateModel.getUnitResourceTemplateModel().setCallerCpiTemplateModel(callerAmwTemplateModelContextSwitched);
-            }
-            ppiAmwTemplateModel.setContextProperties(baseModelForContextSwitch.getContextProperties());
-            // TODO check if nodeProperties are needed
-            //ppiAmwTemplateModel.setNodeProperties(baseModelForContextSwitch.getNodeProperties());
-            ppiAmwTemplateModel.setDeploymentProperties(baseModelForContextSwitch.getDeploymentProperties());
-        }
+        
     }
 
     private void populateBaseProperties(Map<String, AmwResourceTemplateModel> map) {
@@ -407,10 +348,6 @@ public class AmwResourceTemplateModel implements TemplateHashModelEx {
                 Map<String, AmwResourceTemplateModel> map = providedResTypes.get(key);
                 preProcess(baseModel, map);
             }
-        }
-        if (ppiAmwTemplateModel != null) {
-            ppiAmwTemplateModel.setAmwModelPreprocessExceptionHandler(baseModel.getAmwModelPreprocessExceptionHandler());
-            ppiAmwTemplateModel.preProcess();
         }
         preProcessFreeMarkerProperties(baseModel, properties, functions);
     }

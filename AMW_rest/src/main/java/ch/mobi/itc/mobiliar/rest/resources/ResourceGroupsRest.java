@@ -65,8 +65,6 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtService;
@@ -267,7 +265,7 @@ public class ResourceGroupsRest {
                     (request.getType() != null) ? request.getType() : null, request.getName()));
 
         try {
-            resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), request.getName(),
+            resourceBoundary.createNewResourceByName(request.getName(),
                     request.getType(), request.getReleaseName());
         } catch (ResourceTypeNotFoundException e) {
             throw new NotFoundException("Resource type: " + request.getType() + " not found");
@@ -298,8 +296,8 @@ public class ResourceGroupsRest {
         }
         try {
             copyResourceResult = copyResource.doCreateResourceRelease(resourceGroupName, request.getReleaseName(),
-                    request.getSourceReleaseName(), ForeignableOwner.getSystemOwner());
-        } catch (ForeignableOwnerViolationException | AMWException e) {
+                    request.getSourceReleaseName());
+        } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
         if (!copyResourceResult.isSuccess()) {
@@ -327,7 +325,7 @@ public class ResourceGroupsRest {
                 return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from Origin failed")).build();
             }
             return Response.ok().build();
-        } catch (ForeignableOwnerViolationException | AMWException e) {
+        } catch (AMWException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
     }
@@ -398,12 +396,12 @@ public class ResourceGroupsRest {
     @Produces(APPLICATION_JSON)
     @Operation(summary = "Delete a specific resource release")
     public Response deleteResourceRelease(@PathParam("resourceGroupId") Integer resourceGroupId,
-                                          @PathParam("releaseId") Integer releaseId) throws NotFoundException, ElementAlreadyExistsException, ForeignableOwnerViolationException {
+                                          @PathParam("releaseId") Integer releaseId) throws NotFoundException, ElementAlreadyExistsException {
         ResourceEntity resource = resourceLocator.getResourceByGroupIdAndRelease(resourceGroupId, releaseId);
         if (resource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
         }
-        resourceBoundary.removeResource(ForeignableOwner.getSystemOwner(), resource.getId());
+        resourceBoundary.removeResource(resource.getId());
         return Response.ok().build();
     }
 

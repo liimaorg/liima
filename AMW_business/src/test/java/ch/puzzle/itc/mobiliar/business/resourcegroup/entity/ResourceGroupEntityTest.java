@@ -30,7 +30,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 
 public class ResourceGroupEntityTest {
@@ -45,7 +44,7 @@ public class ResourceGroupEntityTest {
 	private ResourceEntity createResourceForRelease(Date releaseDate){
 		ReleaseEntity release = new ReleaseEntity();
 		release.setInstallationInProductionAt(releaseDate);
-		ResourceEntity resource = new ResourceEntity(ForeignableOwner.getSystemOwner());
+		ResourceEntity resource = new ResourceEntity();
 		resource.setRelease(release);
 		return resource;
 	}

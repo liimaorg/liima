@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,9 +58,8 @@ public class Issue6110AppServerRelationsTemplateProcessorTest extends AmwTemplat
 		app = builder.resourceFor(EntityBuilderType.APP);
 		ad = builder.resourceFor(EntityBuilderType.AD);
 		jboss = builder.resourceFor(EntityBuilderType.JBOSS7MANAGEMENT);
-		jbossAdRelation = builder.buildConsumedRelation(jboss, ad, ForeignableOwner.AMW);
-		asJbossRelation = builder.buildConsumedRelation(as, jboss, ForeignableOwner.AMW);
-
+		jbossAdRelation = builder.buildConsumedRelation(jboss, ad);
+		asJbossRelation = builder.buildConsumedRelation(as, jboss);
 	}
 
 	@Test

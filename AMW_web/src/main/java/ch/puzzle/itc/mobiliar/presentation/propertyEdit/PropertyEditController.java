@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import ch.puzzle.itc.mobiliar.presentation.resourceRelation.ResourceRelationModel;
@@ -62,11 +61,6 @@ public class PropertyEditController {
                  propertyDataProvider.save();
                  resourceRelation.reloadValues();
                  GlobalMessageAppender.addSuccessMessage(message);
-            }
-            catch (ForeignableOwnerViolationException e) {
-                String errorMessage = "Edit resource not allowed by owner "+e.getViolatingOwner();
-                GlobalMessageAppender.addErrorMessage(errorMessage);
-                log.log(Level.SEVERE, errorMessage, e);
             }
             catch (AMWException e) {
                 GlobalMessageAppender.addErrorMessage(e.getMessage());

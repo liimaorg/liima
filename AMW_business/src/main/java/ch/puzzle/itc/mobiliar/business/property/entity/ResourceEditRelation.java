@@ -20,8 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableAttributesDTO;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
@@ -69,15 +67,6 @@ public class ResourceEditRelation {
 	@Getter
 	private Date slaveReleaseDate;
 
-    @Getter
-    private ForeignableAttributesDTO sourceForeignableAttributes;
-
-    @Getter
-    private ForeignableAttributesDTO relationForeignableAttributes;
-
-    @Getter
-    private ForeignableAttributesDTO targetForeignableAttributes;
-
     /**
      * Constructor must have the same number of arguments as the result of the SQL query and the result types
      * must match. Location of the query: ResourceEditService.loadResourceEditRelations
@@ -85,39 +74,27 @@ public class ResourceEditRelation {
      * @param resRelId
      * @param slaveId
      * @param identifier
-     * @param relationFcOwner
-     * @param relationFcExternalKey
-     * @param relationFcExternalLink
      * @param slaveName
-     * @param slaveFcOwner
-     * @param slaveFcExternalKey
-     * @param slaveFcExternalLink
      * @param slaveGroupId
      * @param slaveReleaseId
      * @param slaveReleaseName
      * @param slaveTypeId
      * @param slaveTypeName
-     * @param masterFcOwner
-     * @param masterFcExternalKey
-     * @param masterFcExternalLink
      * @param masterTypeName
      * @param resRelTypeId
      * @param typeIdentifier
      * @param relationMode
      * @param slaveReleaseDate
      */
-	public ResourceEditRelation(Integer resRelId, Integer slaveId, String identifier, String relationFcOwner, String relationFcExternalKey, String relationFcExternalLink, String slaveName, String slaveFcOwner, String slaveFcExternalKey, String slaveFcExternalLink,
+	public ResourceEditRelation(Integer resRelId, Integer slaveId, String identifier, String slaveName,
 			Integer slaveGroupId, Integer slaveReleaseId, String slaveReleaseName, Integer slaveTypeId,
-			String slaveTypeName, String masterFcOwner, String masterFcExternalKey, String masterFcExternalLink, String masterTypeName, Integer resRelTypeId, String typeIdentifier,
+			String slaveTypeName, String masterTypeName, Integer resRelTypeId, String typeIdentifier,
 			String relationMode, Date slaveReleaseDate) {
 		this.mode = Mode.valueOf(relationMode);
 		this.resRelId = resRelId;
 		this.slaveId = slaveId;
 		this.identifier = identifier;
 		this.slaveName = slaveName;
-        this.sourceForeignableAttributes = createForeignableAttributes(masterFcOwner, masterFcExternalKey, masterFcExternalLink);
-        this.relationForeignableAttributes = createForeignableAttributes(relationFcOwner, relationFcExternalKey, relationFcExternalLink);
-        this.targetForeignableAttributes = createForeignableAttributes(slaveFcOwner, slaveFcExternalKey, slaveFcExternalLink);
 		this.slaveGroupId = slaveGroupId;
 		this.slaveReleaseId = slaveReleaseId;
 		this.slaveReleaseName = slaveReleaseName;
@@ -128,14 +105,6 @@ public class ResourceEditRelation {
 		this.slaveTypeName = slaveTypeName;
 		this.slaveReleaseDate = slaveReleaseDate;
 	}
-
-    private ForeignableAttributesDTO createForeignableAttributes(String owner, String fcExternalKey, String fcExternalLink){
-        if (owner != null){
-            return new ForeignableAttributesDTO(ForeignableOwner.valueOf(owner), fcExternalKey, fcExternalLink);
-        }
-        // create system owned not foreignable
-        return new ForeignableAttributesDTO();
-    }
 
 	/**
 	 * @return name + relation-identifier (ad_1) or type-identifier (adXY) or null if any of this is

@@ -23,7 +23,7 @@ public class PropertyDTOTest {
                 true, true,false, null,  "validationLogic",
                 "mik", null, null, null, "propContName",
                 "typeContName", null, null, null, null,null,
-                null, null, null,null, null, null, null,null);
+                null, null, null,null, null);
         // when
         dto = new PropertyDTO(resourceEditProperty, context);
 
@@ -42,7 +42,7 @@ public class PropertyDTOTest {
                 true, true,false, null,  "validationLogic",
                 "mik", null, null, null, "propContName",
                 "typeContName", null, null, null, null,null,
-                null, null, null,null, null, null, null,null);
+                null, null, null,null, null);
         // when
         dto = new PropertyDTO(resourceEditProperty, context);
 

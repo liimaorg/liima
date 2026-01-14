@@ -23,8 +23,6 @@ package ch.mobi.itc.mobiliar.rest.resources;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
@@ -168,7 +166,7 @@ public class ResourceRelationsRest {
         boolean isProvidedRelation = RelationEditor.ResourceRelationType.valueOf(relationType.toUpperCase()).equals(RelationEditor.ResourceRelationType.PROVIDED);
         try {
             relationEditor.addResourceRelationForSpecificRelease(resourceGroupName, slaveGroupName,
-                    isProvidedRelation, null, relationType, releaseName, ForeignableOwner.getSystemOwner());
+                    isProvidedRelation, null, relationType, releaseName);
         } catch (ResourceNotFoundException | ElementAlreadyExistsException | ValidationException e) {
             return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
         }
@@ -203,9 +201,6 @@ public class ResourceRelationsRest {
             } else {
                 return Response.status(NOT_FOUND).entity(new ExceptionDto("No matching relation found")).build();
             }
-
-        } catch (ForeignableOwnerViolationException fe) {
-            return Response.status(UNAUTHORIZED).entity(new ExceptionDto(fe.getMessage())).build();
         } catch (ResourceNotFoundException | ElementAlreadyExistsException e) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto(e.getMessage())).build();
         }

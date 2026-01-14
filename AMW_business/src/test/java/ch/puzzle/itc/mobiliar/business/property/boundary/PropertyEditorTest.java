@@ -60,9 +60,6 @@ import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
-import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.integration.entity.util.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyDescriptorService;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
@@ -132,9 +129,6 @@ public class PropertyEditorTest {
 
     @Mock
     PropertyDescriptorService propertyDescriptorServiceMock;
-
-    @Mock
-    ForeignableService foreignableServiceMock;
 
     @Mock
     AuditService auditServiceMock;
@@ -1018,25 +1012,22 @@ public class PropertyEditorTest {
 
     @Test
     public void savePropertyDescriptorForResourceWhenResourceIdIsNullShouldThrowException()
-            throws ForeignableOwnerViolationException, AMWException {
+            throws AMWException {
         // given
-        ForeignableOwner changingOwner = ForeignableOwner.AMW;
         Integer resourceId = null;
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
         String propertyTagsString = "propertyTagsString";
 
         // when
         assertThrows(NullPointerException.class, () -> {
-            editor.savePropertyDescriptorForResource(changingOwner, resourceId, descriptor,
-                    descriptor.foreignableFieldHashCode(), propertyTagsString);
+            editor.savePropertyDescriptorForResource(resourceId, descriptor, propertyTagsString);
         });
     }
 
     @Test
     public void savePropertyDescriptorForResourceWhenDublicateDescriptorNamesShouldThrowException()
-            throws ForeignableOwnerViolationException, AMWException {
+            throws AMWException {
         // given
-        ForeignableOwner changingOwner = ForeignableOwner.AMW;
         Integer resourceId = 1;
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
         String propertyTagsString = "propertyTagsString";
@@ -1060,16 +1051,15 @@ public class PropertyEditorTest {
 
         // when / then
         assertThrows(AMWException.class, () -> {
-            editor.savePropertyDescriptorForResource(changingOwner, resourceId, descriptor,
-                    descriptor.foreignableFieldHashCode(), propertyTagsString);
+            editor.savePropertyDescriptorForResource(resourceId, descriptor,
+                    propertyTagsString);
         });
     }
 
     @Test
     public void savePropertyDescriptorForResourceShouldDelegatePropertyTagEditingService()
-            throws ForeignableOwnerViolationException, AMWException {
+            throws AMWException {
         // given
-        ForeignableOwner changingOwner = ForeignableOwner.AMW;
         Integer resourceId = 1;
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
         String propertyTagsString = "propertyTagsString";
@@ -1081,8 +1071,7 @@ public class PropertyEditorTest {
         when(resourceEntityMock.getResourceType()).thenReturn(resourceTypeEntityMock);
 
         // when
-        editor.savePropertyDescriptorForResource(changingOwner, resourceId, descriptor,
-                descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.savePropertyDescriptorForResource(resourceId, descriptor, propertyTagsString);
 
         // then
         verify(propertyTagEditingServiceMock).convertToTags(propertyTagsString);
@@ -1090,9 +1079,8 @@ public class PropertyEditorTest {
 
     @Test
     public void savePropertyDescriptorForResourceShouldSaveWithOwner()
-            throws ForeignableOwnerViolationException, AMWException {
+            throws AMWException {
         // given
-        ForeignableOwner changingOwner = ForeignableOwner.AMW;
         Integer resourceId = 1;
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
         String propertyTagsString = "propertyTagsString";
@@ -1110,46 +1098,20 @@ public class PropertyEditorTest {
         when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
 
         // when
-        editor.savePropertyDescriptorForResource(changingOwner, resourceId, descriptor,
-                descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.savePropertyDescriptorForResource(resourceId, descriptor,
+                propertyTagsString);
 
         // then
-        verify(propertyDescriptorServiceMock).savePropertyDescriptorForOwner(changingOwner,
+        verify(propertyDescriptorServiceMock).savePropertyDescriptor(
                 resourceContextEntityMock, descriptor, propertyTags, resourceEntityMock);
     }
 
-    @Test
-    public void savePropertyDescriptorForResourceShouldVerifyIfEditableByOwner()
-            throws ForeignableOwnerViolationException, AMWException {
-        // given
-        ForeignableOwner changingOwner = ForeignableOwner.AMW;
-        Integer resourceId = 1;
-        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
-        String propertyTagsString = "propertyTagsString";
 
-        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
-        ResourceTypeEntity resourceTypeEntityMock = mock(ResourceTypeEntity.class);
-
-        when(entityManagerMock.find(ResourceEntity.class, resourceId)).thenReturn(resourceEntityMock);
-        when(resourceEntityMock.getResourceType()).thenReturn(resourceTypeEntityMock);
-        List<PropertyTagEntity> propertyTags = new ArrayList<>();
-        propertyTags.add(new PropertyTagEntity());
-        when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
-
-        // when
-        editor.savePropertyDescriptorForResource(changingOwner, resourceId, descriptor,
-                descriptor.foreignableFieldHashCode(), propertyTagsString);
-
-        // then
-        verify(foreignableServiceMock).verifyEditableByOwner(changingOwner,
-                descriptor.foreignableFieldHashCode(), descriptor);
-    }
 
     @Test
     public void savePropertyDescriptorForResourceTypeShouldSaveWithOwner()
-            throws ForeignableOwnerViolationException, AMWException {
+            throws AMWException {
         // given
-        ForeignableOwner changingOwner = ForeignableOwner.AMW;
         Integer resourceTypeId = 1;
         PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
         String propertyTagsString = "propertyTagsString";
@@ -1167,77 +1129,12 @@ public class PropertyEditorTest {
         when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
 
         // when
-        editor.savePropertyDescriptorForResourceType(changingOwner, resourceTypeId, descriptor,
-                descriptor.foreignableFieldHashCode(), propertyTagsString);
+        editor.savePropertyDescriptorForResourceType(resourceTypeId, descriptor,
+                propertyTagsString);
 
         // then
-        verify(propertyDescriptorServiceMock).savePropertyDescriptorForOwner(changingOwner,
+        verify(propertyDescriptorServiceMock).savePropertyDescriptor(
                 resourceTypeContextEntityMock, descriptor, propertyTags, resourceTypeEntityMock);
-    }
-
-    @Test
-    public void savePropertyDescriptorForResourceTypeShouldVerifyIfEditableByOwner()
-            throws ForeignableOwnerViolationException, AMWException {
-        // given
-        ForeignableOwner changingOwner = ForeignableOwner.AMW;
-        Integer resourceTypeId = 1;
-        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
-        String propertyTagsString = "propertyTagsString";
-
-        ResourceTypeEntity resourceTypeEntityMock = mock(ResourceTypeEntity.class);
-
-        when(entityManagerMock.find(ResourceTypeEntity.class, resourceTypeId))
-                .thenReturn(resourceTypeEntityMock);
-
-        List<PropertyTagEntity> propertyTags = new ArrayList<>();
-        propertyTags.add(new PropertyTagEntity());
-        when(propertyTagEditingServiceMock.convertToTags(propertyTagsString)).thenReturn(propertyTags);
-
-        // when
-        editor.savePropertyDescriptorForResourceType(changingOwner, resourceTypeId, descriptor,
-                descriptor.foreignableFieldHashCode(), propertyTagsString);
-
-        // then
-        verify(foreignableServiceMock).verifyEditableByOwner(changingOwner,
-                descriptor.foreignableFieldHashCode(), descriptor);
-    }
-
-    @Test
-    public void deletePropertyDescriptorForResourceShouldVerifyIfDeletableByOwner()
-            throws ForeignableOwnerViolationException, AMWException {
-        // given
-        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
-        Integer resourceId = 1;
-        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
-
-        ResourceEntity resourceEntityMock = mock(ResourceEntity.class);
-
-        when(entityManagerMock.find(ResourceEntity.class, resourceId)).thenReturn(resourceEntityMock);
-
-        // when
-        editor.deletePropertyDescriptorForResource(deletingOwner, resourceId, descriptor, false);
-
-        // then
-        verify(foreignableServiceMock).verifyDeletableByOwner(deletingOwner, descriptor);
-    }
-
-    @Test
-    public void deletePropertyDescriptorForResourceTypeShouldVerifyIfDeletableByOwner()
-            throws ForeignableOwnerViolationException, AMWException {
-        // given
-        ForeignableOwner deletingOwner = ForeignableOwner.AMW;
-        Integer resourceId = 1;
-        PropertyDescriptorEntity descriptor = new PropertyDescriptorEntityBuilder().withId(2).build();
-
-        ResourceTypeEntity resourceTypeEntityMock = mock(ResourceTypeEntity.class);
-
-        when(entityManagerMock.find(ResourceTypeEntity.class, resourceId)).thenReturn(resourceTypeEntityMock);
-
-        // when
-        editor.deletePropertyDescriptorForResourceType(deletingOwner, resourceId, descriptor, false);
-
-        // then
-        verify(foreignableServiceMock).verifyDeletableByOwner(deletingOwner, descriptor);
     }
 
     private ResourceEntity createWithIdNameAndTypeNameWithRelations(int i, String resourceGroupName,

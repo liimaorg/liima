@@ -98,7 +98,6 @@
 			<role-name>test_deployer</role-name>
 			<role-name>developer_deployer</role-name>
 			<role-name>env_management_deployer</role-name>
-            <role-name>overwrite_foreignables</role-name>
             <role-name>admin_developer</role-name>
 		</auth-constraint>
 	</security-constraint>
@@ -127,9 +126,6 @@
 	<security-role>
 		<role-name>env_management_deployer</role-name>
 	</security-role>
-    <security-role>
-        <role-name>overwrite_foreignables</role-name>
-    </security-role>
 	<security-role>
 		<role-name>admin_developer</role-name>
 	</security-role>

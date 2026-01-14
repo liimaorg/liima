@@ -41,7 +41,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationContext;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
@@ -92,7 +91,7 @@ public class AppServerRelationsTemplateProcessorTest extends AmwTemplateProcesso
 	@Test
 	public void testTemplatesNestedOnResource() throws IOException {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
-		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(builder.resourceFor(DB2), builder.resourceFor(ZUSER), ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity relation = builder.buildConsumedRelation(builder.resourceFor(DB2), builder.resourceFor(ZUSER));
 
 		assertNotNull(relation);
 		ResourceTypeEntity type = builder.typeFor(ZUSER.type);
@@ -127,8 +126,8 @@ public class AppServerRelationsTemplateProcessorTest extends AmwTemplateProcesso
 		ResourceEntity ws = builder.resourceFor(EntityBuilderType.WS);
 		ResourceEntity lb = builder.resourceFor(EntityBuilderType.LB);
 
-		builder.buildConsumedRelation(app, ws, ForeignableOwner.AMW);
-		builder.buildConsumedRelation(ws, lb, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(app, ws);
+		builder.buildConsumedRelation(ws, lb);
 
 		builder.buildResourceTemplate(ws, "ws", "${loadbalancer.name}", "aPath");
 

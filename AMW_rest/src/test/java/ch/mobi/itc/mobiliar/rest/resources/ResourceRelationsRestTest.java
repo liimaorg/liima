@@ -38,7 +38,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RelationEditor;
@@ -112,7 +111,7 @@ public class ResourceRelationsRestTest {
         Response response = rest.addRelation(slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, false, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, false, null, relationType, rest.releaseName);
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
@@ -130,7 +129,7 @@ public class ResourceRelationsRestTest {
         Response response = rest.addRelation(slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName);
         assertEquals(CREATED.getStatusCode(), response.getStatus());
     }
 
@@ -144,13 +143,13 @@ public class ResourceRelationsRestTest {
 
         when(relationEditorMock.isValidResourceRelationType(relationType)).thenReturn(true);
         doThrow(new ValidationException("Resource is already provided by another ResourceGroup")).when(relationEditorMock)
-                .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+                .addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName);
 
         // when
         Response response = rest.addRelation(slaveResourceGroupName, relationType);
 
         // then
-        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName, ForeignableOwner.getSystemOwner());
+        verify(relationEditorMock, times(1)).addResourceRelationForSpecificRelease(rest.resourceGroupName, slaveResourceGroupName, true, null, relationType, rest.releaseName);
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 

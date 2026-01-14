@@ -24,8 +24,6 @@
  */
 package ch.puzzle.itc.mobiliar.presentation.propertyEdit;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
@@ -102,9 +100,7 @@ public class RelationDataProvider implements Serializable {
 
     private String identifier;
 
-    @Setter
-    @Getter
-    private String softlinkReferenceName;
+    
 
     @Getter
     private List<ResourceType> resourceTypes;
@@ -374,8 +370,7 @@ public class RelationDataProvider implements Serializable {
                 GlobalMessageAppender.addErrorMessage(message);
             } else {
                 try {
-                    relationEditor.addRelation(resourceOrType.getId(), slaveGroupId, provided,
-                            relationName, ForeignableOwner.getSystemOwner());
+                    relationEditor.addRelation(resourceOrType.getId(), slaveGroupId, provided, relationName);
                     resourceRelationModel.reloadValues();
                     String message = "Resource successfully added.";
                     GlobalMessageAppender.addSuccessMessage(message);
@@ -418,8 +413,7 @@ public class RelationDataProvider implements Serializable {
                 } else {
                     try {
                         if (isEditResource()) {
-                            relationEditor.removeRelation(ForeignableOwner.getSystemOwner(), resourceRelationToRemove
-                                    .getResRelId());
+                            relationEditor.removeRelation(resourceRelationToRemove.getResRelId());
                         } else {
                             relationEditor.removeResourceTypeRelation(resourceRelationToRemove.getResRelTypeId());
                         }
@@ -442,8 +436,6 @@ public class RelationDataProvider implements Serializable {
         } catch (ResourceNotFoundException e) {
             String message = "The selected resource can not be found.";
             GlobalMessageAppender.addErrorMessage(message);
-        } catch (ForeignableOwnerViolationException e) {
-            GlobalMessageAppender.addErrorMessage("Relation can not be deleted by owner " + e.getViolatingOwner());
         }
         return isSuccessful;
     }

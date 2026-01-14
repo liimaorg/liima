@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -63,17 +62,8 @@ public class ResourceEntityService {
 		return groups;
 	}
 
-//	public void setConsumedMasterRelations(ResourceEntity resource, Set<ConsumedResourceRelationEntity> relations) {
-//		for (ConsumedResourceRelationEntity r : relations) {
-//			if (r.getSlaveResource().getResourceType().isRuntimeType()) {
-//				setRuntime(resource, r.getSlaveResource().getResourceGroup());
-//			} else {
-//				resource.addConsumedRelation(r);
-//			}
-//		}
-//	}
 
-	public void setRuntime(ResourceEntity applicationServer, ResourceGroupEntity runtime, ForeignableOwner changingOwner) {
+	public void setRuntime(ResourceEntity applicationServer, ResourceGroupEntity runtime) {
 		if (applicationServer.getResourceType().isApplicationServerResourceType()) {
 			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, applicationServer.getResourceGroup(), null, "set runtime");
 			ResourceGroupEntity existingResGroup = applicationServer.getRuntime();
@@ -87,7 +77,7 @@ public class ResourceEntityService {
 			ResourceRelationTypeEntity appserverToRuntimeRelation = restypeProvider.getOrCreateResourceRelationTypeIncludingParents(applicationServer.getResourceType(),
 					runtime.getResourceType(), null);
 			for (ResourceEntity res : runtime.getResources()) {
-				applicationServer.addConsumedResourceRelation(res, appserverToRuntimeRelation, null, changingOwner);
+				applicationServer.addConsumedResourceRelation(res, appserverToRuntimeRelation, null);
 			}
 		} else {
 			throw new NotImplementedException("It's only allowed to add runtimes to application servers!");

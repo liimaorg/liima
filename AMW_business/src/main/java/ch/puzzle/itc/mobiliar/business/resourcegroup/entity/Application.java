@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
@@ -36,8 +35,8 @@ public class Application extends Resource {
         Application app = new Application(resourceTypeProvider, globalContext);
 
         if (r == null) {
-            // create by system owner
-            r = ResourceFactory.createNewResourceForOwner(ForeignableOwner.getSystemOwner());
+            // create new resource
+            r = ResourceFactory.createNewResource();
         }
 
         app.wrap(r);

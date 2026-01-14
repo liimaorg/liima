@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.resourcesedit;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application;
@@ -79,7 +78,7 @@ public class CreateResourceController {
                 errorMessage = "The release for the resource must not be empty.";
             } else {
                 try {
-                    Resource r = resourceBoundary.createNewResourceByName(ForeignableOwner.getSystemOwner(), newResourceName,
+                    Resource r = resourceBoundary.createNewResourceByName(newResourceName,
                                 resourceType.getId(), release.getId());
                     if (r != null) {
                         String message = "Resource " + newResourceName + " successfully created";
@@ -148,14 +147,14 @@ public class CreateResourceController {
             try {
                 if (appServerGroup == null) {
                     // create App for special AS "Applications without application server"
-                    app = resourceBoundary.createNewApplicationWithoutAppServerByName(ForeignableOwner.getSystemOwner(), null, null, appName, releaseForApp.getId(), false);
+                    app = resourceBoundary.createNewApplicationWithoutAppServerByName(appName, releaseForApp.getId(), false);
                     if (app != null) {
                         message = "Application " + appName + " without Application Server successfully created.";
                         GlobalMessageAppender.addSuccessMessage(message);
                     }
                 } else {
                     // create App for AS
-                    app = resourceBoundary.createNewUniqueApplicationForAppServer(ForeignableOwner.getSystemOwner(), appName, appServerGroup, releaseForApp.getId(), releaseForAs);
+                    app = resourceBoundary.createNewUniqueApplicationForAppServer(appName, appServerGroup, releaseForApp.getId(), releaseForAs);
                     if (app != null) {
                         message = "Application " + appName + " successfully created.";
                         GlobalMessageAppender.addSuccessMessage(message);

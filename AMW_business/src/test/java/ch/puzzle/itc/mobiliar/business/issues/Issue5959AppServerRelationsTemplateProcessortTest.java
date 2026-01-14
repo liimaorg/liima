@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +56,7 @@ public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateP
 	@Test
 	public void testConsumingOnly() throws IOException {
 		// given
-		builder.buildConsumedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(builder.app, builder.ad);
 
 		String appTemplate = "name=${consumedResTypes.ActiveDirectory.ad.name}";
 		builder.buildResourceTypeTemplate(builder.app.getResourceType(), "recursion", readRecursionTemplate(), "recursion");
@@ -75,8 +74,8 @@ public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateP
 	@Test
 	public void testConsumingAndProvidingApp() throws IOException {
 		// given
-		builder.buildConsumedRelation(builder.app, builder.ad, ForeignableOwner.AMW);
-		builder.buildProvidedRelation(builder.app, builder.ws, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(builder.app, builder.ad);
+		builder.buildProvidedRelation(builder.app, builder.ws);
 		builder.buildResourceProperty(builder.ws, "testProp", "testValue");
 		builder.buildResourceTypeTemplate(builder.app.getResourceType(), "tmp.properties", appTemplate, "tmp.properties");
 
@@ -91,7 +90,7 @@ public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateP
 	@Test
 	public void testProvidingOnlyApp() throws IOException {
 		// given
-		builder.buildProvidedRelation(builder.app, builder.ws, ForeignableOwner.AMW);
+		builder.buildProvidedRelation(builder.app, builder.ws);
 		// builder.buildResourceProperty(builder.ws, "testProp", "testValue");
 		builder.buildResourceTypeTemplate(builder.app.getResourceType(), "tmp.properties", appTemplate, "tmp.properties");
 
@@ -111,12 +110,12 @@ public class Issue5959AppServerRelationsTemplateProcessortTest extends TemplateP
 		builder.buildResourceTypeTemplate(builder.app.getResourceType(), "tmp.properties", appTemplate, "tmp.properties");
 		builder.buildResourceTypeTemplate(builder.app.getResourceType(), "recursion", readRecursionTemplate(), "recursion");
 
-		builder.buildProvidedRelation(builder.app, builder.ws, ForeignableOwner.AMW);
+		builder.buildProvidedRelation(builder.app, builder.ws);
 		// builder.buildResourceProperty(context, builder.ws, "testProp", "testValue");
 
 		ResourceEntity app2 = builder.buildResource(builder.typeFor(APP.type), "app2");
-		builder.buildProvidedRelation(app2, builder.ws, ForeignableOwner.AMW);
-		builder.buildConsumedRelation(builder.as, app2, ForeignableOwner.AMW);
+		builder.buildProvidedRelation(app2, builder.ws);
+		builder.buildConsumedRelation(builder.as, app2);
 
 		// builder.buildProvidedRelation(app2, builder.ad);
 		builder.buildResourceProperty(builder.ad, "testFoo", "testBar");

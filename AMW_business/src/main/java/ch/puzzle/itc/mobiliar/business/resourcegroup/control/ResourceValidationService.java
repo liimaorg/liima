@@ -85,18 +85,4 @@ public class ResourceValidationService {
             }
         }
     }
-
-    public void validateSoftlinkId(String softlinkId, Integer resourceGroupId) throws AMWException {
-        if(softlinkId == null || softlinkId.isEmpty()){
-            // empty softlink is allowed
-            return;
-        }
-        // Check if a resource with the same softlinkId exists in an other resourceGroup...
-        List<ResourceEntity> resourceEntities = QueryUtils.fetch(ResourceEntity.class,
-                queries.searchResourceBySoftlinkIdAndHasNotResourceGroupId(softlinkId, resourceGroupId), 0, -1);
-        if (resourceEntities.size() > 0) {
-            String message = "A resource with the softlinkId " + softlinkId + " already exists in other resourceGroup!";
-            throw new AMWException(message);
-        }
-    }
 }

@@ -23,9 +23,7 @@ package ch.puzzle.itc.mobiliar.business.property.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
@@ -37,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import ch.puzzle.itc.mobiliar.builders.PropertyDescriptorEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.PropertyEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
@@ -170,271 +167,14 @@ public class PropertyDescriptorEntityTest {
     }
 
     @Test
-    public void defaultConstructorShouldSetDefaultSystemOwner(){
-
-        // when
-        propertyDescriptorEntity = new PropertyDescriptorEntity();
-
-        // then
-        assertNotNull(propertyDescriptorEntity.getOwner());
-        assertEquals(ForeignableOwner.getSystemOwner(),propertyDescriptorEntity.getOwner());
-    }
-
-    @Test
-    public void constructorWithOwnerShouldSetOwner(){
-        // given
-        ForeignableOwner owner = ForeignableOwner.MAIA;
-
-        // when
-        propertyDescriptorEntity = new PropertyDescriptorEntity(owner);
-
-        // then
-        assertEquals(owner,propertyDescriptorEntity.getOwner());
-    }
-
-    @Test
-    public void constructorWithNullShouldThrowException(){
-        // given
-        ForeignableOwner owner = null;
-
-        // when
-        assertThrows(NullPointerException.class, () -> {
-            propertyDescriptorEntity = new PropertyDescriptorEntity(owner);
-        });
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithSameFieldsShouldReturnTrue(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedIdShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withId(99).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedDisplayNameShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withDisplayName("otherDisplayName").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedOwnerShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withOwner(ForeignableOwner.MAIA).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedExternalLinkShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withFcExternalLink("otherExternalLink").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedExternalKeyShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withFcExternalKey("otherExternalKey").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedDefaultValueShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withDefaultValue("otherDefaultValue").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedExampleValueShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withExampleValue("otherExampletValue").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedMikShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withMik("otherMIK").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedOptionalShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().isOptional(true).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedEncryptedShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().isEncrypted(true).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedPropertyNameShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withPropertyName("otherPropertyName").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedNullableShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().isNullable(true).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedValidationLogicShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withValidationLogic("otherValidationLogic").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedPropertyCommentShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withPropertyComment("otherPropertyComment").build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedCardinalityShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withCardinalityProperty(999).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
-    public void foreignableFieldHashCodeWithChangedPropertyTypeShouldBeDifferent(){
-        // given
-        propertyDescriptorEntity = new PropertyDescriptorEntityBuilder().build();
-        PropertyTypeEntity otherType = new PropertyTypeEntity();
-        otherType.setId(2000);
-        int otherHashCode = new PropertyDescriptorEntityBuilder().withPropertyType(otherType).build().foreignableFieldHashCode();
-
-        // when
-        int foreignableFieldHashCode = propertyDescriptorEntity.foreignableFieldHashCode();
-
-        // then
-        assertNotEquals(otherHashCode, foreignableFieldHashCode);
-    }
-
-    @Test
     public void copyPropertyDescriptorEntity_should_create_target_if_null() throws AMWException{
         // given
         String origName = "foo";
         PropertyDescriptorEntity origin = createOriginPropDesc(origName);
 
         // when
-        PropertyDescriptorEntity copy = origin.getCopy(null, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.COPY, ForeignableOwner.AMW));
-        PropertyDescriptorEntity release = origin.getCopy(null, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.RELEASE, ForeignableOwner.AMW));
+        PropertyDescriptorEntity copy = origin.getCopy(null, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.COPY));
+        PropertyDescriptorEntity release = origin.getCopy(null, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.RELEASE));
 
         // then
         assertPropDescCopy(copy, origin, null, null);
@@ -472,8 +212,8 @@ public class PropertyDescriptorEntityTest {
         Set<PropertyEntity> releaseTargetProps = Collections.unmodifiableSet(releaseTarget.getProperties());
 
         // when
-        PropertyDescriptorEntity copy = origin.getCopy(copyTarget, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.COPY, ForeignableOwner.AMW));
-        PropertyDescriptorEntity release = origin.getCopy(releaseTarget, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.RELEASE, ForeignableOwner.AMW));
+        PropertyDescriptorEntity copy = origin.getCopy(copyTarget, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.COPY));
+        PropertyDescriptorEntity release = origin.getCopy(releaseTarget, new CopyUnit(null, new ResourceEntityBuilder().withName("targetResource").build(), CopyResourceDomainService.CopyMode.RELEASE));
 
         // then
         assertPropDescCopy(copy, origin, copyTarget, copyTargetProps);

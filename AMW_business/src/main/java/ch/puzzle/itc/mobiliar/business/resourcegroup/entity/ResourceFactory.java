@@ -20,65 +20,38 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.entity;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-
 public class ResourceFactory {
 	
 	/**
-     * Set default AMW owner
+     * Create a new resource with given name
 	 * @param name
 	 * @return the created resource entity
 	 */
 	public static ResourceEntity createNewResource(String name){
-		return createNewResourceForOwner(name, ForeignableOwner.getSystemOwner());
+		ResourceEntity entity = createNewResource();
+		entity.setName(name);
+		return entity;
 	}
 	
 	/**
-     * Set default AMW owner
+     * Create a new resource in the given resource group
 	 * @param resourceGroup
 	 * @return the created resource entity
 	 */
 	public static ResourceEntity createNewResource(ResourceGroupEntity resourceGroup){
-		return createNewResourceForOwner(resourceGroup, ForeignableOwner.getSystemOwner());
+		ResourceEntity entity = new ResourceEntity();
+		entity.setResourceGroup(resourceGroup);
+		entity.updateName(resourceGroup.getName());
+		resourceGroup.getResources().add(entity);
+		return entity;
 	}
-	
-	
+
 	/**
-     * Set default AMW owner
+     * Create a new resource
 	 * @return the created resource entity
 	 */
 	public static ResourceEntity createNewResource(){
-		return createNewResourceForOwner(ForeignableOwner.getSystemOwner());
+		return createNewResource(new ResourceGroupEntity());
 	}
-
-    /**
-     * @return the created resource entity for owner
-     */
-    public static ResourceEntity createNewResourceForOwner(String name, ForeignableOwner owner){
-        ResourceEntity entity = createNewResourceForOwner(owner);
-        entity.setName(name);
-        return entity;
-    }
-
-    /**
-     * @param resourceGroup
-     * @return the created resource entity for owner
-     */
-    public static ResourceEntity createNewResourceForOwner(ResourceGroupEntity resourceGroup, ForeignableOwner owner){
-        ResourceEntity entity = new ResourceEntity(owner);
-        entity.setResourceGroup(resourceGroup);
-        entity.updateName(resourceGroup.getName());
-        resourceGroup.getResources().add(entity);
-        return entity;
-    }
-
-
-    /**
-     * @return the created resource entity for owner
-     */
-    public static ResourceEntity createNewResourceForOwner(ForeignableOwner owner){
-        return createNewResourceForOwner(new ResourceGroupEntity(), owner);
-    }
-
 
 }

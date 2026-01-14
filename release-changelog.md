@@ -1,3 +1,8 @@
+# v1.18.9
+* Maia code was removed: [#938](https://github.com/liimaorg/liima/pull/938)
+  * Role overwrite_foreignables is no longer used
+  * Maia fields in the database were removed
+
 # v1.18.8
 * Bug/select revision as signal [#930](https://github.com/liimaorg/liima/pull/930)
   * fixes a bug template/function revision compare view

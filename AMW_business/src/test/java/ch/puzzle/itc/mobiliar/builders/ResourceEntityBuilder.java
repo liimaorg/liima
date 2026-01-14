@@ -20,13 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
@@ -52,13 +50,9 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 	private String resourceTypeName;
 	private ResourceGroupEntity group;
 	private ReleaseEntity release;
-    private ForeignableOwner owner;
 	private Set<AmwFunctionEntity> functions = new HashSet<>();
 	private boolean isDeletable;
-	private String softlinkId;
-	private SoftlinkRelationEntity softlinkRelation;
 	private Set<ResourceContextEntity> contexts;
-	private String localPortId;
 
 	/**
 	 * @param name
@@ -248,11 +242,6 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
         return this;
     }
 
-    public ResourceEntityBuilder withOwner(ForeignableOwner owner){
-        this.owner = owner;
-        return this;
-    }
-
 	public ResourceEntityBuilder forResourceGroup(ResourceGroupEntity group){
 		this.group = group;
 		return this;
@@ -283,16 +272,6 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 		return this;
 	}
 
-	public ResourceEntityBuilder withSoftlinkId(String softlinkId){
-		this.softlinkId = softlinkId;
-		return this;
-	}
-
-	public ResourceEntityBuilder withSoftlinkRelation(SoftlinkRelationEntity softlinkRelation){
-		this.softlinkRelation = softlinkRelation;
-		return this;
-	}
-
 	public ResourceEntityBuilder withRelease(ReleaseEntity release){
 		this.release = release;
 		return this;
@@ -300,11 +279,6 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 
 	public ResourceEntityBuilder withContexts(Set<ResourceContextEntity> contexts) {
 		this.contexts = contexts;
-		return this;
-	}
-
-	public ResourceEntityBuilder withLocalPortId(String localPortId){
-		this.localPortId = localPortId;
 		return this;
 	}
 
@@ -324,25 +298,9 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 		}
 
 		resourceEntity.setId(id);
-
-        if (owner != null){
-            resourceEntity.setOwner(owner);
-        }
-
 		resourceEntity.setFunctions(functions);
-
 		resourceEntity.setDeletable(isDeletable);
-
-		resourceEntity.setSoftlinkId(softlinkId);
-		
 		resourceEntity.setContexts(contexts);
-
-		resourceEntity.setLocalPortId(localPortId);
-
-		if(softlinkRelation != null){
-			throw new UnsupportedOperationException("Softlinkrelation is only applicable in mock");
-		}
-
 		return resourceEntity;
 	}
 
@@ -356,21 +314,9 @@ public class ResourceEntityBuilder extends BaseEntityBuilder {
 		}
 
 		lenient().when(resourceEntity.getId()).thenReturn(id);
-		lenient().when(resourceEntity.getOwner()).thenReturn(owner);
 		lenient().when(resourceEntity.getFunctions()).thenReturn(functions);
 		lenient().when(resourceEntity.isDeletable()).thenReturn(isDeletable);
-		lenient().when(resourceEntity.getSoftlinkId()).thenReturn(softlinkId);
 		lenient().when(resourceEntity.getContexts()).thenReturn(contexts);
-		lenient().when(resourceEntity.getLocalPortId()).thenReturn(localPortId);
-		if(softlinkRelation != null){
-			lenient().when(resourceEntity.getSoftlinkRelation()).thenReturn(softlinkRelation);
-			if (Mockito.mockingDetails(softlinkRelation).isMock()) {
-				lenient().when(softlinkRelation.getCpiResource()).thenReturn(resourceEntity);
-			}else{
-				softlinkRelation.setCpiResource(resourceEntity);
-			}
-		}
-
 		return resourceEntity;
 	}
 

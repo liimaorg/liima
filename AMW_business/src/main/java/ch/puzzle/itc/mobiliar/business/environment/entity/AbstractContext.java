@@ -46,10 +46,8 @@ public abstract class AbstractContext implements Serializable, Identifiable {
 	private Integer id;
 	@OneToMany(cascade = ALL, orphanRemoval = true)
 	// IMPORTANT: This property has to be mapped through a join table, since
-	// it
-	// affects multiple tables - otherwise there would be problems with
-	// foreign
-	// key constraints
+	// it affects multiple tables - otherwise there would be problems with
+	// foreign key constraints
 	private Set<PropertyEntity> properties;
 	@OneToMany(cascade = ALL, orphanRemoval = true)
 	private Set<TemplateDescriptorEntity> templates;

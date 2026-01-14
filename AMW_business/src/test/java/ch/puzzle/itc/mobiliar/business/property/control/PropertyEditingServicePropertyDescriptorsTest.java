@@ -46,7 +46,6 @@ import org.mockito.Spy;
 
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextHierarchy;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -123,8 +122,8 @@ public class PropertyEditingServicePropertyDescriptorsTest {
         resourceRelationTypeEntity.setResourceTypes(masterType, slaveType);
         entityManager.persist(resourceRelationTypeEntity);
         consumedResourceRelationEntity = master
-                  .addConsumedResourceRelation(slave, resourceRelationTypeEntity, null, ForeignableOwner.AMW);
-        providedResourceRelationEntity = master.addProvidedResourceRelation(provided, resourceRelationTypeEntity, ForeignableOwner.AMW);        ;
+                  .addConsumedResourceRelation(slave, resourceRelationTypeEntity, null);
+        providedResourceRelationEntity = master.addProvidedResourceRelation(provided, resourceRelationTypeEntity);
         contextEntity = new ContextEntity();
         contextEntity.setName(ContextNames.GLOBAL.name());
         entityManager.persist(contextEntity);

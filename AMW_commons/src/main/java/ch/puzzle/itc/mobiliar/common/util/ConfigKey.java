@@ -41,8 +41,7 @@ public enum ConfigKey {
     VM_URL_PARAM("amw.vmUrlParam", "AMW_VMURLPARAM", false), // deprecated, use VM_DETAIL_URL instead
     CSV_SEPARATOR("amw.csvSeparator", "AMW_CSVSEPARATOR", ";", false),
     LOCAL_ENV("amw.localEnv", "AMW_LOCALENV", "Local", false),
-    PROVIDABLE_SOFTLINK_RESOURCE_TYPES("amw.providableSoftlinkResourceTypes", "AMW_PROVIDABLESOFTLINKRESOURCETYPES", false),
-    CONSUMABLE_SOFTLINK_RESOURCE_TYPES("amw.consumableSoftlinkResourceTypes", "AMW_CONSUMABLESOFTLINKRESOURCETYPES", false),
+    
     EXTERNAL_RESOURCE_BACKLINK_SCHEMA("amw.externalResourceBacklinkSchema", "AMW_EXTERNALRESOURCEBACKLINKSCHEMA", false),
     EXTERNAL_RESOURCE_BACKLINK_HOST("amw.externalResourceBacklinkHost", "AMW_EXTERNALRESOURCEBACKLINKHOST", false),
     /** Create not Existent Directory Structure */

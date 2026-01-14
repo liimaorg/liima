@@ -41,9 +41,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService.CopyMode;
@@ -67,9 +64,6 @@ public class CopyResourceDomainServicePersistenceTest {
 	CommonDomainService commonDomainService;
 
     @Mock
-    ForeignableService foreignableServiceMock;
-
-    @Mock
     ResourceRepository resourceRepositoryMock;
 
     @Mock
@@ -91,7 +85,7 @@ public class CopyResourceDomainServicePersistenceTest {
 	 * @throws ResourceNotFoundException
 	 */
 	@Test
-	public void test_propertyOverwrittenInContext() throws ForeignableOwnerViolationException, AMWException {
+	public void test_propertyOverwrittenInContext() throws AMWException {
 		// given
 		ResourceTypeEntity appType = new ResourceTypeEntity();
 		appType.setName(DefaultResourceTypeDefinition.APPLICATION.name());
@@ -131,7 +125,7 @@ public class CopyResourceDomainServicePersistenceTest {
 		entityManager.persist(target);
 
 		// when
-		CopyResourceResult result = service.doCopyResourceAndSave(new CopyUnit(origin, target, CopyMode.COPY, ForeignableOwner.AMW));
+		CopyResourceResult result = service.doCopyResourceAndSave(new CopyUnit(origin, target, CopyMode.COPY));
 
 		// then
 		assertTrue(result.isSuccess());

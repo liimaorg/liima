@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <!-- Remove IGNORE_FOREIGNABLE_OWNER permission -->
+    <changeSet id="remove-foreignables-001" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">SELECT COUNT(*) FROM TAMW_PERMISSION WHERE VALUE = 'IGNORE_FOREIGNABLE_OWNER'</sqlCheck>
+        </preConditions>
+        <!-- First delete restrictions that reference this permission -->
+        <delete tableName="TAMW_RESTRICTION">
+            <where>PERMISSION_ID IN (SELECT ID FROM TAMW_PERMISSION WHERE VALUE = 'IGNORE_FOREIGNABLE_OWNER')</where>
+        </delete>
+        <!-- Then delete the permission itself -->
+        <delete tableName="TAMW_PERMISSION">
+            <where>VALUE = 'IGNORE_FOREIGNABLE_OWNER'</where>
+        </delete>
+    </changeSet>
+
+    <!-- Remove foreignable columns from TAMW_RESOURCE -->
+    <changeSet id="remove-foreignables-002" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCE" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_RESOURCE" columnName="FCOWNER"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-003" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCE_AUD" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_RESOURCE_AUD" columnName="FCOWNER"/>
+    </changeSet>
+
+    <!-- Remove foreignable columns from TAMW_RESOURCEGROUP -->
+    <changeSet id="remove-foreignables-004" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCEGROUP" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_RESOURCEGROUP" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-005" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCEGROUP" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_RESOURCEGROUP" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-006" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCEGROUP_AUD" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_RESOURCEGROUP_AUD" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-007" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCEGROUP_AUD" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_RESOURCEGROUP_AUD" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+    <!-- Remove foreignable columns from TAMW_CONSUMEDRESREL -->
+    <changeSet id="remove-foreignables-008" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_CONSUMEDRESREL" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_CONSUMEDRESREL" columnName="FCOWNER"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-009" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_CONSUMEDRESREL" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_CONSUMEDRESREL" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-010" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_CONSUMEDRESREL" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_CONSUMEDRESREL" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-011" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_CONSUMEDRESREL_AUD" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_CONSUMEDRESREL_AUD" columnName="FCOWNER"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-012" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_CONSUMEDRESREL_AUD" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_CONSUMEDRESREL_AUD" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-013" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_CONSUMEDRESREL_AUD" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_CONSUMEDRESREL_AUD" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+    <!-- Remove foreignable columns from TAMW_PROVIDEDRESREL -->
+    <changeSet id="remove-foreignables-014" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROVIDEDRESREL" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROVIDEDRESREL" columnName="FCOWNER"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-015" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROVIDEDRESREL" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROVIDEDRESREL" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-016" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROVIDEDRESREL" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROVIDEDRESREL" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-017" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROVIDEDRESREL_AUD" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROVIDEDRESREL_AUD" columnName="FCOWNER"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-018" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROVIDEDRESREL_AUD" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROVIDEDRESREL_AUD" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-019" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROVIDEDRESREL_AUD" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROVIDEDRESREL_AUD" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+    <!-- Remove foreignable columns from TAMW_PROPERTYDESCRIPTOR -->
+    <changeSet id="remove-foreignables-020" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROPERTYDESCRIPTOR" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="FCOWNER"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-021" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROPERTYDESCRIPTOR" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-022" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROPERTYDESCRIPTOR" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-023" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="FCOWNER"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="FCOWNER"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-024" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="FCEXTERNALLINK"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="FCEXTERNALLINK"/>
+    </changeSet>
+
+    <changeSet id="remove-foreignables-025" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="FCEXTERNALKEY"/>
+        </preConditions>
+        <dropColumn tableName="TAMW_PROPERTYDESCRIPTOR_AUD" columnName="FCEXTERNALKEY"/>
+    </changeSet>
+
+</databaseChangeLog>

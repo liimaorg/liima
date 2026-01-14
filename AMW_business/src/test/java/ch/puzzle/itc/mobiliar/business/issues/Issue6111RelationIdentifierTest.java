@@ -32,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.GenerationUnit;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.TemplateProcessorBaseTest;
@@ -67,14 +66,14 @@ public class Issue6111RelationIdentifierTest extends TemplateProcessorBaseTest<P
 
 		app = builder.app;
 
-		ConsumedResourceRelationEntity adInternRelation = builder.buildConsumedRelation(app, adIntern, ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity adInternRelation = builder.buildConsumedRelation(app, adIntern);
 		adInternRelation.setIdentifier(null);
-		ConsumedResourceRelationEntity adintern_1Relation = builder.buildConsumedRelation(app, adIntern, ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity adintern_1Relation = builder.buildConsumedRelation(app, adIntern);
 		adintern_1Relation.setIdentifier("1");
 
-		ConsumedResourceRelationEntity adExternRelation = builder.buildConsumedRelation(app, adExtern, ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity adExternRelation = builder.buildConsumedRelation(app, adExtern);
 		adExternRelation.setIdentifier(null);
-		ConsumedResourceRelationEntity adExtern_1Relation = builder.buildConsumedRelation(app, adExtern, ForeignableOwner.AMW);
+		ConsumedResourceRelationEntity adExtern_1Relation = builder.buildConsumedRelation(app, adExtern);
 		adExtern_1Relation.setIdentifier("1");
 	}
 

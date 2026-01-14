@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
@@ -60,11 +59,11 @@ public class ApplicationServer extends Resource {
 		return applications;
 	}
 
-	public void addApplication(Application application, ForeignableOwner changingOwner) throws ElementAlreadyExistsException {
-		addApplication(application.getEntity(), changingOwner);
+	public void addApplication(Application application) throws ElementAlreadyExistsException {
+		addApplication(application.getEntity());
 	}
 
-	public void addApplication(ResourceEntity application, ForeignableOwner changingOwner) throws ElementAlreadyExistsException {
+	public void addApplication(ResourceEntity application) throws ElementAlreadyExistsException {
 		for(Application app : getApplications()){
 			if(app.getId().equals(application.getId())){
 				String msg = "Die Applikation " + application.getName() + " ist bereits im Server " + getName() + " enthalten";
@@ -73,14 +72,14 @@ public class ApplicationServer extends Resource {
 		}
 		ResourceRelationTypeEntity relationType = resourceTypeProvider.getOrCreateResourceRelationType(this
 .getEntity().getResourceType(), application.getResourceType(), null);
-		getEntity().addConsumedResourceRelation(application, relationType, null, changingOwner);
+		getEntity().addConsumedResourceRelation(application, relationType, null);
 	}
 
 	public static ApplicationServer createByResource(ResourceEntity r, ResourceTypeProvider resourceTypeProvider, ContextEntity globalContext) {
 		ApplicationServer appServer = new ApplicationServer(resourceTypeProvider, globalContext);
 		if (r == null){
-            // app server created by system user
-			r = ResourceFactory.createNewResourceForOwner(ForeignableOwner.getSystemOwner());
+            // app server created by system
+			r = ResourceFactory.createNewResource();
 		}
 		appServer.wrap(r);
 		return appServer;

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="remove-softlink-001" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCE" columnName="SOFTLINKID"/>
+        </preConditions>
+        <dropIndex indexName="I_TAMW_RESOURCE_01" tableName="TAMW_RESOURCE"/>
+        <dropColumn tableName="TAMW_RESOURCE" columnName="SOFTLINKID"/>
+    </changeSet>
+
+    <changeSet id="remove-softlink-002" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="TAMW_RESOURCE_AUD" columnName="SOFTLINKID"/>
+        </preConditions>
+        <dropIndex indexName="I_TAMW_RESOURCE_A_01" tableName="TAMW_RESOURCE_AUD"/>
+        <dropColumn tableName="TAMW_RESOURCE_AUD" columnName="SOFTLINKID"/>
+    </changeSet>
+
+    <changeSet id="remove-softlink-003" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="TAMW_SOFTLINKRELATION"/>
+        </preConditions>
+        <dropIndex indexName="I_TAMW_SOFTLINKRELATION_01" tableName="TAMW_SOFTLINKRELATION"/>
+        <dropTable tableName="TAMW_SOFTLINKRELATION"/>
+    </changeSet>
+
+    <changeSet id="remove-softlink-004" author="yvespp">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="TAMW_SOFTLINKRELATION_AUD"/>
+        </preConditions>
+        <dropIndex indexName="I_TAMW_SOFTLINKRELATION_A_01" tableName="TAMW_SOFTLINKRELATION_AUD"/>
+        <dropTable tableName="TAMW_SOFTLINKRELATION_AUD"/>
+    </changeSet>
+
+</databaseChangeLog>

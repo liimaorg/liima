@@ -93,9 +93,6 @@ public class ResourceGroupEntity implements Serializable, Comparable<ResourceGro
 	@Version
 	private long v;
 
-    private String fcExternalKey;
-    private String fcExternalLink;
-
 	/**
 	 * We currently have to ensure, that the names of the resources are updated as well - therefore we have
 	 * to iterate through all of them and change their name. As soon as all queries are adapted, this is not
@@ -189,21 +186,5 @@ public class ResourceGroupEntity implements Serializable, Comparable<ResourceGro
 			}
 		}
 	}
-
-    protected String getFcExternalKey() {
-        return fcExternalKey;
-    }
-
-    protected void setFcExternalKey(String fcExternalKey) {
-        this.fcExternalKey = fcExternalKey;
-    }
-
-    protected String getFcExternalLink() {
-        return fcExternalLink;
-    }
-
-    protected void setFcExternalLink(String fcExternalLink) {
-        this.fcExternalLink = fcExternalLink;
-    }
 
 }

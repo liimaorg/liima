@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.test;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextTypeEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
@@ -166,27 +165,27 @@ public class EntityBuilder {
 		child.setParentResourceType(base);
 	}
 
-	public ConsumedResourceRelationEntity buildConsumedRelation(ResourceEntity master, ResourceEntity slave, ForeignableOwner changingOwner) {
+	public ConsumedResourceRelationEntity buildConsumedRelation(ResourceEntity master, ResourceEntity slave) {
 		ResourceRelationTypeEntity typeRelation = buildTypeRelation(master.getResourceType(),
 				slave.getResourceType());
 		ConsumedResourceRelationEntity relation;
-		relation = master.addConsumedResourceRelation(slave, typeRelation, null, changingOwner);
+		relation = master.addConsumedResourceRelation(slave, typeRelation, null);
 		setId(relation, consumedRelationCounter++);
 		consumedRelations.add(relation);
 		return relation;
 	}
 
 	public ConsumedResourceRelationEntity buildConsumedRelation(EntityBuilderType master,
-			EntityBuilderType slave, ForeignableOwner changingOwner) {
-		return buildConsumedRelation(resourceFor(master.name), resourceFor(slave.name), changingOwner);
+			EntityBuilderType slave) {
+		return buildConsumedRelation(resourceFor(master.name), resourceFor(slave.name));
 	}
 
-	public ProvidedResourceRelationEntity buildProvidedRelation(ResourceEntity master, ResourceEntity slave, ForeignableOwner changingOwner) {
+	public ProvidedResourceRelationEntity buildProvidedRelation(ResourceEntity master, ResourceEntity slave) {
 		ResourceRelationTypeEntity buildTypeRelation = buildTypeRelation(master.getResourceType(),
 				slave.getResourceType());
 		ProvidedResourceRelationEntity relation;
 		try {
-			relation = master.addProvidedResourceRelation(slave, buildTypeRelation, changingOwner);
+			relation = master.addProvidedResourceRelation(slave, buildTypeRelation);
 			setId(relation, providedRelationCounter++);
 			providedRelations.add(relation);
 			return relation;

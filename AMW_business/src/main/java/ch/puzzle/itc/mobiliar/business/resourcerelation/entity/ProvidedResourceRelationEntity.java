@@ -21,10 +21,8 @@
 package ch.puzzle.itc.mobiliar.business.resourcerelation.entity;
 
 import ch.puzzle.itc.mobiliar.business.auditview.entity.Auditable;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +31,6 @@ import org.hibernate.envers.Audited;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Objects;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
@@ -42,39 +39,18 @@ import static javax.persistence.CascadeType.ALL;
 @Audited
 @Table(name = "TAMW_providedResRel")
 public class ProvidedResourceRelationEntity extends AbstractResourceRelationEntity implements Auditable {
-
-    // IMPORTANT! Whenever a new field (not relation to other entity) is added then this field must be added to foreignableFieldEquals method!!!
 	
 	@Getter
 	@Setter
 	@OneToMany(mappedBy = "providedResourceRelation", cascade = ALL)
 	private Set<ResourceRelationContextEntity> contexts;
 
-    /**
-     * Creates new entity object with default system owner
-     */
     public ProvidedResourceRelationEntity() {
-        super(ForeignableOwner.getSystemOwner());
-    }
-
-    public ProvidedResourceRelationEntity(ForeignableOwner owner) {
-        super(Objects.requireNonNull(owner, "Owner must not be null"));
-    }
-
-    @Override
-    protected int foreignableRelationFieldHashCode() {
-        return 0;
     }
 
     @Override
     public ProvidedResourceRelationEntity getCopy(AbstractResourceRelationEntity target, CopyUnit copyUnit) {
         boolean isMasterRelation = isMasterResource(copyUnit.getOriginResource());
-
-        // only Copy AMW owned Relations and the target is null, if target is set we need to proceed to also add values
-        if(copyUnit.getMode() == CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR
-                && !ForeignableOwner.getSystemOwner().isSameOwner(this.getOwner()) && target == null){
-            return null;
-        }
 
 		// slave relations will be only copied in RELEASE mode
         if(isMasterRelation || copyUnit.getMode() == CopyResourceDomainService.CopyMode.RELEASE) {
@@ -85,15 +61,11 @@ public class ProvidedResourceRelationEntity extends AbstractResourceRelationEnti
                 targetCopy = (ProvidedResourceRelationEntity) target;
             }
 
-            targetCopy.setIdentifier(getIdentifier());
+            targetCopy.setIdentifier(StringUtils.defaultIfBlank(getIdentifier(), null));
             if (isMasterRelation) {
                 // master relation
                 targetCopy.setMasterResource(copyUnit.getTargetResource());
-                if(CopyResourceDomainService.CopyMode.MAIA_PREDECESSOR != copyUnit.getMode()
-                        || targetCopy.getSlaveResource() == null){
-                    // Maia Predecessor Mode, the target Slave Resource must remain
-                    targetCopy.setSlaveResource(getSlaveResource());
-                }
+                targetCopy.setSlaveResource(getSlaveResource());
 
             } else {
                 // slave relation
@@ -102,7 +74,6 @@ public class ProvidedResourceRelationEntity extends AbstractResourceRelationEnti
             }
             targetCopy.getSlaveResource().addProvidedSlaveRelation(targetCopy);
             targetCopy.setResourceRelationType(getResourceRelationType());
-            CopyHelper.copyForeignable(targetCopy, this, copyUnit);
 
             return targetCopy;
         }

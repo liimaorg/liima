@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.test;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -75,13 +74,13 @@ public class PersistingEntityBuilder extends AmwEntityBuilder {
 	}
 
 	@Override
-	public ConsumedResourceRelationEntity buildConsumedRelation(ResourceEntity master, ResourceEntity slave, ForeignableOwner changingOwner) {
-		return flushAndRefresh(super.buildConsumedRelation(master, slave, ForeignableOwner.AMW), master, slave);
+	public ConsumedResourceRelationEntity buildConsumedRelation(ResourceEntity master, ResourceEntity slave) {
+		return flushAndRefresh(super.buildConsumedRelation(master, slave), master, slave);
 	}
 
 	@Override
-	public ProvidedResourceRelationEntity buildProvidedRelation(ResourceEntity master, ResourceEntity slave, ForeignableOwner changingOwner) {
-		return flushAndRefresh(super.buildProvidedRelation(master, slave, ForeignableOwner.AMW), master, slave);
+	public ProvidedResourceRelationEntity buildProvidedRelation(ResourceEntity master, ResourceEntity slave) {
+		return flushAndRefresh(super.buildProvidedRelation(master, slave), master, slave);
 	}
 
 	private <T extends AbstractResourceRelationEntity> T flushAndRefresh(T relation, ResourceEntity master, ResourceEntity slave) {
@@ -101,7 +100,7 @@ public class PersistingEntityBuilder extends AmwEntityBuilder {
 		ResourceTypeEntity appType = buildResourceType(APP.type);
 		app = buildResource(appType, APP.name);
 
-		buildConsumedRelation(as, app, ForeignableOwner.AMW);
+		buildConsumedRelation(as, app);
 
 		addResourceProperty(context, as, "testProp", "testValue");
 

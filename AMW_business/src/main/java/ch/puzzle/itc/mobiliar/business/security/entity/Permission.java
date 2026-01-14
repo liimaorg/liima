@@ -24,9 +24,6 @@ public enum Permission {
 
     DEFAULT("",true),
 
-    // FOREIGNABLES PERMISSIONS
-    IGNORE_FOREIGNABLE_OWNER("Ignore the owner of a foreignable object. Chuck Norris can edit/delete objects of any owner!", true),
-
     // FUNCTIONS
     MANAGE_GLOBAL_FUNCTIONS("Create, edit and delete GlobalFunctions", true),
     VIEW_GLOBAL_FUNCTIONS("Can see GlobalFunctions", true),

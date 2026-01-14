@@ -20,15 +20,9 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.utils.CopyHelper;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Holds relevant informations for copy / releasing
@@ -49,23 +43,10 @@ public class CopyUnit {
     @Setter
     private CopyResourceResult result;
 
-    @Getter
-    @Setter
-    private ForeignableOwner actingOwner;
-
-    public CopyUnit(ResourceEntity originResource, ResourceEntity targetResource, CopyResourceDomainService.CopyMode mode, ForeignableOwner actingOwner)
-            throws AMWException {
-        Map<CopyResourceDomainService.CopyMode, Set<ForeignableOwner>> validCopyModeOwnerCombinations = CopyHelper.getValidModeOwnerCombinationsMap();
-        for (CopyResourceDomainService.CopyMode copyMode : validCopyModeOwnerCombinations.keySet()) {
-            if (mode == copyMode && !validCopyModeOwnerCombinations.get(copyMode).contains(actingOwner)) {
-                throw new AMWException("Copy in " + mode.name() + " mode can not be executed by owner " + actingOwner);
-            }
-        }
-
+    public CopyUnit(ResourceEntity originResource, ResourceEntity targetResource, CopyResourceDomainService.CopyMode mode) {
         this.targetResource = targetResource;
         this.originResource = originResource;
         this.mode = mode;
-        this.actingOwner = actingOwner;
         this.result = new CopyResourceResult(targetResource != null ? targetResource.getName() : null);
     }
 

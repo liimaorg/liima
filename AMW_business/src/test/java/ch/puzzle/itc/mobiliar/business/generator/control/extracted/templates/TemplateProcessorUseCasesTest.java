@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -98,8 +97,8 @@ public class TemplateProcessorUseCasesTest extends AmwTemplateProcessorTest {
 		ws = builder.resourceFor(EntityBuilderType.WS);
 		lb = builder.resourceFor(EntityBuilderType.LB);
 
-		builder.buildConsumedRelation(app, ws, ForeignableOwner.AMW);
-		builder.buildConsumedRelation(ws, lb, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(app, ws);
+		builder.buildConsumedRelation(ws, lb);
 
 		builder.addResourceProperty(context, lb, "schema", "https");
 		builder.addResourceProperty(context, lb, "host", "test.org");
@@ -127,7 +126,7 @@ public class TemplateProcessorUseCasesTest extends AmwTemplateProcessorTest {
 	@Test
 	public void testTemplatesOnResourcesB() throws IOException {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
-		builder.buildConsumedRelation(as, lb, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(as, lb);
 		prepareWorkUnits(templateExceptionHandler);
 
 		assertWorkUnits(2, 2);
@@ -143,7 +142,7 @@ public class TemplateProcessorUseCasesTest extends AmwTemplateProcessorTest {
 	public void testTemplatesOnResourcesC() throws IOException {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
 		ResourceEntity ws2 = builder.buildResource(builder.typeFor(WS.type), "ws2");
-		builder.buildConsumedRelation(ws2, lb, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(ws2, lb);
 		prepareWorkUnits(templateExceptionHandler);
 		assertWorkUnits(1, 2);
 

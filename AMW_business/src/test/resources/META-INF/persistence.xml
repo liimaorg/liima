@@ -42,7 +42,6 @@
                <class>ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.database.entity.SequencesEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity</class>
-               <class>ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity</class>
                <class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter</class>
                <class>ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key</class>
         <properties>

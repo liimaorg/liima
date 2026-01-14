@@ -30,19 +30,11 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationCon
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties.AppServerRelationProperties;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
-import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
-import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -74,9 +66,6 @@ public class GenerationUnitFactory {
 	
 	@Inject
 	FunctionService functionService;
-	
-	@Inject
-	SoftlinkRelationService softlinkRelationService;
 
     @Inject
     AmwAuditReader amwAuditReader;
@@ -171,9 +160,6 @@ public class GenerationUnitFactory {
 		Set<TemplateDescriptorEntity> resourceRelationTemplates = handleConsumedRelations(mainWorkSet, options, templateExceptionHandler, resource, excludedApplicationGroupIds, walkingPathIndex, properties, resourceWorkSet, generateTemplates, parentResourceWorkSet);
 		properties.setResourceRelationTemplates(resourceRelationTemplates);
 
-		// is this resource a CPI which is connected to a PPI by softlink
-		handleSoftlinkRelation(options, templateExceptionHandler, resource, properties, options.getContext().getDeployment().getDeploymentStateDate());
-
 		// process provided resources as they are returned from model
 		handleProvidedRelations(mainWorkSet, options, resource, properties, resourceWorkSet);
 
@@ -247,103 +233,6 @@ public class GenerationUnitFactory {
 		}
 	}
 
-	private void handleSoftlinkRelation(GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler, ResourceEntity resource, AppServerRelationProperties properties, Date stateToDeployDate) {
-		SoftlinkRelationEntity softlinkRelation = resource.getSoftlinkRelation();
-
-		if(softlinkRelation != null){
-			// get PPI in given Release
-			ResourceEntity ppiResource = softlinkRelationService.getSoftlinkResolvableSlaveResource(softlinkRelation.getSoftlinkRef(), options.getContext().getTargetRelease());
-			if(ppiResource == null){
-				templateExceptionHandler.addTemplatePropertyException(new TemplatePropertyException("no PPI found for softlink ID: " + softlinkRelation.getSoftlinkRef() + " in Release: " + options.getContext().getTargetRelease().getName(),
-						TemplatePropertyException.CAUSE.WRONG_DATASTRUCTURE));
-			}else{
-				log.info(" (softlink): " + ppiResource.getSoftlinkId() + " resource " + ppiResource.getName());
-				ResourceEntity asFromPPI = resolveApplicationServerFromResource(ppiResource, options.getContext().getTargetRelease(), templateExceptionHandler);
-				if(asFromPPI != null){
-                    // reload AS at the correct Date(the same as the cpi side) from Auditlog
-                    asFromPPI = amwAuditReader.getByDate(ResourceEntity.class, stateToDeployDate, asFromPPI.getId());
-					ResourceEntity node = resolveNodeForPpiApplicationServer(asFromPPI, options.getContext().getTargetRelease(), templateExceptionHandler);
-					if(node != null){
-						GenerationContext asPPIContext = options.getContext().copyGenerationContextForOtherAs(asFromPPI);
-						asPPIContext.setNode(node);
-						GenerationOptions optionsPPI = new GenerationOptions(asPPIContext); // options
-						GenerationPackage slGenerationPackage = createWorkForAppServer(optionsPPI, asFromPPI, templateExceptionHandler);
-						SoftlinkGenerationPackage softlinkGenerationPackage = new SoftlinkGenerationPackage();
-						softlinkGenerationPackage.setGenerationPackage(slGenerationPackage);
-						softlinkGenerationPackage.setPpiResourceEntity(ppiResource);
-						softlinkGenerationPackage.setGlobalFunctions(options.getContext().getGlobalFunctions());
-						properties.setSoftlinkPPIGenerationPackage(softlinkGenerationPackage);
-					}else{
-						templateExceptionHandler.addTemplatePropertyException(new TemplatePropertyException("no Node found for AS: " + asFromPPI.getName(),
-								TemplatePropertyException.CAUSE.WRONG_DATASTRUCTURE));
-					}
-				}else{
-					templateExceptionHandler.addTemplatePropertyException(new TemplatePropertyException("no AS found for PPI with softlink ID: " + softlinkRelation.getSoftlinkRef() + " in Release: " + options.getContext().getTargetRelease().getName(),
-							TemplatePropertyException.CAUSE.WRONG_DATASTRUCTURE));
-				}
-			}
-		}
-	}
-
-	private ResourceEntity resolveNodeForPpiApplicationServer(ResourceEntity asFromPPI, ReleaseEntity targetRelease, AMWTemplateExceptionHandler templateExceptionHandler) {
-		List<ResourceEntity> nodes = asFromPPI.getConsumedRelatedResourcesByResourceType(DefaultResourceTypeDefinition.NODE);
-		Set<ResourceGroupEntity> resourceGroupsForNodes = getResourceGroupsForResources(nodes);
-		if(resourceGroupsForNodes == null || resourceGroupsForNodes.isEmpty()){
-			templateExceptionHandler.addTemplatePropertyException(new TemplatePropertyException("The AS (" + asFromPPI.getName() + ") of the PPI side has no Node assigned in Release: " + targetRelease.getName(), 
-					TemplatePropertyException.CAUSE.WRONG_DATASTRUCTURE));
-		}else{
-			// TODO take the correct node, for the moment take the first.
-			return  dependencyResolver.getResourceEntityForRelease(nodes.get(0).getResourceGroup(), targetRelease);
-		}
-		return null;
-	}
-
-
-	private ResourceEntity resolveApplicationServerFromResource(ResourceEntity ppiResource, ReleaseEntity targetRelease, AMWTemplateExceptionHandler templateExceptionHandler) {
-		List<ResourceEntity> applications = ppiResource.getMasterResourcesOfProvidedSlaveRelationByResourceType(DefaultResourceTypeDefinition.APPLICATION);
-		
-		Set<ResourceGroupEntity> resourceGroupsForApplications = getResourceGroupsForResources(applications);
-
-		if(resourceGroupsForApplications == null || resourceGroupsForApplications.isEmpty()){
-			templateExceptionHandler.addTemplatePropertyException(new TemplatePropertyException("no Applications found for PPI with softlink ID: " + ppiResource.getSoftlinkId() + " in Release: " + targetRelease.getName(), 
-					TemplatePropertyException.CAUSE.WRONG_DATASTRUCTURE));
-		}else if(resourceGroupsForApplications.size() > 1){
-			templateExceptionHandler.addTemplatePropertyException(new TemplatePropertyException("The PPI " + ppiResource.getName() + " is provided by more than one Application.", 
-					TemplatePropertyException.CAUSE.WRONG_DATASTRUCTURE));
-		}else{
-			ResourceEntity application = dependencyResolver.getResourceEntityForRelease(resourceGroupsForApplications.iterator().next(), targetRelease);
-			if(application != null){
-				List<ResourceEntity> applicationServers = application.getMasterResourcesOfConsumedSlaveRelationByResourceType(DefaultResourceTypeDefinition.APPLICATIONSERVER);
-				ResourceEntity applicationServer = findResourceEntityForRelease(application, applicationServers, targetRelease);
-				// exclude Apps without AS ApplicationServer
-                if(!ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName().equals(applicationServer.getName())){
-                    return applicationServer;
-                }
-			}
-			templateExceptionHandler.addTemplatePropertyException(new TemplatePropertyException("The PPI " + ppiResource.getName() + " has no AS.", 
-					TemplatePropertyException.CAUSE.WRONG_DATASTRUCTURE));
-		}
-		return null;
-	}
-	
-	private Set<ResourceGroupEntity> getResourceGroupsForResources(Collection<ResourceEntity> resources){
-		Set<ResourceGroupEntity> result = new HashSet<>();
-		for (ResourceEntity r : resources) {
-			result.add(r.getResourceGroup());
-		}
-		return result;
-	}
-	
-	private ResourceEntity findResourceEntityForRelease(ResourceEntity resource, Collection<ResourceEntity> resources, ReleaseEntity targetRelease) {
-		Set<ResourceGroupEntity> result = getResourceGroupsForResources(resources);
-		
-		if (result.size() > 1) {
-			throw new AMWRuntimeException(resource.getName() + " is provided by multiple other resources");
-		}
-		
-		return dependencyResolver.getResourceEntityForRelease(result.iterator().next(), targetRelease);
-	}
-
 
 	private Set<TemplateDescriptorEntity> createGenerationUnitForConsumedResource(GenerationPackage mainWorkSet,
 			GenerationOptions options, AMWTemplateExceptionHandler templateExceptionHandler,
@@ -374,12 +263,6 @@ public class GenerationUnitFactory {
 		String identifier = resourceRelation.buildIdentifer();
 		AppServerRelationProperties slaveProperties = properties.addConsumedRelation(identifier, slave,
 				resourceRelation);
-
-        // set the SoftlinkPPI Generation Package to AppServerRelationProperies
-		if(generationUnitForResource.getPackageGenerationUnit() != null && generationUnitForResource.getPackageGenerationUnit().getAppServerRelationProperties() != null &&
-				generationUnitForResource.getPackageGenerationUnit().getAppServerRelationProperties().getSoftlinkPPIGenerationPackage() != null){
-			slaveProperties.setSoftlinkPPIGenerationPackage(generationUnitForResource.getPackageGenerationUnit().getAppServerRelationProperties().getSoftlinkPPIGenerationPackage());
-		}
 
 		Set<TemplateDescriptorEntity> relationTemplates = templatesForRelation(options, resourceRelation);
 

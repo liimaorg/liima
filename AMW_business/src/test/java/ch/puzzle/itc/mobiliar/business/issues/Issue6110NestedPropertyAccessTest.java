@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.util.logging.Level;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,13 +63,13 @@ public class Issue6110NestedPropertyAccessTest extends TemplateProcessorBaseTest
 
 		builder.buildResourceType(JBOSS7MANAGEMENT.type);
 		jboss = builder.buildResource(JBOSS7MANAGEMENT, "jboss7Management_Ldap");
-		builder.buildConsumedRelation(as, jboss, ForeignableOwner.AMW);
-		builder.buildConsumedRelation(jboss, ad, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(as, jboss);
+		builder.buildConsumedRelation(jboss, ad);
 
 		// without node, only APP is generated
 		builder.buildResourceType(NODE1.type);
 		node = builder.buildResource(NODE1, "node");
-		builder.buildConsumedRelation(as, node, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(as, node);
 	}
 
 	@Test

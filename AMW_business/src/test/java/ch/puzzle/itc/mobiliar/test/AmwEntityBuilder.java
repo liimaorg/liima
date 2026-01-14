@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.test;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 
 import static ch.puzzle.itc.mobiliar.test.EntityBuilderType.*;
@@ -43,18 +42,18 @@ public class AmwEntityBuilder extends EntityBuilder {
 		}
 		buildContextAndPlatform();
 
-		buildConsumedRelation(resourceFor(AS), resourceFor(NODE1), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(AS), resourceFor(NODE2), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(AS), platform, ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(AS), resourceFor(APP), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(AD), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(CERT), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(DB2), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(JBOSS7MANAGEMENT), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(KEYSTORE), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(MAIL), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(CLUSTER), ForeignableOwner.AMW);
-		buildConsumedRelation(resourceFor(APP), resourceFor(TRUSTSTORE), ForeignableOwner.AMW);
+		buildConsumedRelation(resourceFor(AS), resourceFor(NODE1));
+		buildConsumedRelation(resourceFor(AS), resourceFor(NODE2));
+		buildConsumedRelation(resourceFor(AS), platform);
+		buildConsumedRelation(resourceFor(AS), resourceFor(APP));
+		buildConsumedRelation(resourceFor(APP), resourceFor(AD));
+		buildConsumedRelation(resourceFor(APP), resourceFor(CERT));
+		buildConsumedRelation(resourceFor(APP), resourceFor(DB2));
+		buildConsumedRelation(resourceFor(APP), resourceFor(JBOSS7MANAGEMENT));
+		buildConsumedRelation(resourceFor(APP), resourceFor(KEYSTORE));
+		buildConsumedRelation(resourceFor(APP), resourceFor(MAIL));
+		buildConsumedRelation(resourceFor(APP), resourceFor(CLUSTER));
+		buildConsumedRelation(resourceFor(APP), resourceFor(TRUSTSTORE));
 
 		// inheritance
 		ResourceTypeEntity cert = buildResourceType("Certificate");

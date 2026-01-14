@@ -83,24 +83,14 @@ public class ResourceEditService {
 		sb.append("resRel.ID resRelId, ");
 		sb.append("resRel.SLAVERESOURCE_ID slaveId, ");
 		sb.append("resRel.IDENTIFIER identifier, ");
-		sb.append("resRel.FCOWNER resRelOwner, ");
-        sb.append("resRel.FCEXTERNALKEY resRelExternalKey, ");
-        sb.append("resRel.FCEXTERNALLINK resRelExternalLink, ");
 
         sb.append("slave.NAME slaveName, ");
 
-        sb.append("slave.FCOWNER slaveOwner, ");
-        sb.append("slaveGroup.FCEXTERNALKEY slaveExternalKey, ");
-        sb.append("slaveGroup.FCEXTERNALLINK slaveExternalLink, ");
 		sb.append("slave.RESOURCEGROUP_ID slaveGroupId, ");
 		sb.append("slave.RELEASE_ID slaveReleaseId, ");
 		sb.append("slaverelease.NAME slaveReleaseName, ");
 		sb.append("resRelType.RESOURCETYPEB_ID slaveTypeId, ");
 		sb.append("slaveType.NAME slaveTypeName, ");
-
-        sb.append("master.FCOWNER masterOwner, ");
-        sb.append("masterGroup.FCEXTERNALKEY masterExternalKey, ");
-        sb.append("masterGroup.FCEXTERNALLINK masterExternalLink, ");
 
 		sb.append("masterType.NAME masterTypeName, ");
 		sb.append("resRelType.ID resRelTypeId, ");
@@ -150,26 +140,13 @@ public class ResourceEditService {
 		sb.append("cast(NULL as INT) resRelId, ");
 		sb.append("cast(NULL as INT) slaveId, ");
 		sb.append("cast(NULL as VARCHAR(5)) identifier, ");
-		sb.append("cast(NULL as VARCHAR(5)) resRelOwner, ");
-        sb.append("cast(NULL as VARCHAR(5)) resRelExternalKey, ");
-        sb.append("cast(NULL as VARCHAR(5)) resRelExternalLink, ");
-
-        sb.append("cast(NULL as VARCHAR(5)) slaveName, ");
-		sb.append("cast(NULL as VARCHAR(5)) slaveOwner, ");
-        sb.append("cast(NULL as VARCHAR(5)) slaveExternalKey, ");
-        sb.append("cast(NULL as VARCHAR(5)) slaveExternalLink, ");
-
-
-        sb.append("cast(NULL as INT) slaveGroupId, ");
+		sb.append("cast(NULL as VARCHAR(5)) slaveName, ");
+		sb.append("cast(NULL as INT) slaveGroupId, ");
 		sb.append("cast(NULL as INT) slaveReleaseId, ");
 		sb.append("cast(NULL as VARCHAR(5)) slaveReleaseName, ");
 		sb.append("resRelType.RESOURCETYPEB_ID slaveTypeId, ");
 		sb.append("slaveType.NAME slaveTypeName, ");
-		sb.append("cast(NULL as VARCHAR(5)) masterOwner, ");
-        sb.append("cast(NULL as VARCHAR(5)) masterExternalKey, ");
-        sb.append("cast(NULL as VARCHAR(5)) masterExternalLink, ");
-
-        sb.append("masterType.NAME masterTypeName, ");
+		sb.append("masterType.NAME masterTypeName, ");
 		sb.append("resRelType.ID resRelTypeId, ");
 		sb.append("resRelType.IDENTIFIER typeIdentifier, ");
 		sb.append("cast('" + ResourceEditRelation.Mode.TYPE + "' as VARCHAR(5)) relationMode, ");

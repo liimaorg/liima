@@ -1,4 +1,4 @@
--- this ist the old, not performance optimized version of loadPropertyDescriptorsForResource.sql ,compatible with H2
+-- this ist the old, not performance optimized version of loadPropertyDescriptorsForResource.sql, compatible with H2
 SELECT
 --the technicalKey of the property
 descr.PROPERTYNAME propertyName,
@@ -50,13 +50,7 @@ prop.origin,
 :loadedFor loadedFor,
 (CASE WHEN propResName IS NOT NULL THEN propResName ELSE res.NAME END) resourceName,
 -- constant to define if the property descriptors origin is defined on  resource context -> 'instance' or resource type -> 'type'
-(CASE WHEN res.ID IS NOT NULL THEN cast('instance' as VARCHAR(8)) WHEN resType.ID IS NOT NULL THEN cast('type' as VARCHAR(8)) WHEN resRelType.ID IS NOT NULL THEN cast('type_rel' as VARCHAR(8)) WHEN resRelation.ID IS NOT NULL THEN cast('relation' as VARCHAR(8)) END) propertyDescriptorOrigin,
--- foreignable owner
-descr.FCOWNER fcOwner,
--- foreignable external key
-descr.FCEXTERNALKEY fcExternalKey,
--- foreignable external link
-descr.FCEXTERNALLINK fcExternalLink
+(CASE WHEN res.ID IS NOT NULL THEN cast('instance' as VARCHAR(8)) WHEN resType.ID IS NOT NULL THEN cast('type' as VARCHAR(8)) WHEN resRelType.ID IS NOT NULL THEN cast('type_rel' as VARCHAR(8)) WHEN resRelation.ID IS NOT NULL THEN cast('relation' as VARCHAR(8)) END) propertyDescriptorOrigin
 --we select all property descriptors and join them with their assigned contexts
 FROM TAMW_PROPERTYDESCRIPTOR descr
 

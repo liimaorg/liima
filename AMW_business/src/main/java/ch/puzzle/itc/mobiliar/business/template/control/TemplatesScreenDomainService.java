@@ -187,15 +187,6 @@ public class TemplatesScreenDomainService {
         return templateDescriptorList;
     }
 
-    private void removeTemplate(Integer selectedTemplateId, boolean isResType) throws TemplateNotDeletableException {
-		if (isResType) {
-            removeDefaultResTypeTemplate(selectedTemplateId);
-            //The template is an InstanceResource_Template. Permitted to app_developer
-        } else {
-            removeDefaultResTemplate(selectedTemplateId);
-        }
-    }
-
     @HasPermission(permission = Permission.RESOURCE_TEMPLATE, action = Action.DELETE)
     private void removeDefaultResTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
         doRemoveTemplate(selectedTemplateId);
@@ -206,18 +197,6 @@ public class TemplatesScreenDomainService {
         doRemoveTemplate(selectedTemplateId);
     }
 
-
-    /**
-     * Retruns a list of templates with the name templateName
-     *
-     * @param templateName
-     * @return
-     */
-    private List<TemplateDescriptorEntity> getTemplateListByName(String templateName) {
-        ArrayList<TemplateDescriptorEntity> result = (ArrayList<TemplateDescriptorEntity>) entityManager.createQuery("from TemplateDescriptorEntity tde where tde.name=:templateName", TemplateDescriptorEntity.class)
-                .setParameter("templateName", templateName).getResultList();
-        return result == null ? new ArrayList<TemplateDescriptorEntity>() : result;
-    }
 
     /**
      * Löscht die Template von eine ResourceType.

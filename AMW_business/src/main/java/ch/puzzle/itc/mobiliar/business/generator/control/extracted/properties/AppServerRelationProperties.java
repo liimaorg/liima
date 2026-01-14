@@ -21,7 +21,6 @@
 package ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,6 @@ import java.util.logging.Logger;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.*;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwAppServerNodeModel;
-import ch.puzzle.itc.mobiliar.business.property.entity.AmwTemplateModel;
-import lombok.Getter;
 import lombok.Setter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -83,9 +80,7 @@ public class AppServerRelationProperties {
 	private List<AppServerRelationProperties> consumed = new ArrayList<>();
 	private List<AppServerRelationProperties> provided = new ArrayList<>();
 	
-	@Getter
-	@Setter
-	private SoftlinkGenerationPackage softlinkPPIGenerationPackage;
+    
 
 	private Map<ResourceEntity, Set<GeneratedTemplate>> templatesCache;
 
@@ -252,36 +247,6 @@ public class AppServerRelationProperties {
 			AmwAppServerNodeModel appServerNodeViaResolver = new AmwAppServerNodeModel();
             addAppServerNodeViaResolver(appServerNodeViaResolver, relation.resolver);
             relationModel.setAppServerNodeViaResolver(appServerNodeViaResolver);
-            
-            // This Resource has a Softlink
-            SoftlinkGenerationPackage generationPackage = relation.getSoftlinkPPIGenerationPackage();
-            if(generationPackage != null && generationPackage.getGenerationPackage()!= null && generationPackage.getPpiResourceEntity() != null){
-            	GenerationSubPackage asPackage = generationPackage.getGenerationPackage().getGenerationSubPackages().get(generationPackage.getGenerationPackage().
-                        getGenerationSubPackages().size() - 1);
-            	AmwResourceTemplateModel asModelPPI = asPackage.getPackageGenerationUnit().getPropertiesAsModel();
-                // find AmwResourceTemplateModel for the PPI
-				GenerationUnit generationUnitPPI = GenerationUnit.forResource(new HashSet<>(asPackage.getSubGenerationUnitsAsList()), generationPackage.getPpiResourceEntity());
-                // find AmwResourceTemplateModel for the Runtime of Provider side
-                GenerationUnit generationUnitRuntimePPI = GenerationUnit.getRuntimeGenerationUnit(new HashSet<>(asPackage.getSubGenerationUnitsAsList()));
-
-                // set Softlinkref on cpi side (twice the same id so take the id from PPI Resource Entity)
-                relationModel.setSoftlinkRef(generationPackage.getPpiResourceEntity().getSoftlinkId());
-
-                AmwResourceTemplateModel unitResourceTemplateModel = generationUnitPPI.getPropertiesAsModel();
-                // set Softlinkid on ppi side
-                unitResourceTemplateModel.setSoftlinkId(generationPackage.getPpiResourceEntity().getSoftlinkId());
-
-                AmwTemplateModel model = new AmwTemplateModel();
-				model.setGlobalFunctionTemplates(generationPackage.getGlobalFunctions());
-				model.setUnitResourceTemplateModel(unitResourceTemplateModel);
-				model.setAsProperties(asModelPPI);
-                model.setRuntimeProperties(generationUnitRuntimePPI.getPropertiesAsModel());
-
-				model.populateBaseProperties();
-
-				relationModel.setPpiAmwTemplateModel(model);
-            }
-            
 			if (transformNested) {
 				addRelated(relationModel, relation, relationModel);
 			}

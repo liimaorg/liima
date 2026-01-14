@@ -23,9 +23,6 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
-import ch.puzzle.itc.mobiliar.business.foreignable.control.ForeignableService;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwnerViolationException;
 import ch.puzzle.itc.mobiliar.business.function.entity.AmwFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
@@ -41,8 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceR
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.control.SoftlinkRelationService;
-import ch.puzzle.itc.mobiliar.business.softlinkRelation.entity.SoftlinkRelationEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 
@@ -132,27 +127,21 @@ public class CopyResourceDomainService {
     CommonDomainService commonDomainService;
 
     @Inject
-    ForeignableService foreignableService;
-
-    @Inject
-    SoftlinkRelationService softlinkService;
-
-    @Inject
     ResourceLocator resourceLocator;
 
     @Inject
     AuditService auditService;
 
     public enum CopyMode {
-        COPY, RELEASE, MAIA_PREDECESSOR
+        COPY, RELEASE
     }
 
-    public CopyResourceResult copyFromOriginToTargetResource(ResourceEntity origin, ResourceEntity target, ForeignableOwner actingOwner)
-            throws ForeignableOwnerViolationException, AMWException {
+    public CopyResourceResult copyFromOriginToTargetResource(ResourceEntity origin, ResourceEntity target)
+            throws AMWException {
         if (target == null) {
             throw new RuntimeException("Target resource should not be null for copy action");
         } else {
-            return doCopyResourceAndSave(new CopyUnit(origin, target, CopyMode.COPY, actingOwner));
+            return doCopyResourceAndSave(new CopyUnit(origin, target, CopyMode.COPY));
         }
     }
 
@@ -160,23 +149,14 @@ public class CopyResourceDomainService {
      * @param origin  - the resource to create a new release from
      * @param release - the release to create
      */
-    public CopyResourceResult createReleaseFromOriginResource(ResourceEntity origin, ReleaseEntity release, ForeignableOwner actingOwner)
-            throws ForeignableOwnerViolationException, AMWException {
+    public CopyResourceResult createReleaseFromOriginResource(ResourceEntity origin, ReleaseEntity release)
+            throws AMWException {
         ResourceEntity target = commonDomainService.getResourceEntityByGroupAndRelease(origin.getResourceGroup().getId(), release.getId());
         if (target == null) {
-            target = ResourceFactory.createNewResourceForOwner(origin.getResourceGroup(), actingOwner);
+            target = ResourceFactory.createNewResource(origin.getResourceGroup());
             target.setRelease(release);
         }
-        return doCopyResourceAndSave(new CopyUnit(origin, target, CopyMode.RELEASE, actingOwner));
-    }
-
-    public CopyResourceResult copyFromPredecessorToSuccessorResource(ResourceEntity predecessor, ResourceEntity successor, ForeignableOwner actingOwner)
-            throws ForeignableOwnerViolationException, AMWException {
-        if (successor == null) {
-            throw new RuntimeException("Successor resource should not be null for copy predecessor action");
-        } else {
-            return doCopyResourceAndSave(new CopyUnit(predecessor, successor, CopyMode.MAIA_PREDECESSOR, actingOwner));
-        }
+        return doCopyResourceAndSave(new CopyUnit(origin, target, CopyMode.RELEASE));
     }
 
     /**
@@ -184,37 +164,28 @@ public class CopyResourceDomainService {
      *
      * @return result if copy was successful, contains a list with error messages if copy fails
      */
-    protected CopyResourceResult doCopyResourceAndSave(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
-        int targetHashCodeBeforeChange = copyUnit.getTargetResource() != null ? copyUnit.getTargetResource().foreignableFieldHashCode() : 0;
+    protected CopyResourceResult doCopyResourceAndSave(CopyUnit copyUnit) {
         doCopy(copyUnit);
         if (!copyUnit.getResult().isSuccess()) {
             return copyUnit.getResult();
         }
-        // persist before permission check to avoid TransientPropertyValueException when JPA tries to auto flush
         auditService.storeIdInThreadLocalForAuditLog(copyUnit.getTargetResource());
         entityManager.persist(copyUnit.getTargetResource());
-        // check if only decorable fields on resource changed when changing owner is different from resource owner
-        foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), targetHashCodeBeforeChange, copyUnit.getTargetResource());
         return copyUnit.getResult();
     }
 
-    protected void doCopy(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
+    protected void doCopy(CopyUnit copyUnit) {
         copyUnit.getOriginResource().getCopy(copyUnit.getTargetResource(), copyUnit);
         copyResourceContexts(copyUnit);
         copyConsumedMasterRelations(copyUnit);
-        if (copyUnit.getMode() != CopyMode.MAIA_PREDECESSOR) {
-            copyConsumedSlaveRelations(copyUnit);
-        }
+        copyConsumedSlaveRelations(copyUnit);
         copyProvidedMasterRelations(copyUnit);
-        if (copyUnit.getMode() != CopyMode.MAIA_PREDECESSOR) {
-            copyProvidedSlaveRelations(copyUnit);
-        }
+        copyProvidedSlaveRelations(copyUnit);
         copyFunctions(copyUnit);
-        copySoftlinkRelation(copyUnit);
         copyUnit.getResult().setTargetResource(copyUnit.getTargetResource());
     }
 
-    protected void copyConsumedMasterRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
+    protected void copyConsumedMasterRelations(CopyUnit copyUnit) {
         Set<ConsumedResourceRelationEntity> targetConsumedMasterRel = copyUnit.getTargetResource().getConsumedMasterRelations();
         Set<ConsumedResourceRelationEntity> originConsumedMasterRel = copyUnit.getOriginResource().getConsumedMasterRelations();
         if(targetConsumedMasterRel == null) {
@@ -224,7 +195,7 @@ public class CopyResourceDomainService {
         copyUnit.getTargetResource().setConsumedMasterRelations(targetConsumedMasterRel);
     }
 
-    protected void copyConsumedSlaveRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
+    protected void copyConsumedSlaveRelations(CopyUnit copyUnit) {
         Set<ConsumedResourceRelationEntity> targetConsumedSlaveRel = copyUnit.getTargetResource().getConsumedSlaveRelations();
         Set<ConsumedResourceRelationEntity> originConsumedSlaveRel = copyUnit.getOriginResource().getConsumedSlaveRelations();
         if(targetConsumedSlaveRel == null) {
@@ -249,7 +220,7 @@ public class CopyResourceDomainService {
      */
     protected void copyConsumedResourceRelationEntities(Set<ConsumedResourceRelationEntity> origins,
                                                         Set<ConsumedResourceRelationEntity> targets,
-                                                        CopyUnit copyUnit, boolean slaveRelation) throws ForeignableOwnerViolationException {
+                                                        CopyUnit copyUnit, boolean slaveRelation) {
         if (origins == null) {
             return;
         }
@@ -277,12 +248,10 @@ public class CopyResourceDomainService {
             }
             String key = origin.buildIdentifer();
             ConsumedResourceRelationEntity target = targetMap.get(key);
-            int consumedResourceRelationForeignableHashCodeBeforeChange = target != null ? target.foreignableFieldHashCode() : 0;
             target = origin.getCopy(target, copyUnit);
 
             if (target != null) {
                 copyResourceRelationContexts(origin.getContexts(), target, copyUnit, slaveRelation);
-                foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), consumedResourceRelationForeignableHashCodeBeforeChange, target);
                 targets.add(target);
             }
         }
@@ -299,13 +268,13 @@ public class CopyResourceDomainService {
         return !originalRuntime.getId().equals(newRuntime.getId());
     }
 
-    protected void copyProvidedMasterRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
+    protected void copyProvidedMasterRelations(CopyUnit copyUnit) {
         Set<ProvidedResourceRelationEntity> targetProvidedResRels = copyUnit.getTargetResource().getProvidedMasterRelations();
         Set<ProvidedResourceRelationEntity> originProvidedResRels = copyUnit.getOriginResource().getProvidedMasterRelations();
         if (targetProvidedResRels == null) {
             targetProvidedResRels = new HashSet<ProvidedResourceRelationEntity>();
         }
-        if (copyUnit.getMode() == CopyMode.RELEASE || copyUnit.getMode() == CopyMode.MAIA_PREDECESSOR) {
+        if (copyUnit.getMode() == CopyMode.RELEASE) {
             copyProvidedResourceRelationEntities(originProvidedResRels, targetProvidedResRels, copyUnit, false);
             copyUnit.getTargetResource().setProvidedMasterRelations(targetProvidedResRels);
         } else if (originProvidedResRels != null) {
@@ -318,7 +287,7 @@ public class CopyResourceDomainService {
         }
     }
 
-    protected void copyProvidedSlaveRelations(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
+    protected void copyProvidedSlaveRelations(CopyUnit copyUnit) {
         Set<ProvidedResourceRelationEntity> targetProvidedSlaveRels = copyUnit.getTargetResource().getProvidedSlaveRelations();
         Set<ProvidedResourceRelationEntity> originProvidedSlaveRels = copyUnit.getOriginResource().getProvidedSlaveRelations();
         if (targetProvidedSlaveRels == null) {
@@ -337,25 +306,13 @@ public class CopyResourceDomainService {
         }
     }
 
-    protected SoftlinkRelationEntity copySoftlinkRelation(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
-        SoftlinkRelationEntity originSoftlink = copyUnit.getOriginResource().getSoftlinkRelation();
-        SoftlinkRelationEntity targetSoftlink = copyUnit.getTargetResource().getSoftlinkRelation();
-        if (originSoftlink != null) {
-            int softlinkRelationForeignableHashCodeBeforeChange = targetSoftlink != null ? targetSoftlink.foreignableFieldHashCode() : 0;
-
-            targetSoftlink = originSoftlink.getCopy(targetSoftlink, copyUnit);
-            foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), softlinkRelationForeignableHashCodeBeforeChange, targetSoftlink);
-            softlinkService.setSoftlinkRelation(copyUnit.getTargetResource(), targetSoftlink);
-        }
-        return targetSoftlink;
-    }
+    
 
     /**
      * iterate and copy
      */
     protected void copyProvidedResourceRelationEntities(Set<ProvidedResourceRelationEntity> origins,
-                                                        Set<ProvidedResourceRelationEntity> targets, CopyUnit copyUnit, boolean slaveRelation)
-            throws ForeignableOwnerViolationException {
+                                                        Set<ProvidedResourceRelationEntity> targets, CopyUnit copyUnit, boolean slaveRelation) {
         if (origins == null) {
             return;
         }
@@ -369,12 +326,10 @@ public class CopyResourceDomainService {
             String key = origin.buildIdentifer();
             ProvidedResourceRelationEntity target = targetMap.get(origin.buildIdentifer());
 
-            int providedResourceRelationForeignableHashCodeBeforeChange = target != null ? target.foreignableFieldHashCode() : 0;
             target = origin.getCopy(target, copyUnit);
 
             if (target != null) {
                 copyResourceRelationContexts(origin.getContexts(), target, copyUnit, slaveRelation);
-                foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), providedResourceRelationForeignableHashCodeBeforeChange, target);
 
                 if (!targetMap.containsKey(key)) {
                     targets.add(target);
@@ -386,7 +341,7 @@ public class CopyResourceDomainService {
     /**
      * iterate and copy
      */
-    protected void copyResourceContexts(CopyUnit copyUnit) throws ForeignableOwnerViolationException {
+    protected void copyResourceContexts(CopyUnit copyUnit) {
         Set<ResourceContextEntity> targets = copyUnit.getTargetResource().getContexts();
         Set<ResourceContextEntity> origins = copyUnit.getOriginResource().getContexts();
 
@@ -428,7 +383,7 @@ public class CopyResourceDomainService {
      */
     protected void copyResourceRelationContexts(Set<ResourceRelationContextEntity> origins,
                                                 AbstractResourceRelationEntity targetResRel,
-                                                CopyUnit copyUnit, boolean slaveRelation) throws ForeignableOwnerViolationException {
+                                                CopyUnit copyUnit, boolean slaveRelation) {
         if (origins == null) {
             return;
         }
@@ -471,25 +426,7 @@ public class CopyResourceDomainService {
             }
         }
 
-        if (copyUnit.getMode() == CopyMode.MAIA_PREDECESSOR && targetResRel.getSlaveResource() != null && (resourceLocator.hasResourceConsumableSoftlinkType(targetResRel.getSlaveResource()) || resourceLocator
-                .hasResourceProvidableSoftlinkType(targetResRel.getSlaveResource()))) {
-
-            // propertyValue from relations has to be copied if PropertyDescriptor exists on target (successor)
-            for (ResourceContextEntity resourceContextEntity : copyUnit.getTargetResource().getContexts()) {
-                for (PropertyDescriptorEntity propertyDescriptorEntity : resourceContextEntity.getPropertyDescriptors()) {
-                    String key = createDescriptorKey(propertyDescriptorEntity);
-                    allPropertyDescriptorsMap.put(key, propertyDescriptorEntity);
-                }
-            }
-            // add PropertyDescriptor from ProvidedMasterRelations
-            for (ProvidedResourceRelationEntity providedResourceRelationEntity : copyUnit.getTargetResource().getProvidedMasterRelations()) {
-                addRelationPropertyDescriptors(allPropertyDescriptorsMap, providedResourceRelationEntity);
-            }
-            // add PropertyDescriptor from ConsumedMasterRelations
-            for (ConsumedResourceRelationEntity consumedResourceRelationEntity : copyUnit.getTargetResource().getConsumedMasterRelations()) {
-                addRelationPropertyDescriptors(allPropertyDescriptorsMap, consumedResourceRelationEntity);
-            }
-        }
+        
 
         // do copy for all contexts
         for (ResourceRelationContextEntity origin : origins) {
@@ -500,23 +437,12 @@ public class CopyResourceDomainService {
         }
     }
 
-    private <T extends AbstractResourceRelationEntity> void addRelationPropertyDescriptors(Map<String, PropertyDescriptorEntity> allPropertyDescriptorsMap, T relationEntity) {
-        for (ResourceContextEntity resourceContextEntity : relationEntity.getSlaveResource().getContexts()) {
-            if (resourceContextEntity.getPropertyDescriptors() != null) {
-                for (PropertyDescriptorEntity propertyDescriptorEntity : resourceContextEntity.getPropertyDescriptors()) {
-                    String key = createDescriptorKey(propertyDescriptorEntity);
-                    allPropertyDescriptorsMap.put(key, propertyDescriptorEntity);
-                }
-            }
-        }
-    }
-
     /**
      * iterate and copy
      */
     protected Map<String, PropertyDescriptorEntity> copyPropertyDescriptors(
             Set<PropertyDescriptorEntity> origins, Set<PropertyDescriptorEntity> targets,
-            ContextDependency<?> targetContextDependency, CopyUnit copyUnit) throws ForeignableOwnerViolationException {
+            ContextDependency<?> targetContextDependency, CopyUnit copyUnit) {
         // prepare map with propertyName and isTesting as key
         Map<String, PropertyDescriptorEntity> targetsMap = new HashMap<>();
         if (targets != null) {
@@ -530,28 +456,16 @@ public class CopyResourceDomainService {
             for (PropertyDescriptorEntity origin : origins) {
                 String key = createDescriptorKey(origin);
                 PropertyDescriptorEntity targetDescriptor = targetsMap.get(key);
-
-                // Predecessor Mode only copy AMW Owned Elements
-                if (CopyMode.MAIA_PREDECESSOR.equals(copyUnit.getMode())) {
-                    if (ForeignableOwner.AMW.equals(origin.getOwner())) {
-                        copyPropertyDescriptor(targetContextDependency, copyUnit, targetsMap, origin, key, targetDescriptor);
-                    }
-                } else {
-                    copyPropertyDescriptor(targetContextDependency, copyUnit, targetsMap, origin, key, targetDescriptor);
-                }
+                copyPropertyDescriptor(targetContextDependency, copyUnit, targetsMap, origin, key, targetDescriptor);
             }
         }
         return targetsMap;
     }
 
-    private void copyPropertyDescriptor(ContextDependency<?> targetContextDependency, CopyUnit copyUnit, Map<String, PropertyDescriptorEntity> targetsMap, PropertyDescriptorEntity origin, String key, PropertyDescriptorEntity targetDescriptor) throws ForeignableOwnerViolationException {
-        int propertyDescriptorForeignableHashCodeBeforeChange = targetDescriptor != null ? targetDescriptor.foreignableFieldHashCode() : 0;
-
+    private void copyPropertyDescriptor(ContextDependency<?> targetContextDependency, CopyUnit copyUnit, Map<String, PropertyDescriptorEntity> targetsMap, PropertyDescriptorEntity origin, String key, PropertyDescriptorEntity targetDescriptor) {
         PropertyDescriptorEntity target = origin.getCopy(targetDescriptor, copyUnit);
 
         copyTags(origin, target);
-
-        foreignableService.verifyEditableByOwner(copyUnit.getActingOwner(), propertyDescriptorForeignableHashCodeBeforeChange, target);
 
         if (!targetsMap.containsKey(key)) {
             targetContextDependency.addPropertyDescriptor(target);
@@ -645,22 +559,17 @@ public class CopyResourceDomainService {
                         targetProperty = existingPropertiesByDescriptorId.get(targetDescriptor.getId());
                     }
                 }
-
-                if (CopyMode.MAIA_PREDECESSOR == copyUnit.getMode() && targetDescriptor == null) {
-                    // do not add property for null descriptor when Predecessor mode
-                } else {
-                    if (targetProperty == null) {
-                        // If no property for the found property descriptor exists, we create a new one...
-                        PropertyEntity target = origin.getCopy(null, copyUnit);
-                        // targetDescriptor null come for properties on ResourceTypes or master relations
-                        if (targetDescriptor != null) {
-                            target.setDescriptor(targetDescriptor);
-                        }
-                        targets.add(target);
-                    } else {
-                        // otherwise, we merge the new value with the old property entity
-                        targets.add(mergePropertyEntity(origin, targetProperty));
+                if (targetProperty == null) {
+                    // If no property for the found property descriptor exists, we create a new one...
+                    PropertyEntity target = origin.getCopy(null, copyUnit);
+                    // targetDescriptor null come for properties on ResourceTypes or master relations
+                    if (targetDescriptor != null) {
+                        target.setDescriptor(targetDescriptor);
                     }
+                    targets.add(target);
+                } else {
+                    // otherwise, we merge the new value with the old property entity
+                    targets.add(mergePropertyEntity(origin, targetProperty));
                 }
             }
         }
@@ -677,7 +586,6 @@ public class CopyResourceDomainService {
 
     /**
      * Existing templates in target will be overwritten! <br/>
-     * Functions are always owned by {@link ForeignableOwner#AMW}, all functions will be copied in {@link CopyMode#MAIA_PREDECESSOR}.
      */
     protected Set<TemplateDescriptorEntity> copyTemplates(Set<TemplateDescriptorEntity> origins,
                                                           Set<TemplateDescriptorEntity> targets,
@@ -699,7 +607,6 @@ public class CopyResourceDomainService {
 
     /**
      * Existing functions in target won't be overwritten. <br/>
-     * Functions are always owned by {@link ForeignableOwner#AMW}, all functions will be copied in {@link CopyMode#MAIA_PREDECESSOR}.
      */
     protected void copyFunctions(CopyUnit copyUnit) {
         Set<String> targetFunctions = new HashSet<>();

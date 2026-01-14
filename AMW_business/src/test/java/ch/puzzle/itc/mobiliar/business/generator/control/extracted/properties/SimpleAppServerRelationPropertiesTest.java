@@ -31,7 +31,6 @@ import java.util.logging.Level;
 import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.business.domain.TestUtils;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHandler;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -67,7 +66,7 @@ public class SimpleAppServerRelationPropertiesTest {
 	public void testTwoRelatedResourcesOfSameType() throws TemplateModelException {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
 		ResourceEntity app2 = builder.buildResource(builder.typeFor(APP.type), "app2");
-		builder.buildConsumedRelation(builder.as, app2, ForeignableOwner.AMW);
+		builder.buildConsumedRelation(builder.as, app2);
 
 		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.as, templateExceptionHandler);
 		for (ConsumedResourceRelationEntity relation : builder.as.getConsumedMasterRelations()) {
@@ -95,8 +94,8 @@ public class SimpleAppServerRelationPropertiesTest {
 	public void testTwoRelatedProvidedResourcesOfSameType() throws TemplateModelException {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
 		ResourceEntity ws2 = builder.buildResource(builder.typeFor(WS.type), "ws2");
-		builder.buildProvidedRelation(builder.app, builder.ws, ForeignableOwner.AMW);
-		builder.buildProvidedRelation(builder.app, ws2, ForeignableOwner.AMW);
+		builder.buildProvidedRelation(builder.app, builder.ws);
+		builder.buildProvidedRelation(builder.app, ws2);
 
 		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.app, templateExceptionHandler);
 		for (ProvidedResourceRelationEntity relation : builder.app.getProvidedMasterRelations()) {

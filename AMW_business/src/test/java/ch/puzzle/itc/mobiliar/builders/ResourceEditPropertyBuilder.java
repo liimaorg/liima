@@ -20,7 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.builders;
 
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 
@@ -53,10 +52,6 @@ public class ResourceEditPropertyBuilder {
 	private String exampleValue = null;
 	private String defaultValue = null;
     private String descriptorOrigin = null;
-    private String fcOwner = null;
-    private String fcExternalKey = null;
-    private String fcExternalLink = null;
-
 
 	public ResourceEditPropertyBuilder() {
 	}
@@ -261,30 +256,6 @@ public class ResourceEditPropertyBuilder {
     }
 
     /**
-     * foreignable owner
-     */
-    public ResourceEditPropertyBuilder withFcOwner(ForeignableOwner fcOwner) {
-        this.fcOwner = fcOwner.name();
-        return this;
-    }
-
-    /**
-     * foreignable external link
-     */
-    public ResourceEditPropertyBuilder withFcExternalLink(String fcExternalLink) {
-        this.fcExternalLink = fcExternalLink;
-        return this;
-    }
-
-    /**
-     * foreignable external link
-     */
-    public ResourceEditPropertyBuilder withFcExternalKey(String fcExternalKey) {
-        this.fcExternalKey = fcExternalKey;
-        return this;
-    }
-
-    /**
      * Build with descriptor
      */
     public ResourceEditPropertyBuilder withDescriptor(PropertyDescriptorEntity descriptor) {
@@ -306,6 +277,6 @@ public class ResourceEditPropertyBuilder {
 		return new ResourceEditProperty(technicalKey, displayName, propertyValue, exampleValue, defaultValue, propertyComment,
 				isNullable, isOptional, isEncrypted, cardinalityProperty, validationLogic, mik, propContextId,
 				typeContextId, descriptorId, propContName, typeContName, typeId, propertyValueTypeId, masterTypeId, typeName,
-				validationRegex, propertyId, origin, loadedFor, resourceName, descriptorOrigin, fcOwner, fcExternalKey, fcExternalLink);
+				validationRegex, propertyId, origin, loadedFor, resourceName, descriptorOrigin);
 	}
 }

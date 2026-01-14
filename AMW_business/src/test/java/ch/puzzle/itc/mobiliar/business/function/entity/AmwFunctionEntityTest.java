@@ -23,7 +23,6 @@ package ch.puzzle.itc.mobiliar.business.function.entity;
 import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.ResourceTypeEntityBuilder;
 import ch.puzzle.itc.mobiliar.builders.TargetPlatformEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.foreignable.entity.ForeignableOwner;
 import ch.puzzle.itc.mobiliar.business.property.entity.MikEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyUnit;
@@ -449,7 +448,7 @@ public class AmwFunctionEntityTest {
         ResourceEntity targetResource = new ResourceEntityBuilder().buildAppServerEntity("targetResource", null, null, true);
 
         // when
-        AmwFunctionEntity copy = origin.getCopy(null, new CopyUnit(originResource, targetResource, mode, ForeignableOwner.AMW));
+        AmwFunctionEntity copy = origin.getCopy(null, new CopyUnit(originResource, targetResource, mode));
 
         // then
         assertNotNull(copy);
