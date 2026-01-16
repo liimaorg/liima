@@ -1,0 +1,106 @@
+
+
+.indicator {
+  display: inline-block;
+  min-width: 7px;
+  min-height: 7px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+  transform: translateZ(0); // Force GPU acceleration for smoother rendering
+  backface-visibility: hidden; // Improve rendering quality
+  will-change: transform; // Optimize for animations
+}
+
+.level-1 {
+  background-color: var(--bs-dark); // Bootstrap primary for top level (domains)
+}
+
+.level-2 {
+  background-color: var(--bs-gray); // Bootstrap info for second level (environments)
+}
+
+.level-3 {
+  background-color: var(--bs-info); // Bootstrap light for third level (sub-environments)
+}
+
+ul {
+  position: relative;
+
+  // Only apply lines to the deepest nested ul (level-3 items)
+  ul {
+
+    ul {
+
+      position: relative;
+
+      .nav-item {
+        position: relative;
+
+        // Vertical line connecting level-3 items
+        &::before {
+          margin-left: 1rem;
+          content: '';
+          position: absolute;
+          left: 4px;
+          top: 0;
+          bottom: 0;
+          width: 1px;
+          background-color: var(--bs-gray-300);
+        }
+
+        // Start line at center for first item
+        &:first-child::before {
+          //top: 50%;
+        }
+
+        // End line at center for last item
+        &:last-child::before {
+          bottom: 50%;
+        }
+
+        // Horizontal line to indicator
+        &::after {
+          margin-left: 1rem;
+          content: '';
+          position: absolute;
+          left: 4px;
+          top: 50%;
+          width: 12px;
+          height: 1px;
+          background-color: var(--bs-gray-300);
+          transform: translateY(-50%);
+        }
+      }
+    }
+  }
+}
+
+.nav-link {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    font-weight: bold;
+
+    .indicator {
+      background-color: var(--bs-link-hover-color);
+    }
+  }
+
+  &.active {
+    font-weight: 600;
+    border-radius: 4px;
+
+    .indicator {
+      background-color: var(--bs-link-color);
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+    }
+  }
+}
