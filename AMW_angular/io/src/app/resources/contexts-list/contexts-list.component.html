@@ -1,0 +1,51 @@
+@if (permissions().canView) {
+  <ul class="nav flex-column">
+    @for (global of environmentTree(); track global.id) {
+      <li class="nav-item">
+        <a
+          class="nav-link ps-0"
+          [ngClass]="{ active: selection() === global }"
+          (click)="setContext(global)"
+          tabindex="0"
+          role="button"
+        >
+          <span class="indicator level-1"></span>
+          {{ global.name | uppercase }}
+        </a>
+        <ul class="nav flex-column">
+          @for (domain of global.children; track domain.id) {
+            <li class="nav-item">
+              <a
+                class="nav-link ps-3"
+                [ngClass]="{ active: selection() === domain }"
+                (click)="setContext(domain)"
+                tabindex="0"
+                role="button"
+              >
+                <span class="indicator level-2"></span>
+                {{ domain.name | uppercase }}
+              </a>
+              <ul class="nav flex-column">
+                @for (environment of domain.children; track environment.id) {
+                  <li class="nav-item">
+                    <a
+                      class="nav-link ps-3 ms-3"
+                      [ngClass]="{ active: selection() === environment }"
+                      (click)="setContext(environment)"
+                      tabindex="0"
+                      role="button"
+                    >
+                      <span class="indicator level-3"></span>
+                      {{ environment.name | uppercase }}
+                      {{ environment.nameAlias ? `(${(environment.nameAlias | uppercase)})` : '' }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            </li>
+          }
+        </ul>
+      </li>
+    }
+  </ul>
+}

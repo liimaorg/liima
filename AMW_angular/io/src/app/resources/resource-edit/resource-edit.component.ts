@@ -12,6 +12,8 @@ import { ResourceTemplatesListComponent } from './resource-templates/resource-te
 import { Release } from '../models/release';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
+import { ContextsListComponent } from '../contexts-list/contexts-list.component';
+import { EnvironmentService } from '../../deployment/environment.service';
 
 @Component({
   selector: 'app-resource-edit',
@@ -26,6 +28,7 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
     NgbDropdownMenu,
     NgbDropdownToggle,
     NgbDropdownItem,
+    ContextsListComponent,
   ],
   templateUrl: './resource-edit.component.html',
   styleUrl: './resource-edit.component.scss',
@@ -33,11 +36,12 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
 export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
+  private environmentService = inject(EnvironmentService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
-  contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
+  contextId: Signal<number> = this.environmentService.contextId;
   resource: Signal<Resource> = this.resourceService.resource;
   releases: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
 
