@@ -37,6 +37,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHan
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwResourceTemplateModel;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyMaskingContext;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -66,6 +67,7 @@ public class AppServerRelationProperties {
 	private ContextEntity context;
 	private BasePropertyCollector collector;
 	private String identifier;
+	private PropertyMaskingContext maskingContext;
 
 	private Map<String, FreeMarkerProperty> properties;
 	@Setter
@@ -85,20 +87,22 @@ public class AppServerRelationProperties {
 	private boolean supportNesting = true;
 	private AMWTemplateExceptionHandler templateExceptionHandler;
 
-	public AppServerRelationProperties(ContextEntity context, ResourceEntity owner, AMWTemplateExceptionHandler templateExceptionHandler) {
+	public AppServerRelationProperties(ContextEntity context, ResourceEntity owner, AMWTemplateExceptionHandler templateExceptionHandler, PropertyMaskingContext maskingContext) {
 		this.owner = owner;
 		this.context = context;
 		this.templateExceptionHandler = templateExceptionHandler;
+		this.maskingContext = maskingContext;
 		this.collector = new BasePropertyCollector();
 		this.properties = collectResourceProperties(context, owner);
 	}
 
 	private AppServerRelationProperties(ResourceEntity resource, Map<String, FreeMarkerProperty> properties,
-			String identifier, AMWTemplateExceptionHandler templateExceptionHandler) {
+			String identifier, AMWTemplateExceptionHandler templateExceptionHandler, PropertyMaskingContext maskingContext) {
 		this.owner = resource;
 		this.properties = properties;
 		this.identifier = identifier;
 		this.templateExceptionHandler = templateExceptionHandler;
+		this.maskingContext = maskingContext;
 	}
 	
 	/**
@@ -260,7 +264,7 @@ public class AppServerRelationProperties {
 		// relation overrides properties
 		properties.putAll(collectRelationProperties(context, resource, resourceRelation));
 
-		AppServerRelationProperties asrProperties = new AppServerRelationProperties(resource, properties, identifier, templateExceptionHandler);
+		AppServerRelationProperties asrProperties = new AppServerRelationProperties(resource, properties, identifier, templateExceptionHandler, maskingContext);
 		list.add(asrProperties);
 		return asrProperties;
 
@@ -272,7 +276,10 @@ public class AppServerRelationProperties {
 	 * Populates properties
 	 */
 	private Map<String, FreeMarkerProperty> collectResourceProperties(ContextEntity context, ResourceEntity resource) {
-		return collector.propertiesForResource(resource, context, templateExceptionHandler);
+		Map<String, FreeMarkerProperty> props = collector.propertiesForResource(resource, context, templateExceptionHandler);
+		// Mask encrypted values when masking is enabled (e.g., test generation without decrypt permissions)
+		maskEncryptedProperties(props);
+		return props;
 	}
 
 	/**
@@ -284,7 +291,20 @@ public class AppServerRelationProperties {
 	 */
 	private Map<String, FreeMarkerProperty> collectRelationProperties(ContextEntity context, ResourceEntity resource,
 			AbstractResourceRelationEntity resourceRelation) {
-		return collector.propertiesForRelation(resource, context, resourceRelation);
+		Map<String, FreeMarkerProperty> relationProps = collector.propertiesForRelation(resource, context, resourceRelation);
+		maskEncryptedProperties(relationProps);
+		return relationProps;
+	}
+
+	void maskEncryptedProperties(Map<String, FreeMarkerProperty> props) {
+		if (props == null || props.isEmpty()) {
+			return;
+		}
+		if (maskingContext != null && maskingContext.isMaskingEnabled()) {
+			for (FreeMarkerProperty property : props.values()) {
+				property.maskIfEncrypted();
+			}
+		}
 	}
 
 	@Override

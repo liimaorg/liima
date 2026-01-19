@@ -26,9 +26,6 @@ import java.io.Serializable;
 
 public class FreeMarkerProperty implements Comparable<FreeMarkerProperty>, Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	@Getter
@@ -37,13 +34,12 @@ public class FreeMarkerProperty implements Comparable<FreeMarkerProperty>, Seria
     FreeMarkerPropertyDescriptor _descriptor;
 
 	/**
-	 * creates based on the technicalKey a default PropertyDescriptro
+	 * creates based on the technicalKey a default PropertyDescriptor
 	 * Special case: PropertyDescriptorEntities having no PropertyEntity
 	 * @param value
 	 * @param technicalKey
 	 */
 	public FreeMarkerProperty(String value, String technicalKey) {
-
 		PropertyDescriptorEntity desc = new PropertyDescriptorEntity();
 		desc.setPropertyName(technicalKey);
 		desc.setDisplayName(technicalKey);
@@ -101,5 +97,15 @@ public class FreeMarkerProperty implements Comparable<FreeMarkerProperty>, Seria
 
     public void setEvaluatedValue(String s) {
         this.currentValue = s;
+    }
+
+    /**
+     * Masks the current value if the property is encrypted.
+     * Used when user doesn't have decrypt permissions.
+     */
+    public void maskIfEncrypted() {
+        if (_descriptor != null && _descriptor.isEncrypt() && currentValue != null) {
+            currentValue = "****";
+        }
     }
 }

@@ -34,6 +34,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.*;
 import ch.puzzle.itc.mobiliar.business.globalfunction.control.GlobalFunctionService;
 import ch.puzzle.itc.mobiliar.business.globalfunction.entity.GlobalFunctionEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyMaskingContext;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -97,6 +98,9 @@ public class GeneratorDomainServiceWithAppServerRelations {
 
     @Inject
     private GeneratorUtils generatorUtils;
+
+    @Inject
+    PropertyMaskingContext propertyMaskingContext;
 
     /**
      * @return a NodeGenerationResult
@@ -319,6 +323,17 @@ public class GeneratorDomainServiceWithAppServerRelations {
         GenerationContext generationContext = new GenerationContext(context, appServer, fakeDeplyoment,
                 stateDate, GenerationModus.TEST, resourceDependencyResolver);
         generationContext.setGlobalFunctions(globalFunctions);
+
+        // Determine decrypt permission once
+        boolean hasDecryptPermission = permissionService.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context,
+                Action.ALL, appServer.getResourceGroup(), null) ||
+                permissionService.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context,
+                        Action.ALL, null, appServer.getResourceType());
+
+        // Enable masking for this request if user lacks decrypt permission
+        if (!hasDecryptPermission) {
+            propertyMaskingContext.enableMasking();
+        }
 
         EnvironmentGenerationResult result;
         try {

@@ -68,7 +68,7 @@ public class ApplicationResolverTest {
 		context = builder.context;
 		Mockito.when(resourceDependencyResolverService.getProvidedSlaveRelationsForRelease(ArgumentMatchers.<ResourceEntity>any(), ArgumentMatchers.<ReleaseEntity>any()))
 				.thenAnswer(invocation -> ((ResourceEntity) invocation.getArguments()[0]).getProvidedSlaveRelations());
-		resolver = new ApplicationResolver(builder.options, builder.ws, resourceDependencyResolverService);
+		resolver = new ApplicationResolver(builder.options, builder.ws, resourceDependencyResolverService, null);
 		assertEquals(true, resolver.resolve());
 	}
 
