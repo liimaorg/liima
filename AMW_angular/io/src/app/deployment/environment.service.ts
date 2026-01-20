@@ -1,19 +1,15 @@
-import { Injectable, Signal, inject, computed, effect } from '@angular/core';
+import { Injectable, Signal, inject, computed } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
-import { catchError, shareReplay, switchMap, map } from 'rxjs/operators';
+import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 import { Environment, EnvironmentTree } from './environment';
 import { BaseService } from '../base/base.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class EnvironmentService extends BaseService {
   private http = inject(HttpClient);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
 
-  private contextId$ = new Subject<number>();
   private reload$ = new Subject<Environment[]>();
   private reloadedContexts = this.reload$.pipe(
     startWith(null),
@@ -28,40 +24,6 @@ export class EnvironmentService extends BaseService {
   contexts: Signal<Environment[]> = toSignal(this.reloadedContexts, { initialValue: [] as Environment[] });
   envs: Signal<Environment[]> = toSignal(this.reloadedEnvs, { initialValue: [] as Environment[] });
   environmentTree: Signal<EnvironmentTree[]> = computed(() => this.buildEnvironmentTree(this.contexts()));
-
-  private urlContextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), {
-    initialValue: 1,
-  });
-  contextId: Signal<number> = toSignal(this.contextId$, { initialValue: 1 });
-
-  constructor() {
-    super();
-
-    // Sync URL contextId to service
-    effect(() => {
-      const urlCtx = this.urlContextId();
-      if (urlCtx) {
-        this.contextId$.next(urlCtx);
-      }
-    });
-
-    // Sync service contextId to URL
-    effect(() => {
-      const serviceCtx = this.contextId();
-      const currentUrlCtx = this.urlContextId();
-      if (serviceCtx !== currentUrlCtx) {
-        void this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { ctx: serviceCtx },
-          queryParamsHandling: 'merge',
-        });
-      }
-    });
-  }
-
-  setContextId(id: number) {
-    this.contextId$.next(id);
-  }
 
   getAll(): Observable<Environment[]> {
     return this.getEnvironments(false);
