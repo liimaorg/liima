@@ -160,9 +160,31 @@ export class ResourceService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  getProperty(resourceGroupName: string, releaseName: string, propertyName: string): Observable<Property> {
+  getProperty(resourceId: number, propertyName: string, contextId: number = 1): Observable<Property> {
+    const params = new HttpParams().set('contextId', contextId.toString());
     return this.http
-      .get<Property>(`${this.getBaseUrl()}/resources/${resourceGroupName}/${releaseName}/properties/${propertyName}`, {
+      .get<Property>(`${this.getBaseUrl()}/resources/${resourceId}/properties/${propertyName}`, {
+        params,
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getProperties(resourceId: number, contextId: number = 1): Observable<Property[]> {
+    const params = new HttpParams().set('contextId', contextId.toString());
+    return this.http
+      .get<Property[]>(`${this.getBaseUrl()}/resources/${resourceId}/properties`, {
+        params,
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  bulkUpdateProperties(resourceId: number, properties: Property[], contextId: number = 1): Observable<void> {
+    const params = new HttpParams().set('contextId', contextId.toString());
+    return this.http
+      .put<void>(`${this.getBaseUrl()}/resources/${resourceId}/properties`, properties, {
+        params,
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));

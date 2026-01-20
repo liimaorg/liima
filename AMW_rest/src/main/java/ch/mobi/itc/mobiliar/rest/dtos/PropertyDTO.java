@@ -40,6 +40,15 @@ public class PropertyDTO {
     private String generalComment;
     private String valueComment;
     private String context;
+    private String displayName;
+    private String validationRegex;
+    private Boolean encrypted;
+    private Boolean nullable;
+    private Boolean optional;
+    private String defaultValue;
+    private String exampleValue;
+    private Boolean definedOnInstance;
+    private Integer descriptorId;
 
     public PropertyDTO(ResourceEditProperty property, String context){
         this.name = property.getTechnicalKey();
@@ -47,5 +56,14 @@ public class PropertyDTO {
         this.replacedValue = property.getReplacedValue();
         this.generalComment = property.getPropertyComment();
         this.context = context;
+        this.displayName = property.getDisplayName();
+        this.validationRegex = property.getValidationLogic();
+        this.encrypted = property.isEncrypted();
+        this.nullable = property.isNullable();
+        this.optional = property.isOptional();
+        this.defaultValue = property.getDefaultValue();
+        this.exampleValue = property.getExampleValue();
+        this.definedOnInstance = property.isDefinedOnInstance();
+        this.descriptorId = property.getDescriptorId();
     }
 }

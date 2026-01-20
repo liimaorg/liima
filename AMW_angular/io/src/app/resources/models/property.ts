@@ -5,4 +5,13 @@ export interface Property {
   generalComment: string;
   valueComment: string;
   context: string;
+  displayName?: string;
+  validationRegex?: string;
+  encrypted?: boolean;
+  nullable?: boolean;
+  optional?: boolean;
+  defaultValue?: string;
+  exampleValue?: string;
+  definedOnInstance?: boolean;
+  descriptorId?: number;
 }
