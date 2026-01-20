@@ -9,7 +9,7 @@
           tabindex="0"
           role="button"
         >
-          <span class="indicator level-1"></span>
+          <span class="circle level-1"></span>
           {{ global.name | uppercase }}
         </a>
         <ul class="nav flex-column">
@@ -22,7 +22,7 @@
                 tabindex="0"
                 role="button"
               >
-                <span class="indicator level-2"></span>
+                <span class="circle level-2"></span>
                 {{ domain.name | uppercase }}
               </a>
               <ul class="nav flex-column">
@@ -35,7 +35,7 @@
                       tabindex="0"
                       role="button"
                     >
-                      <span class="indicator level-3"></span>
+                      <span class="circle level-3"></span>
                       {{ environment.name | uppercase }}
                       {{ environment.nameAlias ? `(${(environment.nameAlias | uppercase)})` : '' }}
                     </a>

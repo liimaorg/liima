@@ -5,7 +5,7 @@
 
 ul {
   position: relative;
-  
+
   // Only apply lines to the deepest nested ul (level-3 items)
   ul {
 
@@ -18,7 +18,7 @@ ul {
 
         // Vertical line connecting level-3 items
         &::before {
-          margin-left: 1rem;
+          margin-left: 1.4rem;
           content: '';
           position: absolute;
           left: 4px;
@@ -40,7 +40,7 @@ ul {
 
         // Horizontal line to indicator
         &::after {
-          margin-left: 1rem;
+          margin-left: 1.4rem;
           content: '';
           position: absolute;
           left: 4px;
@@ -71,7 +71,7 @@ ul {
     border-radius: 4px;
     font-weight: bold;
 
-    .indicator {
+    .circle {
       background-color: var(--bs-link-hover-color);
     }
   }
@@ -81,14 +81,14 @@ ul {
     border-radius: 4px;
     background-color: rgba(0, 0, 255, 0.03);
 
-    .indicator {
+    .circle {
       background-color: var(--bs-link-color);
       box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
     }
   }
 }
 
-.indicator {
+.circle {
   display: inline-block;
   min-width: 7px;
   min-height: 7px;
