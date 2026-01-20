@@ -134,4 +134,23 @@ public class ResourcePropertiesRest {
         return Response.status(Response.Status.OK).build();
     }
 
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Bulk update multiple property values for a resource in a specific release")
+    public Response bulkUpdateResourceProperties(List<PropertyDTO> properties, @DefaultValue("Global") @QueryParam("env") String environment) throws ValidationException {
+        if (properties == null || properties.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Properties list cannot be empty").build();
+        }
+        
+        for (PropertyDTO property : properties) {
+            if (property.getName() == null || property.getName().trim().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Property name cannot be null or empty").build();
+            }
+            propertyEditor.setPropertyValueOnResourceForContext(resourceGroupName, releaseName, environment, property.getName(), property.getValue());
+        }
+        
+        return Response.status(Response.Status.OK).build();
+    }
+
 }
