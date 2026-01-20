@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.AMWTemplateExceptionHan
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties.AppServerRelationProperties;
 import ch.puzzle.itc.mobiliar.business.property.entity.AmwAppServerNodeModel;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyMaskingContext;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -39,11 +40,13 @@ public class ApplicationResolver {
 	private ResourceEntity applicationServer;
 	private GenerationOptions options;
     private ResourceDependencyResolverService resourceDependencyResolverService;
+	private PropertyMaskingContext maskingContext;
 
-	public ApplicationResolver(GenerationOptions options, ResourceEntity slave,ResourceDependencyResolverService dependencyResolverService) {
+	public ApplicationResolver(GenerationOptions options, ResourceEntity slave, ResourceDependencyResolverService dependencyResolverService, PropertyMaskingContext maskingContext) {
 		this.resource = slave;
 		this.options = options;
 	    this.resourceDependencyResolverService = dependencyResolverService;
+		this.maskingContext = maskingContext;
 	}
 
 	public boolean resolve() {
@@ -107,8 +110,8 @@ public class ApplicationResolver {
 	}
 
 	public void transform(AMWTemplateExceptionHandler templateExceptionHandler, AmwAppServerNodeModel model) {
-		AppServerRelationProperties app = new AppServerRelationProperties(options.getContext().getContext(), getApplication(), templateExceptionHandler);
-		AppServerRelationProperties appServer = new AppServerRelationProperties(options.getContext().getContext(), getApplicationServer(), templateExceptionHandler);
+		AppServerRelationProperties app = new AppServerRelationProperties(options.getContext().getContext(), getApplication(), templateExceptionHandler, maskingContext);
+		AppServerRelationProperties appServer = new AppServerRelationProperties(options.getContext().getContext(), getApplicationServer(), templateExceptionHandler, maskingContext);
 
 		model.setAppProperties(app.getProperties());
 		model.setAppServerProperties(appServer.getProperties());

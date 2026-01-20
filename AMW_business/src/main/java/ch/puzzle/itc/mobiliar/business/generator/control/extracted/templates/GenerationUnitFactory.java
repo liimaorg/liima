@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationCon
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.properties.AppServerRelationProperties;
 import ch.puzzle.itc.mobiliar.business.property.entity.FreeMarkerProperty;
+import ch.puzzle.itc.mobiliar.business.property.entity.PropertyMaskingContext;
 import ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
@@ -69,6 +70,9 @@ public class GenerationUnitFactory {
 
     @Inject
     AmwAuditReader amwAuditReader;
+
+	@Inject
+	PropertyMaskingContext propertyMaskingContext;
 
 	/**
 	 * Collects templates and properties as well as their properties.
@@ -344,7 +348,7 @@ public class GenerationUnitFactory {
 	private AppServerRelationProperties propertiesFor(GenerationOptions options, ResourceEntity resource,
 			AMWTemplateExceptionHandler templateExceptionHandler) {
 		return new AppServerRelationProperties(options.getContext().getContext(), resource,
-				templateExceptionHandler);
+				templateExceptionHandler, propertyMaskingContext);
 	}
 
 }

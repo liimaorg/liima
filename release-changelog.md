@@ -2,6 +2,13 @@
 * Maia code was removed: [#938](https://github.com/liimaorg/liima/pull/938)
   * Role overwrite_foreignables is no longer used
   * Maia fields in the database were removed
+* feat: mask encrypted properties in test generate if user doesn't have decrypt permissions [#943](https://github.com/liimaorg/liima/pull/943)
+    * User needs RESOURCE_PROPERTY_DECRYPT permissions on the appServer on that env or RESOURCETYPE_PROPERTY_DECRYPT on the AppSever Type to see decrypted properties in test generated template
+* refactor(generator): remove model traversal from consumed to providedres [#940](https://github.com/liimaorg/liima/pull/940)
+  * With this change `${consumedResTypes.Webservice.ws.appServer.name}` and `${consumedResTypes.Webservice.ws.app.name}` doesn't work anymore in templates.
+* feat(deployment-log): turn urls in deployment log into clickable links [#941](https://github.com/liimaorg/liima/pull/941)
+* chore(deps-dev): bump tar from 7.5.2 to 7.5.3 in /AMW_angular/io [#942](https://github.com/liimaorg/liima/pull/942)
+* chore(deps-dev): bump hono from 4.11.3 to 4.11.4 in /AMW_angular/io [#939](https://github.com/liimaorg/liima/pull/939)
 
 # v1.18.8
 * Bug/select revision as signal [#930](https://github.com/liimaorg/liima/pull/930)

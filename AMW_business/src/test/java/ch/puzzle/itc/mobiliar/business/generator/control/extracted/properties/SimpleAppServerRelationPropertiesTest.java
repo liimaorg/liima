@@ -52,7 +52,7 @@ public class SimpleAppServerRelationPropertiesTest {
 	@Test
 	public void testSingleAsAppRelation() {
 		AMWTemplateExceptionHandler templateExceptionHandler = new AMWTemplateExceptionHandler();
-		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.as, templateExceptionHandler);
+		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.as, templateExceptionHandler, null);
 		for (ConsumedResourceRelationEntity relation : builder.as.getConsumedMasterRelations()) {
 			ResourceEntity slaveResource = relation.getSlaveResource();
 			properties.addConsumedRelation(slaveResource.getName(), slaveResource, relation);
@@ -68,7 +68,7 @@ public class SimpleAppServerRelationPropertiesTest {
 		ResourceEntity app2 = builder.buildResource(builder.typeFor(APP.type), "app2");
 		builder.buildConsumedRelation(builder.as, app2);
 
-		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.as, templateExceptionHandler);
+		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.as, templateExceptionHandler, null);
 		for (ConsumedResourceRelationEntity relation : builder.as.getConsumedMasterRelations()) {
 			ResourceEntity slaveResource = relation.getSlaveResource();
 			properties.addConsumedRelation(slaveResource.getName(), slaveResource, relation);
@@ -97,7 +97,7 @@ public class SimpleAppServerRelationPropertiesTest {
 		builder.buildProvidedRelation(builder.app, builder.ws);
 		builder.buildProvidedRelation(builder.app, ws2);
 
-		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.app, templateExceptionHandler);
+		AppServerRelationProperties properties = new AppServerRelationProperties(builder.context, builder.app, templateExceptionHandler, null);
 		for (ProvidedResourceRelationEntity relation : builder.app.getProvidedMasterRelations()) {
 			ResourceEntity slaveResource = relation.getSlaveResource();
 			properties.addProvidedRelation(slaveResource.getName(), slaveResource, relation);
