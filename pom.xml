@@ -34,7 +34,7 @@
         <version.release.maven.plugin>3.3.1</version.release.maven.plugin>
 
         <version.liquibase>4.33.0</version.liquibase>
-        <version.assertj-core>3.27.6</version.assertj-core>
+        <version.assertj-core>3.27.7</version.assertj-core>
         <version.swagger>2.2.41</version.swagger>
         <version.hamcrest>3.0</version.hamcrest>
         <version.junit>5.14.1</version.junit>
