@@ -21,15 +21,15 @@
               [(ngModel)]="selectedFilterType"
               (change)="addFilter()"
             >
-              @for (filterType of filterTypes; track filterType.name) {
+              @for (filterType of filterTypes(); track filterType.name) {
                 <option [ngValue]="filterType">{{ filterType.name }}</option>
               }
             </select>
           </div>
         </div>
 
-        @if (filters.length > 0) {
-          @for (filter of filters; track $index; let i = $index) {
+        @if (filters().length > 0) {
+          @for (filter of filters(); track $index; let i = $index) {
             <div class="form-group row">
               <div class="col-sm-4 offset-1">
                 <input class="form-control" disabled type="text" value="{{ filter.name }}" />
@@ -103,7 +103,7 @@
             <app-button
               [variant]="'danger'"
               [additionalClasses]="'mb-2 me-2'"
-              [disabled]="filters.length < 1"
+              [disabled]="filters().length < 1"
               (click)="clearFilters()"
             >
               Clear filters</app-button
@@ -111,7 +111,7 @@
             <app-button
               [variant]="'secondary'"
               [additionalClasses]="'mb-2 me-2'"
-              [disabled]="filters.length < 1"
+              [disabled]="filters().length < 1"
               (click)="copyURL()"
               ><app-icon icon="clipboard"></app-icon> Clipboard</app-button
             >

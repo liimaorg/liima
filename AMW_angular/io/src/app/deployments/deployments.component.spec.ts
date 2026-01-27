@@ -135,6 +135,40 @@ describe('DeploymentsComponent (with query params)', () => {
     expect(component.paramFilters[1].valOptions.length).toEqual(0);
   });
 
+  it('should initialize filter valOptions as empty array for async option values', () => {
+    // given
+    const stateFilter = JSON.stringify([{ name: 'State', comp: 'eq', val: 'failed' }]);
+    const deploymentFilters: DeploymentFilterType[] = [{ name: 'State', type: 'ENUM_TYPE' }];
+    
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
+    // Mock to verify it's called, but return empty so we can check initial state
+    const getFilterOptionValuesSpy = vi.spyOn(deploymentService, 'getFilterOptionValues').mockReturnValue(
+      of(['success', 'failed', 'canceled', 'rejected']),
+    );
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
+
+    // when
+    component.ngOnInit();
+    activatedRouteStub.queryParams.next({ filters: stateFilter });
+
+    // then
+    expect(component.filters().length).toBe(1);
+    const filter = component.filters()[0];
+    
+    // The critical fix: valOptions should be initialized as an empty array (not undefined)
+    // so that ngModel binding doesn't break when options are loaded asynchronously
+    expect(filter.valOptions).toBeDefined();
+    expect(Array.isArray(filter.valOptions)).toBe(true);
+    
+    // The filter value should be preserved as 'failed'
+    expect(filter.val).toEqual('failed');
+    
+    // Verify the service was called to fetch options
+    expect(getFilterOptionValuesSpy).toHaveBeenCalledWith('State');
+  });
+
   it('should apply filters ngOnInit ', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
@@ -378,14 +412,14 @@ describe('DeploymentsComponent (without query params)', () => {
   it('should remove filter and reset offset on removeFilter', () => {
     // given
     component.offset = 10;
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
         type: 'booleanType',
       } as DeploymentFilter,
-    ];
+    ]);
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
@@ -399,24 +433,24 @@ describe('DeploymentsComponent (without query params)', () => {
     vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
 
     // when
-    component.removeFilter(component.filters[0]);
+    component.removeFilter(component.filters()[0]);
 
     // then
-    expect(component.filters.length).toEqual(0);
+    expect(component.filters().length).toEqual(0);
     expect(component.offset).toEqual(0);
   });
 
   it('should reset offset on setMaxResultsPerPage', () => {
     // given
     component.offset = 10;
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
         type: 'booleanType',
       } as DeploymentFilter,
-    ];
+    ]);
 
     // when
     component.setMaxResultsPerPage(20);
@@ -498,7 +532,7 @@ describe('DeploymentsComponent (without query params)', () => {
     vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
     // given
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
@@ -511,7 +545,7 @@ describe('DeploymentsComponent (without query params)', () => {
         val: 'TestApp',
         type: 'StringType',
       } as DeploymentFilter,
-    ];
+    ]);
 
     // when
     component.applyFilters();
@@ -550,7 +584,7 @@ describe('DeploymentsComponent (without query params)', () => {
     vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
     vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
@@ -575,13 +609,13 @@ describe('DeploymentsComponent (without query params)', () => {
         val: '',
         type: 'SpecialFilterType',
       } as DeploymentFilter,
-    ];
+    ]);
 
     // when
     component.applyFilters();
 
     // then
-    expect(component.filters.length).toEqual(3);
+    expect(component.filters().length).toEqual(3);
     expect(sessionStorage.getItem('deploymentFilters')).toEqual(JSON.stringify(expectedFilters));
     expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(
       JSON.stringify(expectedFilters),
@@ -609,7 +643,7 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'Confirmed', comp: 'eq', val: 'true' } as DeploymentFilter,
       { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter,
     ];
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
@@ -622,7 +656,7 @@ describe('DeploymentsComponent (without query params)', () => {
         val: 'TestApp',
         type: 'StringType',
       } as DeploymentFilter,
-    ];
+    ]);
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },

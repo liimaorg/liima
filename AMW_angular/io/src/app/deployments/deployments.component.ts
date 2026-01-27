@@ -58,7 +58,7 @@ export class DeploymentsComponent implements OnInit {
   filtersForParam: DeploymentFilter[] = [];
 
   // valid for all, loaded once
-  filterTypes: DeploymentFilterType[] = [];
+  filterTypes = signal<DeploymentFilterType[]>([]);
   comparatorOptions: ComparatorFilterOption[] = [];
   comparatorOptionsMap: { [key: string]: string } = {};
   hasPermissionToRequestDeployments = false;
@@ -74,7 +74,7 @@ export class DeploymentsComponent implements OnInit {
   selectedFilterType: DeploymentFilterType;
 
   // already set
-  filters: DeploymentFilter[] = [];
+  filters = signal<DeploymentFilter[]>([]);
 
   // filtered deployments
   deployments = signal<Deployment[]>([]);
@@ -133,7 +133,7 @@ export class DeploymentsComponent implements OnInit {
       newFilter.type = this.selectedFilterType.type;
       newFilter.compOptions = this.comparatorOptionsForType(this.selectedFilterType.type);
       this.setValueOptionsForFilter(newFilter);
-      this.filters.push(newFilter);
+      this.filters.update((filters) => [...filters, newFilter]);
       this.offset = 0;
       this.selectedFilterType = null;
       this.selectModel.reset(null);
@@ -141,19 +141,23 @@ export class DeploymentsComponent implements OnInit {
   }
 
   removeFilter(filter: DeploymentFilter) {
-    const i: number = _.findIndex(this.filters, {
+    const i: number = _.findIndex(this.filters(), {
       name: filter.name,
       comp: filter.comp,
       val: filter.val,
     });
     if (i !== -1) {
-      this.filters.splice(i, 1);
+      this.filters.update((filters) => {
+        const newFilters = [...filters];
+        newFilters.splice(i, 1);
+        return newFilters;
+      });
     }
     this.offset = 0;
   }
 
   clearFilters() {
-    this.filters = [];
+    this.filters.set([]);
     sessionStorage.setItem('deploymentFilters', null);
     this.updateFiltersInURL(null);
   }
@@ -163,7 +167,7 @@ export class DeploymentsComponent implements OnInit {
     this.filtersForParam = [];
     const filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
-    this.filters.forEach((filter) => {
+    this.filters().forEach((filter) => {
       if (filter.val || filter.type === 'SpecialFilterType') {
         this.filtersForParam.push({
           name: filter.name,
@@ -332,7 +336,7 @@ export class DeploymentsComponent implements OnInit {
   private canFilterBeAdded(): boolean {
     return (
       this.selectedFilterType.name !== 'Latest deployment job for App Server and Env' ||
-      _.findIndex(this.filters, { name: this.selectedFilterType.name }) === -1
+      _.findIndex(this.filters(), { name: this.selectedFilterType.name }) === -1
     );
   }
 
@@ -385,10 +389,13 @@ export class DeploymentsComponent implements OnInit {
       if (filter.type === 'booleanType') {
         filter.valOptions = this.filterValueOptions[filter.name] = ['true', 'false'];
       } else {
+        // Initialize with empty array so ngModel has something to bind to
+        filter.valOptions = [];
         this.getAndSetFilterOptionValues(filter);
       }
+    } else {
+      filter.valOptions = this.filterValueOptions[filter.name];
     }
-    filter.valOptions = this.filterValueOptions[filter.name];
   }
 
   private mapStates() {
@@ -422,7 +429,7 @@ export class DeploymentsComponent implements OnInit {
   private initTypeAndOptions() {
     this.isLoading.set(true);
     this.deploymentService.getAllDeploymentFilterTypes().subscribe({
-      next: (r) => (this.filterTypes = _.sortBy(r, 'name')),
+      next: (r) => this.filterTypes.set(_.sortBy(r, 'name')),
       error: (e) => (this.errorMessage = e),
       complete: () => {
         this.getAllComparatorOptions();
@@ -443,9 +450,15 @@ export class DeploymentsComponent implements OnInit {
 
   private getAndSetFilterOptionValues(filter: DeploymentFilter) {
     this.deploymentService.getFilterOptionValues(filter.name).subscribe({
-      next: (r) => (this.filterValueOptions[filter.name] = r),
+      next: (r) => {
+        // Update the cache
+        this.filterValueOptions[filter.name] = r;
+        // Update filter object in place to maintain ngModel binding reference
+        filter.valOptions = r;
+        // Trigger change detection by creating new array reference
+        this.filters.update((filters) => [...filters]);
+      },
       error: (e) => (this.errorMessage = e),
-      complete: () => (filter.valOptions = this.filterValueOptions[filter.name]),
     });
   }
 
@@ -492,21 +505,70 @@ export class DeploymentsComponent implements OnInit {
   private enhanceParamFilter() {
     if (this.paramFilters) {
       this.clearFilters();
+      // update all filters in one batch
+      const newFilters: DeploymentFilter[] = [];
+      let filtersToProcess = this.paramFilters.length;
+      
       this.paramFilters.forEach((filter) => {
-        const i: number = _.findIndex(this.filterTypes, ['name', filter.name]);
+        const i: number = _.findIndex(this.filterTypes(), ['name', filter.name]);
         if (i >= 0) {
-          filter.type = this.filterTypes[i].type;
+          filter.type = this.filterTypes()[i].type;
           filter.compOptions = this.comparatorOptionsForType(filter.type);
           filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
           this.parseDateTime(filter);
-          this.setValueOptionsForFilter(filter);
-          this.filters.push(filter);
+          
+          // Pre-fetch options before adding to signal
+          if (!this.filterValueOptions[filter.name]) {
+            if (filter.type === 'booleanType') {
+              filter.valOptions = this.filterValueOptions[filter.name] = ['true', 'false'];
+              newFilters.push(filter);
+              filtersToProcess--;
+              // If all filters are ready, set them
+              if (filtersToProcess === 0) {
+                this.filters.set(newFilters);
+                if (this.autoload) {
+                  this.applyFilters();
+                }
+              }
+            } else {
+              // Fetch options and add filter once options are loaded
+              this.deploymentService.getFilterOptionValues(filter.name).subscribe({
+                next: (r) => {
+                  this.filterValueOptions[filter.name] = r;
+                  filter.valOptions = r;
+                  newFilters.push(filter);
+                  filtersToProcess--;
+                  // If all filters are ready, set them
+                  if (filtersToProcess === 0) {
+                    this.filters.set(newFilters);
+                    if (this.autoload) {
+                      this.applyFilters();
+                    }
+                  }
+                },
+                error: (e) => {
+                  this.errorMessage = e;
+                  filtersToProcess--;
+                },
+              });
+            }
+          } else {
+            filter.valOptions = this.filterValueOptions[filter.name];
+            newFilters.push(filter);
+            filtersToProcess--;
+            if (filtersToProcess === 0) {
+              this.filters.set(newFilters);
+              if (this.autoload) {
+                this.applyFilters();
+              }
+            }
+          }
         } else {
           this.errorMessage = 'Error parsing filter';
+          filtersToProcess--;
         }
       });
-    }
-    if (this.autoload) {
+    } else if (this.autoload) {
       this.applyFilters();
     }
   }
