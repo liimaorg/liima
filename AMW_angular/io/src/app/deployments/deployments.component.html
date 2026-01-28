@@ -33,7 +33,8 @@
             <app-deployment-filter 
               [filter]="filter" 
               [index]="i" 
-              [compOptions]="comparatorOptionsForFilterType(filter.type)"
+              [type]="getFilterType(filter.name) || ''"
+              [compOptions]="comparatorOptionsForFilterType(getFilterType(filter.name) || '')"
               (remove)="removeFilter($event)">
             </app-deployment-filter>
           }
@@ -112,7 +113,7 @@
                   [deployments]="deployments()"
                   [sortCol]="sortCol"
                   [sortDirection]="sortDirection"
-                  [filtersForParam]="filtersForParam"
+                  [filtersForParam]="filters()"
                   (doConfirmDeployment)="confirmDeployment($event)"
                   (doCancelDeployment)="cancelDeployment($event)"
                   (doRejectDeployment)="rejectDeployment($event)"

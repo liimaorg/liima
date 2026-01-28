@@ -18,6 +18,7 @@ export class DeploymentFilterComponent implements OnInit {
 
   @Input({ required: true }) filter!: DeploymentFilter;
   @Input({ required: true }) index!: number;
+  @Input({ required: true }) type!: string;
   @Input() compOptions: ComparatorFilterOption[] = [];
   @Output() remove = new EventEmitter<DeploymentFilter>();
 
@@ -29,13 +30,12 @@ export class DeploymentFilterComponent implements OnInit {
       this.valOptions.set([String(this.filter.val)]);
     }
     this.loadOptions();
-    console.log("init " + this.filter)
   }
 
   private loadOptions() {
-    if (this.filter.type === 'booleanType') {
+    if (this.type === 'booleanType') {
       this.valOptions.set(['true', 'false']);
-    } else if (this.filter.type !== 'SpecialFilterType' && this.filter.type !== 'DateType') {
+    } else if (this.type !== 'SpecialFilterType' && this.type !== 'DateType') {
       this.deploymentService.getFilterOptionValues(this.filter.name).subscribe({
         next: (options) => {
           this.valOptions.set(options);

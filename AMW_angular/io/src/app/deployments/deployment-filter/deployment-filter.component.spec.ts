@@ -25,11 +25,11 @@ describe('DeploymentFilterComponent', () => {
   it('should create', () => {
     component.filter = {
       name: 'State',
-      type: 'ENUM_TYPE',
       comp: 'eq',
       val: 'failed',
     } as DeploymentFilter;
     component.index = 0;
+    component.type = 'ENUM_TYPE';
     component.compOptions = [{ name: 'eq', displayName: 'is' }];
     expect(component).toBeTruthy();
   });
@@ -37,13 +37,13 @@ describe('DeploymentFilterComponent', () => {
   it('should load options for ENUM_TYPE filters and mark for check', () => {
     const filter: DeploymentFilter = {
       name: 'State',
-      type: 'ENUM_TYPE',
       comp: 'eq',
       val: 'failed',
     } as DeploymentFilter;
 
     component.filter = filter;
     component.index = 0;
+    component.type = 'ENUM_TYPE';
     component.compOptions = [{ name: 'eq', displayName: 'is' }];
 
     const mockOptions = ['success', 'failed', 'canceled'];
@@ -62,13 +62,13 @@ describe('DeploymentFilterComponent', () => {
   it('should set boolean options for booleanType filters and mark for check', () => {
     const filter: DeploymentFilter = {
       name: 'Confirmed',
-      type: 'booleanType',
       comp: 'eq',
       val: 'true',
     } as DeploymentFilter;
 
     component.filter = filter;
     component.index = 0;
+    component.type = 'booleanType';
     component.compOptions = [{ name: 'eq', displayName: 'is' }];
 
     component.ngOnInit();
@@ -79,13 +79,13 @@ describe('DeploymentFilterComponent', () => {
   it('should not load options for SpecialFilterType', () => {
     const filter: DeploymentFilter = {
       name: 'Special',
-      type: 'SpecialFilterType',
       comp: 'eq',
       val: '',
     } as DeploymentFilter;
 
     component.filter = filter;
     component.index = 0;
+    component.type = 'SpecialFilterType';
     component.compOptions = [];
 
     const spy = vi.spyOn(deploymentService, 'getFilterOptionValues');
@@ -99,13 +99,13 @@ describe('DeploymentFilterComponent', () => {
   it('should not load options for DateType filters', () => {
     const filter: DeploymentFilter = {
       name: 'Date',
-      type: 'DateType',
       comp: 'eq',
       val: '',
     } as DeploymentFilter;
 
     component.filter = filter;
     component.index = 0;
+    component.type = 'DateType';
     component.compOptions = [];
 
     const spy = vi.spyOn(deploymentService, 'getFilterOptionValues');
@@ -119,13 +119,13 @@ describe('DeploymentFilterComponent', () => {
   it('should emit remove event', () => {
     const filter: DeploymentFilter = {
       name: 'State',
-      type: 'ENUM_TYPE',
       comp: 'eq',
       val: 'failed',
     } as DeploymentFilter;
 
     component.filter = filter;
     component.index = 0;
+    component.type = 'ENUM_TYPE';
 
     let emittedFilter: DeploymentFilter | undefined;
     component.remove.subscribe((f) => (emittedFilter = f));

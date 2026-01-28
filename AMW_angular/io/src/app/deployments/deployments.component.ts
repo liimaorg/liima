@@ -52,11 +52,6 @@ export class DeploymentsComponent implements OnInit {
   paramFilters: DeploymentFilter[] = [];
   autoload = true;
 
-  // enhanced filters for deployment service
-  filtersForBackend: DeploymentFilter[] = [];
-  // value of filters parameter. Used to pass as json object to the logView.xhtml
-  filtersForParam: DeploymentFilter[] = [];
-
   // valid for all, loaded once
   filterTypes = signal<DeploymentFilterType[]>([]);
   comparatorOptions: ComparatorFilterOption[] = [];
@@ -128,7 +123,6 @@ export class DeploymentsComponent implements OnInit {
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
       newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
-      newFilter.type = this.selectedFilterType.type;
       this.filters.update((filters) => [...filters, newFilter]);
       this.offset = 0;
       this.selectedFilterType = null;
@@ -159,45 +153,22 @@ export class DeploymentsComponent implements OnInit {
   }
 
   applyFilters() {
-    this.filtersForBackend = [];
-    this.filtersForParam = [];
     const filtersToBeRemoved: DeploymentFilter[] = [];
     this.errorMessage = '';
+    // Remove empty filters first
     this.filters().forEach((filter) => {
-      if (filter.val || filter.type === 'SpecialFilterType') {
-        this.filtersForParam.push({
-          name: filter.name,
-          comp: filter.comp,
-          val: filter.val,
-        } as DeploymentFilter);
-        if (filter.type === 'DateType') {
-          if (!filter.val) {
-            this.errorMessage = 'Invalid date';
-          }
-          this.filtersForBackend.push({
-            name: filter.name,
-            comp: filter.comp,
-            val: filter.val.toEpoch().toString(),
-          } as DeploymentFilter);
-        } else {
-          this.filtersForBackend.push({
-            name: filter.name,
-            comp: filter.comp,
-            val: filter.val,
-          } as DeploymentFilter);
-        }
-      } else {
+      const filterType = this.getFilterType(filter.name);
+      if (!filter.val && filterType !== 'SpecialFilterType') {
         filtersToBeRemoved.push(filter);
+      } else if (filterType === 'DateType' && !filter.val) {
+        this.errorMessage = 'Invalid date';
       }
     });
     filtersToBeRemoved.forEach((filter) => this.removeFilter(filter));
 
     if (!this.errorMessage) {
-      this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
-      let filterString: string = null;
-      if (this.filtersForParam.length > 0) {
-        filterString = JSON.stringify(this.filtersForParam);
-      }
+      this.getFilteredDeployments(this.buildBackendFilters());
+      const filterString = this.filters().length > 0 ? JSON.stringify(this.filters()) : null;
       sessionStorage.setItem('deploymentFilters', filterString);
       this.updateFiltersInURL(filterString);
     }
@@ -277,7 +248,7 @@ export class DeploymentsComponent implements OnInit {
   exportCSV() {
     this.isLoading.set(true);
     this.errorMessage = 'Generating your CSV.<br>Please hold on, depending on the requested data this may take a while';
-    this.getFilteredDeploymentsForCsvExport(JSON.stringify(this.filtersForBackend));
+    this.getFilteredDeploymentsForCsvExport(this.buildBackendFilters());
   }
 
   async copyURL() {
@@ -323,10 +294,14 @@ export class DeploymentsComponent implements OnInit {
   autoRefresh() {
     if (this.refreshInterval > 0 && !this.timerSubscription) {
       this.timerSubscription = timer(this.refreshInterval * 1000).subscribe(() => {
-        this.getFilteredDeployments(JSON.stringify(this.filtersForBackend));
+        this.getFilteredDeployments(this.buildBackendFilters());
         this.timerSubscription = null;
       });
     }
+  }
+
+  getFilterType(filterName: string): string | undefined {
+    return this.filterTypes().find(ft => ft.name === filterName)?.type;
   }
 
   private canFilterBeAdded(): boolean {
@@ -383,6 +358,17 @@ export class DeploymentsComponent implements OnInit {
   comparatorOptionsForFilterType(filterType: string) {
     return this.comparatorOptionsForType(filterType);
   }
+
+  private buildBackendFilters(): string {
+    const filters = this.filters()
+      .map(filter => ({
+        name: filter.name,
+        comp: filter.comp,
+        val: this.getFilterType(filter.name) === 'DateType' ? filter.val.toEpoch().toString() : filter.val,
+      } as DeploymentFilter));
+    return JSON.stringify(filters);
+  }
+
 
   private mapStates() {
     if (this.deployments()) {
@@ -480,11 +466,10 @@ export class DeploymentsComponent implements OnInit {
       const enhancedFilters: DeploymentFilter[] = [];
       
       this.paramFilters.forEach((filter) => {
-        const i: number = _.findIndex(this.filterTypes(), ['name', filter.name]);
-        if (i >= 0) {
-          filter.type = this.filterTypes()[i].type;
+        const filterType = this.getFilterType(filter.name);
+        if (filterType) {
           filter.comp = !filter.comp ? this.defaultComparator : filter.comp;
-          this.parseDateTime(filter);
+          this.parseDateTime(filter, filterType);
           enhancedFilters.push(filter);
         } else {
           this.errorMessage = 'Error parsing filter';
@@ -501,8 +486,8 @@ export class DeploymentsComponent implements OnInit {
   }
 
   // parse string from json back to DateTimeModel
-  private parseDateTime(filter: DeploymentFilter) {
-    if (filter.type === 'DateType') {
+  private parseDateTime(filter: DeploymentFilter, filterType: string) {
+    if (filterType === 'DateType') {
       filter.val = DateTimeModel.fromLocalString(filter.val);
     }
   }

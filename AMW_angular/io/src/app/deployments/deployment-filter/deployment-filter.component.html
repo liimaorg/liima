@@ -2,10 +2,10 @@
   <div class="col-sm-4 offset-1">
     <input class="form-control" disabled type="text" [value]="filter.name" />
   </div>
-  @if (filter.type === 'SpecialFilterType') {
+  @if (type === 'SpecialFilterType') {
     <div class="col-sm-6"></div>
   }
-  @if (filter.type !== 'SpecialFilterType') {
+  @if (type !== 'SpecialFilterType') {
     <div class="col-sm-2">
       <select
         id="selectFilterComp"
@@ -20,8 +20,8 @@
         }
       </select>
     </div>
-    @if (filter.type !== 'DateType') {
-      @if (filter.type !== 'booleanType' && filter.type !== 'ENUM_TYPE') {
+    @if (type !== 'DateType') {
+      @if (type !== 'booleanType' && type !== 'ENUM_TYPE') {
         <div class="col-sm-4">
           <input class="form-control" [attr.list]="'list' + index" type="text" [(ngModel)]="filter.val" />
           <datalist [attr.id]="'list' + index">
@@ -31,7 +31,7 @@
           </datalist>
         </div>
       }
-      @if (filter.type === 'booleanType' || filter.type === 'ENUM_TYPE') {
+      @if (type === 'booleanType' || type === 'ENUM_TYPE') {
         <div class="col-sm-4">
           <select class="form-control" [(ngModel)]="filter.val">
             @for (filterValueOption of valOptions(); track filterValueOption) {
@@ -41,7 +41,7 @@
         </div>
       }
     }
-    @if (filter.type === 'DateType') {
+    @if (type === 'DateType') {
       <div class="col-sm-4">
         <div class="input-group date">
           <app-date-time-picker
