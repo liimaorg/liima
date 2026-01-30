@@ -3,7 +3,20 @@
   [title]="'Functions'"
   [actionName]="'New Function'"
   [canAction]="permissions().canAdd"
-  [lists]="functionsData()"
   (tileAction)="add()"
-  (listAction)="doListAction($event)"
-></app-tile-component>
+  [noContent]="!functionsData()"
+  [notAllowed]="!!functionsData() && functionsData().length <= 0"
+>
+  @for (list of functionsData(); track list) {
+    <app-tile-list
+      [title]="list.title"
+      [data]="list.entries"
+      [canEdit]="list.canEdit"
+      [canDelete]="list.canDelete"
+      [canOverwrite]="list.canOverwrite"
+      (edit)="doListAction($event)"
+      (delete)="doListAction($event)"
+      (overwrite)="doListAction($event)"
+    ></app-tile-list>
+  }
+</app-tile-component>

@@ -32,7 +32,8 @@ describe('TileComponent', () => {
     componentRef.setInput('title', 'my title');
     componentRef.setInput('actionName', 'myAction');
     componentRef.setInput('canAction', true);
-    componentRef.setInput('lists', tileData);
+    componentRef.setInput('noContent', false);
+    componentRef.setInput('notAllowed', false);
     fixture.detectChanges();
   });
 

@@ -6,11 +6,13 @@ import { PropertyFieldComponent } from '../../property-field/property-field.comp
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourcePropertiesService } from '../../services/resource-properties.service';
+import { TileComponent } from '../../../shared/tile/tile.component';
+import { TileListComponent } from '../../../shared/tile/tile-list/tile-list.component';
 
 @Component({
   selector: 'app-resource-properties',
   standalone: true,
-  imports: [PropertyFieldComponent, ButtonComponent, LoadingIndicatorComponent],
+  imports: [PropertyFieldComponent, ButtonComponent, LoadingIndicatorComponent, TileComponent, TileListComponent],
   templateUrl: './resource-properties.component.html',
   styleUrl: './resource-properties.component.scss',
 })
@@ -111,6 +113,10 @@ export class ResourcePropertiesComponent {
     this.changedProperties.set(new Map());
     this.errorMessage.set(null);
     this.successMessage.set(null);
+  }
+
+  addProperty() {
+    //TODO implement
   }
 
   saveChanges() {
