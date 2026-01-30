@@ -1,12 +1,11 @@
 import { Component, input, signal, computed, inject, effect, Signal } from '@angular/core';
-import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
-import { ResourceService } from '../../services/resource.service';
 import { PropertyFieldComponent } from '../../property-field/property-field.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceTypesService } from '../../services/resource-types.service';
 import { ResourceType } from '../../models/resource-type';
+import { ResourcePropertiesService } from '../../services/resource-properties.service';
 
 @Component({
   selector: 'app-resource-type-properties',
@@ -19,6 +18,7 @@ export class ResourceTypePropertiesComponent {
   contextId = input.required<number>();
 
   private resourceTypeService = inject(ResourceTypesService);
+  private propertiesService = inject(ResourcePropertiesService);
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
@@ -27,13 +27,13 @@ export class ResourceTypePropertiesComponent {
 
   private changedProperties = signal<Map<string, string>>(new Map());
 
-  properties = this.resourceTypeService.properties;
+  properties = this.propertiesService.properties;
 
   isLoading = computed(() => {
     const ctxId = this.contextId();
 
     if (this.resourceType()?.id && ctxId) {
-      this.resourceTypeService.setContextForProperties(this.resourceType().id, ctxId);
+      this.propertiesService.setIdsForResourceTypeProperties(this.resourceType().id, ctxId);
       return false;
     }
     return false;
@@ -58,7 +58,6 @@ export class ResourceTypePropertiesComponent {
 
   constructor() {
     effect(() => {
-      const ctxId = this.contextId();
       this.changedProperties.set(new Map());
       this.errorMessage.set(null);
     });
@@ -113,12 +112,12 @@ export class ResourceTypePropertiesComponent {
       } as Property;
     });
 
-    // this.resourceTypeService.bulkUpdateProperties(res.id, updatedProperties, ctxId).subscribe({
+    // this.propertiesService.bulkUpdateResourceTypeProperties(res.id, updatedProperties, ctxId).subscribe({
     //   next: () => {
     //     this.isSaving.set(false);
     //     this.successMessage.set('Properties saved successfully');
     //     this.changedProperties.set(new Map());
-    //     this.resourceTypeService.setContextForProperties(res.id, ctxId);
+    //     this.propertiesService.setIdsForResourceTypeProperties(res.id, ctxId);
     //     setTimeout(() => this.successMessage.set(null), 3000);
     //   },
     //   error: (error) => {
