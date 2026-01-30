@@ -21,9 +21,7 @@
               "base": "dist"
             },
             "index": "src/index.html",
-            "polyfills": [
-              "@angular/localize/init"
-            ],
+            "polyfills": ["@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -34,10 +32,7 @@
                 "output": "/"
               }
             ],
-            "styles": [
-              "src/styles.scss",
-              "./node_modules/bootstrap-icons/font/bootstrap-icons.scss"
-            ],
+            "styles": ["src/styles.scss", "./node_modules/bootstrap-icons/font/bootstrap-icons.scss"],
             "scripts": [],
             "extractLicenses": false,
             "sourceMap": true,
@@ -102,10 +97,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }
@@ -113,9 +105,7 @@
   },
   "cli": {
     "analytics": false,
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ]
+    "schematicCollections": ["@angular-eslint/schematics"]
   },
   "schematics": {
     "@schematics/angular:component": {

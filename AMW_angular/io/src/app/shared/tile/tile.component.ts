@@ -9,7 +9,13 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
   selector: 'app-tile-component',
   template: `
     <div class="tile rounded">
-      <div class="tile-header" (click)="toggleBody()" [ngClass]="showBody() ? 'opened' : 'closed'">
+      <div
+        tabindex="0"
+        class="tile-header"
+        (keyup.enter)="toggleBody()"
+        (click)="toggleBody()"
+        [ngClass]="showBody() ? 'opened' : 'closed'"
+      >
         <div class="tile-title">
           @if (showBody()) {
             <app-icon icon="caret-down"></app-icon>
@@ -82,7 +88,7 @@ export class TileComponent {
     this.showBody.set(!this.showBody());
   }
 
-  doTileAction(event: any) {
+  doTileAction(event: PointerEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.tileAction.emit();

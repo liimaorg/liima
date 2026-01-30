@@ -83,7 +83,7 @@ describe('DateTimePickerComponent', () => {
           year: 2025,
           month: 12,
           day: 31,
-        })
+        }),
       );
 
       component.writeValue(null);
@@ -121,7 +121,7 @@ describe('DateTimePickerComponent', () => {
           day: 1,
           hour: 10,
           minute: 30,
-        })
+        }),
       );
 
       component.onDateChange({ year: 2025, month: 12, day: 25 });
@@ -152,7 +152,7 @@ describe('DateTimePickerComponent', () => {
           day: 25,
           hour: 10,
           minute: 30,
-        })
+        }),
       );
 
       component.onTimeChange({ hour: 23, minute: 59, second: 0 });

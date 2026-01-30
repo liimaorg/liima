@@ -77,7 +77,7 @@ describe('DatePickerComponent', () => {
           year: 2025,
           month: 12,
           day: 31,
-        })
+        }),
       );
 
       component.writeValue(null);
@@ -110,7 +110,7 @@ describe('DatePickerComponent', () => {
           year: 2025,
           month: 1,
           day: 1,
-        })
+        }),
       );
 
       component.onDateChange({ year: 2025, month: 12, day: 25 });
@@ -160,7 +160,7 @@ describe('DatePickerComponent', () => {
           year: 2025,
           month: 12,
           day: 31,
-        })
+        }),
       );
 
       const onChange = vi.spyOn(component, 'onChange');

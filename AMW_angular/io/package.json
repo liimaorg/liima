@@ -14,7 +14,6 @@
     "prettier": "npx prettier --write .",
     "mavenbuild": "ng build --configuration production",
     "maventest": "ng test --watch=false",
-    "postinstall": "husky || true",
     "prepare": "husky"
   },
   "private": true,
