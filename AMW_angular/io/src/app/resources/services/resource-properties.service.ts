@@ -5,7 +5,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, startWith, Subject } from 'rxjs';
 import { Property } from '../models/property';
 import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
-import { PropertyDiff } from '../models/property-diff';
 
 export interface PropertyUpdate {
   name: string;
