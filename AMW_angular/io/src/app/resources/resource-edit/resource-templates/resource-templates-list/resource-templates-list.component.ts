@@ -9,7 +9,7 @@ import { ResourceTemplate } from 'src/app/resources/models/resource-template';
 import { ResourceTemplatesService } from 'src/app/resources/services/resource-templates.service';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
 import { ToastService } from 'src/app/shared/elements/toast/toast.service';
-import { EntryAction, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { EntryAction, TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { TileComponent } from 'src/app/shared/tile/tile.component';
 import { ResourceTemplateEditComponent } from '../resource-template-edit/resource-template-edit.component';
 import { ResourceTemplateDeleteComponent } from '../resource-template-delete/resource-template-delete.component';
@@ -20,7 +20,7 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 @Component({
   selector: 'app-resource-templates-list',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent],
+  imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
   templateUrl: './resource-templates-list.component.html',
 })
 export class ResourceTemplatesListComponent implements OnDestroy {

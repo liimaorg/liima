@@ -3,7 +3,19 @@
   [title]="'Templates'"
   [actionName]="'New Template'"
   [canAction]="permissions().canAdd"
-  [lists]="templatesData()"
   (tileAction)="addTemplate()"
-  (listAction)="doListAction($event)"
-></app-tile-component>
+  [noContent]="!templatesData()"
+  [notAllowed]="!!templatesData() && templatesData().length <= 0"
+>
+  @for (list of templatesData(); track list) {
+    <app-tile-list
+      [title]="list.title"
+      [data]="list.entries"
+      [canEdit]="list.canEdit"
+      [canDelete]="list.canDelete"
+      (edit)="doListAction($event)"
+      (delete)="doListAction($event)"
+      (overwrite)="doListAction($event)"
+    ></app-tile-list>
+  }
+</app-tile-component>
