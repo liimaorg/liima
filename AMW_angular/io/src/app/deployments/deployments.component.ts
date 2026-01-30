@@ -301,7 +301,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   getFilterType(filterName: string): string | undefined {
-    return this.filterTypes().find(ft => ft.name === filterName)?.type;
+    return this.filterTypes().find((ft) => ft.name === filterName)?.type;
   }
 
   private canFilterBeAdded(): boolean {
@@ -360,15 +360,16 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private buildBackendFilters(): string {
-    const filters = this.filters()
-      .map(filter => ({
-        name: filter.name,
-        comp: filter.comp,
-        val: this.getFilterType(filter.name) === 'DateType' ? filter.val.toEpoch().toString() : filter.val,
-      } as DeploymentFilter));
+    const filters = this.filters().map(
+      (filter) =>
+        ({
+          name: filter.name,
+          comp: filter.comp,
+          val: this.getFilterType(filter.name) === 'DateType' ? filter.val.toEpoch().toString() : filter.val,
+        }) as DeploymentFilter,
+    );
     return JSON.stringify(filters);
   }
-
 
   private mapStates() {
     if (this.deployments()) {
@@ -464,7 +465,7 @@ export class DeploymentsComponent implements OnInit {
     if (this.paramFilters && this.paramFilters.length > 0) {
       this.clearFilters();
       const enhancedFilters: DeploymentFilter[] = [];
-      
+
       this.paramFilters.forEach((filter) => {
         const filterType = this.getFilterType(filter.name);
         if (filterType) {
@@ -475,7 +476,7 @@ export class DeploymentsComponent implements OnInit {
           this.errorMessage = 'Error parsing filter';
         }
       });
-      
+
       this.filters.set(enhancedFilters);
       if (this.autoload) {
         this.applyFilters();

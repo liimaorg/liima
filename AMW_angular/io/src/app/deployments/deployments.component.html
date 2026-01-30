@@ -30,12 +30,13 @@
 
         @if (filters().length > 0) {
           @for (filter of filters(); track $index; let i = $index) {
-            <app-deployment-filter 
-              [filter]="filter" 
-              [index]="i" 
+            <app-deployment-filter
+              [filter]="filter"
+              [index]="i"
               [type]="getFilterType(filter.name) || ''"
               [compOptions]="comparatorOptionsForFilterType(getFilterType(filter.name) || '')"
-              (remove)="removeFilter($event)">
+              (remove)="removeFilter($event)"
+            >
             </app-deployment-filter>
           }
         }

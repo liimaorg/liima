@@ -132,7 +132,7 @@ describe('DeploymentsComponent (with query params)', () => {
     // given
     const stateFilter = JSON.stringify([{ name: 'State', comp: 'eq', val: 'failed' }]);
     const deploymentFilters: DeploymentFilterType[] = [{ name: 'State', type: 'ENUM_TYPE' }];
-    
+
     vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
     vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
     vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
@@ -145,7 +145,7 @@ describe('DeploymentsComponent (with query params)', () => {
     // then
     expect(component.filters().length).toBe(1);
     const filterResult = component.filters()[0];
-    
+
     // The filter value should be preserved as 'failed' immediately
     expect(filterResult.val).toEqual('failed');
     // Filter should have the correct type in filterTypes
