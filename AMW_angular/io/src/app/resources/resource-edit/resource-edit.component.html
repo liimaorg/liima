@@ -10,7 +10,13 @@
       <ul ngbDropdownMenu>
         @for (release of releases(); track release) {
           <li ngbDropdownItem>
-            <a class="dropdown-item" tabindex="0" (click)="loadResourceFromRelease(release.id)">{{ release.name }}</a>
+            <a
+              class="dropdown-item"
+              tabindex="0"
+              (keyup.enter)="loadResourceFromRelease(release.id)"
+              (click)="loadResourceFromRelease(release.id)"
+              >{{ release.name }}</a
+            >
           </li>
         }
       </ul>

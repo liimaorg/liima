@@ -32,11 +32,10 @@ export class ContextsListComponent {
       return {
         canView: this.authService.hasPermission('ENV_PANEL_LIST', 'ALL'),
       };
-    } else {
-      return {
-        canView: false,
-      };
     }
+    return {
+      canView: false,
+    };
   });
 
   protected setContext(domain: EnvironmentTree) {

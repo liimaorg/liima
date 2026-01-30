@@ -59,14 +59,8 @@ export class EnvironmentService extends BaseService {
       .filter((environment) => environment.parentName === parentName)
       .map((environment) => {
         return {
-          id: environment.id,
-          name: environment.name,
-          nameAlias: environment.nameAlias,
-          parentName: environment.parentName,
-          parentId: environment.parentId,
+          ...environment,
           children: this.buildEnvironmentTree(environments, environment.name),
-          selected: environment.selected,
-          disabled: environment.disabled,
         };
       });
   }
