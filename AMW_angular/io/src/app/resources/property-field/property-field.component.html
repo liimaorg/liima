@@ -1,0 +1,46 @@
+<div class="property-field">
+  <label [for]="fieldId()" class="property-label">
+    @if (isEditable()) {
+      <a [href]="propertyEditLink()" class="property-name-link">
+        {{ displayLabel() }}
+      </a>
+    } @else {
+      {{ displayLabel() }}
+    }
+    @if (!property().nullable && !property().optional) {
+      <span class="required">*</span>
+    }
+  </label>
+
+  @if (property().encrypted) {
+    <input
+      [id]="fieldId()"
+      type="password"
+      class="property-input"
+      [class.error]="hasError()"
+      [(ngModel)]="localValue"
+      (blur)="onBlur()"
+      [placeholder]="property().exampleValue || ''"
+      [disabled]="property().disabled || false"
+    />
+  } @else {
+    <input
+      [id]="fieldId()"
+      type="text"
+      class="property-input"
+      [class.error]="hasError()"
+      [(ngModel)]="localValue"
+      (blur)="onBlur()"
+      [placeholder]="property().exampleValue || ''"
+      [disabled]="property().disabled || false"
+    />
+  }
+
+  @if (validationError()) {
+    <div class="validation-error">{{ validationError() }}</div>
+  }
+
+  @if (property().defaultValue && !localValue) {
+    <div class="default-value-hint">Default: {{ property().defaultValue }}</div>
+  }
+</div>

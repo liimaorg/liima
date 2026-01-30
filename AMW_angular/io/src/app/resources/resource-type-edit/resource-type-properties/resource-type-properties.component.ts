@@ -5,49 +5,45 @@ import { ResourceService } from '../../services/resource.service';
 import { PropertyFieldComponent } from '../../property-field/property-field.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
+import { ResourceTypesService } from '../../services/resource-types.service';
+import { ResourceType } from '../../models/resource-type';
 
 @Component({
-  selector: 'app-resource-properties',
+  selector: 'app-resource-type-properties',
   standalone: true,
   imports: [PropertyFieldComponent, ButtonComponent, LoadingIndicatorComponent],
-  templateUrl: './resource-properties.component.html',
-  styleUrl: './resource-properties.component.scss',
+  templateUrl: './resource-type-properties.component.html',
+  styleUrl: './resource-type-properties.component.scss',
 })
-export class ResourcePropertiesComponent {
+export class ResourceTypePropertiesComponent {
   contextId = input.required<number>();
 
-  private resourceService = inject(ResourceService);
+  private resourceTypeService = inject(ResourceTypesService);
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
-  resource: Signal<Resource> = this.resourceService.resource;
-
-  // TODO
-  // add property button with check hasAddPropertyPermission
-  // Add new ${editResourceView.editResource ? 'instance' : 'resource type'
-
-  // TODO make table component seperate reuse for releated resources
-  // securityDataProvider.hasPermission('RESOURCE','READ')}
+  resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   private changedProperties = signal<Map<string, string>>(new Map());
 
-  properties = this.resourceService.properties;
+  properties = this.resourceTypeService.properties;
 
   isLoading = computed(() => {
     const ctxId = this.contextId();
-    if (this.resource()?.id && ctxId) {
-      this.resourceService.setContextForProperties(this.resource().id, ctxId);
+
+    if (this.resourceType()?.id && ctxId) {
+      this.resourceTypeService.setContextForProperties(this.resourceType().id, ctxId);
       return false;
     }
     return false;
   });
 
-  // Special property for resource/resource type name (only shown in Global context)
-  appNameProperty = computed<Property>(() => ({
-    name: 'resourceName',
-    displayName: `${this.resource()?.type || 'Resource'} name`,
-    value: this.resource()?.name || '',
+  // Special property for resource type name (only shown in Global context)
+  resourceTypeNameProperty = computed<Property>(() => ({
+    name: 'resourceTypeName',
+    displayName: 'Resource Type name',
+    value: this.resourceType()?.name || '',
     replacedValue: '',
     generalComment: '',
     valueComment: '',
@@ -56,21 +52,7 @@ export class ResourcePropertiesComponent {
     optional: false,
   }));
 
-  // Special property for Out Of Service (only shown for applications, always disabled)
-  outOfServiceProperty = computed<Property>(() => ({
-    name: 'outOfService',
-    displayName: 'Out Of Service',
-    value: '', // TODO: Get from resource.resourceGroup.outOfServiceRelease.name when available
-    replacedValue: '',
-    generalComment: '',
-    valueComment: '',
-    context: 'Global',
-    nullable: true,
-    optional: true,
-    disabled: true,
-  }));
-
-  showAppNameProperty = computed(() => {
+  showResourceTypeNameProperty = computed(() => {
     return this.contextId() === 1;
   });
 
@@ -81,9 +63,6 @@ export class ResourcePropertiesComponent {
       this.errorMessage.set(null);
     });
   }
-
-  // isDefinedOnInstanceOrType is only relevant for rendering editable properties
-  // so there is no difference in propertytypes only for rendering the table component (releatedResourceProperties)
 
   hasChanges = computed(() => this.changedProperties().size > 0);
 
@@ -113,7 +92,7 @@ export class ResourcePropertiesComponent {
   }
 
   saveChanges() {
-    const res = this.resource();
+    const res = this.resourceType();
     const ctxId = this.contextId();
     if (!res?.id) return;
 
@@ -134,18 +113,18 @@ export class ResourcePropertiesComponent {
       } as Property;
     });
 
-    this.resourceService.bulkUpdateProperties(res.id, updatedProperties, ctxId).subscribe({
-      next: () => {
-        this.isSaving.set(false);
-        this.successMessage.set('Properties saved successfully');
-        this.changedProperties.set(new Map());
-        this.resourceService.setContextForProperties(res.id, ctxId);
-        setTimeout(() => this.successMessage.set(null), 3000);
-      },
-      error: (error) => {
-        this.isSaving.set(false);
-        this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
-      },
-    });
+    // this.resourceTypeService.bulkUpdateProperties(res.id, updatedProperties, ctxId).subscribe({
+    //   next: () => {
+    //     this.isSaving.set(false);
+    //     this.successMessage.set('Properties saved successfully');
+    //     this.changedProperties.set(new Map());
+    //     this.resourceTypeService.setContextForProperties(res.id, ctxId);
+    //     setTimeout(() => this.successMessage.set(null), 3000);
+    //   },
+    //   error: (error) => {
+    //     this.isSaving.set(false);
+    //     this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
+    //   },
+    // });
   }
 }
