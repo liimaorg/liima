@@ -120,7 +120,9 @@ describe('PermissionService', () => {
     });
 
     const postReq = httpTestingController.expectOne((req) => {
-      return req.method === 'POST' && req.urlWithParams === '/AMW_rest/resources/permissions/restrictions/?delegation=false';
+      return (
+        req.method === 'POST' && req.urlWithParams === '/AMW_rest/resources/permissions/restrictions/?delegation=false'
+      );
     });
 
     postReq.flush(created, {

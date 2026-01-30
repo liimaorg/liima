@@ -11,11 +11,7 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
-    "lib": [
-      "es2022",
-      "dom",
-      "esnext.disposable"
-    ],
+    "lib": ["es2022", "dom", "esnext.disposable"],
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {
