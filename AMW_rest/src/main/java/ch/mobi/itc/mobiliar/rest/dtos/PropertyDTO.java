@@ -47,7 +47,7 @@ public class PropertyDTO {
     private Boolean optional;
     private String defaultValue;
     private String exampleValue;
-    private Boolean definedOnInstance;
+    private String propertyDescriptorOrigin;
     private Integer descriptorId;
 
     public PropertyDTO(ResourceEditProperty property, String context){
@@ -63,7 +63,7 @@ public class PropertyDTO {
         this.optional = property.isOptional();
         this.defaultValue = property.getDefaultValue();
         this.exampleValue = property.getExampleValue();
-        this.definedOnInstance = property.isDefinedOnInstance();
+        this.propertyDescriptorOrigin = property.getPropertyDescriptorOrigin() != null ? property.getPropertyDescriptorOrigin().name() : null;
         this.descriptorId = property.getDescriptorId();
     }
 }

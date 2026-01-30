@@ -10,6 +10,7 @@ import { ResourceTypesService } from '../services/resource-types.service';
 import { ResourceTypeFunctionsListComponent } from './resource-type-functions/resource-type-functions-list.component';
 import { ResourceTypeTemplatesListComponent } from './resource-type-templates/resource-type-templates-list.component';
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
+import { ResourceTypePropertiesComponent } from './resource-type-properties/resource-type-properties.component';
 
 @Component({
   selector: 'app-resource-type-edit',
@@ -20,6 +21,7 @@ import { ContextsListComponent } from '../contexts-list/contexts-list.component'
     ResourceTypeFunctionsListComponent,
     ResourceTypeTemplatesListComponent,
     ContextsListComponent,
+    ResourceTypePropertiesComponent,
   ],
   templateUrl: './resource-type-edit.component.html',
 })

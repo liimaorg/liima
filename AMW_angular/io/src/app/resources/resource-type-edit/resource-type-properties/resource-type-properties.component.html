@@ -1,0 +1,47 @@
+<div class="resource-type-properties-container">
+  <div class="properties-header">
+    <h3>Resource Type Properties</h3>
+    @if (hasChanges()) {
+      <div class="action-buttons">
+        <app-button [variant]="'secondary'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>
+        <app-button [variant]="'primary'" [size]="'sm'" (click)="saveChanges()" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+        </app-button>
+      </div>
+    }
+  </div>
+
+  <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+
+  @if (errorMessage()) {
+    <div class="error-banner">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="success-banner">{{ successMessage() }}</div>
+  }
+
+  @if (!isLoading()) {
+    <div class="properties-section">
+      <div class="properties-list">
+        @if (showResourceTypeNameProperty()) {
+          <app-property-field
+            [property]="resourceTypeNameProperty()"
+            (valueChange)="onPropertyChange(resourceTypeNameProperty().name, $event)"
+          ></app-property-field>
+        }
+
+        @for (property of properties(); track property.name) {
+          <app-property-field
+            [property]="property"
+            (valueChange)="onPropertyChange(property.name, $event)"
+          ></app-property-field>
+        }
+      </div>
+    </div>
+  }
+
+  @if (!isLoading() && properties().length === 0) {
+    <div class="no-properties">No properties defined for this resource type</div>
+  }
+</div>

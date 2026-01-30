@@ -21,6 +21,10 @@ export class ResourceService extends BaseService {
 
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
   private resourceId$: Subject<number> = new Subject<number>();
+  private propertiesContext$: Subject<{ resourceId: number; contextId: number }> = new Subject<{
+    resourceId: number;
+    contextId: number;
+  }>();
 
   private resourceGroupListForType$: Observable<Resource[]> = this.resourceType$.pipe(
     switchMap((resourceType: ResourceType) => {
@@ -42,11 +46,20 @@ export class ResourceService extends BaseService {
     shareReplay(1),
   );
 
+  private propertiesForResource$: Observable<Property[]> = this.propertiesContext$.pipe(
+    switchMap(({ resourceId, contextId }) => {
+      return this.getProperties(resourceId, contextId);
+    }),
+    startWith([]),
+    shareReplay(1),
+  );
+
   resourceGroupListForType = toSignal(this.resourceGroupListForType$, { initialValue: [] as Resource[] });
   releasesForResourceGroup = toSignal(this.releasesForResourceGroupByResourceId$, {
     initialValue: [] as Release[],
   });
   resource = toSignal(this.resourceById$, { initialValue: null });
+  properties = toSignal(this.propertiesForResource$, { initialValue: [] as Property[] });
 
   setTypeForResourceGroupList(resourcesType: ResourceType) {
     this.resourceType$.next(resourcesType);
@@ -54,6 +67,10 @@ export class ResourceService extends BaseService {
 
   setIdForResource(id: number) {
     this.resourceId$.next(id);
+  }
+
+  setContextForProperties(resourceId: number, contextId: number) {
+    this.propertiesContext$.next({ resourceId, contextId });
   }
 
   getAll(): Observable<Resource[]> {
@@ -173,7 +190,7 @@ export class ResourceService extends BaseService {
   getProperties(resourceId: number, contextId: number = 1): Observable<Property[]> {
     const params = new HttpParams().set('contextId', contextId.toString());
     return this.http
-      .get<Property[]>(`${this.getBaseUrl()}/resources/${resourceId}/properties`, {
+      .get<Property[]>(`${this.getBaseUrl()}/resources/resource/${resourceId}/properties`, {
         params,
         headers: this.getHeaders(),
       })
@@ -183,7 +200,7 @@ export class ResourceService extends BaseService {
   bulkUpdateProperties(resourceId: number, properties: Property[], contextId: number = 1): Observable<void> {
     const params = new HttpParams().set('contextId', contextId.toString());
     return this.http
-      .put<void>(`${this.getBaseUrl()}/resources/${resourceId}/properties`, properties, {
+      .put<void>(`${this.getBaseUrl()}/resources/resource/${resourceId}/properties`, properties, {
         params,
         headers: this.getHeaders(),
       })

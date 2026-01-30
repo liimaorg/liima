@@ -1,3 +1,5 @@
+export type PropertyDescriptorOrigin = 'INSTANCE' | 'RELATION' | 'TYPE' | 'TYPE_REL';
+
 export interface Property {
   name: string;
   value: string;
@@ -12,6 +14,7 @@ export interface Property {
   optional?: boolean;
   defaultValue?: string;
   exampleValue?: string;
-  definedOnInstance?: boolean;
+  propertyDescriptorOrigin?: PropertyDescriptorOrigin;
   descriptorId?: number;
+  disabled?: boolean;
 }

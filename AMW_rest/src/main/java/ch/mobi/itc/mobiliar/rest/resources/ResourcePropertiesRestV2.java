@@ -25,8 +25,10 @@ import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,28 +43,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequestScoped
-@Path("/resources/{resourceId}/properties")
-@Tag(name = "/resources/{resourceId}/properties", description = "Resource properties (ID-based API)")
+@Path("/resources")
+@Tag(name = "/resources/properties", description = "Resource properties (ID-based API)")
 public class ResourcePropertiesRestV2 {
-
-    @PathParam("resourceId")
-    Integer resourceId;
 
     @Inject
     PropertyEditor propertyEditor;
 
     @Inject
-    ResourceLocator resourceLocator;
+    private ResourceBoundary resourceBoundary;
 
     @Inject
     ContextLocator contextLocator;
 
     @GET
+    @Path("/resource/{id : \\d+}/properties")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get all properties for a resource by resource ID and context ID")
+    @Operation(summary = "Get all properties for a resource")
     public Response getResourceProperties(
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) 
-            throws ValidationException {
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) throws
+            ValidationException, NotFoundException {
         
         List<PropertyDTO> resourceProperties = getResourcePropertiesById(resourceId, contextId);
         if (resourceProperties.isEmpty()) {
@@ -71,8 +72,8 @@ public class ResourcePropertiesRestV2 {
         return Response.ok(resourceProperties).build();
     }
 
-    List<PropertyDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws ValidationException {
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+    List<PropertyDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws ValidationException, NotFoundException {
+        ResourceEntity resource = resourceBoundary.getResource(resourceId);
         List<PropertyDTO> result = new ArrayList<>();
         
         if (resource != null) {
@@ -92,16 +93,54 @@ public class ResourcePropertiesRestV2 {
         return result;
     }
 
-    @Path("/{propertyName}")
+    @GET
+    @Path("/resourceType/{id : \\d+}/properties")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get all properties for a resource type")
+    public Response getResourceTypeProperties(
+            @Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId,
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) throws
+            ValidationException, NotFoundException {
+
+        List<PropertyDTO> resourceProperties = getResourceTypePropertiesById(resourceTypeId, contextId);
+        if (resourceProperties.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(resourceProperties).build();
+    }
+
+    List<PropertyDTO> getResourceTypePropertiesById(Integer resourceTypeId, Integer contextId) throws ValidationException, NotFoundException {
+        ResourceTypeEntity resourceType = resourceBoundary.getResourceType(resourceTypeId);
+        List<PropertyDTO> result = new ArrayList<>();
+
+        if (resourceType != null) {
+            ContextEntity context = contextLocator.getContextById(contextId);
+            if (context == null) {
+                throw new ValidationException("Context with ID " + contextId + " not found");
+            }
+
+            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResourceType(
+                    resourceType.getId(),
+                    context.getId());
+
+            for (ResourceEditProperty property : properties) {
+                result.add(new PropertyDTO(property, context.getName()));
+            }
+        }
+        return result;
+    }
+
+    @Path("/resource/{id : \\d+}/properties/{propertyName}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get a specific property by name for a resource")
     public Response getResourceProperty(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @PathParam("propertyName") String propertyName,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) 
-            throws ValidationException {
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws ValidationException, NotFoundException {
         
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        ResourceEntity resource = resourceBoundary.getResource(resourceId);
         if (resource != null) {
             ContextEntity context = contextLocator.getContextById(contextId);
             if (context == null) {
@@ -121,18 +160,19 @@ public class ResourcePropertiesRestV2 {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    @Path("/{propertyName}")
+    @Path("/resource/{id : \\d+}/properties/{propertyName}")
     @PUT
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Update a single property value by resource ID and context ID")
     public Response updateResourceProperty(
-            @Parameter(description = "New property value") String value,
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @PathParam("propertyName") String propertyName,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) 
-            throws ValidationException {
+            @Parameter(description = "New property value") String value,
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws ValidationException, NotFoundException {
         
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        ResourceEntity resource = resourceBoundary.getResource(resourceId);
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Resource not found").build();
         }
@@ -152,16 +192,17 @@ public class ResourcePropertiesRestV2 {
         return Response.status(Response.Status.OK).build();
     }
 
-    @Path("/{propertyName}")
+    @Path("/resource/{id : \\d+}/properties/{propertyName}")
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Reset a property value to null")
     public Response resetResourceProperty(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @PathParam("propertyName") String propertyName,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) 
-            throws ValidationException {
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws ValidationException, NotFoundException {
         
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        ResourceEntity resource = resourceBoundary.getResource(resourceId);
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Resource not found").build();
         }
@@ -181,13 +222,15 @@ public class ResourcePropertiesRestV2 {
     }
 
     @PUT
+    @Path("/resource/{id : \\d+}/properties")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Bulk update multiple property values using resource ID and context ID")
     public Response bulkUpdateResourceProperties(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             List<PropertyDTO> properties,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) 
-            throws ValidationException {
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws ValidationException, NotFoundException {
         
         if (properties == null || properties.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -195,7 +238,7 @@ public class ResourcePropertiesRestV2 {
                     .build();
         }
         
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        ResourceEntity resource = resourceBoundary.getResource(resourceId);
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("Resource not found")
