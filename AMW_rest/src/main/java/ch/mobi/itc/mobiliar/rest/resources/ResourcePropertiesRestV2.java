@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequestScoped
-@Path("/resources")
+@Path("/resourcesV2")
 @Tag(name = "/resources/properties", description = "Resource properties (ID-based API)")
 public class ResourcePropertiesRestV2 {
 

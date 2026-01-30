@@ -5,6 +5,7 @@ import { ResourceService } from '../../services/resource.service';
 import { PropertyFieldComponent } from '../../property-field/property-field.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
+import { ResourcePropertiesService } from '../../services/resource-properties.service';
 
 @Component({
   selector: 'app-resource-properties',
@@ -17,6 +18,7 @@ export class ResourcePropertiesComponent {
   contextId = input.required<number>();
 
   private resourceService = inject(ResourceService);
+  private propertiesService = inject(ResourcePropertiesService);
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
@@ -32,12 +34,12 @@ export class ResourcePropertiesComponent {
 
   private changedProperties = signal<Map<string, string>>(new Map());
 
-  properties = this.resourceService.properties;
+  properties = this.propertiesService.properties;
 
   isLoading = computed(() => {
     const ctxId = this.contextId();
     if (this.resource()?.id && ctxId) {
-      this.resourceService.setContextForProperties(this.resource().id, ctxId);
+      this.propertiesService.setIdsForResourceProperties(this.resource().id, ctxId);
       return false;
     }
     return false;
@@ -76,7 +78,6 @@ export class ResourcePropertiesComponent {
 
   constructor() {
     effect(() => {
-      const ctxId = this.contextId();
       this.changedProperties.set(new Map());
       this.errorMessage.set(null);
     });
@@ -134,12 +135,12 @@ export class ResourcePropertiesComponent {
       } as Property;
     });
 
-    this.resourceService.bulkUpdateProperties(res.id, updatedProperties, ctxId).subscribe({
+    this.propertiesService.bulkUpdateResourceProperties(res.id, updatedProperties, ctxId).subscribe({
       next: () => {
         this.isSaving.set(false);
         this.successMessage.set('Properties saved successfully');
         this.changedProperties.set(new Map());
-        this.resourceService.setContextForProperties(res.id, ctxId);
+        this.propertiesService.setIdsForResourceProperties(res.id, ctxId);
         setTimeout(() => this.successMessage.set(null), 3000);
       },
       error: (error) => {
