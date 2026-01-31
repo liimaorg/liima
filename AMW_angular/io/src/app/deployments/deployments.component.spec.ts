@@ -9,6 +9,7 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { DeploymentsListComponent } from './deployments-list.component';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DeploymentFilterType } from '../deployment/deployment-filter-type';
+import { FilterType } from '../deployment/filter-type.enum';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { Deployment } from '../deployment/deployment';
@@ -123,9 +124,9 @@ describe('DeploymentsComponent (with query params)', () => {
 
     // then
     expect(component.paramFilters[0].name).toEqual('Application');
-    expect(component.getFilterType('Application')).toEqual('StringType');
+    expect(component.getFilterType('Application')).toEqual(FilterType.STRING);
     expect(component.paramFilters[1].name).toEqual('Confirmed on');
-    expect(component.getFilterType('Confirmed on')).toEqual('DateType');
+    expect(component.getFilterType('Confirmed on')).toEqual(FilterType.DATE);
   });
 
   it('should set URL filter value immediately while component loads options asynchronously', () => {

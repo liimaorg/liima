@@ -20,17 +20,14 @@ describe('DeploymentFilterComponent', () => {
     fixture = TestBed.createComponent(DeploymentFilterComponent);
     component = fixture.componentInstance;
     deploymentService = TestBed.inject(DeploymentService);
+    
+    fixture.componentRef.setInput('filter', { name: 'Test Filter', comp: 'eq', val: 'test' } as DeploymentFilter);
+    fixture.componentRef.setInput('index', 0);
+    fixture.componentRef.setInput('type', 'StringType');
+    fixture.componentRef.setInput('compOptions', [{ name: 'eq', displayName: 'is' }]);
   });
 
   it('should create', () => {
-    component.filter = {
-      name: 'State',
-      comp: 'eq',
-      val: 'failed',
-    } as DeploymentFilter;
-    component.index = 0;
-    component.type = 'ENUM_TYPE';
-    component.compOptions = [{ name: 'eq', displayName: 'is' }];
     expect(component).toBeTruthy();
   });
 
@@ -41,10 +38,10 @@ describe('DeploymentFilterComponent', () => {
       val: 'failed',
     } as DeploymentFilter;
 
-    component.filter = filter;
-    component.index = 0;
-    component.type = 'ENUM_TYPE';
-    component.compOptions = [{ name: 'eq', displayName: 'is' }];
+    fixture.componentRef.setInput('filter', filter);
+    fixture.componentRef.setInput('index', 0);
+    fixture.componentRef.setInput('type', 'ENUM_TYPE');
+    fixture.componentRef.setInput('compOptions', [{ name: 'eq', displayName: 'is' }]);
 
     const mockOptions = ['success', 'failed', 'canceled'];
     vi.spyOn(deploymentService, 'getFilterOptionValues').mockImplementation(() => {
@@ -66,10 +63,10 @@ describe('DeploymentFilterComponent', () => {
       val: 'true',
     } as DeploymentFilter;
 
-    component.filter = filter;
-    component.index = 0;
-    component.type = 'booleanType';
-    component.compOptions = [{ name: 'eq', displayName: 'is' }];
+    fixture.componentRef.setInput('filter', filter);
+    fixture.componentRef.setInput('index', 0);
+    fixture.componentRef.setInput('type', 'booleanType');
+    fixture.componentRef.setInput('compOptions', [{ name: 'eq', displayName: 'is' }]);
 
     component.ngOnInit();
 
@@ -83,10 +80,10 @@ describe('DeploymentFilterComponent', () => {
       val: '',
     } as DeploymentFilter;
 
-    component.filter = filter;
-    component.index = 0;
-    component.type = 'SpecialFilterType';
-    component.compOptions = [];
+    fixture.componentRef.setInput('filter', filter);
+    fixture.componentRef.setInput('index', 0);
+    fixture.componentRef.setInput('type', 'SpecialFilterType');
+    fixture.componentRef.setInput('compOptions', []);
 
     const spy = vi.spyOn(deploymentService, 'getFilterOptionValues');
 
@@ -103,10 +100,10 @@ describe('DeploymentFilterComponent', () => {
       val: '',
     } as DeploymentFilter;
 
-    component.filter = filter;
-    component.index = 0;
-    component.type = 'DateType';
-    component.compOptions = [];
+    fixture.componentRef.setInput('filter', filter);
+    fixture.componentRef.setInput('index', 0);
+    fixture.componentRef.setInput('type', 'DateType');
+    fixture.componentRef.setInput('compOptions', []);
 
     const spy = vi.spyOn(deploymentService, 'getFilterOptionValues');
 
@@ -123,9 +120,9 @@ describe('DeploymentFilterComponent', () => {
       val: 'failed',
     } as DeploymentFilter;
 
-    component.filter = filter;
-    component.index = 0;
-    component.type = 'ENUM_TYPE';
+    fixture.componentRef.setInput('filter', filter);
+    fixture.componentRef.setInput('index', 0);
+    fixture.componentRef.setInput('type', 'ENUM_TYPE');
 
     let emittedFilter: DeploymentFilter | undefined;
     component.remove.subscribe((f) => (emittedFilter = f));

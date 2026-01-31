@@ -1,18 +1,18 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
   inject,
-  Input,
+  input,
   OnInit,
-  Output,
+  output,
   signal,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DeploymentFilter } from '../../deployment/deployment-filter';
 import { ComparatorFilterOption } from '../../deployment/comparator-filter-option';
 import { DeploymentService } from '../../deployment/deployment.service';
+import { FilterType } from '../../deployment/filter-type.enum';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { DateTimePickerComponent } from '../../shared/date-time-picker/date-time-picker.component';
@@ -21,32 +21,33 @@ import { DateTimePickerComponent } from '../../shared/date-time-picker/date-time
   selector: 'app-deployment-filter',
   templateUrl: './deployment-filter.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, ButtonComponent, IconComponent, DateTimePickerComponent],
+  imports: [CommonModule, FormsModule, ButtonComponent, IconComponent, DateTimePickerComponent],
 })
 export class DeploymentFilterComponent implements OnInit {
   private deploymentService = inject(DeploymentService);
+  protected readonly FilterType = FilterType;
 
-  @Input({ required: true }) filter!: DeploymentFilter;
-  @Input({ required: true }) index!: number;
-  @Input({ required: true }) type!: string;
-  @Input() compOptions: ComparatorFilterOption[] = [];
-  @Output() remove = new EventEmitter<DeploymentFilter>();
+  filter = input.required<DeploymentFilter>();
+  index = input.required<number>();
+  type = input.required<string>();
+  compOptions = input<ComparatorFilterOption[]>([]);
+  remove = output<DeploymentFilter>();
 
   valOptions = signal<string[]>([]);
 
   ngOnInit() {
     // Pre-seed options with the current value so the select can render it before async options load
-    if (this.filter?.val) {
-      this.valOptions.set([String(this.filter.val)]);
+    if (this.filter()?.val) {
+      this.valOptions.set([String(this.filter().val)]);
     }
     this.loadOptions();
   }
 
   private loadOptions() {
-    if (this.type === 'booleanType') {
+    if (this.type() === FilterType.BOOLEAN) {
       this.valOptions.set(['true', 'false']);
-    } else if (this.type !== 'SpecialFilterType' && this.type !== 'DateType') {
-      this.deploymentService.getFilterOptionValues(this.filter.name).subscribe({
+    } else if (this.type() !== FilterType.SPECIAL && this.type() !== FilterType.DATE) {
+      this.deploymentService.getFilterOptionValues(this.filter().name).subscribe({
         next: (options) => {
           this.valOptions.set(options);
         },
@@ -55,6 +56,6 @@ export class DeploymentFilterComponent implements OnInit {
   }
 
   onRemove() {
-    this.remove.emit(this.filter);
+    this.remove.emit(this.filter());
   }
 }

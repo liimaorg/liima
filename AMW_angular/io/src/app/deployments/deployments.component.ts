@@ -1,11 +1,12 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import * as _ from 'lodash-es';
 import * as datefns from 'date-fns';
 import { Subscription, timer } from 'rxjs';
 import { DeploymentFilter } from '../deployment/deployment-filter';
+import { FilterType } from '../deployment/filter-type.enum';
 import { DeploymentFilterType } from '../deployment/deployment-filter-type';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { Deployment } from '../deployment/deployment';
@@ -54,6 +55,16 @@ export class DeploymentsComponent implements OnInit {
 
   // valid for all, loaded once
   filterTypes = signal<DeploymentFilterType[]>([]);
+  private filterTypeMap = computed(() => {
+    const map = new Map<string, FilterType>();
+    this.filterTypes().forEach(filterType => {
+      const validFilterTypes = Object.values(FilterType);
+      if (validFilterTypes.includes(filterType.type as FilterType)) {
+        map.set(filterType.name, filterType.type as FilterType);
+      }
+    });
+    return map;
+  });
   comparatorOptions: ComparatorFilterOption[] = [];
   comparatorOptionsMap: { [key: string]: string } = {};
   singleComparatorOption: ComparatorFilterOption[] = [{ name: 'eq', displayName: 'is' }];
@@ -122,7 +133,7 @@ export class DeploymentsComponent implements OnInit {
       const newFilter: DeploymentFilter = {} as DeploymentFilter;
       newFilter.name = this.selectedFilterType.name;
       newFilter.comp = this.defaultComparator;
-      newFilter.val = this.selectedFilterType.type === 'booleanType' ? 'true' : '';
+      newFilter.val = this.selectedFilterType.type === FilterType.BOOLEAN ? 'true' : '';
       this.filters.update((filters) => [...filters, newFilter]);
       this.offset = 0;
       this.selectedFilterType = null;
@@ -160,7 +171,7 @@ export class DeploymentsComponent implements OnInit {
       const filterType = this.getFilterType(filter.name);
       if (!filter.val && filterType !== 'SpecialFilterType') {
         filtersToBeRemoved.push(filter);
-      } else if (filterType === 'DateType' && !filter.val) {
+      } else if (filterType === FilterType.DATE && !filter.val) {
         this.errorMessage = 'Invalid date';
       }
     });
@@ -300,8 +311,8 @@ export class DeploymentsComponent implements OnInit {
     }
   }
 
-  getFilterType(filterName: string): string | undefined {
-    return this.filterTypes().find((ft) => ft.name === filterName)?.type;
+  getFilterType(filterName: string): FilterType | undefined {
+    return this.filterTypeMap().get(filterName);
   }
 
   private canFilterBeAdded(): boolean {
@@ -348,7 +359,7 @@ export class DeploymentsComponent implements OnInit {
   }
 
   private comparatorOptionsForType(filterType: string) {
-    if (filterType === 'booleanType' || filterType === 'StringType' || filterType === 'ENUM_TYPE') {
+    if (filterType === FilterType.BOOLEAN || filterType === FilterType.STRING || filterType === FilterType.ENUM) {
       return this.singleComparatorOption;
     } else {
       return this.comparatorOptions;
@@ -365,7 +376,8 @@ export class DeploymentsComponent implements OnInit {
         ({
           name: filter.name,
           comp: filter.comp,
-          val: this.getFilterType(filter.name) === 'DateType' ? filter.val.toEpoch().toString() : filter.val,
+          val: this.getFilterType(filter.name) === FilterType.DATE
+            && filter.val instanceof DateTimeModel ? filter.val.toEpoch().toString() : filter.val,
         }) as DeploymentFilter,
     );
     return JSON.stringify(filters);
@@ -488,8 +500,8 @@ export class DeploymentsComponent implements OnInit {
 
   // parse string from json back to DateTimeModel
   private parseDateTime(filter: DeploymentFilter, filterType: string) {
-    if (filterType === 'DateType') {
-      filter.val = DateTimeModel.fromLocalString(filter.val);
+    if (filterType === FilterType.DATE) {
+      filter.val = DateTimeModel.fromLocalString(filter.val as string);
     }
   }
 
