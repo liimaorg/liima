@@ -2,12 +2,10 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 
 @use 'deployments/deployments.scss';
 
-/* Move down content because we have a fixed navbar that is 50px tall */
-/*
+/* Bootstrap standard: body padding for fixed navbar */
 body {
   padding-top: 50px;
 }
-*/
 
 .page-header {
   margin: 0;

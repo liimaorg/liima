@@ -22,7 +22,6 @@ import { EnvironmentService } from '../../deployment/environment.service';
 import { ResourceType } from '../../resources/models/resource-type';
 import { ResourceTypesService } from '../../resources/services/resource-types.service';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { PermissionService } from './permission.service';
 import { RestrictionAddComponent } from './restriction-add.component';
@@ -35,7 +34,6 @@ import { RestrictionsCreation } from './restrictions-creation';
   templateUrl: './permission.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    LoadingIndicatorComponent,
     NgbNav,
     NgbNavItem,
     NgbNavLinkButton,

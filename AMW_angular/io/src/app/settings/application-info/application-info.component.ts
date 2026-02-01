@@ -1,5 +1,4 @@
 import { Component, computed, inject } from '@angular/core';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { SettingService } from '../../setting/setting.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AppInformation } from '../../setting/app-information';
@@ -8,7 +7,7 @@ import { TableComponent, TableColumnType } from '../../shared/table/table.compon
 
 @Component({
   selector: 'app-application-info',
-  imports: [LoadingIndicatorComponent, TableComponent],
+  imports: [TableComponent],
   templateUrl: './application-info.component.html',
 })
 export class ApplicationInfoComponent {
