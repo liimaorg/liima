@@ -8,13 +8,13 @@
   [noContent]="false"
   [notAllowed]="false"
 >
-  <div class="resource-properties-container">
+  <div>
     <div class="properties-header">
       @if (hasChanges()) {
         <div class="action-buttons">
-          <app-button [variant]="'secondary'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>
+          <app-button [variant]="'light'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>
           <app-button [variant]="'primary'" [size]="'sm'" (click)="saveChanges()" [disabled]="isSaving()">
-            {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+            {{ isSaving() ? 'Saving...' : 'Save' }}
           </app-button>
         </div>
       }
