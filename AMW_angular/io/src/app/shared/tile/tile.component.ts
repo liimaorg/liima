@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
@@ -65,9 +65,10 @@ export class TileComponent {
 
   tileAction = output<void>();
 
-  showBody = signal(this.isVisible());
+  showBody = linkedSignal(() => this.isVisible());
+
   toggleBody() {
-    this.showBody.set(!this.showBody());
+    this.showBody.update((current) => !current);
   }
 
   doTileAction(event: PointerEvent) {
