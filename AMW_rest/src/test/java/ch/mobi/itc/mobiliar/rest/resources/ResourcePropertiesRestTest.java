@@ -29,7 +29,7 @@ public class ResourcePropertiesRestTest {
         int notFound = Response.Status.NOT_FOUND.getStatusCode();
 
         // when
-        Response response = rest.getResourceProperties("Test");
+        Response response = rest.getResourceProperties("Test", "Test", "test");
 
         // then
         assertThat(response.getStatus(), is(notFound));

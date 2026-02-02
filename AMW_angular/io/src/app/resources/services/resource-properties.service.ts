@@ -10,7 +10,7 @@ import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 export class ResourcePropertiesService extends BaseService {
   private http = inject(HttpClient);
 
-  private path = `${this.getBaseUrl()}/resourcesV2`;
+  private path = `${this.getBaseUrl()}`;
   private properties$: Subject<{ id: number; contextId: number }> = new Subject<{
     id: number;
     contextId: number;
@@ -50,7 +50,7 @@ export class ResourcePropertiesService extends BaseService {
   getResourceProperties(id: number, contextId: number = 1): Observable<Property[]> {
     const params = new HttpParams().set('contextId', contextId.toString());
     return this.http
-      .get<Property[]>(`${this.path}/resource/${id}/properties`, {
+      .get<Property[]>(`${this.getBaseUrl()}/resources/${id}/properties`, {
         params,
         headers: this.getHeaders(),
       })
@@ -60,7 +60,7 @@ export class ResourcePropertiesService extends BaseService {
   getResourceTypeProperties(id: number, contextId: number = 1): Observable<Property[]> {
     const params = new HttpParams().set('contextId', contextId.toString());
     return this.http
-      .get<Property[]>(`${this.path}/resourceType/${id}/properties`, {
+      .get<Property[]>(`${this.getBaseUrl()}/resourceTypes/${id}/properties`, {
         params,
         headers: this.getHeaders(),
       })
@@ -70,7 +70,7 @@ export class ResourcePropertiesService extends BaseService {
   bulkUpdateResourceProperties(id: number, properties: Property[], contextId: number = 1): Observable<void> {
     const params = new HttpParams().set('contextId', contextId.toString());
     return this.http
-      .put<void>(`${this.path}/resource/${id}/properties`, properties, {
+      .put<void>(`${this.getBaseUrl()}/resources/${id}/properties`, properties, {
         params,
         headers: this.getHeaders(),
       })

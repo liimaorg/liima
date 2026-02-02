@@ -28,6 +28,7 @@ import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 
 import javax.ejb.Stateless;
@@ -54,8 +55,17 @@ public class ContextLocator {
 		return contextRepository.getContextByName(name);
 	}
 
+	/* Deprecated use getById instead */
+	@Deprecated
 	public ContextEntity getContextById(Integer id) {
 		return contextRepository.find(id);
+	}
+
+	public ContextEntity getById(Integer id) throws NotFoundException {
+		ContextEntity entity = contextRepository.find(id);
+		if (entity != null) {
+			return entity;
+		} else throw new NotFoundException("Context with id " + id + " not found");
 	}
 
 	public List<ContextEntity> getAllEnvironments() {
