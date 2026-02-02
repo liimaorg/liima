@@ -79,7 +79,7 @@ public class RESTApplication extends Application {
         resources.add(ResourceTypesRest.class);
         resources.add(ReleasesRest.class);
         resources.add(ResourcePropertiesRest.class);
-        resources.add(ResourcePropertiesRestV2.class);
+        resources.add(ResourceTypePropertiesRest.class);
         resources.add(ResourceTemplatesRest.class);
         resources.add(ResourceRelationsRest.class);
         resources.add(ResourceRelationPropertiesRest.class);

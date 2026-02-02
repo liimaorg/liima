@@ -221,7 +221,7 @@ public class ResourceGroupsRest {
                                    @QueryParam("type") String resourceType) throws ValidationException, ResourceNotFoundException {
         ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ResourceDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
-                releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
+                releaseName, resourceType), resourceProperties.getPropertiesByResourceGroupNameAndReleaseName(resourceGroupName, releaseName,
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName));
     }
 
@@ -238,7 +238,7 @@ public class ResourceGroupsRest {
             throw new NotFoundException("Release or resource not found");
         }
         return new ResourceDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
-                release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
+                release.getName(), resourceType), resourceProperties.getPropertiesByResourceGroupNameAndReleaseName(resourceGroupName, release.getName(),
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, release.getName()));
     }
 
