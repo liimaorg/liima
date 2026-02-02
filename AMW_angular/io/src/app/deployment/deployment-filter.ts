@@ -1,10 +1,9 @@
-import { ComparatorFilterOption } from './comparator-filter-option';
+import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
+
+export type FilterValue = string | number | boolean | DateTimeModel;
 
 export interface DeploymentFilter {
   name: string;
   comp: string;
-  val: any;
-  type: string;
-  compOptions: ComparatorFilterOption[];
-  valOptions: string[];
+  val: FilterValue;
 }

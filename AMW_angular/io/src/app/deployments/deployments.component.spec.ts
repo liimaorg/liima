@@ -9,6 +9,7 @@ import { DeploymentService } from '../deployment/deployment.service';
 import { DeploymentsListComponent } from './deployments-list.component';
 import { DeploymentsEditModalComponent } from './deployments-edit-modal.component';
 import { DeploymentFilterType } from '../deployment/deployment-filter-type';
+import { FilterType } from '../deployment/filter-type.enum';
 import { ComparatorFilterOption } from '../deployment/comparator-filter-option';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { Deployment } from '../deployment/deployment';
@@ -81,7 +82,7 @@ describe('DeploymentsComponent (with query params)', () => {
     expect(deploymentService.canRequestDeployments).toHaveBeenCalled();
   });
 
-  it('should enhance filters with the right comparator and comparator options on ngOnInit', () => {
+  it('should enhance filters with the right comparator on ngOnInit', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
@@ -101,13 +102,13 @@ describe('DeploymentsComponent (with query params)', () => {
     activatedRouteStub.queryParams.next({ filters: filter });
 
     // then
-    expect(component.paramFilters[0].compOptions.length).toEqual(1);
-    expect(component.paramFilters[1].compOptions.length).toEqual(3);
+    expect(component.paramFilters[0].name).toEqual('Application');
     expect(component.paramFilters[0].comp).toEqual('eq');
+    expect(component.paramFilters[1].name).toEqual('Confirmed on');
     expect(component.paramFilters[1].comp).toEqual('lt');
   });
 
-  it('should enhance filters with the right option values on ngOnInit', () => {
+  it('should enhance filters with correct filter types on ngOnInit', () => {
     // given
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
@@ -115,15 +116,6 @@ describe('DeploymentsComponent (with query params)', () => {
     ];
     vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
     vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
-    vi.spyOn(deploymentService, 'getFilterOptionValues').mockImplementation((param: string) => {
-      const optionValues: {
-        [key: string]: string[];
-      } = {
-        Application: ['app1', 'app2'],
-        'Confirmed on': [],
-      };
-      return of(optionValues[param]);
-    });
     vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
 
     // when
@@ -131,8 +123,36 @@ describe('DeploymentsComponent (with query params)', () => {
     activatedRouteStub.queryParams.next({ filters: filter });
 
     // then
-    expect(component.paramFilters[0].valOptions.length).toEqual(2);
-    expect(component.paramFilters[1].valOptions.length).toEqual(0);
+    expect(component.paramFilters[0].name).toEqual('Application');
+    expect(component.getFilterType('Application')).toEqual(FilterType.STRING);
+    expect(component.paramFilters[1].name).toEqual('Confirmed on');
+    expect(component.getFilterType('Confirmed on')).toEqual(FilterType.DATE);
+  });
+
+  it('should set URL filter value immediately while component loads options asynchronously', () => {
+    // given
+    const stateFilter = JSON.stringify([{ name: 'State', comp: 'eq', val: 'failed' }]);
+    const deploymentFilters: DeploymentFilterType[] = [{ name: 'State', type: 'ENUM_TYPE' }];
+
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
+
+    // when
+    component.ngOnInit();
+    activatedRouteStub.queryParams.next({ filters: stateFilter });
+
+    // then
+    expect(component.filters().length).toBe(1);
+    const filterResult = component.filters()[0];
+
+    // The filter value should be preserved as 'failed' immediately
+    expect(filterResult.val).toEqual('failed');
+    // Filter should have the correct type in filterTypes
+    expect(component.getFilterType('State')).toEqual('ENUM_TYPE');
+    // Component will load options asynchronously
+    expect(filterResult.name).toEqual('State');
   });
 
   it('should apply filters ngOnInit ', () => {
@@ -165,7 +185,7 @@ describe('DeploymentsComponent (with query params)', () => {
 
     // then
     expect(deploymentService.getFilteredDeploymentsForCsvExport).toHaveBeenCalledWith(
-      JSON.stringify(component.filtersForBackend),
+      JSON.stringify([]),
       'd.deploymentDate',
       'DESC',
     );
@@ -378,14 +398,14 @@ describe('DeploymentsComponent (without query params)', () => {
   it('should remove filter and reset offset on removeFilter', () => {
     // given
     component.offset = 10;
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
         type: 'booleanType',
       } as DeploymentFilter,
-    ];
+    ]);
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },
@@ -399,24 +419,24 @@ describe('DeploymentsComponent (without query params)', () => {
     vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
 
     // when
-    component.removeFilter(component.filters[0]);
+    component.removeFilter(component.filters()[0]);
 
     // then
-    expect(component.filters.length).toEqual(0);
+    expect(component.filters().length).toEqual(0);
     expect(component.offset).toEqual(0);
   });
 
   it('should reset offset on setMaxResultsPerPage', () => {
     // given
     component.offset = 10;
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
         type: 'booleanType',
       } as DeploymentFilter,
-    ];
+    ]);
 
     // when
     component.setMaxResultsPerPage(20);
@@ -486,7 +506,7 @@ describe('DeploymentsComponent (without query params)', () => {
     ];
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' },
+      { name: 'Confirmed', type: 'booleanType' },
     ];
     const comparatorOptions: ComparatorFilterOption[] = [
       { name: 'lt', displayName: '<' },
@@ -497,21 +517,19 @@ describe('DeploymentsComponent (without query params)', () => {
     vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
     vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
-    // given
-    component.filters = [
+    component.filterTypes.set(deploymentFilters);
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
         val: 'true',
-        type: 'booleanType',
       } as DeploymentFilter,
       {
         name: 'Application',
         comp: 'eq',
         val: 'TestApp',
-        type: 'StringType',
       } as DeploymentFilter,
-    ];
+    ]);
 
     // when
     component.applyFilters();
@@ -538,7 +556,7 @@ describe('DeploymentsComponent (without query params)', () => {
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
       { name: 'Application Server', type: 'StringType' },
-      { name: 'Confirmed on', type: 'DateType' },
+      { name: 'Confirmed', type: 'booleanType' },
       { name: 'Latest deployment', type: 'SpecialFilterType' },
     ];
     const comparatorOptions: ComparatorFilterOption[] = [
@@ -550,38 +568,35 @@ describe('DeploymentsComponent (without query params)', () => {
     vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of(comparatorOptions));
     vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
 
-    component.filters = [
+    component.filterTypes.set(deploymentFilters);
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
         val: 'false',
-        type: 'booleanType',
       } as DeploymentFilter,
       {
         name: 'Application',
         comp: 'eq',
         val: 'TestApp',
-        type: 'StringType',
       } as DeploymentFilter,
       {
         name: 'Application Server',
         comp: 'eq',
         val: '',
-        type: 'StringType',
       } as DeploymentFilter,
       {
         name: 'Latest deployment',
         comp: 'eq',
         val: '',
-        type: 'SpecialFilterType',
       } as DeploymentFilter,
-    ];
+    ]);
 
     // when
     component.applyFilters();
 
     // then
-    expect(component.filters.length).toEqual(3);
+    expect(component.filters().length).toEqual(3);
     expect(sessionStorage.getItem('deploymentFilters')).toEqual(JSON.stringify(expectedFilters));
     expect(deploymentService.getFilteredDeployments).toHaveBeenCalledWith(
       JSON.stringify(expectedFilters),
@@ -609,7 +624,7 @@ describe('DeploymentsComponent (without query params)', () => {
       { name: 'Confirmed', comp: 'eq', val: 'true' } as DeploymentFilter,
       { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter,
     ];
-    component.filters = [
+    component.filters.set([
       {
         name: 'Confirmed',
         comp: 'eq',
@@ -622,7 +637,7 @@ describe('DeploymentsComponent (without query params)', () => {
         val: 'TestApp',
         type: 'StringType',
       } as DeploymentFilter,
-    ];
+    ]);
     const deploymentFilters: DeploymentFilterType[] = [
       { name: 'Application', type: 'StringType' },
       { name: 'Confirmed on', type: 'DateType' },

@@ -1,0 +1,59 @@
+<div class="form-group row">
+  <div class="col-sm-4 offset-1">
+    <input class="form-control" disabled type="text" [value]="filter().name" />
+  </div>
+  @if (type() !== FilterType.SPECIAL) {
+    <div class="col-sm-2">
+      <select
+        id="selectFilterComp"
+        class="form-control"
+        [attr.disabled]="compOptions.length === 1 ? '' : null"
+        [(ngModel)]="filter().comp"
+      >
+        @for (compOption of compOptions(); track compOption) {
+          <option [ngValue]="compOption.name">
+            {{ compOption.displayName }}
+          </option>
+        }
+      </select>
+    </div>
+    @if (type() !== FilterType.DATE) {
+      @if (type() !== FilterType.BOOLEAN && type() !== FilterType.ENUM) {
+        <div class="col-sm-4">
+          <input class="form-control" [attr.list]="'list' + index()" type="text" [(ngModel)]="filter().val" />
+          <datalist [attr.id]="'list' + index()">
+            @for (filterValueOption of valOptions(); track filterValueOption) {
+              <option>{{ filterValueOption }}</option>
+            }
+          </datalist>
+        </div>
+      }
+      @if (type() === FilterType.BOOLEAN || type() === FilterType.ENUM) {
+        <div class="col-sm-4">
+          <select class="form-control" [(ngModel)]="filter().val">
+            @for (filterValueOption of valOptions(); track filterValueOption) {
+              <option>{{ filterValueOption }}</option>
+            }
+          </select>
+        </div>
+      }
+    }
+    @if (type() === FilterType.DATE) {
+      <div class="col-sm-4">
+        <div class="input-group date">
+          <app-date-time-picker
+            [(ngModel)]="filter().val"
+            name="dateDeployment"
+            id="datetimepicker"
+            class="w-100"
+          ></app-date-time-picker>
+        </div>
+      </div>
+    }
+  }
+  <div class="col-sm-1" [ngClass]="{ 'ms-auto': type() === FilterType.SPECIAL }">
+    <app-button title="Remove filter" [variant]="'link'" (click)="onRemove()"
+      ><app-icon icon="trash"></app-icon
+    ></app-button>
+  </div>
+</div>
