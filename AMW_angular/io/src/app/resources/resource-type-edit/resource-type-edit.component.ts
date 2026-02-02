@@ -9,6 +9,7 @@ import { ResourceType } from '../models/resource-type';
 import { ResourceTypesService } from '../services/resource-types.service';
 import { ResourceTypeFunctionsListComponent } from './resource-type-functions/resource-type-functions-list.component';
 import { ResourceTypeTemplatesListComponent } from './resource-type-templates/resource-type-templates-list.component';
+import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 
 @Component({
   selector: 'app-resource-type-edit',
@@ -18,6 +19,7 @@ import { ResourceTypeTemplatesListComponent } from './resource-type-templates/re
     PageComponent,
     ResourceTypeFunctionsListComponent,
     ResourceTypeTemplatesListComponent,
+    ContextsListComponent,
   ],
   templateUrl: './resource-type-edit.component.html',
 })

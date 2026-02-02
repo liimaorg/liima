@@ -2,7 +2,7 @@
 <app-page>
   <div class="page-title">Edit {{ this.resourceType()?.name }}</div>
 
-  <div class="page-content">
+  <div class="page-content d-flex gap-3">
     @if (this.resourceType()?.name && !permissions().canEditResourceType) {
       <div class="container">
         <span class="text-warning-2">Not Authorized! You are not allowed to Edit-ResourceTypes.</span>
@@ -12,14 +12,19 @@
         <span>Please provide a resourceType-id to edit a resource.</span>
       </div>
     } @else {
-      <app-resource-type-templates-list
-        [resourceType]="resourceType()"
-        [contextId]="contextId()"
-      ></app-resource-type-templates-list>
-      <app-resource-type-functions-list
-        [resourceType]="resourceType()"
-        [contextId]="contextId()"
-      ></app-resource-type-functions-list>
+      <div class="flex-shrink-0">
+        <app-contexts-list></app-contexts-list>
+      </div>
+      <div class="flex-grow-1">
+        <app-resource-type-templates-list
+          [resourceType]="resourceType()"
+          [contextId]="contextId()"
+        ></app-resource-type-templates-list>
+        <app-resource-type-functions-list
+          [resourceType]="resourceType()"
+          [contextId]="contextId()"
+        ></app-resource-type-functions-list>
+      </div>
     }
   </div>
 </app-page>

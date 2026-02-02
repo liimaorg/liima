@@ -4,8 +4,8 @@
       <label for="filter" class="form-label">Application/AS name</label>
       <input class="form-control" id="filter" type="text" [(ngModel)]="filterValue" name="filterValue" />
     </div>
-    <div class="col-sm-2">
-      <label class="form-label">Release</label>
+    <div class="col-sm col-xl-3">
+      <label class="form-label" for="selectRelease">Release</label>
       <ng-select
         id="selectRelease"
         [clearable]="false"
@@ -19,7 +19,7 @@
       </ng-select>
     </div>
     <div class="col-sm">
-      <app-button [variant]="'primary'" [additionalClasses]="'float-start'" type="submit">Search</app-button>
+      <app-button class="align-middle" [variant]="'primary'" type="submit">Search</app-button>
     </div>
   </div>
 </form>

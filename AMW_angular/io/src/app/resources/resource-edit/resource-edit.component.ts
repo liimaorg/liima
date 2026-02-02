@@ -12,6 +12,7 @@ import { ResourceTemplatesListComponent } from './resource-templates/resource-te
 import { Release } from '../models/release';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
+import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -26,6 +27,7 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
     NgbDropdownMenu,
     NgbDropdownToggle,
     NgbDropdownItem,
+    ContextsListComponent,
   ],
   templateUrl: './resource-edit.component.html',
   styleUrl: './resource-edit.component.scss',

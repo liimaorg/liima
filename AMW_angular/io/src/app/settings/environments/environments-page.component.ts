@@ -25,13 +25,11 @@ export class EnvironmentsPageComponent {
   private toastService = inject(ToastService);
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
-  contexts: Signal<Environment[]> = this.environmentsService.contexts;
   globalEnv: EnvironmentTree;
   environmentTree: Signal<EnvironmentTree[]> = computed(() => {
-    if (!this.contexts()) return;
-    const envTree = this.buildEnvironmentTree(this.contexts());
+    const envTree = this.environmentsService.environmentTree();
+    if (!envTree || envTree.length === 0) return [];
     this.globalEnv = envTree[0];
-    if (!(envTree.length > 0)) return;
     return envTree[0].children;
   });
 
@@ -50,23 +48,6 @@ export class EnvironmentsPageComponent {
       };
     }
   });
-
-  private buildEnvironmentTree(environments: Environment[], parentName: string | null = null): EnvironmentTree[] {
-    return environments
-      .filter((environment) => environment.parentName === parentName)
-      .map((environment) => {
-        return {
-          id: environment.id,
-          name: environment.name,
-          nameAlias: environment.nameAlias,
-          parentName: environment.parentName,
-          parentId: environment.parentId,
-          children: this.buildEnvironmentTree(environments, environment.name),
-          selected: environment.selected,
-          disabled: environment.disabled,
-        };
-      });
-  }
 
   addEnvironment(envParent: EnvironmentTree) {
     const modalRef: NgbModalRef = this.modalService.open(EnvironmentEditComponent);
