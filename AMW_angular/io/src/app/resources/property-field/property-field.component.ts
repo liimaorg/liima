@@ -68,25 +68,49 @@ export class PropertyFieldComponent {
     this.valueChange.emit(this.localValue);
   }
 
+  /*
+     Validation behavior:
+     - "No value" is an error only if `required` AND `value+default+mik` are all empty.
+     - Regex matching uses `defaultValue` if `value` is empty.
+     - If (`nullable` OR `optional`) AND `value+default` are empty AND `mik` is present => skip regex validation.
+     -> mik (machineInterpretationKey) -> liima might produce a value later 🤯
+   */
   private validate() {
-    const value = this.localValue;
+    const value = this.localValue ?? '';
     const prop = this.property();
-    const effectiveValue = value || prop.defaultValue || '';
 
-    if (!prop.nullable && !prop.optional && !effectiveValue) {
+    const isNullable = !!prop.nullable;
+    const isOptional = !!prop.optional;
+    const defaultValue = prop.defaultValue ?? '';
+    const mik = prop.mik ?? '';
+    const regexString = prop.validationRegex ?? '.*';
+
+    const noValueSet = value === '' && defaultValue === '';
+
+    if (!isNullable && !isOptional && noValueSet && mik === '') {
       this.validationError.set('This field is required');
       return;
     }
 
-    if (effectiveValue && prop.validationRegex) {
+    if ((isNullable || isOptional) && noValueSet && mik !== '') {
+      this.validationError.set(null);
+      return;
+    }
+
+    const regexMatchValue = value === '' ? defaultValue : value;
+
+    if (regexString && regexMatchValue !== '') {
       try {
-        const regex = new RegExp(prop.validationRegex);
-        if (!regex.test(effectiveValue)) {
+        // enforce "full match".
+        const fullMatchRegex = new RegExp(`^(?:${regexString})$`);
+        if (!fullMatchRegex.test(regexMatchValue)) {
           this.validationError.set('Value does not match the required pattern');
           return;
         }
       } catch (e) {
-        console.error('Invalid regex pattern:', prop.validationRegex, e);
+        console.error('Invalid regex pattern:', regexString, e);
+        this.validationError.set('Value does not match the required pattern');
+        return;
       }
     }
 
