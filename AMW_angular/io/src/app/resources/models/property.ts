@@ -16,5 +16,6 @@ export interface Property {
   exampleValue?: string;
   propertyDescriptorOrigin?: PropertyDescriptorOrigin;
   descriptorId?: number;
+  cardinality?: number;
   disabled?: boolean;
 }

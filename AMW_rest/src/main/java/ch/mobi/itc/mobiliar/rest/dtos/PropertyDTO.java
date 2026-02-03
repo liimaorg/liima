@@ -49,6 +49,7 @@ public class PropertyDTO {
     private String exampleValue;
     private String propertyDescriptorOrigin;
     private Integer descriptorId;
+    private Integer cardinality;
 
     public PropertyDTO(ResourceEditProperty property, String context){
         this.name = property.getTechnicalKey();
@@ -65,5 +66,6 @@ public class PropertyDTO {
         this.exampleValue = property.getExampleValue();
         this.propertyDescriptorOrigin = property.getPropertyDescriptorOrigin() != null ? property.getPropertyDescriptorOrigin().name() : null;
         this.descriptorId = property.getDescriptorId();
+        this.cardinality = property.getCardinalityProperty();
     }
 }

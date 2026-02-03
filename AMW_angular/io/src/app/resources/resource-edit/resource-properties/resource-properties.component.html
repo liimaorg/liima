@@ -2,7 +2,7 @@
 <app-tile-component
   [title]="'Properties'"
   [actionName]="'New Property'"
-  [canAction]="true"
+  [canAction]="permissions().canAddProperty"
   [isVisible]="true"
   (tileAction)="addProperty()"
   [noContent]="false"
@@ -10,7 +10,7 @@
 >
   <div>
     <div class="properties-header">
-      @if (hasChanges()) {
+      @if (hasChanges() && permissions().canAddProperty) {
         <div class="action-buttons">
           <app-button [variant]="'light'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>
           <app-button [variant]="'primary'" [size]="'sm'" (click)="saveChanges()" [disabled]="isSaving()">
@@ -29,25 +29,27 @@
     }
   </div>
   <div class="properties-section">
-    <div class="properties-list">
+    <div class="properties-list ps-2">
       @if (showAppNameProperty()) {
         <app-property-field
           [property]="appNameProperty()"
-          [isInstanceContext]="true"
+          [isResource]="true"
           (valueChange)="onPropertyChange(appNameProperty().name, $event)"
         ></app-property-field>
       }
-
-      <app-property-field
-        [property]="outOfServiceProperty()"
-        [isInstanceContext]="true"
-        (valueChange)="onPropertyChange(outOfServiceProperty().name, $event)"
-      ></app-property-field>
-
-      @for (property of properties(); track property.name) {
+      @if (showOutOfServiceProperty()) {
+        <app-property-field
+          [property]="outOfServiceProperty()"
+          [isResource]="true"
+          (valueChange)="onPropertyChange(outOfServiceProperty().name, $event)"
+        ></app-property-field>
+      }
+      @for (property of properties(); track property.descriptorId) {
         <app-property-field
           [property]="property"
-          [isInstanceContext]="true"
+          [isResource]="true"
+          [canEdit]="permissions().canAddProperty"
+          [canDelete]="permissions().canAddProperty"
           (valueChange)="onPropertyChange(property.name, $event)"
         ></app-property-field>
       }

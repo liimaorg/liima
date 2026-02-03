@@ -1,13 +1,10 @@
-.property-field {
-  margin-bottom: 1rem;
-}
-
 .property-label {
-  display: block;
   font-weight: 500;
-  margin-bottom: 0.25rem;
   font-size: 14px;
   color: #333;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .property-name-link {
@@ -26,7 +23,7 @@
 
 .property-input {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.1rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
@@ -40,7 +37,8 @@
 }
 
 .property-input.error {
-  border-color: #dc3545;
+  border: 3px solid #dc3545;
+  background-color: #f5cccc;
 }
 
 .property-input.error:focus {
