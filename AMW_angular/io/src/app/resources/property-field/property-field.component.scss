@@ -1,10 +1,20 @@
+:host {
+  margin: 0.75rem 0;
+}
+
 .property-label {
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   color: #333;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  margin: 0;
+}
+
+.label-icon {
+  margin-left: 0.2rem;
+  color: #333;
 }
 
 .property-name-link {
@@ -18,12 +28,11 @@
 
 .required {
   color: #dc3545;
-  margin-left: 2px;
 }
 
 .property-input {
-  width: 100%;
-  padding: 0.1rem;
+  width: 60%;
+  padding: 0.2rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
@@ -51,9 +60,4 @@
   margin-top: 0.25rem;
 }
 
-.default-value-hint {
-  color: #6c757d;
-  font-size: 12px;
-  margin-top: 0.25rem;
-  font-style: italic;
-}
+
