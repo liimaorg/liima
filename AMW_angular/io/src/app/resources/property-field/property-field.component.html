@@ -20,16 +20,12 @@
         [class.error]="hasError()"
         [(ngModel)]="localValue"
         (blur)="onBlur()"
-        [placeholder]="property().exampleValue || ''"
+        [placeholder]="property().defaultValue || property().exampleValue || ''"
         [disabled]="property().disabled || false"
       />
 
       @if (validationError()) {
         <div class="validation-error">{{ validationError() }}</div>
-      }
-
-      @if (property().defaultValue && !localValue) {
-        <div class="default-value-hint">Default: {{ property().defaultValue }}</div>
       }
     </div>
     <div class="col-2 me-0 justify-content-start d-flex">

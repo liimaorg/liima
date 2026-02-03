@@ -14,6 +14,7 @@ export interface Property {
   optional?: boolean;
   defaultValue?: string;
   exampleValue?: string;
+  mik?: string;
   propertyDescriptorOrigin?: PropertyDescriptorOrigin;
   descriptorId?: number;
   cardinality?: number;
