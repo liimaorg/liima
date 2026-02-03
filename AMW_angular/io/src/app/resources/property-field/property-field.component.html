@@ -14,10 +14,13 @@
       [(ngModel)]="localValue"
       (blur)="onBlur()"
       [placeholder]="property().defaultValue || property().exampleValue || ''"
-      [disabled]="property().disabled || false"
+      [disabled]="isInputDisabled()"
     />
-    <input type="checkbox" id="reset" class="ms-2" (click)="reset()" />
-    <label for="reset">Reset</label>
+
+    @if (canReset()) {
+      <input type="checkbox" [id]="resetId()" class="ms-2" [checked]="resetChecked()" (change)="toggleReset($event)" />
+      <label [for]="resetId()">Reset</label>
+    }
 
     @if (isEditable()) {
       @if (canEdit()) {

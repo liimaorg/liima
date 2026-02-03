@@ -51,6 +51,7 @@
           [canEdit]="permissions().canAddProperty"
           [canDelete]="permissions().canAddProperty"
           (valueChange)="onPropertyChange(property.name, $event)"
+          (resetChange)="onPropertyReset(property.name, $event)"
         ></app-property-field>
       }
     </div>

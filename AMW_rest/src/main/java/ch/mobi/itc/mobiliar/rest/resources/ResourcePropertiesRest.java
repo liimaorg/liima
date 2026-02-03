@@ -86,7 +86,7 @@ public class ResourcePropertiesRest {
                     context.getId());
 
             for (ResourceEditProperty property : properties) {
-                result.add(new PropertyDTO(property, context.getName()));
+                result.add(new PropertyDTO(property, context.getName(), contextId));
             }
         }
         return result;
@@ -111,7 +111,7 @@ public class ResourcePropertiesRest {
 
             for (ResourceEditProperty property : properties) {
                 if (property.getTechnicalKey().equals(propertyName)) {
-                    return Response.ok(new PropertyDTO(property, context.getName())).build();
+                    return Response.ok(new PropertyDTO(property, context.getName(), contextId)).build();
                 }
             }
         }
@@ -227,7 +227,7 @@ public class ResourcePropertiesRest {
             List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
                     context.getId());
             for (ResourceEditProperty property : properties) {
-                result.add(new PropertyDTO(property, context.getName()));
+                result.add(new PropertyDTO(property, context.getName(), context.getId()));
             }
         }
         return result;
@@ -250,7 +250,7 @@ public class ResourcePropertiesRest {
                     context.getId());
             for (ResourceEditProperty property : properties) {
                 if (property.getTechnicalKey().equals(propertyName)) {
-                    return Response.ok(new PropertyDTO(property, context.getName())).build();
+                    return Response.ok(new PropertyDTO(property, context.getName(), context.getId())).build();
                 }
             }
         }
