@@ -19,7 +19,7 @@ export class PropertyFieldComponent {
   valueChange = output<string>();
   resetChange = output<boolean>();
 
-  private internalValue = signal<string>('');
+  private internalValue = signal<string | null>(null);
   validationError = signal<string | null>(null);
   touched = signal(false);
   resetChecked = signal(false);
@@ -57,10 +57,9 @@ export class PropertyFieldComponent {
   });
 
   get localValue(): string {
-    if (this.internalValue() === '' && !this.touched()) {
-      return this.property().value || '';
-    }
-    return this.internalValue();
+    const current = this.internalValue();
+    if (current !== null) return current;
+    return this.property().value ?? '';
   }
 
   set localValue(value: string) {
@@ -100,7 +99,6 @@ export class PropertyFieldComponent {
      -> mik (machineInterpretationKey) -> liima might produce a value later 🤯
    */
   private validate() {
-    const value = this.localValue ?? '';
     const prop = this.property();
 
     const isNullable = !!prop.nullable;
@@ -109,7 +107,7 @@ export class PropertyFieldComponent {
     const mik = prop.mik ?? '';
     const regexString = prop.validationRegex ?? '.*';
 
-    const noValueSet = value === '' && defaultValue === '';
+    const noValueSet = this.localValue === '' && defaultValue === '';
 
     if (!isNullable && !isOptional && noValueSet && mik === '') {
       this.validationError.set('This field is required');
@@ -121,7 +119,7 @@ export class PropertyFieldComponent {
       return;
     }
 
-    const regexMatchValue = value === '' ? defaultValue : value;
+    const regexMatchValue = this.localValue === '' ? defaultValue : this.localValue;
 
     if (regexString && regexMatchValue !== '') {
       try {
