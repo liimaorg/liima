@@ -1,58 +1,51 @@
 @if (showProperty()) {
-  <div class="row my-1 align-items-center">
-    <label [for]="fieldId()" class="property-label col-2">
-      @if (isEditable()) {
-        <a [href]="propertyEdit(property().descriptorId)" class="property-name-link">
-          {{ displayLabel() }}
-        </a>
-      } @else {
-        {{ displayLabel() }}
-      }
-      @if (!property().nullable && !property().optional) {
-        <span class="required">*</span>
-      }
-    </label>
-    <div class="col-8">
-      <input
-        [id]="fieldId()"
-        type="{{ property().encrypted ? 'password' : 'text' }}"
-        class="property-input"
-        [class.error]="hasError()"
-        [(ngModel)]="localValue"
-        (blur)="onBlur()"
-        [placeholder]="property().defaultValue || property().exampleValue || ''"
-        [disabled]="property().disabled || false"
-      />
-
-      @if (validationError()) {
-        <div class="validation-error">{{ validationError() }}</div>
-      }
-    </div>
-    <div class="col-2 me-0 justify-content-start d-flex">
-      @if (isEditable()) {
-        @if (canEdit()) {
-          <app-button
-            title="Edit"
-            [size]="'sm'"
-            [variant]="'link'"
-            [additionalClasses]="'me-2 p-0'"
-            (click)="propertyEdit(property().descriptorId)"
-          >
-            <app-icon icon="pencil"></app-icon>
-          </app-button>
-        }
-        @if (canDelete()) {
-          <app-button
-            title="Delete"
-            [size]="'sm'"
-            [variant]="'link'"
-            [additionalClasses]="'p-0 link-danger'"
-            (click)="propertyDelete(property().descriptorId)"
-          >
-            <app-icon icon="trash"></app-icon>
-          </app-button>
-        }
-      }
-    </div>
+  <div class="d-flex gap-1 align-items-center mb-1">
+    <label [for]="fieldId()" class="property-label">
+      {{ displayLabel() }}
+      <app-icon icon="info-circle-fill" class="label-icon"></app-icon
+    ></label>
   </div>
+  <div class="d-flex gap-1 align-items-center">
+    <input
+      [id]="fieldId()"
+      type="{{ property().encrypted ? 'password' : 'text' }}"
+      class="property-input"
+      [class.error]="hasError()"
+      [(ngModel)]="localValue"
+      (blur)="onBlur()"
+      [placeholder]="property().defaultValue || property().exampleValue || ''"
+      [disabled]="property().disabled || false"
+    />
+    <input type="checkbox" id="reset" class="ms-2" (click)="reset()" />
+    <label for="reset">Reset</label>
+
+    @if (isEditable()) {
+      @if (canEdit()) {
+        <app-button
+          title="Edit"
+          [size]="'sm'"
+          [variant]="'link'"
+          [additionalClasses]="'mx-2 p-0'"
+          (click)="propertyEdit(property().descriptorId)"
+        >
+          <app-icon icon="pencil"></app-icon>
+        </app-button>
+      }
+      @if (canDelete()) {
+        <app-button
+          title="Delete"
+          [size]="'sm'"
+          [variant]="'link'"
+          [additionalClasses]="'p-0 link-danger'"
+          (click)="propertyDelete(property().descriptorId)"
+        >
+          <app-icon icon="trash"></app-icon>
+        </app-button>
+      }
+    }
+  </div>
+
+  @if (validationError()) {
+    <div class="validation-error">{{ validationError() }}</div>
+  }
 }

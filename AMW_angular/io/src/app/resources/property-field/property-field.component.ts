@@ -126,4 +126,6 @@ export class PropertyFieldComponent {
     // TODO
     console.log('propertyDelete' + descriptorId);
   }
+
+  protected reset() {}
 }
