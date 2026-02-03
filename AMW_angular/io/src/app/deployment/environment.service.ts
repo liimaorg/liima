@@ -65,6 +65,17 @@ export class EnvironmentService extends BaseService {
       });
   }
 
+  findEnvironmentById(tree: EnvironmentTree[], id: number): EnvironmentTree | null {
+    for (const node of tree) {
+      if (node.id === id) return node;
+      if (node.children) {
+        const found = this.findEnvironmentById(node.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
   save(environment: Environment) {
     if (environment.id) return this.update(environment);
     return this.create(environment);

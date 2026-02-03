@@ -24,7 +24,7 @@ export class ContextsListComponent {
 
   selection = computed(() => {
     const ctxId = this.contextId();
-    return this.findEnvironmentById(this.environmentTree(), ctxId) || this.environmentTree()[0];
+    return this.environmentsService.findEnvironmentById(this.environmentTree(), ctxId) || this.environmentTree()[0];
   });
 
   permissions = computed(() => {
@@ -44,16 +44,5 @@ export class ContextsListComponent {
       queryParams: { ctx: domain.id },
       queryParamsHandling: 'merge',
     });
-  }
-
-  private findEnvironmentById(tree: EnvironmentTree[], id: number): EnvironmentTree | null {
-    for (const node of tree) {
-      if (node.id === id) return node;
-      if (node.children) {
-        const found = this.findEnvironmentById(node.children, id);
-        if (found) return found;
-      }
-    }
-    return null;
   }
 }

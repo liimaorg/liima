@@ -1,17 +1,21 @@
 import { Component, input, output, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Property } from '../models/property';
+import { ButtonComponent } from '../../shared/button/button.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-property-field',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ButtonComponent, IconComponent],
   templateUrl: './property-field.component.html',
   styleUrl: './property-field.component.scss',
 })
 export class PropertyFieldComponent {
   property = input.required<Property>();
-  isInstanceContext = input<boolean>(true); // true for resource component, false for resourceType component
+  isResource = input<boolean>(true); // true for resource component, false for resourceType component
+  canEdit = input<boolean>(false);
+  canDelete = input<boolean>(false);
   valueChange = output<string>();
 
   private internalValue = signal<string>('');
@@ -22,9 +26,13 @@ export class PropertyFieldComponent {
   displayLabel = computed(() => this.property().displayName || this.property().name);
   hasError = computed(() => this.touched() && !!this.validationError());
 
+  showProperty = computed(() => {
+    return this.property().cardinality === null || this.property().cardinality != -1;
+  });
+
   isEditable = computed(() => {
     const prop = this.property();
-    const isResourceContext = this.isInstanceContext();
+    const isResourceContext = this.isResource();
     const origin = prop.propertyDescriptorOrigin;
 
     if (!origin) {
@@ -33,7 +41,7 @@ export class PropertyFieldComponent {
 
     // Editable when:
     // - Resource context + descriptor origin is INSTANCE
-    // - ResourceType context + descriptor origin is TYP
+    // - ResourceType context + descriptor origin is TYPE
     return isResourceContext ? origin === 'INSTANCE' : origin === 'TYPE';
   });
 
@@ -83,5 +91,15 @@ export class PropertyFieldComponent {
     }
 
     this.validationError.set(null);
+  }
+
+  protected propertyEdit(descriptorId: number) {
+    // TODO
+    console.log('propertyEdit' + descriptorId);
+  }
+
+  protected propertyDelete(descriptorId: number) {
+    // TODO
+    console.log('propertyDelete' + descriptorId);
   }
 }
