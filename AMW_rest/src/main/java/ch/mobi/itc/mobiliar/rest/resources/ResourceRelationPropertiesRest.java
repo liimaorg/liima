@@ -94,7 +94,7 @@ public class ResourceRelationPropertiesRest {
         }
         List<PropertyDTO> propertyDTOS = new ArrayList<>();
         for (ResourceEditProperty property : properties) {
-            propertyDTOS.add(new PropertyDTO(property, context.getName()));
+            propertyDTOS.add(new PropertyDTO(property, context.getName(), context.getId()));
         }
         return Response.ok(propertyDTOS).build();
     }
@@ -115,7 +115,7 @@ public class ResourceRelationPropertiesRest {
         }
         for (ResourceEditProperty property : properties) {
             if (property.getTechnicalKey().equals(propertyName)) {
-                return Response.ok(new PropertyDTO(property, context.getName())).build();
+                return Response.ok(new PropertyDTO(property, context.getName(), context.getId())).build();
             }
         }
         return Response.status(Response.Status.NOT_FOUND).build();

@@ -47,11 +47,13 @@ public class PropertyDTO {
     private Boolean optional;
     private String defaultValue;
     private String exampleValue;
+    private String mik;
     private String propertyDescriptorOrigin;
     private Integer descriptorId;
     private Integer cardinality;
+    private Boolean definedInContext;
 
-    public PropertyDTO(ResourceEditProperty property, String context){
+    public PropertyDTO(ResourceEditProperty property, String context, Integer contextId){
         this.name = property.getTechnicalKey();
         this.value = property.getDecryptedPropertyValue() != null ? property.getDecryptedPropertyValue() : property.getDefaultValue();
         this.replacedValue = property.getReplacedValue();
@@ -64,8 +66,10 @@ public class PropertyDTO {
         this.optional = property.isOptional();
         this.defaultValue = property.getDefaultValue();
         this.exampleValue = property.getExampleValue();
+        this.mik = property.getMik();
         this.propertyDescriptorOrigin = property.getPropertyDescriptorOrigin() != null ? property.getPropertyDescriptorOrigin().name() : null;
         this.descriptorId = property.getDescriptorId();
         this.cardinality = property.getCardinalityProperty();
+        this.definedInContext = contextId != null && property.isDefinedInContext(contextId);
     }
 }

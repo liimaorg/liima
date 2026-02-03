@@ -61,7 +61,7 @@ public class ResourceTypePropertiesRest {
                     context.getId());
 
             for (ResourceEditProperty property : properties) {
-                result.add(new PropertyDTO(property, context.getName()));
+                result.add(new PropertyDTO(property, context.getName(), contextId));
             }
         }
         return result;

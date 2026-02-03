@@ -67,6 +67,16 @@ export class ResourcePropertiesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
+  deleteResourceProperty(id: number, propertyName: string, contextId: number = 1): Observable<void> {
+    const params = new HttpParams().set('contextId', contextId.toString());
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resources/${id}/properties/${propertyName}`, {
+        params,
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   bulkUpdateResourceProperties(id: number, properties: Property[], contextId: number = 1): Observable<void> {
     const params = new HttpParams().set('contextId', contextId.toString());
     return this.http

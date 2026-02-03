@@ -2,11 +2,12 @@ export type PropertyDescriptorOrigin = 'INSTANCE' | 'RELATION' | 'TYPE' | 'TYPE_
 
 export interface Property {
   name: string;
-  value: string;
+  value: string | null;
   replacedValue: string;
   generalComment: string;
   valueComment: string;
   context: string;
+  definedInContext?: boolean;
   displayName?: string;
   validationRegex?: string;
   encrypted?: boolean;

@@ -1,4 +1,5 @@
 import { Component, input, signal, computed, inject, effect, Signal } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
 import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
 import { ResourceService } from '../../services/resource.service';
@@ -31,6 +32,7 @@ export class ResourcePropertiesComponent {
   resource: Signal<Resource> = this.resourceService.resource;
 
   private changedProperties = signal<Map<string, string>>(new Map());
+  private resetProperties = signal<Set<string>>(new Set());
 
   properties = this.propertiesService.properties;
 
@@ -94,6 +96,7 @@ export class ResourcePropertiesComponent {
   constructor() {
     effect(() => {
       this.changedProperties.set(new Map());
+      this.resetProperties.set(new Set());
       this.errorMessage.set(null);
     });
   }
@@ -101,9 +104,17 @@ export class ResourcePropertiesComponent {
   // isDefinedOnInstanceOrType is only relevant for rendering editable properties
   // so there is no difference in propertytypes only for rendering the table component (releatedResourceProperties)
 
-  hasChanges = computed(() => this.changedProperties().size > 0);
+  hasChanges = computed(() => this.changedProperties().size > 0 || this.resetProperties().size > 0);
 
   onPropertyChange(propertyName: string, newValue: string) {
+    // If user starts editing a property that was marked for reset, unmark the reset.
+    this.resetProperties.update((set) => {
+      if (!set.has(propertyName)) return set;
+      const next = new Set(set);
+      next.delete(propertyName);
+      return next;
+    });
+
     const props = this.properties() || [];
     const originalProperty = props.find((p) => p.name === propertyName);
 
@@ -122,8 +133,33 @@ export class ResourcePropertiesComponent {
     }
   }
 
+  onPropertyReset(propertyName: string, checked: boolean) {
+    if (checked) {
+      this.resetProperties.update((set) => {
+        const next = new Set(set);
+        next.add(propertyName);
+        return next;
+      });
+
+      this.changedProperties.update((map) => {
+        if (!map.has(propertyName)) return map;
+        const next = new Map(map);
+        next.delete(propertyName);
+        return next;
+      });
+    } else {
+      this.resetProperties.update((set) => {
+        if (!set.has(propertyName)) return set;
+        const next = new Set(set);
+        next.delete(propertyName);
+        return next;
+      });
+    }
+  }
+
   resetChanges() {
     this.changedProperties.set(new Map());
+    this.resetProperties.set(new Set());
     this.errorMessage.set(null);
     this.successMessage.set(null);
   }
@@ -138,7 +174,8 @@ export class ResourcePropertiesComponent {
     if (!res?.id) return;
 
     const changes = this.changedProperties();
-    if (changes.size === 0) return;
+    const resets = this.resetProperties();
+    if (changes.size === 0 && resets.size === 0) return;
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
@@ -154,11 +191,21 @@ export class ResourcePropertiesComponent {
       } as Property;
     });
 
-    this.propertiesService.bulkUpdateResourceProperties(res.id, updatedProperties, ctxId).subscribe({
+    const update$ = updatedProperties.length
+      ? this.propertiesService.bulkUpdateResourceProperties(res.id, updatedProperties, ctxId)
+      : of(void 0);
+
+    const resetCalls$ = Array.from(resets.values()).map((name) =>
+      this.propertiesService.deleteResourceProperty(res.id, name, ctxId),
+    );
+    const reset$ = resetCalls$.length ? forkJoin(resetCalls$).pipe() : of([]);
+
+    forkJoin([update$, reset$]).subscribe({
       next: () => {
         this.isSaving.set(false);
         this.successMessage.set('Properties saved successfully');
         this.changedProperties.set(new Map());
+        this.resetProperties.set(new Set());
         this.propertiesService.setIdsForResourceProperties(res.id, ctxId);
         setTimeout(() => this.successMessage.set(null), 3000);
       },

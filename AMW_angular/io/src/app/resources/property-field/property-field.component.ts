@@ -17,14 +17,19 @@ export class PropertyFieldComponent {
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
   valueChange = output<string>();
+  resetChange = output<boolean>();
 
   private internalValue = signal<string>('');
   validationError = signal<string | null>(null);
   touched = signal(false);
+  resetChecked = signal(false);
 
   fieldId = computed(() => `property-${this.property().name}`);
+  resetId = computed(() => `reset-${this.property().name}`);
   displayLabel = computed(() => this.property().displayName || this.property().name);
   hasError = computed(() => this.touched() && !!this.validationError());
+  canReset = computed(() => !!this.property().definedInContext);
+  isInputDisabled = computed(() => this.property().disabled || this.resetChecked());
 
   showProperty = computed(() => {
     return this.property().cardinality === null || this.property().cardinality != -1;
@@ -65,6 +70,25 @@ export class PropertyFieldComponent {
   onBlur() {
     this.touched.set(true);
     this.validate();
+    this.valueChange.emit(this.localValue);
+  }
+
+  protected toggleReset(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    const checked = !!target?.checked;
+    this.resetChecked.set(checked);
+
+    if (checked) {
+      // Reset means: value is taken from parent context (replacedValue)
+      this.internalValue.set(this.property().replacedValue || '');
+    } else {
+      // Back to the value defined in the current context
+      this.internalValue.set(this.property().value || '');
+    }
+
+    this.touched.set(true);
+    this.validate();
+    this.resetChange.emit(checked);
     this.valueChange.emit(this.localValue);
   }
 
@@ -127,5 +151,5 @@ export class PropertyFieldComponent {
     console.log('propertyDelete' + descriptorId);
   }
 
-  protected reset() {}
+  protected readonly HTMLInputElement = HTMLInputElement;
 }
