@@ -65,12 +65,6 @@ export class PropertyFieldComponent {
     });
   }
 
-  propertyEditLink = computed(() => {
-    const prop = this.property();
-    // TODO: Build proper edit link with descriptorId and other params
-    return `/properties/edit/${prop.descriptorId}`;
-  });
-
   get localValue(): string {
     const current = this.internalValue();
     if (current !== null) return current;
