@@ -1,4 +1,4 @@
-import { Component, input, signal, computed, inject, effect, Signal } from '@angular/core';
+import { Component, input, signal, computed, inject, Signal } from '@angular/core';
 import { Property } from '../../models/property';
 import { PropertyFieldComponent } from '../../property-field/property-field.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
@@ -93,13 +93,6 @@ export class ResourceTypePropertiesComponent {
   showResourceTypeNameProperty = computed(() => {
     return this.contextId() === 1;
   });
-
-  constructor() {
-    effect(() => {
-      this.editor.resetChanges();
-      this.errorMessage.set(null);
-    });
-  }
 
   protected addProperty() {}
 

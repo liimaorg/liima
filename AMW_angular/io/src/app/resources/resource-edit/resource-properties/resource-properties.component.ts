@@ -1,4 +1,4 @@
-import { Component, input, signal, computed, inject, effect, Signal } from '@angular/core';
+import { Component, input, signal, computed, inject, Signal } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
@@ -109,13 +109,6 @@ export class ResourcePropertiesComponent {
   showOutOfServiceProperty = computed(() => {
     return this.resource()?.resourceTypeId === 1;
   });
-
-  constructor() {
-    effect(() => {
-      this.editor.resetChanges();
-      this.errorMessage.set(null);
-    });
-  }
 
   onPropertyChange(propertyName: string, newValue: string) {
     this.editor.onPropertyChange(propertyName, newValue);
