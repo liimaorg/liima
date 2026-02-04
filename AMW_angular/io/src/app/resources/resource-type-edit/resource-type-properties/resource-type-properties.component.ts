@@ -6,17 +6,20 @@ import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indi
 import { ResourceTypesService } from '../../services/resource-types.service';
 import { ResourceType } from '../../models/resource-type';
 import { ResourcePropertiesService } from '../../services/resource-properties.service';
+import { TileComponent } from '../../../shared/tile/tile.component';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-resource-type-properties',
   standalone: true,
-  imports: [PropertyFieldComponent, ButtonComponent, LoadingIndicatorComponent],
+  imports: [PropertyFieldComponent, ButtonComponent, LoadingIndicatorComponent, TileComponent],
   templateUrl: './resource-type-properties.component.html',
   styleUrl: './resource-type-properties.component.scss',
 })
 export class ResourceTypePropertiesComponent {
   contextId = input.required<number>();
 
+  private authService = inject(AuthService);
   private resourceTypeService = inject(ResourceTypesService);
   private propertiesService = inject(ResourcePropertiesService);
 
@@ -26,6 +29,7 @@ export class ResourceTypePropertiesComponent {
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   private changedProperties = signal<Map<string, string>>(new Map());
+  private resetProperties = signal<Set<string>>(new Set());
 
   properties = this.propertiesService.properties;
 
@@ -39,6 +43,17 @@ export class ResourceTypePropertiesComponent {
     return false;
   });
 
+  // same permissions for crud c-- TODO verify for resource-type + add context
+  permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canAddProperty: this.authService.hasPermission('RESOURCE', 'UPDATE', null, null, null),
+      };
+    } else {
+      return { canAddProperty: false };
+    }
+  });
+
   // Special property for resource type name (only shown in Global context)
   resourceTypeNameProperty = computed<Property>(() => ({
     name: 'resourceTypeName',
@@ -47,6 +62,7 @@ export class ResourceTypePropertiesComponent {
     replacedValue: '',
     generalComment: '',
     valueComment: '',
+    defaultValue: '',
     context: 'Global',
     nullable: false,
     optional: false,
@@ -84,12 +100,6 @@ export class ResourceTypePropertiesComponent {
     }
   }
 
-  resetChanges() {
-    this.changedProperties.set(new Map());
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-  }
-
   saveChanges() {
     const res = this.resourceType();
     const ctxId = this.contextId();
@@ -125,5 +135,38 @@ export class ResourceTypePropertiesComponent {
     //     this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
     //   },
     // });
+  }
+
+  protected addProperty() {}
+
+  onPropertyReset(propertyName: string, checked: boolean) {
+    if (checked) {
+      this.resetProperties.update((set) => {
+        const next = new Set(set);
+        next.add(propertyName);
+        return next;
+      });
+
+      this.changedProperties.update((map) => {
+        if (!map.has(propertyName)) return map;
+        const next = new Map(map);
+        next.delete(propertyName);
+        return next;
+      });
+    } else {
+      this.resetProperties.update((set) => {
+        if (!set.has(propertyName)) return set;
+        const next = new Set(set);
+        next.delete(propertyName);
+        return next;
+      });
+    }
+  }
+
+  resetChanges() {
+    this.changedProperties.set(new Map());
+    this.resetProperties.set(new Set());
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
   }
 }

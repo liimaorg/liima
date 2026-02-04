@@ -1,24 +1,8 @@
-.resource-type-properties-container {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.properties-header {
+.properties-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: end;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #ddd;
-}
-
-.properties-header h3 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
+  padding: 1rem 0 0;
 }
 
 .action-buttons {
@@ -27,16 +11,26 @@
 }
 
 .properties-section {
-  margin-bottom: 2rem;
-}
-
-.properties-section:last-child {
   margin-bottom: 0;
 }
 
 .properties-list {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  row-gap: 0.75rem;
+  column-gap: 2.5rem;
+}
+
+.properties-list > * {
+  flex: 0 0 calc(50% - 2rem);
+  min-width: 0;
+}
+
+@media (max-width: 992px) {
+  .properties-list > * {
+    flex-basis: 100%;
+  }
 }
 
 .no-properties {

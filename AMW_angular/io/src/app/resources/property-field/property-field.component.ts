@@ -16,6 +16,7 @@ export class PropertyFieldComponent {
   isResource = input<boolean>(true); // true for resource component, false for resourceType component
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
+  hideTooltip = input<boolean>(false);
   valueChange = output<string>();
   resetChange = output<boolean>();
 
