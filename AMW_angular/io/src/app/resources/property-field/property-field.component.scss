@@ -1,5 +1,12 @@
 :host {
-  margin: 0.75rem 0;
+  margin: 0.25rem 0;
+}
+
+.label-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
 }
 
 .property-label {
@@ -14,16 +21,7 @@
 
 .label-icon {
   margin-left: 0.2rem;
-  color: #333;
-}
-
-.property-name-link {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.property-name-link:hover {
-  text-decoration: underline;
+  color: #ced4da;
 }
 
 .required {
@@ -31,12 +29,13 @@
 }
 
 .property-input {
-  width: 60%;
+  width: 85%;
   padding: 0.2rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
   transition: border-color 0.2s;
+  line-height: 21px;
 }
 
 .property-input:focus {
@@ -45,13 +44,18 @@
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
-.property-input.error {
-  border: 3px solid #dc3545;
-  background-color: #f5cccc;
+.is-invalid {
+  border: 2px solid #ea868f;
 }
 
-.property-input.error:focus {
+.property-input.is-invalid:focus {
   box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.reset-btn {
+  padding: 0.2rem 12px;
+  margin-right: 0;
+  line-height: 21px;
 }
 
 .validation-error {

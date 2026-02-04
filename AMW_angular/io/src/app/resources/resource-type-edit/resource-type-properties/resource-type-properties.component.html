@@ -1,33 +1,28 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
-<div class="resource-type-properties-container">
-  <div class="properties-header">
-    <h3>Resource Type Properties</h3>
-    @if (hasChanges()) {
-      <div class="action-buttons">
-        <app-button [variant]="'secondary'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>
-        <app-button [variant]="'primary'" [size]="'sm'" (click)="saveChanges()" [disabled]="isSaving()">
-          {{ isSaving() ? 'Saving...' : 'Save Changes' }}
-        </app-button>
-      </div>
+<app-tile-component
+  [title]="'Properties'"
+  [actionName]="'New Property'"
+  [canAction]="permissions().canAddProperty"
+  [isVisible]="true"
+  (tileAction)="addProperty()"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+  <div>
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
     }
-  </div>
 
-  <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+    @if (successMessage()) {
+      <div class="success-banner">{{ successMessage() }}</div>
+    }
 
-  @if (errorMessage()) {
-    <div class="error-banner">{{ errorMessage() }}</div>
-  }
-
-  @if (successMessage()) {
-    <div class="success-banner">{{ successMessage() }}</div>
-  }
-
-  @if (!isLoading()) {
     <div class="properties-section">
       <div class="properties-list">
         @if (showResourceTypeNameProperty()) {
           <app-property-field
             [property]="resourceTypeNameProperty()"
+            [hideTooltip]="true"
             (valueChange)="onPropertyChange(resourceTypeNameProperty().name, $event)"
           ></app-property-field>
         }
@@ -35,14 +30,22 @@
         @for (property of properties(); track property.name) {
           <app-property-field
             [property]="property"
+            [canEdit]="permissions().canAddProperty"
+            [canDelete]="permissions().canAddProperty"
             (valueChange)="onPropertyChange(property.name, $event)"
+            (resetChange)="onPropertyReset(property.name, $event)"
           ></app-property-field>
         }
       </div>
     </div>
-  }
-
-  @if (!isLoading() && properties().length === 0) {
-    <div class="no-properties">No properties defined for this resource type</div>
-  }
-</div>
+    div class="properties-footer">
+    @if (hasChanges() && permissions().canAddProperty) {
+      <div class="action-buttons">
+        <app-button [variant]="'light'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>
+        <app-button [variant]="'primary'" [size]="'sm'" (click)="saveChanges()" [disabled]="isSaving()">
+          {{ isSaving() ? 'Saving...' : 'Save' }}
+        </app-button>
+      </div>
+    }
+  </div>
+</app-tile-component>

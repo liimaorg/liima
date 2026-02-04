@@ -1,16 +1,44 @@
 @if (showProperty()) {
-  <div class="d-flex gap-1 align-items-center mb-1">
-    <label [for]="fieldId()" class="property-label">
+  <div class="label-container">
+    <label [for]="fieldId()" class="property-label justify-content-start">
       {{ displayLabel() }}
-      <app-icon icon="info-circle-fill" class="label-icon"></app-icon
-    ></label>
+      @if (!hideTooltip()) {
+        <app-icon icon="info-circle-fill" class="label-icon"></app-icon>
+      }
+    </label>
+    <div class="justify-content-end gap-1 align-items-center">
+      @if (isEditable()) {
+        @if (canEdit()) {
+          <app-button
+            title="Edit"
+            [size]="'sm'"
+            [variant]="'link'"
+            [additionalClasses]="'mx-2 p-0'"
+            (click)="propertyEdit(property().descriptorId)"
+          >
+            <app-icon icon="pencil"></app-icon>
+          </app-button>
+        }
+        @if (canDelete()) {
+          <app-button
+            title="Delete"
+            [size]="'sm'"
+            [variant]="'link'"
+            [additionalClasses]="'p-0 link-danger'"
+            (click)="propertyDelete(property().descriptorId)"
+          >
+            <app-icon icon="trash"></app-icon>
+          </app-button>
+        }
+      }
+    </div>
   </div>
-  <div class="d-flex gap-1 align-items-center">
+  <div class="d-flex align-items-center input-group">
     <input
       [id]="fieldId()"
       type="{{ property().encrypted ? 'password' : 'text' }}"
-      class="property-input"
-      [class.error]="hasError()"
+      class="property-input form-control"
+      [class.is-invalid]="hasError()"
       [(ngModel)]="localValue"
       (blur)="onBlur()"
       [placeholder]="property().defaultValue || property().exampleValue || ''"
@@ -18,33 +46,17 @@
     />
 
     @if (canReset()) {
-      <input type="checkbox" [id]="resetId()" class="ms-2" [checked]="resetChecked()" (change)="toggleReset($event)" />
-      <label [for]="resetId()">Reset</label>
-    }
-
-    @if (isEditable()) {
-      @if (canEdit()) {
-        <app-button
-          title="Edit"
-          [size]="'sm'"
-          [variant]="'link'"
-          [additionalClasses]="'mx-2 p-0'"
-          (click)="propertyEdit(property().descriptorId)"
-        >
-          <app-icon icon="pencil"></app-icon>
-        </app-button>
-      }
-      @if (canDelete()) {
-        <app-button
-          title="Delete"
-          [size]="'sm'"
-          [variant]="'link'"
-          [additionalClasses]="'p-0 link-danger'"
-          (click)="propertyDelete(property().descriptorId)"
-        >
-          <app-icon icon="trash"></app-icon>
-        </app-button>
-      }
+      <input
+        type="checkbox"
+        class="btn-check"
+        [id]="resetId()"
+        autocomplete="off"
+        [checked]="resetChecked()"
+        (change)="toggleReset($event)"
+      />
+      <label class="btn btn-outline-primary reset-btn" [for]="resetId()"
+        ><i class="bi bi-arrow-counterclockwise"></i
+      ></label>
     }
   </div>
 
