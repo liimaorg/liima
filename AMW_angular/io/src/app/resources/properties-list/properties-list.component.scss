@@ -1,0 +1,19 @@
+
+.properties-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  row-gap: 0.75rem;
+  column-gap: 2.5rem;
+}
+
+.properties-list > * {
+  flex: 0 0 calc(50% - 2rem);
+  min-width: 0;
+}
+
+@media (max-width: 992px) {
+  .properties-list > * {
+    flex-basis: 100%;
+  }
+}

@@ -3,22 +3,25 @@ import { FormsModule } from '@angular/forms';
 import { Property } from '../models/property';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-property-field',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, IconComponent],
+  imports: [FormsModule, ButtonComponent, IconComponent, NgbTooltip],
   templateUrl: './property-field.component.html',
   styleUrl: './property-field.component.scss',
 })
 export class PropertyFieldComponent {
   property = input.required<Property>();
-  isResource = input<boolean>(true); // true for resource component, false for resourceType component
+  mode = input<'resource' | 'resourceType'>('resource');
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
   hideTooltip = input<boolean>(false);
   valueChange = output<string>();
   resetChange = output<boolean>();
+  editClicked = output<number>();
+  deleteClicked = output<number>();
 
   private internalValue = signal<string | null>(null);
   validationError = signal<string | null>(null);
@@ -38,7 +41,7 @@ export class PropertyFieldComponent {
 
   isEditable = computed(() => {
     const prop = this.property();
-    const isResourceContext = this.isResource();
+    const isResourceContext = this.mode() === 'resource';
     const origin = prop.propertyDescriptorOrigin;
 
     if (!origin) {
@@ -141,13 +144,11 @@ export class PropertyFieldComponent {
   }
 
   protected propertyEdit(descriptorId: number) {
-    // TODO
-    console.log('propertyEdit' + descriptorId);
+    this.editClicked.emit(descriptorId);
   }
 
   protected propertyDelete(descriptorId: number) {
-    // TODO
-    console.log('propertyDelete' + descriptorId);
+    this.deleteClicked.emit(descriptorId);
   }
 
   protected readonly HTMLInputElement = HTMLInputElement;

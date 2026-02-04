@@ -1,0 +1,22 @@
+<div>
+  @if (errorMessage()) {
+    <div class="error-banner">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="success-banner">{{ successMessage() }}</div>
+  }
+</div>
+<div class="properties-section">
+  <ng-content></ng-content>
+</div>
+<div class="properties-footer">
+  @if (hasChanges() && canEdit()) {
+    <div class="action-buttons">
+      <app-button [variant]="'light'" [size]="'sm'" (click)="cancelAction.emit()">Cancel</app-button>
+      <app-button [variant]="'primary'" [size]="'sm'" (click)="saveAction.emit()" [disabled]="isSaving()">
+        {{ isSaving() ? 'Saving...' : 'Save' }}
+      </app-button>
+    </div>
+  }
+</div>

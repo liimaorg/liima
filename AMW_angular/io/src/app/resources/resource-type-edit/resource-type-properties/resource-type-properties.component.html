@@ -8,37 +8,38 @@
   [noContent]="false"
   [notAllowed]="false"
 >
-  <div>
-    @if (errorMessage()) {
-      <div class="error-banner">{{ errorMessage() }}</div>
-    }
+  @if (errorMessage()) {
+    <div class="error-banner">{{ errorMessage() }}</div>
+  }
 
-    @if (successMessage()) {
-      <div class="success-banner">{{ successMessage() }}</div>
-    }
+  @if (successMessage()) {
+    <div class="success-banner">{{ successMessage() }}</div>
+  }
 
-    <div class="properties-section">
-      <div class="properties-list">
-        @if (showResourceTypeNameProperty()) {
-          <app-property-field
-            [property]="resourceTypeNameProperty()"
-            [hideTooltip]="true"
-            (valueChange)="onPropertyChange(resourceTypeNameProperty().name, $event)"
-          ></app-property-field>
-        }
+  <div class="properties-section">
+    <div class="properties-list">
+      @if (showResourceTypeNameProperty()) {
+        <app-property-field
+          [property]="resourceTypeNameProperty()"
+          [mode]="'resourceType'"
+          [hideTooltip]="true"
+          (valueChange)="onPropertyChange(resourceTypeNameProperty().name, $event)"
+        ></app-property-field>
+      }
 
-        @for (property of properties(); track property.name) {
-          <app-property-field
-            [property]="property"
-            [canEdit]="permissions().canAddProperty"
-            [canDelete]="permissions().canAddProperty"
-            (valueChange)="onPropertyChange(property.name, $event)"
-            (resetChange)="onPropertyReset(property.name, $event)"
-          ></app-property-field>
-        }
-      </div>
+      @for (property of properties(); track property.name) {
+        <app-property-field
+          [property]="property"
+          [mode]="'resourceType'"
+          [canEdit]="permissions().canAddProperty"
+          [canDelete]="permissions().canAddProperty"
+          (valueChange)="onPropertyChange(property.name, $event)"
+          (resetChange)="onPropertyReset(property.name, $event)"
+        ></app-property-field>
+      }
     </div>
-    div class="properties-footer">
+  </div>
+  <div class="properties-footer">
     @if (hasChanges() && permissions().canAddProperty) {
       <div class="action-buttons">
         <app-button [variant]="'light'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>

@@ -3,18 +3,19 @@ import { forkJoin, of } from 'rxjs';
 import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
 import { ResourceService } from '../../services/resource.service';
-import { PropertyFieldComponent } from '../../property-field/property-field.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourcePropertiesService } from '../../services/resource-properties.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { AuthService } from '../../../auth/auth.service';
 import { EnvironmentService } from '../../../deployment/environment.service';
+import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
+import { PropertiesListComponent } from '../../properties-list/properties-list.component';
+import { createPropertiesEditor } from '../../properties-editor';
 
 @Component({
   selector: 'app-resource-properties',
   standalone: true,
-  imports: [PropertyFieldComponent, ButtonComponent, LoadingIndicatorComponent, TileComponent],
+  imports: [LoadingIndicatorComponent, TileComponent, PropertiesPanelComponent, PropertiesListComponent],
   templateUrl: './resource-properties.component.html',
   styleUrl: './resource-properties.component.scss',
 })
@@ -31,10 +32,23 @@ export class ResourcePropertiesComponent {
   successMessage = signal<string | null>(null);
   resource: Signal<Resource> = this.resourceService.resource;
 
-  private changedProperties = signal<Map<string, string>>(new Map());
-  private resetProperties = signal<Set<string>>(new Set());
-
   properties = this.propertiesService.properties;
+
+  private editor = createPropertiesEditor(() => this.properties() || [], {
+    includeResetsInHasChanges: true,
+    unmarkResetOnChange: true,
+  });
+
+  specialProperties = computed<Property[]>(() => {
+    const result: Property[] = [];
+    if (this.showAppNameProperty()) {
+      result.push(this.appNameProperty());
+    }
+    if (this.showOutOfServiceProperty()) {
+      result.push(this.outOfServiceProperty());
+    }
+    return result;
+  });
 
   isLoading = computed(() => {
     if (this.resource()?.id && this.contextId()) {
@@ -95,8 +109,7 @@ export class ResourcePropertiesComponent {
 
   constructor() {
     effect(() => {
-      this.changedProperties.set(new Map());
-      this.resetProperties.set(new Set());
+      this.editor.resetChanges();
       this.errorMessage.set(null);
     });
   }
@@ -104,62 +117,18 @@ export class ResourcePropertiesComponent {
   // isDefinedOnInstanceOrType is only relevant for rendering editable properties
   // so there is no difference in propertytypes only for rendering the table component (releatedResourceProperties)
 
-  hasChanges = computed(() => this.changedProperties().size > 0 || this.resetProperties().size > 0);
+  hasChanges = this.editor.hasChanges;
 
   onPropertyChange(propertyName: string, newValue: string) {
-    // If user starts editing a property that was marked for reset, unmark the reset.
-    this.resetProperties.update((set) => {
-      if (!set.has(propertyName)) return set;
-      const next = new Set(set);
-      next.delete(propertyName);
-      return next;
-    });
-
-    const props = this.properties() || [];
-    const originalProperty = props.find((p) => p.name === propertyName);
-
-    if (originalProperty && originalProperty.value !== newValue) {
-      this.changedProperties.update((map) => {
-        const newMap = new Map(map);
-        newMap.set(propertyName, newValue);
-        return newMap;
-      });
-    } else {
-      this.changedProperties.update((map) => {
-        const newMap = new Map(map);
-        newMap.delete(propertyName);
-        return newMap;
-      });
-    }
+    this.editor.onPropertyChange(propertyName, newValue);
   }
 
   onPropertyReset(propertyName: string, checked: boolean) {
-    if (checked) {
-      this.resetProperties.update((set) => {
-        const next = new Set(set);
-        next.add(propertyName);
-        return next;
-      });
-
-      this.changedProperties.update((map) => {
-        if (!map.has(propertyName)) return map;
-        const next = new Map(map);
-        next.delete(propertyName);
-        return next;
-      });
-    } else {
-      this.resetProperties.update((set) => {
-        if (!set.has(propertyName)) return set;
-        const next = new Set(set);
-        next.delete(propertyName);
-        return next;
-      });
-    }
+    this.editor.onPropertyReset(propertyName, checked);
   }
 
   resetChanges() {
-    this.changedProperties.set(new Map());
-    this.resetProperties.set(new Set());
+    this.editor.resetChanges();
     this.errorMessage.set(null);
     this.successMessage.set(null);
   }
@@ -173,8 +142,8 @@ export class ResourcePropertiesComponent {
     const ctxId = this.contextId();
     if (!res?.id) return;
 
-    const changes = this.changedProperties();
-    const resets = this.resetProperties();
+    const changes = this.editor.changedProperties();
+    const resets = this.editor.resetProperties();
     if (changes.size === 0 && resets.size === 0) return;
 
     this.isSaving.set(true);
@@ -204,8 +173,7 @@ export class ResourcePropertiesComponent {
       next: () => {
         this.isSaving.set(false);
         this.successMessage.set('Properties saved successfully');
-        this.changedProperties.set(new Map());
-        this.resetProperties.set(new Set());
+        this.editor.resetChanges();
         this.propertiesService.setIdsForResourceProperties(res.id, ctxId);
         setTimeout(() => this.successMessage.set(null), 3000);
       },

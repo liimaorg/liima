@@ -1,0 +1,39 @@
+.properties-footer {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  padding: 1rem 0 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.properties-section {
+  margin-bottom: 0;
+}
+.no-properties {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.error-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid #f5c6cb;
+}
+
+.success-banner {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid #c3e6cb;
+}
