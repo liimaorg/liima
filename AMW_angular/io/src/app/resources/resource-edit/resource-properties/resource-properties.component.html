@@ -19,10 +19,10 @@
   >
     <app-properties-list
       [properties]="properties()"
-      [specialProperties]="specialProperties()"
       [canEdit]="permissions().canAddProperty"
       [canDelete]="permissions().canAddProperty"
       [mode]="'resource'"
+      [resetToken]="resetToken()"
       (valueChange)="onPropertyChange($event.name, $event.value)"
       (resetToggled)="onPropertyReset($event.name, $event.checked)"
     ></app-properties-list>

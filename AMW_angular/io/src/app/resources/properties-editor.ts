@@ -6,14 +6,12 @@ type CreatePropertiesEditorOptions = {
   unmarkResetOnChange?: boolean;
 };
 
-export function createPropertiesEditor(
-  getProperties: () => Property[],
-  options: CreatePropertiesEditorOptions = {},
-) {
+export function createPropertiesEditor(getProperties: () => Property[], options: CreatePropertiesEditorOptions = {}) {
   const { includeResetsInHasChanges = true, unmarkResetOnChange = true } = options;
 
   const changedProperties = signal<Map<string, string>>(new Map());
   const resetProperties = signal<Set<string>>(new Set());
+  const resetToken = signal(0);
 
   const hasChanges = computed(() => {
     if (includeResetsInHasChanges) {
@@ -77,11 +75,13 @@ export function createPropertiesEditor(
   function resetChanges() {
     changedProperties.set(new Map());
     resetProperties.set(new Set());
+    resetToken.update((v) => v + 1);
   }
 
   return {
     changedProperties,
     resetProperties,
+    resetToken,
     hasChanges,
     onPropertyChange,
     onPropertyReset,

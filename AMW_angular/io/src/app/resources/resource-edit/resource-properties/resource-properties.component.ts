@@ -32,14 +32,8 @@ export class ResourcePropertiesComponent {
   successMessage = signal<string | null>(null);
   resource: Signal<Resource> = this.resourceService.resource;
 
-  properties = this.propertiesService.properties;
-
-  private editor = createPropertiesEditor(() => this.properties() || [], {
-    includeResetsInHasChanges: true,
-    unmarkResetOnChange: true,
-  });
-
-  specialProperties = computed<Property[]>(() => {
+  properties = computed<Property[]>(() => {
+    const props = this.propertiesService.properties;
     const result: Property[] = [];
     if (this.showAppNameProperty()) {
       result.push(this.appNameProperty());
@@ -47,8 +41,17 @@ export class ResourcePropertiesComponent {
     if (this.showOutOfServiceProperty()) {
       result.push(this.outOfServiceProperty());
     }
+    result.push(...props());
     return result;
   });
+
+  private editor = createPropertiesEditor(() => [...this.properties().filter((p) => !p.disabled)], {
+    includeResetsInHasChanges: true,
+    unmarkResetOnChange: true,
+  });
+
+  hasChanges = this.editor.hasChanges;
+  resetToken = this.editor.resetToken;
 
   isLoading = computed(() => {
     if (this.resource()?.id && this.contextId()) {
@@ -80,7 +83,7 @@ export class ResourcePropertiesComponent {
     value: this.resource()?.name || '',
     replacedValue: '',
     generalComment: '',
-    valueComment: '',
+    valueComment: 'specialProperty',
     context: 'Global',
     nullable: false,
     optional: false,
@@ -93,7 +96,7 @@ export class ResourcePropertiesComponent {
     value: '', // TODO: Get from resource.resourceGroup.outOfServiceRelease.name when available
     replacedValue: '',
     generalComment: '',
-    valueComment: '',
+    valueComment: 'staticProperty',
     context: 'Global',
     optional: true,
     disabled: true,
@@ -114,11 +117,6 @@ export class ResourcePropertiesComponent {
     });
   }
 
-  // isDefinedOnInstanceOrType is only relevant for rendering editable properties
-  // so there is no difference in propertytypes only for rendering the table component (releatedResourceProperties)
-
-  hasChanges = this.editor.hasChanges;
-
   onPropertyChange(propertyName: string, newValue: string) {
     this.editor.onPropertyChange(propertyName, newValue);
   }
@@ -138,10 +136,6 @@ export class ResourcePropertiesComponent {
   }
 
   saveChanges() {
-    const res = this.resource();
-    const ctxId = this.contextId();
-    if (!res?.id) return;
-
     const changes = this.editor.changedProperties();
     const resets = this.editor.resetProperties();
     if (changes.size === 0 && resets.size === 0) return;
@@ -150,9 +144,8 @@ export class ResourcePropertiesComponent {
     this.errorMessage.set(null);
     this.successMessage.set(null);
 
-    const props = this.properties() || [];
     const updatedProperties: Property[] = Array.from(changes.entries()).map(([name, value]) => {
-      const original = props.find((p) => p.name === name);
+      const original = this.properties().find((p) => p.name === name);
       return {
         ...original,
         name,
@@ -161,11 +154,11 @@ export class ResourcePropertiesComponent {
     });
 
     const update$ = updatedProperties.length
-      ? this.propertiesService.bulkUpdateResourceProperties(res.id, updatedProperties, ctxId)
+      ? this.propertiesService.bulkUpdateResourceProperties(this.resource().id, updatedProperties, this.contextId())
       : of(void 0);
 
     const resetCalls$ = Array.from(resets.values()).map((name) =>
-      this.propertiesService.deleteResourceProperty(res.id, name, ctxId),
+      this.propertiesService.deleteResourceProperty(this.resource().id, name, this.contextId()),
     );
     const reset$ = resetCalls$.length ? forkJoin(resetCalls$).pipe() : of([]);
 
@@ -174,7 +167,7 @@ export class ResourcePropertiesComponent {
         this.isSaving.set(false);
         this.successMessage.set('Properties saved successfully');
         this.editor.resetChanges();
-        this.propertiesService.setIdsForResourceProperties(res.id, ctxId);
+        this.propertiesService.setIdsForResourceProperties(this.resource().id, this.contextId());
         setTimeout(() => this.successMessage.set(null), 3000);
       },
       error: (error) => {

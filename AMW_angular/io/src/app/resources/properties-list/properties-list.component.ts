@@ -12,10 +12,10 @@ import { PropertiesResetToggleAction, PropertiesValueChangeAction } from '../mod
 })
 export class PropertiesListComponent {
   properties = input.required<Property[]>();
-  specialProperties = input<Property[]>([]);
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
   mode = input<'resource' | 'resourceType'>('resource');
+  resetToken = input<number>(0);
 
   valueChange = output<PropertiesValueChangeAction>();
   resetToggled = output<PropertiesResetToggleAction>();
