@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, input, output, signal, computed, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Property } from '../models/property';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -15,6 +15,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 export class PropertyFieldComponent {
   property = input.required<Property>();
   mode = input<'resource' | 'resourceType'>('resource');
+  resetToken = input<number>(0);
   canEdit = input<boolean>(false);
   canDelete = input<boolean>(false);
   hideTooltip = input<boolean>(false);
@@ -54,6 +55,16 @@ export class PropertyFieldComponent {
     return isResourceContext ? origin === 'INSTANCE' : origin === 'TYPE';
   });
 
+  constructor() {
+    effect(() => {
+      this.resetToken();
+      this.internalValue.set(null);
+      this.resetChecked.set(false);
+      this.touched.set(false);
+      this.validationError.set(null);
+    });
+  }
+
   propertyEditLink = computed(() => {
     const prop = this.property();
     // TODO: Build proper edit link with descriptorId and other params
@@ -76,7 +87,7 @@ export class PropertyFieldComponent {
     this.valueChange.emit(this.localValue);
   }
 
-  protected toggleReset(event: Event) {
+  toggleReset(event: Event) {
     const target = event.target as HTMLInputElement | null;
     const checked = !!target?.checked;
     this.resetChecked.set(checked);

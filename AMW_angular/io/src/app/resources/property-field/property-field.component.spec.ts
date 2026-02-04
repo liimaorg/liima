@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ComponentRef } from '@angular/core';
+import { vi } from 'vitest';
 import { PropertyFieldComponent } from './property-field.component';
 import { Property } from '../models/property';
 
@@ -36,7 +37,7 @@ describe('PropertyFieldComponent', () => {
     component = fixture.componentInstance;
     componentRef = fixture.componentRef;
 
-    componentRef.setInput('isResource', true);
+    componentRef.setInput('mode', 'resource');
   });
 
   it('should create', () => {
@@ -178,10 +179,9 @@ describe('PropertyFieldComponent', () => {
     reset!.checked = true;
     const resetOnEvent = new Event('change');
     Object.defineProperty(resetOnEvent, 'target', { value: reset });
-    (component as any).toggleReset(resetOnEvent);
+    (component as PropertyFieldComponent).toggleReset(resetOnEvent);
     fixture.detectChanges();
 
-    const input: HTMLInputElement | null = fixture.nativeElement.querySelector(`#property-p1`);
     expect(component.localValue).toBe('PARENT');
     expect(component.resetChecked()).toBe(true);
     expect(component.isInputDisabled()).toBe(true);
@@ -191,7 +191,7 @@ describe('PropertyFieldComponent', () => {
     reset!.checked = false;
     const resetOffEvent = new Event('change');
     Object.defineProperty(resetOffEvent, 'target', { value: reset });
-    (component as any).toggleReset(resetOffEvent);
+    (component as PropertyFieldComponent).toggleReset(resetOffEvent);
     fixture.detectChanges();
 
     expect(component.localValue).toBe('CURRENT');
