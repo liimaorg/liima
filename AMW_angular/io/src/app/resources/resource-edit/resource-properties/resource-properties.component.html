@@ -8,53 +8,23 @@
   [noContent]="false"
   [notAllowed]="false"
 >
-  <div>
-    @if (errorMessage()) {
-      <div class="error-banner">{{ errorMessage() }}</div>
-    }
-
-    @if (successMessage()) {
-      <div class="success-banner">{{ successMessage() }}</div>
-    }
-  </div>
-  <div class="properties-section">
-    <div class="properties-list">
-      @if (showAppNameProperty()) {
-        <app-property-field
-          [property]="appNameProperty()"
-          [isResource]="true"
-          [hideTooltip]="true"
-          (valueChange)="onPropertyChange(appNameProperty().name, $event)"
-        ></app-property-field>
-      }
-      @if (showOutOfServiceProperty()) {
-        <app-property-field
-          [property]="outOfServiceProperty()"
-          [isResource]="true"
-          [hideTooltip]="true"
-          (valueChange)="onPropertyChange(outOfServiceProperty().name, $event)"
-        ></app-property-field>
-      }
-      @for (property of properties(); track property.descriptorId) {
-        <app-property-field
-          [property]="property"
-          [isResource]="true"
-          [canEdit]="permissions().canAddProperty"
-          [canDelete]="permissions().canAddProperty"
-          (valueChange)="onPropertyChange(property.name, $event)"
-          (resetChange)="onPropertyReset(property.name, $event)"
-        ></app-property-field>
-      }
-    </div>
-  </div>
-  <div class="properties-footer">
-    @if (hasChanges() && permissions().canAddProperty) {
-      <div class="action-buttons">
-        <app-button [variant]="'light'" [size]="'sm'" (click)="resetChanges()">Cancel</app-button>
-        <app-button [variant]="'primary'" [size]="'sm'" (click)="saveChanges()" [disabled]="isSaving()">
-          {{ isSaving() ? 'Saving...' : 'Save' }}
-        </app-button>
-      </div>
-    }
-  </div>
+  <app-properties-panel
+    [canEdit]="permissions().canAddProperty"
+    [isSaving]="isSaving()"
+    [hasChanges]="hasChanges()"
+    [errorMessage]="errorMessage()"
+    [successMessage]="successMessage()"
+    (cancelAction)="resetChanges()"
+    (saveAction)="saveChanges()"
+  >
+    <app-properties-list
+      [properties]="properties()"
+      [specialProperties]="specialProperties()"
+      [canEdit]="permissions().canAddProperty"
+      [canDelete]="permissions().canAddProperty"
+      [mode]="'resource'"
+      (valueChange)="onPropertyChange($event.name, $event.value)"
+      (resetToggled)="onPropertyReset($event.name, $event.checked)"
+    ></app-properties-list>
+  </app-properties-panel>
 </app-tile-component>

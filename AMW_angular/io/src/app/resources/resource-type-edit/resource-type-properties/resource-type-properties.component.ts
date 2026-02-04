@@ -8,6 +8,7 @@ import { ResourceType } from '../../models/resource-type';
 import { ResourcePropertiesService } from '../../services/resource-properties.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { AuthService } from '../../../auth/auth.service';
+import { createPropertiesEditor } from '../../properties-editor';
 
 @Component({
   selector: 'app-resource-type-properties',
@@ -28,10 +29,14 @@ export class ResourceTypePropertiesComponent {
   successMessage = signal<string | null>(null);
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
-  private changedProperties = signal<Map<string, string>>(new Map());
-  private resetProperties = signal<Set<string>>(new Set());
-
   properties = this.propertiesService.properties;
+
+  private editor = createPropertiesEditor(() => this.properties() || [], {
+    // preserve current behavior: hasChanges only considers changed values (not reset toggles)
+    includeResetsInHasChanges: false,
+    // preserve current behavior: editing a property does not auto-uncheck a previous reset
+    unmarkResetOnChange: false,
+  });
 
   isLoading = computed(() => {
     const ctxId = this.contextId();
@@ -74,30 +79,15 @@ export class ResourceTypePropertiesComponent {
 
   constructor() {
     effect(() => {
-      this.changedProperties.set(new Map());
+      this.editor.resetChanges();
       this.errorMessage.set(null);
     });
   }
 
-  hasChanges = computed(() => this.changedProperties().size > 0);
+  hasChanges = this.editor.hasChanges;
 
   onPropertyChange(propertyName: string, newValue: string) {
-    const props = this.properties() || [];
-    const originalProperty = props.find((p) => p.name === propertyName);
-
-    if (originalProperty && originalProperty.value !== newValue) {
-      this.changedProperties.update((map) => {
-        const newMap = new Map(map);
-        newMap.set(propertyName, newValue);
-        return newMap;
-      });
-    } else {
-      this.changedProperties.update((map) => {
-        const newMap = new Map(map);
-        newMap.delete(propertyName);
-        return newMap;
-      });
-    }
+    this.editor.onPropertyChange(propertyName, newValue);
   }
 
   saveChanges() {
@@ -105,7 +95,7 @@ export class ResourceTypePropertiesComponent {
     const ctxId = this.contextId();
     if (!res?.id) return;
 
-    const changes = this.changedProperties();
+    const changes = this.editor.changedProperties();
     if (changes.size === 0) return;
 
     this.isSaving.set(true);
@@ -126,7 +116,7 @@ export class ResourceTypePropertiesComponent {
     //   next: () => {
     //     this.isSaving.set(false);
     //     this.successMessage.set('Properties saved successfully');
-    //     this.changedProperties.set(new Map());
+    //     this.editor.resetChanges();
     //     this.propertiesService.setIdsForResourceTypeProperties(res.id, ctxId);
     //     setTimeout(() => this.successMessage.set(null), 3000);
     //   },
@@ -140,32 +130,11 @@ export class ResourceTypePropertiesComponent {
   protected addProperty() {}
 
   onPropertyReset(propertyName: string, checked: boolean) {
-    if (checked) {
-      this.resetProperties.update((set) => {
-        const next = new Set(set);
-        next.add(propertyName);
-        return next;
-      });
-
-      this.changedProperties.update((map) => {
-        if (!map.has(propertyName)) return map;
-        const next = new Map(map);
-        next.delete(propertyName);
-        return next;
-      });
-    } else {
-      this.resetProperties.update((set) => {
-        if (!set.has(propertyName)) return set;
-        const next = new Set(set);
-        next.delete(propertyName);
-        return next;
-      });
-    }
+    this.editor.onPropertyReset(propertyName, checked);
   }
 
   resetChanges() {
-    this.changedProperties.set(new Map());
-    this.resetProperties.set(new Set());
+    this.editor.resetChanges();
     this.errorMessage.set(null);
     this.successMessage.set(null);
   }

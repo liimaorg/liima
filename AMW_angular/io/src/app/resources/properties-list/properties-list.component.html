@@ -1,0 +1,23 @@
+<div class="properties-list">
+  @for (property of specialProperties(); track property.name) {
+    <app-property-field
+      [property]="property"
+      [mode]="mode()"
+      [hideTooltip]="true"
+      [canEdit]="canEdit()"
+      [canDelete]="canDelete()"
+      (valueChange)="valueChange.emit({ type: 'valueChange', name: property.name, value: $event })"
+    ></app-property-field>
+  }
+
+  @for (property of properties(); track property.descriptorId) {
+    <app-property-field
+      [property]="property"
+      [mode]="mode()"
+      [canEdit]="canEdit()"
+      [canDelete]="canDelete()"
+      (valueChange)="valueChange.emit({ type: 'valueChange', name: property.name, value: $event })"
+      (resetChange)="resetToggled.emit({ type: 'resetToggle', name: property.name, checked: $event })"
+    ></app-property-field>
+  }
+</div>

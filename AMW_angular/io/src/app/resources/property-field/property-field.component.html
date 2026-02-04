@@ -54,8 +54,8 @@
         [checked]="resetChecked()"
         (change)="toggleReset($event)"
       />
-      <label class="btn btn-outline-primary reset-btn" [for]="resetId()"
-        ><i class="bi bi-arrow-counterclockwise"></i
+      <label class="btn btn-outline-primary reset-btn" [ngbTooltip]="'Reset property'" [for]="resetId()">
+        <app-icon icon="arrow-counterclockwise"></app-icon
       ></label>
     }
   </div>
