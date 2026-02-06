@@ -1,7 +1,7 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 
-import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
@@ -9,7 +9,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,13 +44,13 @@ public class ResourceTypePropertiesRest {
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) throws
             NotFoundException {
 
-        List<PropertyDTO> resourceProperties = getResourceTypePropertiesById(resourceTypeId, contextId);
+        List<PropertyExtendedDTO> resourceProperties = getResourceTypePropertiesById(resourceTypeId, contextId);
         return Response.ok(resourceProperties).build();
     }
 
-    List<PropertyDTO> getResourceTypePropertiesById(Integer resourceTypeId, Integer contextId) throws NotFoundException {
+    List<PropertyExtendedDTO> getResourceTypePropertiesById(Integer resourceTypeId, Integer contextId) throws NotFoundException {
         ResourceTypeEntity resourceType = resourceBoundary.getResourceType(resourceTypeId);
-        List<PropertyDTO> result = new ArrayList<>();
+        List<PropertyExtendedDTO> result = new ArrayList<>();
 
         if (resourceType != null) {
             ContextEntity context = contextLocator.getById(contextId);
@@ -61,7 +60,7 @@ public class ResourceTypePropertiesRest {
                     context.getId());
 
             for (ResourceEditProperty property : properties) {
-                result.add(new PropertyDTO(property, context.getName(), contextId));
+                result.add(new PropertyExtendedDTO(property, context.getName(), context.getId()));
             }
         }
         return result;

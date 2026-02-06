@@ -95,9 +95,7 @@ export class PropertyFieldComponent {
     }
 
     this.touched.set(true);
-    this.validate();
     this.resetChange.emit(checked);
-    this.valueChange.emit(this.localValue);
   }
 
   /*
