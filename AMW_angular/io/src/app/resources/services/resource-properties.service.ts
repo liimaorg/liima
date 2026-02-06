@@ -6,6 +6,11 @@ import { Observable, startWith, Subject } from 'rxjs';
 import { Property } from '../models/property';
 import { catchError, shareReplay, switchMap } from 'rxjs/operators';
 
+export interface PropertyUpdate {
+  name: string;
+  value: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ResourcePropertiesService extends BaseService {
   private http = inject(HttpClient);
@@ -67,18 +72,14 @@ export class ResourcePropertiesService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  deleteResourceProperty(id: number, propertyName: string, contextId: number = 1): Observable<void> {
+  bulkUpdateResourcePropertiesValues(
+    id: number,
+    updates: PropertyUpdate[],
+    resets: PropertyUpdate[],
+    contextId: number = 1,
+  ): Observable<void> {
     const params = new HttpParams().set('contextId', contextId.toString());
-    return this.http
-      .delete<void>(`${this.getBaseUrl()}/resources/${id}/properties/${propertyName}`, {
-        params,
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  bulkUpdateResourceProperties(id: number, properties: Property[], contextId: number = 1): Observable<void> {
-    const params = new HttpParams().set('contextId', contextId.toString());
+    const properties = { updates: updates, resets: resets };
     return this.http
       .put<void>(`${this.getBaseUrl()}/resources/${id}/properties`, properties, {
         params,

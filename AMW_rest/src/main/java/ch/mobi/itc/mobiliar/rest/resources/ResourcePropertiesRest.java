@@ -20,7 +20,9 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import ch.mobi.itc.mobiliar.rest.dtos.PropertyBulkUpdateDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
@@ -70,13 +72,13 @@ public class ResourcePropertiesRest {
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) throws
             NotFoundException {
 
-        List<PropertyDTO> resourceProperties = getResourcePropertiesById(resourceId, contextId);
+        List<PropertyExtendedDTO> resourceProperties = getResourcePropertiesById(resourceId, contextId);
         return Response.ok(resourceProperties).build();
     }
 
-    List<PropertyDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws NotFoundException {
+    List<PropertyExtendedDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws NotFoundException {
         ResourceEntity resource = resourceBoundary.getResource(resourceId);
-        List<PropertyDTO> result = new ArrayList<>();
+        List<PropertyExtendedDTO> result = new ArrayList<>();
 
         if (resource != null) {
             ContextEntity context = contextLocator.getById(contextId);
@@ -86,7 +88,7 @@ public class ResourcePropertiesRest {
                     context.getId());
 
             for (ResourceEditProperty property : properties) {
-                result.add(new PropertyDTO(property, context.getName(), contextId));
+                result.add(new PropertyExtendedDTO(property, context.getName(), contextId));
             }
         }
         return result;
@@ -111,7 +113,7 @@ public class ResourcePropertiesRest {
 
             for (ResourceEditProperty property : properties) {
                 if (property.getTechnicalKey().equals(propertyName)) {
-                    return Response.ok(new PropertyDTO(property, context.getName(), contextId)).build();
+                    return Response.ok(new PropertyExtendedDTO(property, context.getName(), contextId)).build();
                 }
             }
         }
@@ -143,64 +145,63 @@ public class ResourcePropertiesRest {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
-    @Path("/{id : \\d+}/properties/{propertyName}")
-    @DELETE
+    // TODO Fully delete property
+
+
+    @PUT
+    @Path("/{id : \\d+}/properties")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Reset a property value to null")
-    public Response resetResourceProperty(
+    @Operation(summary = "Bulk update/ reset multiple property values using resource ID and context ID")
+    public Response bulkUpdateResourceProperties(
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
-            @PathParam("propertyName") String propertyName,
+            PropertyBulkUpdateDTO bulkRequest,
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
             throws ValidationException, NotFoundException {
+
+        if (bulkRequest == null || isRequestEmpty(bulkRequest)) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
 
         ResourceEntity resource = resourceBoundary.getResource(resourceId);
         ContextEntity context = contextLocator.getById(contextId);
 
-        propertyEditor.resetPropertyValueOnResourceForContext(
-                resource.getName(),
-                resource.getRelease().getName(),
-                context.getName(),
-                propertyName);
+        if (bulkRequest.getUpdates() != null) {
+            for (PropertyDTO property : bulkRequest.getUpdates()) {
+                validateProperty(property);
+                propertyEditor.setPropertyValueOnResourceForContext(
+                        resource.getName(),
+                        resource.getRelease().getName(),
+                        context.getName(),
+                        property.getName(),
+                        property.getValue());
+            }
+        }
+
+        if (bulkRequest.getResets() != null) {
+            for (PropertyDTO property : bulkRequest.getResets()) {
+                validateProperty(property);
+                propertyEditor.resetPropertyValueOnResourceForContext(
+                        resource.getName(),
+                        resource.getRelease().getName(),
+                        context.getName(),
+                        property.getName());
+            }
+        }
 
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
-    @PATCH
-    @Path("/{id : \\d+}/properties")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Bulk update multiple property values using resource ID and context ID")
-    public Response bulkUpdateResourceProperties(
-            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
-            List<PropertyDTO> properties,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
-            throws ValidationException, NotFoundException {
-
-        if (properties == null || properties.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Properties list cannot be empty")
-                    .build();
+    private void validateProperty(PropertyDTO property) throws ValidationException {
+        if (property == null || property.getName() == null || property.getName().trim().isEmpty()) {
+            throw new ValidationException("Property name cannot be null or empty");
         }
+    }
 
-        ResourceEntity resource = resourceBoundary.getResource(resourceId);
-        ContextEntity context = contextLocator.getById(contextId);
-
-        for (PropertyDTO property : properties) {
-            if (property.getName() == null || property.getName().trim().isEmpty()) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Property name cannot be null or empty")
-                        .build();
-            }
-
-            propertyEditor.setPropertyValueOnResourceForContext(
-                    resource.getName(),
-                    resource.getRelease().getName(),
-                    context.getName(),
-                    property.getName(),
-                    property.getValue());
-        }
-
-        return Response.status(Response.Status.NO_CONTENT).build();
+    private boolean isRequestEmpty(PropertyBulkUpdateDTO request) {
+        boolean updatesEmpty = request.getUpdates() == null || request.getUpdates().isEmpty();
+        boolean resetsEmpty = request.getResets() == null || request.getResets().isEmpty();
+        return updatesEmpty && resetsEmpty;
     }
 
     @GET
@@ -227,7 +228,7 @@ public class ResourcePropertiesRest {
             List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resource.getId(),
                     context.getId());
             for (ResourceEditProperty property : properties) {
-                result.add(new PropertyDTO(property, context.getName(), context.getId()));
+                result.add(new PropertyDTO(property, context.getName()));
             }
         }
         return result;
@@ -250,7 +251,7 @@ public class ResourcePropertiesRest {
                     context.getId());
             for (ResourceEditProperty property : properties) {
                 if (property.getTechnicalKey().equals(propertyName)) {
-                    return Response.ok(new PropertyDTO(property, context.getName(), context.getId())).build();
+                    return Response.ok(new PropertyDTO(property, context.getName())).build();
                 }
             }
         }
@@ -303,7 +304,12 @@ public class ResourcePropertiesRest {
             if (property.getName() == null || property.getName().trim().isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Property name cannot be null or empty").build();
             }
-            propertyEditor.setPropertyValueOnResourceForContext(resourceGroupName, releaseName, environment, property.getName(), property.getValue());
+            propertyEditor.setPropertyValueOnResourceForContext(
+                    resourceGroupName,
+                    releaseName,
+                    environment,
+                    property.getName(),
+                    property.getValue());
         }
 
         return Response.status(Response.Status.OK).build();

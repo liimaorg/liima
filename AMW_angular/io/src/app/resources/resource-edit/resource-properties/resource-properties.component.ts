@@ -4,7 +4,7 @@ import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
 import { ResourceService } from '../../services/resource.service';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { ResourcePropertiesService } from '../../services/resource-properties.service';
+import { PropertyUpdate, ResourcePropertiesService } from '../../services/resource-properties.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { AuthService } from '../../../auth/auth.service';
 import { EnvironmentService } from '../../../deployment/environment.service';
@@ -84,6 +84,7 @@ export class ResourcePropertiesComponent {
     replacedValue: '',
     generalComment: '',
     valueComment: 'specialProperty',
+    descriptorId: -1,
     context: 'Global',
     nullable: false,
     optional: false,
@@ -97,6 +98,7 @@ export class ResourcePropertiesComponent {
     replacedValue: '',
     generalComment: '',
     valueComment: 'staticProperty',
+    descriptorId: -2,
     context: 'Global',
     optional: true,
     disabled: true,
@@ -137,25 +139,27 @@ export class ResourcePropertiesComponent {
     this.errorMessage.set(null);
     this.successMessage.set(null);
 
-    const updatedProperties: Property[] = Array.from(changes.entries()).map(([name, value]) => {
-      const original = this.properties().find((p) => p.name === name);
-      return {
-        ...original,
-        name,
-        value,
-      } as Property;
-    });
+    const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
 
-    const update$ = updatedProperties.length
-      ? this.propertiesService.bulkUpdateResourceProperties(this.resource().id, updatedProperties, this.contextId())
-      : of(void 0);
+    const resetProperties: PropertyUpdate[] = Array.from(resets.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
 
-    const resetCalls$ = Array.from(resets.values()).map((name) =>
-      this.propertiesService.deleteResourceProperty(this.resource().id, name, this.contextId()),
-    );
-    const reset$ = resetCalls$.length ? forkJoin(resetCalls$).pipe() : of([]);
+    const update$ =
+      updatedProperties.length + resetProperties.length
+        ? this.propertiesService.bulkUpdateResourcePropertiesValues(
+            this.resource().id,
+            updatedProperties,
+            resetProperties,
+            this.contextId(),
+          )
+        : of(void 0);
 
-    forkJoin([update$, reset$]).subscribe({
+    forkJoin([update$]).subscribe({
       next: () => {
         this.isSaving.set(false);
         this.successMessage.set('Properties saved successfully');

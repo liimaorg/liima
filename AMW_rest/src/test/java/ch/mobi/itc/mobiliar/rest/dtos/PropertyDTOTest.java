@@ -25,7 +25,7 @@ public class PropertyDTOTest {
                 "typeContName", null, null, null, null,null,
                 null, null, null,null, null);
         // when
-        dto = new PropertyDTO(resourceEditProperty, context, 1);
+        dto = new PropertyDTO(resourceEditProperty, context);
 
         // then
         assertThat(dto.getValue(), is(propertyValue));
@@ -44,7 +44,7 @@ public class PropertyDTOTest {
                 "typeContName", null, null, null, null,null,
                 null, null, null,null, null);
         // when
-        dto = new PropertyDTO(resourceEditProperty, context,1);
+        dto = new PropertyDTO(resourceEditProperty, context);
 
         // then
         assertThat(dto.getValue(), is(defaultValue));
