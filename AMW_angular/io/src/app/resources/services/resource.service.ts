@@ -228,6 +228,14 @@ export class ResourceService extends BaseService {
       )
       .pipe(catchError(this.handleError));
   }
+
+  changeResourceRelease(resourceId: number, releaseId: number): Observable<void> {
+    return this.http
+      .put<void>(`${this.getBaseUrl()}/resources/${resourceId}/release/${releaseId}`, null, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
 
 function toAppWithVersion(r: any): AppWithVersion {
