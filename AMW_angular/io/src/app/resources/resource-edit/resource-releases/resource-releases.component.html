@@ -1,0 +1,29 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Releases'"
+  [actionName]="'New Release'"
+  [canAction]="permissions().canAddRelease"
+  [isVisible]="true"
+  (tileAction)="addRelease()"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+  @if (!releases() || releases().length < 1) {
+    <div class="no-content">
+      <span>No Release for this resource</span>
+    </div>
+  } @else {
+    <ul>
+      @for (release of releases(); track release) {
+        <li [class.fw-bold]="release.id === id()">
+          <a
+            [routerLink]="['/resource/edit']"
+            [queryParams]="{ ctx: contextId(), id: release.id, selectedResourceTypeId: resourceTypeId() }"
+          >
+            {{ release.name }}
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</app-tile-component>
