@@ -4,11 +4,13 @@ import { AuthService } from '../../../auth/auth.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { Release } from '../../models/release';
 import { RouterLink } from '@angular/router';
+import { IconComponent } from '../../../shared/icon/icon.component';
+import { ButtonComponent } from '../../../shared/button/button.component';
 
 @Component({
   selector: 'app-resource-releases',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent, RouterLink],
+  imports: [LoadingIndicatorComponent, TileComponent, RouterLink, IconComponent, ButtonComponent],
   templateUrl: './resource-releases.component.html',
 })
 export class ResourceReleasesComponent {
@@ -34,5 +36,9 @@ export class ResourceReleasesComponent {
 
   addRelease() {
     console.log('add release');
+  }
+
+  deleteRelease(releaseId: number) {
+    console.log('delete release', releaseId);
   }
 }
