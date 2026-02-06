@@ -6,17 +6,21 @@ import { Release } from '../../models/release';
 import { RouterLink } from '@angular/router';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-resource-releases',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent, RouterLink, IconComponent, ButtonComponent],
+  imports: [LoadingIndicatorComponent, TileComponent, RouterLink, IconComponent, ButtonComponent, ModalHeaderComponent],
   templateUrl: './resource-releases.component.html',
 })
 export class ResourceReleasesComponent {
   private authService = inject(AuthService);
+  private modalService = inject(NgbModal);
 
   isLoading = signal(false);
+  selectedRelease = signal<Release | null>(null);
 
   id = input.required<number>();
   releases = input.required<Release[]>();
@@ -38,7 +42,20 @@ export class ResourceReleasesComponent {
     console.log('add release');
   }
 
+  showDeleteConfirmation(content: unknown, release: Release) {
+    this.selectedRelease.set(release);
+    this.modalService.open(content).result.then(
+      () => {
+        this.deleteRelease(release.id);
+      },
+      () => {
+        this.selectedRelease.set(null);
+      },
+    );
+  }
+
   deleteRelease(releaseId: number) {
     console.log('delete release', releaseId);
+    this.selectedRelease.set(null);
   }
 }
