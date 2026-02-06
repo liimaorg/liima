@@ -7,13 +7,13 @@ import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { ResourceService } from '../../services/resource.service';
+import { Resource } from '../../models/resource';
 
 @Component({
   selector: 'app-resource-releases',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent, RouterLink, IconComponent, ButtonComponent, ModalHeaderComponent],
+  imports: [LoadingIndicatorComponent, TileComponent, RouterLink, IconComponent, ButtonComponent],
   templateUrl: './resource-releases.component.html',
 })
 export class ResourceReleasesComponent {
@@ -29,8 +29,7 @@ export class ResourceReleasesComponent {
   id = input.required<number>();
   releases = input.required<Release[]>();
   contextId = input.required<number>();
-  resourceTypeId = input.required<number>();
-  resourceGroupId = input.required<number>();
+  resource = input.required<Resource>();
 
   // same permissions for crud
   permissions = computed(() => {
