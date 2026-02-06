@@ -25,6 +25,21 @@
               {{ release.name }}
             </td>
             <td class="text-end">
+              @if (release.id === id()) {
+                <app-button
+                  title="Change Release"
+                  [size]="'sm'"
+                  [variant]="'link'"
+                  [additionalClasses]="'p-0 link-secondary me-2'"
+                  (click)="
+                    showChangeReleaseModal(release);
+                    $event.stopPropagation();
+                    $event.preventDefault()
+                  "
+                >
+                  <app-icon icon="pencil"></app-icon>
+                </app-button>
+              }
               <app-button
                 title="Delete"
                 [size]="'sm'"
@@ -93,6 +108,50 @@
       ngbAutofocus
     >
       Create
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #changeReleaseModal let-modal>
+  <app-modal-header
+    [title]="'Change Release for ' + releaseToChange()?.name"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
+  <div class="modal-body">
+    @if (availableReleases().length === 0) {
+      <p>No available releases to change to.</p>
+    } @else {
+      <div class="mb-3">
+        <label for="changeReleaseSelect" class="form-label">Select New Release</label>
+        <select
+          id="changeReleaseSelect"
+          class="form-select"
+          [(ngModel)]="selectedReleaseId"
+          [disabled]="isChangingRelease()"
+        >
+          <option [ngValue]="null">Select Release</option>
+          @for (release of availableReleases(); track release.id) {
+            <option [ngValue]="release.id">{{ release.name }}</option>
+          }
+        </select>
+      </div>
+      <p class="text-muted small">
+        This will move the current resource to the selected release. The resource will keep its properties and
+        relations.
+      </p>
+    }
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')" [disabled]="isChangingRelease()">
+      Cancel
+    </app-button>
+    <app-button
+      [variant]="'primary'"
+      (click)="modal.close('Change click')"
+      [disabled]="!selectedReleaseId || isChangingRelease()"
+      ngbAutofocus
+    >
+      Save
     </app-button>
   </div>
 </ng-template>

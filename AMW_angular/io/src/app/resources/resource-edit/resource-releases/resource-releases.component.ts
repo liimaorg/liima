@@ -38,8 +38,11 @@ export class ResourceReleasesComponent {
   availableReleases = signal<Release[]>([]);
   selectedReleaseId: number | null = null;
   isCreatingRelease = signal(false);
+  releaseToChange = signal<Release | null>(null);
+  isChangingRelease = signal(false);
 
   @ViewChild('createReleaseModal') createReleaseModal!: TemplateRef<any>;
+  @ViewChild('changeReleaseModal') changeReleaseModal!: TemplateRef<any>;
 
   id = input.required<number>();
   releases = input.required<Release[]>();
@@ -121,6 +124,64 @@ export class ResourceReleasesComponent {
           this.selectedReleaseId = null;
         },
       });
+  }
+
+  showChangeReleaseModal(release: Release) {
+    this.releaseToChange.set(release);
+    this.isLoading.set(true);
+    this.resourceService.getAvailableReleasesForResource(release.id).subscribe({
+      next: (releases) => {
+        this.availableReleases.set(releases);
+        this.selectedReleaseId = null;
+        this.isLoading.set(false);
+        this.openChangeReleaseModal();
+      },
+      error: (error) => {
+        console.error('Failed to load available releases:', error);
+        this.isLoading.set(false);
+        this.releaseToChange.set(null);
+      },
+    });
+  }
+
+  openChangeReleaseModal() {
+    const modalRef = this.modalService.open(this.changeReleaseModal);
+    modalRef.result.then(
+      () => {
+        if (this.selectedReleaseId && this.releaseToChange()) {
+          this.changeRelease(this.releaseToChange()!.id, this.selectedReleaseId);
+        }
+      },
+      () => {
+        this.selectedReleaseId = null;
+        this.releaseToChange.set(null);
+      },
+    );
+  }
+
+  changeRelease(resourceId: number, releaseId: number) {
+    this.isChangingRelease.set(true);
+    this.resourceService.changeResourceRelease(resourceId, releaseId).subscribe({
+      next: () => {
+        this.isChangingRelease.set(false);
+        this.selectedReleaseId = null;
+        this.releaseToChange.set(null);
+        // Reload the resource and releases data to reflect the change
+        this.resourceService.setIdForResource(resourceId);
+        // Navigate to the changed resource (stays on the same resource, now in new release)
+        void this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { id: resourceId },
+          queryParamsHandling: 'merge',
+        });
+      },
+      error: (error) => {
+        console.error('Failed to change release:', error);
+        this.isChangingRelease.set(false);
+        this.selectedReleaseId = null;
+        this.releaseToChange.set(null);
+      },
+    });
   }
 
   showDeleteConfirmation(content: unknown, release: Release) {
