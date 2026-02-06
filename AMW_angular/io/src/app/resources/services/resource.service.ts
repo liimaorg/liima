@@ -202,6 +202,14 @@ export class ResourceService extends BaseService {
       .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`)
       .pipe(catchError(this.handleError));
   }
+
+  deleteResourceByResourceId(resourceId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resources/${resourceId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
 
 function toAppWithVersion(r: any): AppWithVersion {
