@@ -69,7 +69,7 @@ export class ResourcePropertiesComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canAddProperty: this.authService.hasPermission('RESOURCE', 'UPDATE', null, null, this.context().name),
+        canAddProperty: this.authService.hasPermission('RESOURCE', 'UPDATE', null, null, this.context()?.name),
       };
     } else {
       return { canAddProperty: false };

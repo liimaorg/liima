@@ -202,6 +202,40 @@ export class ResourceService extends BaseService {
       .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`)
       .pipe(catchError(this.handleError));
   }
+
+  deleteResourceByResourceId(resourceId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resources/${resourceId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getAvailableReleasesForResource(resourceId: number): Observable<Release[]> {
+    return this.http
+      .get<Release[]>(`${this.getBaseUrl()}/resources/${resourceId}/availableReleases`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createResourceRelease(resourceGroupName: string, releaseName: string, sourceReleaseName: string): Observable<void> {
+    return this.http
+      .post<void>(
+        `${this.getBaseUrl()}/resources/${resourceGroupName}`,
+        { releaseName, sourceReleaseName },
+        { headers: this.getHeaders() },
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  changeResourceRelease(resourceId: number, releaseId: number): Observable<void> {
+    return this.http
+      .put<void>(`${this.getBaseUrl()}/resources/${resourceId}/release/${releaseId}`, null, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
 
 function toAppWithVersion(r: any): AppWithVersion {
