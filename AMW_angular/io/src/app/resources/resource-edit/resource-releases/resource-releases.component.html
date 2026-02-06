@@ -47,7 +47,7 @@
 </app-tile-component>
 
 <ng-template #deleteReleaseConfirmation let-modal>
-  < app-modal-header
+  <app-modal-header
     [title]="'Delete release ' + selectedRelease()?.name"
     (cancel)="modal.dismiss('Cross click')"
   ></app-modal-header>
@@ -57,5 +57,42 @@
   <div class="modal-footer">
     <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
     <app-button [variant]="'danger'" (click)="modal.close('Confirm click')" ngbAutofocus>Delete</app-button>
+  </div>
+</ng-template>
+
+<ng-template #createReleaseModal let-modal>
+  <app-modal-header [title]="'Create New Release'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    @if (availableReleases().length === 0) {
+      <p>No available releases to create.</p>
+    } @else {
+      <div class="mb-3">
+        <label for="releaseSelect" class="form-label">Select Release</label>
+        <select
+          id="releaseSelect"
+          class="form-select"
+          [(ngModel)]="selectedReleaseId"
+          [disabled]="isCreatingRelease()"
+        >
+          <option [ngValue]="null">Select Release</option>
+          @for (release of availableReleases(); track release.id) {
+            <option [ngValue]="release.id">{{ release.name }}</option>
+          }
+        </select>
+      </div>
+    }
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')" [disabled]="isCreatingRelease()">
+      Cancel
+    </app-button>
+    <app-button
+      [variant]="'primary'"
+      (click)="modal.close('Create click')"
+      [disabled]="!selectedReleaseId || isCreatingRelease()"
+      ngbAutofocus
+    >
+      Create
+    </app-button>
   </div>
 </ng-template>
