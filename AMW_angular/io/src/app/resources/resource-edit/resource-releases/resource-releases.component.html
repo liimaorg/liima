@@ -19,7 +19,7 @@
           <tr
             style="cursor: pointer"
             [routerLink]="['/resource/edit']"
-            [queryParams]="{ ctx: contextId(), id: release.id, selectedResourceTypeId: resourceTypeId() }"
+            [queryParams]="{ ctx: contextId(), id: release.id, selectedResourceTypeId: resource().resourceTypeId }"
           >
             <td [class.fw-bold]="release.id === id()">
               {{ release.name }}
@@ -47,7 +47,7 @@
 </app-tile-component>
 
 <ng-template #deleteReleaseConfirmation let-modal>
-  <app-modal-header
+  < app-modal-header
     [title]="'Delete release ' + selectedRelease()?.name"
     (cancel)="modal.dismiss('Cross click')"
   ></app-modal-header>

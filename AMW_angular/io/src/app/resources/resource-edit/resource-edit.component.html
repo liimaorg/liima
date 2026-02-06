@@ -41,8 +41,7 @@
           [id]="id()"
           [releases]="releases()"
           [contextId]="contextId()"
-          [resourceTypeId]="resource()?.resourceTypeId || 0"
-          [resourceGroupId]="resource()?.resourceGroupId || 0"
+          [resource]="resource()"
         ></app-resource-releases>
         <app-resource-properties [contextId]="contextId()"></app-resource-properties>
         <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
