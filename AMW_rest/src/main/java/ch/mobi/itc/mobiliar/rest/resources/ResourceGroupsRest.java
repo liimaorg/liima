@@ -140,6 +140,19 @@ public class ResourceGroupsRest {
         return Response.ok(new ResourceDTO(resourceBoundary.getResource(id))).build();
     }
 
+    @DELETE
+    @Path("/{id : \\d+}")
+    @Operation(summary = "Delete a resource by id")
+    @Produces(APPLICATION_JSON)
+    public Response deleteResourceById(@Parameter(description = "Resource ID") @PathParam("id") Integer id) throws NotFoundException, ElementAlreadyExistsException {
+        ResourceEntity resource = resourceLocator.getResourceById(id);
+        if (resource == null) {
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
+        }
+        resourceBoundary.removeResource(id);
+        return Response.ok().build();
+    }
+
     @GET
     @Produces(APPLICATION_JSON)
     @Operation(summary = "Get resource groups", description = "Returns the available resource groups")

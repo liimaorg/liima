@@ -3,11 +3,12 @@ import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indi
 import { AuthService } from '../../../auth/auth.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { Release } from '../../models/release';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
+import { ResourceService } from '../../services/resource.service';
 
 @Component({
   selector: 'app-resource-releases',
@@ -18,6 +19,9 @@ import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.
 export class ResourceReleasesComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
+  private resourceService = inject(ResourceService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   isLoading = signal(false);
   selectedRelease = signal<Release | null>(null);
@@ -26,6 +30,7 @@ export class ResourceReleasesComponent {
   releases = input.required<Release[]>();
   contextId = input.required<number>();
   resourceTypeId = input.required<number>();
+  resourceGroupId = input.required<number>();
 
   // same permissions for crud
   permissions = computed(() => {
@@ -54,8 +59,38 @@ export class ResourceReleasesComponent {
     );
   }
 
-  deleteRelease(releaseId: number) {
-    console.log('delete release', releaseId);
-    this.selectedRelease.set(null);
+  deleteRelease(resourceIdToDelete: number) {
+    // Note: release.id is actually the Resource ID, not the Release ID
+    // This is how the backend constructs the ReleaseDTO
+    this.isLoading.set(true);
+    this.resourceService.deleteResourceByResourceId(resourceIdToDelete).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.selectedRelease.set(null);
+        // Only navigate if we deleted the currently selected release
+        if (resourceIdToDelete === this.id()) {
+          const remainingReleases = this.releases().filter((r) => r.id !== resourceIdToDelete);
+          if (remainingReleases.length > 0) {
+            // Navigate to the first remaining release
+            void this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: { id: remainingReleases[0].id },
+              queryParamsHandling: 'merge',
+            });
+          } else {
+            // No releases left, navigate to resources list
+            void this.router.navigate(['/resources']);
+          }
+        } else {
+          // Reload the releases list to remove the deleted release from the UI
+          this.resourceService.setIdForResource(this.id());
+        }
+      },
+      error: (error) => {
+        console.error('Failed to delete release:', error);
+        this.isLoading.set(false);
+        this.selectedRelease.set(null);
+      },
+    });
   }
 }
