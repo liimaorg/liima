@@ -13,17 +13,31 @@
       <span>No Release for this resource</span>
     </div>
   } @else {
-    <ul>
-      @for (release of releases(); track release) {
-        <li [class.fw-bold]="release.id === id()">
-          <a
+    <table class="table table-borderless">
+      <tbody>
+        @for (release of releases(); track release) {
+          <tr
+            style="cursor: pointer"
             [routerLink]="['/resource/edit']"
             [queryParams]="{ ctx: contextId(), id: release.id, selectedResourceTypeId: resourceTypeId() }"
           >
-            {{ release.name }}
-          </a>
-        </li>
-      }
-    </ul>
+            <td [class.fw-bold]="release.id === id()">
+              {{ release.name }}
+            </td>
+            <td class="text-end">
+              <app-button
+                title="Delete"
+                [size]="'sm'"
+                [variant]="'link'"
+                [additionalClasses]="'p-0 link-danger'"
+                (click)="deleteRelease(release.id); $event.stopPropagation(); $event.preventDefault()"
+              >
+                <app-icon icon="trash"></app-icon>
+              </app-button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
   }
 </app-tile-component>
