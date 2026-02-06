@@ -1,14 +1,32 @@
 <div class="properties-list">
-  @for (property of properties(); track property.descriptorId) {
-    <app-property-field
-      [property]="property"
-      [mode]="mode()"
-      [resetToken]="resetToken()"
-      [hideTooltip]="property.valueComment === 'staticProperty'"
-      [canEdit]="canEdit()"
-      [canDelete]="canDelete()"
-      (valueChange)="valueChange.emit({ type: 'valueChange', name: property.name, value: $event })"
-      (resetChange)="resetToggled.emit({ type: 'resetToggle', name: property.name, checked: $event })"
-    ></app-property-field>
-  }
+  <div class="properties-column">
+    @for (property of leftProperties(); track property.descriptorId) {
+      <ng-container
+        [ngTemplateOutlet]="propertyField"
+        [ngTemplateOutletContext]="{ property: property }"
+      ></ng-container>
+    }
+  </div>
+
+  <div class="properties-column">
+    @for (property of rightProperties(); track property.descriptorId) {
+      <ng-container
+        [ngTemplateOutlet]="propertyField"
+        [ngTemplateOutletContext]="{ property: property }"
+      ></ng-container>
+    }
+  </div>
 </div>
+
+<ng-template #propertyField let-property="property">
+  <app-property-field
+    [property]="property"
+    [mode]="mode()"
+    [resetToken]="resetToken()"
+    [hideTooltip]="property.valueComment === 'staticProperty'"
+    [canEdit]="canEdit()"
+    [canDelete]="canDelete()"
+    (valueChange)="valueChange.emit({ type: 'valueChange', name: property.name, value: $event })"
+    (resetChange)="resetToggled.emit({ type: 'resetToggle', name: property.name, checked: $event })"
+  ></app-property-field>
+</ng-template>
