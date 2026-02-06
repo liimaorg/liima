@@ -512,4 +512,23 @@ public class ResourceGroupsRest {
                 .collect(Collectors.toList());
         return Response.ok(releaseDTOs).build();
     }
+
+    @Path("/{resourceId}/release/{releaseId}")
+    @PUT
+    @Produces(APPLICATION_JSON)
+    @Operation(summary = "Change the release of a resource - used by Angular")
+    public Response changeResourceRelease(@PathParam("resourceId") Integer resourceId,
+                                         @PathParam("releaseId") Integer releaseId) {
+        try {
+            releaseMgmtService.changeReleaseOfResource(
+                resourceLocator.getResourceById(resourceId),
+                releaseLocator.getReleaseById(releaseId)
+            );
+            return Response.ok().build();
+        } catch (ResourceNotFoundException e) {
+            return Response.status(NOT_FOUND).entity(new ExceptionDto(e.getMessage())).build();
+        } catch (NotFoundException e) {
+            return Response.status(NOT_FOUND).entity(new ExceptionDto(e.getMessage())).build();
+        }
+    }
 }
