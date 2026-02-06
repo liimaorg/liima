@@ -37,6 +37,12 @@
         <app-contexts-list></app-contexts-list>
       </div>
       <div class="flex-grow-1">
+        <app-resource-releases
+          [id]="id()"
+          [releases]="releases()"
+          [contextId]="contextId()"
+          [resourceTypeId]="resource()?.resourceTypeId || 0"
+        ></app-resource-releases>
         <app-resource-properties [contextId]="contextId()"></app-resource-properties>
         <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
         <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
