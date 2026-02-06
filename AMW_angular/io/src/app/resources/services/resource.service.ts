@@ -210,6 +210,24 @@ export class ResourceService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  getAvailableReleasesForResource(resourceId: number): Observable<Release[]> {
+    return this.http
+      .get<Release[]>(`${this.getBaseUrl()}/resources/${resourceId}/availableReleases`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createResourceRelease(resourceGroupName: string, releaseName: string, sourceReleaseName: string): Observable<void> {
+    return this.http
+      .post<void>(
+        `${this.getBaseUrl()}/resources/${resourceGroupName}`,
+        { releaseName, sourceReleaseName },
+        { headers: this.getHeaders() },
+      )
+      .pipe(catchError(this.handleError));
+  }
 }
 
 function toAppWithVersion(r: any): AppWithVersion {

@@ -2,6 +2,7 @@ import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-modal-header',
+  standalone: true,
   imports: [],
   template: `<div class="modal-header">
     <h5 class="modal-title">{{ title() }}</h5>

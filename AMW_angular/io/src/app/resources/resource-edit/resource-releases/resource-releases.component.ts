@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal, ViewChild, TemplateRef } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { AuthService } from '../../../auth/auth.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
@@ -9,11 +9,21 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResourceService } from '../../services/resource.service';
 import { Resource } from '../../models/resource';
+import { FormsModule } from '@angular/forms';
+import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 
 @Component({
   selector: 'app-resource-releases',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent, RouterLink, IconComponent, ButtonComponent],
+  imports: [
+    LoadingIndicatorComponent,
+    TileComponent,
+    RouterLink,
+    IconComponent,
+    ButtonComponent,
+    FormsModule,
+    ModalHeaderComponent,
+  ],
   templateUrl: './resource-releases.component.html',
 })
 export class ResourceReleasesComponent {
@@ -25,6 +35,11 @@ export class ResourceReleasesComponent {
 
   isLoading = signal(false);
   selectedRelease = signal<Release | null>(null);
+  availableReleases = signal<Release[]>([]);
+  selectedReleaseId: number | null = null;
+  isCreatingRelease = signal(false);
+
+  @ViewChild('createReleaseModal') createReleaseModal!: TemplateRef<any>;
 
   id = input.required<number>();
   releases = input.required<Release[]>();
@@ -43,7 +58,69 @@ export class ResourceReleasesComponent {
   });
 
   addRelease() {
-    console.log('add release');
+    this.isLoading.set(true);
+    this.resourceService.getAvailableReleasesForResource(this.id()).subscribe({
+      next: (releases) => {
+        this.availableReleases.set(releases);
+        this.selectedReleaseId = null;
+        this.isLoading.set(false);
+        this.showCreateReleaseModal();
+      },
+      error: (error) => {
+        console.error('Failed to load available releases:', error);
+        this.isLoading.set(false);
+      },
+    });
+  }
+
+  showCreateReleaseModal() {
+    const modalRef = this.modalService.open(this.createReleaseModal);
+    modalRef.result.then(
+      () => {
+        if (this.selectedReleaseId) {
+          this.createRelease(this.selectedReleaseId);
+        }
+      },
+      () => {
+        this.selectedReleaseId = null;
+      },
+    );
+  }
+
+  createRelease(releaseId: number) {
+    const selectedRelease = this.availableReleases().find((r) => r.id === releaseId);
+    if (!selectedRelease || !selectedRelease.name) {
+      console.error('Selected release not found');
+      return;
+    }
+
+    const currentResource = this.resource();
+    if (!currentResource || !currentResource.name) {
+      console.error('Current resource not found');
+      return;
+    }
+
+    const currentReleaseName = this.releases().find((r) => r.id === this.id())?.name;
+    if (!currentReleaseName) {
+      console.error('Current release name not found');
+      return;
+    }
+
+    this.isCreatingRelease.set(true);
+    this.resourceService
+      .createResourceRelease(currentResource.name, selectedRelease.name, currentReleaseName)
+      .subscribe({
+        next: () => {
+          this.isCreatingRelease.set(false);
+          this.selectedReleaseId = null;
+          this.resourceService.setIdForResource(this.id());
+        },
+        error: (error) => {
+          console.error('Failed to create release:', error);
+          this.isCreatingRelease.set(false);
+          this.selectedReleaseId = null;
+        },
+      });
   }
 
   showDeleteConfirmation(content: unknown, release: Release) {

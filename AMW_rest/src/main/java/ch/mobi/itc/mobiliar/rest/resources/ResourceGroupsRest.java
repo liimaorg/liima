@@ -132,6 +132,9 @@ public class ResourceGroupsRest {
     @Inject
     private ResourceRelationService resourceRelationService;
 
+    @Inject
+    private ch.puzzle.itc.mobiliar.business.releasing.boundary.Releasing releasing;
+
     @GET
     @Path("/{id : \\d+}")
     @Operation(summary = "Get a resource by id")
@@ -492,5 +495,21 @@ public class ResourceGroupsRest {
                 .map(entry -> new ReleaseDTO(entry.getValue(), entry.getKey()))
                 .collect(Collectors.toList());
         return Response.ok(releases).build();
+    }
+
+    @Path("/{resourceId}/availableReleases")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get available releases for creating a new resource release - used by Angular")
+    public Response getAvailableReleasesForResource(@PathParam("resourceId") Integer resourceId) {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        List<ReleaseEntity> availableReleases = releasing.getNotDefinedReleasesForResource(resource);
+        List<ReleaseDTO> releaseDTOs = availableReleases.stream()
+                .map(release -> new ReleaseDTO(release.getId(), release.getName()))
+                .collect(Collectors.toList());
+        return Response.ok(releaseDTOs).build();
     }
 }
