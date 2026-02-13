@@ -41,8 +41,8 @@ export class ResourceReleasesComponent {
   releaseToChange = signal<Release | null>(null);
   isChangingRelease = signal(false);
 
-  @ViewChild('createReleaseModal') createReleaseModal!: TemplateRef<any>;
-  @ViewChild('changeReleaseModal') changeReleaseModal!: TemplateRef<any>;
+  @ViewChild('createReleaseModal') createReleaseModal!: TemplateRef<void>;
+  @ViewChild('changeReleaseModal') changeReleaseModal!: TemplateRef<void>;
 
   id = input.required<number>();
   releases = input.required<Release[]>();
