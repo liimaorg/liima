@@ -63,7 +63,7 @@
 
 <ng-template #deleteReleaseConfirmation let-modal>
   <app-modal-header
-    [title]="'Delete release ' + selectedRelease()?.name"
+    [title]="'Delete release ' + releaseToDelete()?.name"
     (cancel)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
@@ -86,7 +86,8 @@
         <select
           id="releaseSelect"
           class="form-select"
-          [(ngModel)]="selectedReleaseId"
+          [ngModel]="selectedReleaseId()"
+          (ngModelChange)="selectedReleaseId.set($event)"
           [disabled]="isCreatingRelease()"
         >
           <option [ngValue]="null">Select Release</option>
@@ -104,7 +105,7 @@
     <app-button
       [variant]="'primary'"
       (click)="modal.close('Create click')"
-      [disabled]="!selectedReleaseId || isCreatingRelease()"
+      [disabled]="!selectedReleaseId() || isCreatingRelease()"
       ngbAutofocus
     >
       Create
@@ -126,7 +127,8 @@
         <select
           id="changeReleaseSelect"
           class="form-select"
-          [(ngModel)]="selectedReleaseId"
+          [ngModel]="selectedReleaseId()"
+          (ngModelChange)="selectedReleaseId.set($event)"
           [disabled]="isChangingRelease()"
         >
           <option [ngValue]="null">Select Release</option>
@@ -148,7 +150,7 @@
     <app-button
       [variant]="'primary'"
       (click)="modal.close('Change click')"
-      [disabled]="!selectedReleaseId || isChangingRelease()"
+      [disabled]="!selectedReleaseId() || isChangingRelease()"
       ngbAutofocus
     >
       Save
