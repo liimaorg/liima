@@ -8,27 +8,50 @@
   </div>
 
   <div class="page-content">
-    @if (!result() && !isLoading() && !errorMessage()) {
-      <div class="d-flex flex-column align-items-center gap-3 mt-4">
-        <p>
-          Generate a test configuration for <strong>{{ resourceName() }}</strong>
-          in environment <strong>{{ contextName() }}</strong>
-          with release <strong>{{ releaseName() }}</strong>.
-        </p>
-        <app-button [variant]="'primary'" (click)="generate()">Generate</app-button>
+    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+      <app-button [variant]="'primary'" (click)="generate()" [disabled]="generating()">Generate</app-button>
+
+      <div ngbDropdown>
+        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+          {{ compareReleaseName() || "Don't compare" }}
+        </app-button>
+        <ul ngbDropdownMenu>
+          <li ngbDropdownItem>
+            <a class="dropdown-item" tabindex="0" (click)="setCompareRelease(null)" (keyup.enter)="setCompareRelease(null)">
+              Don't compare
+            </a>
+          </li>
+          @for (release of releases(); track release.id) {
+            @if (release.id !== resourceId()) {
+              <li ngbDropdownItem>
+                <a
+                  class="dropdown-item"
+                  tabindex="0"
+                  (click)="setCompareRelease(release.id)"
+                  (keyup.enter)="setCompareRelease(release.id)"
+                >{{ release.name }}</a>
+              </li>
+            }
+          }
+        </ul>
       </div>
-    }
+
+      <span class="text-muted">
+        {{ releaseName() }}
+        @if (isCompareMode()) {
+          vs {{ compareReleaseName() }}
+        }
+        in {{ contextName() }}
+      </span>
+    </div>
 
     @if (errorMessage()) {
       <div class="alert alert-danger mt-3" role="alert">
         {{ errorMessage() }}
-        <div class="mt-2">
-          <app-button [variant]="'primary'" [size]="'sm'" (click)="generate()">Retry</app-button>
-        </div>
       </div>
     }
 
-    @if (result(); as res) {
+    @if (!isCompareMode() && result(); as res) {
       <div class="mt-3">
         @if (res.error) {
           <div class="alert alert-warning" role="alert">{{ res.error }}</div>
@@ -84,7 +107,9 @@
                           </ul>
                         </div>
                       }
-                      <pre class="mb-0 p-3 template-code"><code>{{ tmpl.content }}</code></pre>
+                      <div class="editor-container">
+                        <app-code-editor [value]="tmpl.content" [readonly]="true" [setup]="'basic'"></app-code-editor>
+                      </div>
                     </div>
                   }
                 </div>
@@ -132,7 +157,9 @@
                                 </ul>
                               </div>
                             }
-                            <pre class="mb-0 p-3 template-code"><code>{{ tmpl.content }}</code></pre>
+                            <div class="editor-container">
+                              <app-code-editor [value]="tmpl.content" [readonly]="true" [setup]="'basic'"></app-code-editor>
+                            </div>
                           </div>
                         }
                       </div>
@@ -145,5 +172,172 @@
         }
       </div>
     }
+
+    @if (compareResult(); as cmp) {
+      <div class="mt-3">
+        @if (cmp.originalError || cmp.comparedError) {
+          <div class="alert alert-warning" role="alert">
+            @if (cmp.originalError) {
+              <div><strong>{{ cmp.originalReleaseName }}:</strong> {{ cmp.originalError }}</div>
+            }
+            @if (cmp.comparedError) {
+              <div><strong>{{ cmp.comparedReleaseName }}:</strong> {{ cmp.comparedError }}</div>
+            }
+          </div>
+        }
+
+        @for (node of cmp.nodes; track node.nodeName; let ni = $index) {
+          <div class="card mb-3">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <app-icon icon="hdd"></app-icon>
+                {{ cmp.applicationServerName }} on {{ node.nodeName }}
+              </h5>
+            </div>
+            <div class="card-body">
+              @if (node.originalErrors.length > 0 || node.comparedErrors.length > 0) {
+                <div class="d-flex gap-3 mb-3">
+                  @if (node.originalErrors.length > 0) {
+                    <div class="alert alert-danger py-2 mb-0 flex-fill">
+                      <strong>{{ cmp.originalReleaseName }}</strong>
+                      <ul class="mb-0">
+                        @for (error of node.originalErrors; track error) {
+                          <li>{{ error }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                  @if (node.comparedErrors.length > 0) {
+                    <div class="alert alert-danger py-2 mb-0 flex-fill">
+                      <strong>{{ cmp.comparedReleaseName }}</strong>
+                      <ul class="mb-0">
+                        @for (error of node.comparedErrors; track error) {
+                          <li>{{ error }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                </div>
+              }
+
+              <h6>Templates</h6>
+              @if (node.asTemplates.length === 0) {
+                <p class="text-muted">No application server templates.</p>
+              }
+              @for (ct of node.asTemplates; track ct.path; let ti = $index) {
+                <ng-container
+                  *ngTemplateOutlet="comparedTemplateItem; context: { $implicit: ct, id: templateId(ni, 'as-cmp', ti), cmp: cmp }"
+                ></ng-container>
+              }
+
+              @if (node.applications.length > 0) {
+                <hr />
+                <h6>Applications</h6>
+                @for (app of node.applications; track app.applicationName) {
+                  <div class="mb-3">
+                    <h6 class="text-muted">{{ app.applicationName }}</h6>
+                    @if (app.originalErrors.length > 0 || app.comparedErrors.length > 0) {
+                      <div class="d-flex gap-3 mb-2">
+                        @if (app.originalErrors.length > 0) {
+                          <div class="alert alert-danger py-1 mb-0 flex-fill small">
+                            <strong>{{ cmp.originalReleaseName }}</strong>
+                            <ul class="mb-0">
+                              @for (error of app.originalErrors; track error) {
+                                <li>{{ error }}</li>
+                              }
+                            </ul>
+                          </div>
+                        }
+                        @if (app.comparedErrors.length > 0) {
+                          <div class="alert alert-danger py-1 mb-0 flex-fill small">
+                            <strong>{{ cmp.comparedReleaseName }}</strong>
+                            <ul class="mb-0">
+                              @for (error of app.comparedErrors; track error) {
+                                <li>{{ error }}</li>
+                              }
+                            </ul>
+                          </div>
+                        }
+                      </div>
+                    }
+                    @for (ct of app.templates; track ct.path; let ati = $index) {
+                      <ng-container
+                        *ngTemplateOutlet="comparedTemplateItem; context: { $implicit: ct, id: templateId(ni, app.applicationName + '-cmp-' + ati, ati), cmp: cmp }"
+                      ></ng-container>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
   </div>
 </app-page>
+
+<ng-template #comparedTemplateItem let-ct let-id="id" let-cmp="cmp">
+  <div class="template-item mb-2">
+    <div
+      class="template-header d-flex align-items-center gap-2 p-2 rounded"
+      [ngClass]="{
+        'bg-light': comparedTemplateStatus(ct) === 'same',
+        'bg-warning-subtle': comparedTemplateStatus(ct) === 'diff',
+        'bg-success-subtle': comparedTemplateStatus(ct) === 'added',
+        'bg-danger-subtle': comparedTemplateStatus(ct) === 'removed'
+      }"
+      (click)="toggleTemplate(id)"
+      role="button"
+    >
+      <app-icon [icon]="isExpanded(id) ? 'chevron-down' : 'chevron-right'"></app-icon>
+      @switch (comparedTemplateStatus(ct)) {
+        @case ('same') {
+          <app-icon icon="check-circle"></app-icon>
+        }
+        @case ('diff') {
+          <app-icon icon="arrow-left-right"></app-icon>
+        }
+        @case ('added') {
+          <app-icon icon="plus-circle"></app-icon>
+        }
+        @case ('removed') {
+          <app-icon icon="dash-circle"></app-icon>
+        }
+      }
+      <span class="template-path">{{ ct.path }}</span>
+      @if (comparedTemplateStatus(ct) === 'added') {
+        <span class="badge bg-success">only in {{ cmp.comparedReleaseName }}</span>
+      }
+      @if (comparedTemplateStatus(ct) === 'removed') {
+        <span class="badge bg-danger">only in {{ cmp.originalReleaseName }}</span>
+      }
+    </div>
+    @if (isExpanded(id)) {
+      <div class="template-content border rounded-bottom p-0">
+        @if (comparedTemplateStatus(ct) === 'diff') {
+          <div class="editor-container">
+            <app-diff-editor
+              [originalValue]="ct.original?.content ?? ''"
+              [modifiedValue]="ct.compared?.content ?? ''"
+              [disableA]="true"
+              [disableB]="true"
+              [collapseUnchanged]="{ margin: 3, minSize: 4 }"
+            ></app-diff-editor>
+          </div>
+        } @else if (comparedTemplateStatus(ct) === 'added') {
+          <div class="editor-container">
+            <app-code-editor [value]="ct.compared?.content ?? ''" [readonly]="true" [setup]="'basic'"></app-code-editor>
+          </div>
+        } @else if (comparedTemplateStatus(ct) === 'removed') {
+          <div class="editor-container">
+            <app-code-editor [value]="ct.original?.content ?? ''" [readonly]="true" [setup]="'basic'"></app-code-editor>
+          </div>
+        } @else {
+          <div class="editor-container">
+            <app-code-editor [value]="ct.original?.content ?? ''" [readonly]="true" [setup]="'basic'"></app-code-editor>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</ng-template>

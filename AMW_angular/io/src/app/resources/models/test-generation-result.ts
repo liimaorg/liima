@@ -24,3 +24,34 @@ export interface EnvironmentGenerationResult {
   nodeGenerationResults: NodeGenerationResult[];
   error: string;
 }
+
+export interface ComparedTemplate {
+  path: string;
+  original?: GeneratedTemplate;
+  compared?: GeneratedTemplate;
+  sameContent: boolean;
+}
+
+export interface ComparedApplication {
+  applicationName: string;
+  templates: ComparedTemplate[];
+  originalErrors: string[];
+  comparedErrors: string[];
+}
+
+export interface ComparedNode {
+  nodeName: string;
+  asTemplates: ComparedTemplate[];
+  applications: ComparedApplication[];
+  originalErrors: string[];
+  comparedErrors: string[];
+}
+
+export interface ComparedGenerationResult {
+  applicationServerName: string;
+  originalReleaseName: string;
+  comparedReleaseName: string;
+  nodes: ComparedNode[];
+  originalError?: string;
+  comparedError?: string;
+}
