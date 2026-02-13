@@ -1,0 +1,43 @@
+<span
+  (mouseenter)="handleMouseEnter()"
+  (mouseleave)="handleMouseLeave()"
+  (click)="handleToggle($event)"
+  [ngbPopover]="popContent"
+  [popoverTitle]="popTitle"
+  #popover="ngbPopover"
+  triggers="manual"
+  placement="auto"
+  container="body"
+  popoverClass="custom-tooltip-width"
+>
+  <ng-content></ng-content>
+</span>
+<ng-template #popTitle>
+  <div
+    (mouseenter)="handleMouseEnter()"
+    (mouseleave)="handleMouseLeave()"
+    class="d-flex justify-content-between align-items-center"
+  >
+    <span>{{ title() }}</span>
+  </div>
+</ng-template>
+<ng-template #popContent>
+  <div class="custom-tooltip-container p-1" (mouseenter)="handleMouseEnter()" (mouseleave)="handleMouseLeave()">
+    @if (subtitle()) {
+      <p class="small text-muted mb-2">{{ subtitle() }}</p>
+    }
+
+    @if (tableData().length > 0) {
+      <table class="table table-sm table-striped border mb-0 small">
+        <tbody>
+          @for (row of tableData(); track row.label) {
+            <tr>
+              <td class="fw-bold text-secondary">{{ row.label }}</td>
+              <td class="text-break">{{ row.value }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</ng-template>

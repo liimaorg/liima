@@ -25,6 +25,11 @@
   color: #ced4da;
 }
 
+.warn-icon {
+  margin-left: 0.2rem;
+  color: #dc3535;
+}
+
 .required {
   color: #dc3545;
 }
@@ -37,6 +42,15 @@
   font-size: 14px;
   transition: border-color 0.2s;
   line-height: 21px;
+  color: #0e1687;
+}
+
+.upper-context {
+  color: #000;
+}
+
+.has-mik {
+  border: 1px solid orange;
 }
 
 .property-input:focus {

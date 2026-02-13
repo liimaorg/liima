@@ -4,11 +4,12 @@ import { Property } from '../models/property';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { TooltipComponent } from '../../shared/tooltip/tooltip.component';
 
 @Component({
   selector: 'app-property-field',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, IconComponent, NgbTooltip],
+  imports: [FormsModule, ButtonComponent, IconComponent, NgbTooltip, TooltipComponent],
   templateUrl: './property-field.component.html',
   styleUrl: './property-field.component.scss',
 })
@@ -34,7 +35,7 @@ export class PropertyFieldComponent {
   displayLabel = computed(() => this.property().displayName || this.property().name);
   hasError = computed(() => this.touched() && !!this.validationError());
   canReset = computed(() => !!this.property().definedInContext);
-  isInputDisabled = computed(() => this.property().disabled || this.resetChecked());
+  isDisabled = computed(() => this.property().disabled || this.resetChecked());
 
   showProperty = computed(() => {
     return this.property().cardinality === null || this.property().cardinality != -1;
@@ -53,6 +54,24 @@ export class PropertyFieldComponent {
     // - Resource context + descriptor origin is INSTANCE
     // - ResourceType context + descriptor origin is TYPE
     return isResourceContext ? origin === 'INSTANCE' : origin === 'TYPE';
+  });
+
+  // black color if reset or defined in upper context
+  toggleInputColor = computed(() => {
+    return this.resetChecked() || (this.localValue === this.property().value && !this.property().definedInContext);
+  });
+
+  // mark input with orange border if mik is present
+  toggleMikInput = computed(() => {
+    const value = this.property().mik;
+    return value != null && value !== '';
+  });
+
+  renderTextArea = computed(() => {
+    const p = this.property();
+    const check = (val: unknown) => typeof val === 'string' && val.length > 70;
+
+    return check(p.value) || check(p.defaultValue);
   });
 
   constructor() {
@@ -74,7 +93,8 @@ export class PropertyFieldComponent {
   set localValue(value: string) {
     this.internalValue.set(value);
   }
-
+  // setUpperContext
+  // ->: if value is the same as before input ? if defined in other context ? black : green)
   onBlur() {
     this.touched.set(true);
     this.validate();
