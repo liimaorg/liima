@@ -1,0 +1,149 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title d-flex align-items-center gap-3">
+    <a [routerLink]="['/resource/edit']" [queryParams]="backQueryParams()" class="btn btn-link p-0">
+      <app-icon icon="arrow-left"></app-icon>
+    </a>
+    <span class="resource-name">Test Generation for {{ result()?.applicationServerName || resourceName() }}</span>
+  </div>
+
+  <div class="page-content">
+    @if (!result() && !isLoading() && !errorMessage()) {
+      <div class="d-flex flex-column align-items-center gap-3 mt-4">
+        <p>
+          Generate a test configuration for <strong>{{ resourceName() }}</strong>
+          in environment <strong>{{ contextName() }}</strong>
+          with release <strong>{{ releaseName() }}</strong>.
+        </p>
+        <app-button [variant]="'primary'" (click)="generate()">Generate</app-button>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="alert alert-danger mt-3" role="alert">
+        {{ errorMessage() }}
+        <div class="mt-2">
+          <app-button [variant]="'primary'" [size]="'sm'" (click)="generate()">Retry</app-button>
+        </div>
+      </div>
+    }
+
+    @if (result(); as res) {
+      <div class="mt-3">
+        @if (res.error) {
+          <div class="alert alert-warning" role="alert">{{ res.error }}</div>
+        }
+
+        @for (node of res.nodeGenerationResults; track node.nodeName; let ni = $index) {
+          <div class="card mb-3">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <app-icon icon="hdd"></app-icon>
+                {{ res.applicationServerName }} on {{ node.nodeName }}
+              </h5>
+            </div>
+            <div class="card-body">
+              @if (hasErrors(node)) {
+                <div class="alert alert-danger py-2 mb-3">
+                  <ul class="mb-0">
+                    @for (error of node.errors; track error) {
+                      <li>{{ error }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+
+              <h6>Templates</h6>
+              @if (node.asTemplates.length === 0) {
+                <p class="text-muted">No application server templates.</p>
+              }
+              @for (tmpl of node.asTemplates; track tmpl.path; let ti = $index) {
+                <div class="template-item mb-2">
+                  <div
+                    class="template-header d-flex align-items-center gap-2 p-2 rounded"
+                    [ngClass]="{ 'bg-danger-subtle': templateHasErrors(tmpl), 'bg-light': !templateHasErrors(tmpl) }"
+                    (click)="toggleTemplate(templateId(ni, 'as', ti))"
+                    role="button"
+                  >
+                    <app-icon [icon]="isExpanded(templateId(ni, 'as', ti)) ? 'chevron-down' : 'chevron-right'"></app-icon>
+                    @if (templateHasErrors(tmpl)) {
+                      <app-icon icon="x-circle"></app-icon>
+                    } @else {
+                      <app-icon icon="check-circle"></app-icon>
+                    }
+                    <span class="template-path">{{ tmpl.path }}</span>
+                  </div>
+                  @if (isExpanded(templateId(ni, 'as', ti))) {
+                    <div class="template-content border rounded-bottom p-0">
+                      @if (templateHasErrors(tmpl)) {
+                        <div class="alert alert-danger py-1 px-2 mb-0 rounded-0">
+                          <ul class="mb-0 small">
+                            @for (error of tmpl.errors; track error) {
+                              <li>{{ error }}</li>
+                            }
+                          </ul>
+                        </div>
+                      }
+                      <pre class="mb-0 p-3 template-code"><code>{{ tmpl.content }}</code></pre>
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (node.appResults.length > 0) {
+                <hr />
+                <h6>Applications</h6>
+                @for (app of node.appResults; track app.applicationName) {
+                  <div class="mb-3">
+                    <h6 class="text-muted">{{ app.applicationName }}</h6>
+                    @if (app.errors.length > 0) {
+                      <div class="alert alert-danger py-2 mb-2">
+                        <ul class="mb-0">
+                          @for (error of app.errors; track error) {
+                            <li>{{ error }}</li>
+                          }
+                        </ul>
+                      </div>
+                    }
+                    @for (tmpl of app.templates; track tmpl.path; let ati = $index) {
+                      <div class="template-item mb-2">
+                        <div
+                          class="template-header d-flex align-items-center gap-2 p-2 rounded"
+                          [ngClass]="{ 'bg-danger-subtle': templateHasErrors(tmpl), 'bg-light': !templateHasErrors(tmpl) }"
+                          (click)="toggleTemplate(templateId(ni, app.applicationName + '-' + ati, ati))"
+                          role="button"
+                        >
+                          <app-icon [icon]="isExpanded(templateId(ni, app.applicationName + '-' + ati, ati)) ? 'chevron-down' : 'chevron-right'"></app-icon>
+                          @if (templateHasErrors(tmpl)) {
+                            <app-icon icon="x-circle"></app-icon>
+                          } @else {
+                            <app-icon icon="check-circle"></app-icon>
+                          }
+                          <span class="template-path">{{ tmpl.path }}</span>
+                        </div>
+                        @if (isExpanded(templateId(ni, app.applicationName + '-' + ati, ati))) {
+                          <div class="template-content border rounded-bottom p-0">
+                            @if (templateHasErrors(tmpl)) {
+                              <div class="alert alert-danger py-1 px-2 mb-0 rounded-0">
+                                <ul class="mb-0 small">
+                                  @for (error of tmpl.errors; track error) {
+                                    <li>{{ error }}</li>
+                                  }
+                                </ul>
+                              </div>
+                            }
+                            <pre class="mb-0 p-3 template-code"><code>{{ tmpl.content }}</code></pre>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</app-page>
