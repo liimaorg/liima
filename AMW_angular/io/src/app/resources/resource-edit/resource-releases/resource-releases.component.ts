@@ -51,15 +51,17 @@ export class ResourceReleasesComponent {
   contextId = input.required<number>();
   resource = input.required<Resource>();
 
-  // same permissions for crud
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
+      const resourceTypeName = this.resource()?.type ?? null;
+      const resourceGroupId = this.resource()?.resourceGroupId ?? null;
       return {
-        //canAddRelease: this.authService.hasPermission('RESOURCE', 'UPDATE', null, null, this.context().name),
-        canAddRelease: true, // TODO: replace with actual permission check
+        canAddRelease: this.authService.hasPermission('RESOURCE', 'CREATE', resourceTypeName, resourceGroupId),
+        canChangeRelease: this.authService.hasPermission('RELEASE', 'UPDATE', resourceTypeName, resourceGroupId),
+        canDeleteRelease: this.authService.hasPermission('RESOURCE', 'DELETE', resourceTypeName, resourceGroupId),
       };
     }
-    return { canAddRelease: false };
+    return { canAddRelease: false, canChangeRelease: false, canDeleteRelease: false };
   });
 
   addRelease() {
