@@ -12,10 +12,7 @@
   font-size: 0.9rem;
 }
 
-.template-code {
-  background-color: #f8f9fa;
-  overflow-x: auto;
+.editor-container {
   max-height: 600px;
-  font-size: 0.85rem;
-  line-height: 1.4;
+  overflow: auto;
 }
