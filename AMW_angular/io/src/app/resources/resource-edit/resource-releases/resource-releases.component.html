@@ -25,34 +25,32 @@
               {{ release.name }}
             </td>
             <td class="text-end">
-              @if (release.id === id()) {
+              @if (release.id === id() && permissions().canChangeRelease) {
                 <app-button
                   title="Change Release"
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'p-0 link-secondary me-2'"
-                  (click)="
-                    showChangeReleaseModal(release);
-                    $event.stopPropagation();
-                    $event.preventDefault()
-                  "
+                  (click)="showChangeReleaseModal(release); $event.stopPropagation(); $event.preventDefault()"
                 >
                   <app-icon icon="pencil"></app-icon>
                 </app-button>
               }
-              <app-button
-                title="Delete"
-                [size]="'sm'"
-                [variant]="'link'"
-                [additionalClasses]="'p-0 link-danger'"
-                (click)="
-                  showDeleteConfirmation(deleteReleaseConfirmation, release);
-                  $event.stopPropagation();
-                  $event.preventDefault()
-                "
-              >
-                <app-icon icon="trash"></app-icon>
-              </app-button>
+              @if (permissions().canDeleteRelease) {
+                <app-button
+                  title="Delete"
+                  [size]="'sm'"
+                  [variant]="'link'"
+                  [additionalClasses]="'p-0 link-danger'"
+                  (click)="
+                    showDeleteConfirmation(deleteReleaseConfirmation, release);
+                    $event.stopPropagation();
+                    $event.preventDefault()
+                  "
+                >
+                  <app-icon icon="trash"></app-icon>
+                </app-button>
+              }
             </td>
           </tr>
         }
