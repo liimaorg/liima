@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, Signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -15,14 +15,7 @@ import { NgClass } from '@angular/common';
 @Component({
   selector: 'app-test-generation',
   standalone: true,
-  imports: [
-    LoadingIndicatorComponent,
-    PageComponent,
-    ButtonComponent,
-    IconComponent,
-    RouterLink,
-    NgClass,
-  ],
+  imports: [LoadingIndicatorComponent, PageComponent, ButtonComponent, IconComponent, RouterLink, NgClass],
   templateUrl: './test-generation.component.html',
   styleUrl: './test-generation.component.scss',
 })
@@ -81,16 +74,17 @@ export class TestGenerationComponent {
     this.errorMessage.set(null);
     this.result.set(null);
 
-    this.testGenerationService.generateTest(name, release, env).subscribe({
-      next: (res) => {
-        this.result.set(res);
-        this.generating.set(false);
-      },
-      error: (err) => {
-        this.errorMessage.set(typeof err === 'string' ? err : 'Test generation failed.');
-        this.generating.set(false);
-      },
-    });
+    this.testGenerationService
+      .generateTest(name, release, env)
+      .pipe(finalize(() => this.generating.set(false))) // always remove the spinner...
+      .subscribe({
+        next: (res) => {
+          this.result.set(res);
+        },
+        error: (err) => {
+          this.errorMessage.set(typeof err === 'string' ? err : 'Test generation failed.');
+        },
+      });
   }
 
   toggleTemplate(templateId: string) {
