@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal, Signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { finalize, map } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
+import { concatMap, finalize, map } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -117,11 +117,14 @@ export class TestGenerationComponent {
     const compareRelease = this.compareReleaseName();
 
     if (compareRelease) {
-      forkJoin({
-        original: this.testGenerationService.generateTest(name, release, env),
-        compared: this.testGenerationService.generateTest(name, compareRelease, env),
-      })
-        .pipe(finalize(() => this.generating.set(false)))
+      this.testGenerationService
+        .generateTest(name, release, env)
+        .pipe(
+          concatMap((original) =>
+            this.testGenerationService.generateTest(name, compareRelease, env).pipe(map((compared) => ({ original, compared }))),
+          ),
+          finalize(() => this.generating.set(false)),
+        )
         .subscribe({
           next: ({ original, compared }) => {
             this.result.set(original);
