@@ -11,6 +11,7 @@ import { ResourceService } from '../../services/resource.service';
 import { Resource } from '../../models/resource';
 import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
+import { ToastService } from '../../../shared/elements/toast/toast.service';
 
 @Component({
   selector: 'app-resource-releases',
@@ -32,6 +33,7 @@ export class ResourceReleasesComponent {
   private resourceService = inject(ResourceService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
 
   isLoading = signal(false);
   selectedRelease = signal<Release | null>(null);
@@ -71,6 +73,7 @@ export class ResourceReleasesComponent {
       },
       error: (error) => {
         console.error('Failed to load available releases:', error);
+        this.toastService.error('Failed to load available releases.');
         this.isLoading.set(false);
       },
     });
@@ -120,6 +123,7 @@ export class ResourceReleasesComponent {
         },
         error: (error) => {
           console.error('Failed to create release:', error);
+          this.toastService.error('Failed to create release.');
           this.isCreatingRelease.set(false);
           this.selectedReleaseId = null;
         },
@@ -138,6 +142,7 @@ export class ResourceReleasesComponent {
       },
       error: (error) => {
         console.error('Failed to load available releases:', error);
+        this.toastService.error('Failed to load available releases.');
         this.isLoading.set(false);
         this.releaseToChange.set(null);
       },
@@ -177,6 +182,7 @@ export class ResourceReleasesComponent {
       },
       error: (error) => {
         console.error('Failed to change release:', error);
+        this.toastService.error('Failed to change release.');
         this.isChangingRelease.set(false);
         this.selectedReleaseId = null;
         this.releaseToChange.set(null);
@@ -225,6 +231,7 @@ export class ResourceReleasesComponent {
       },
       error: (error) => {
         console.error('Failed to delete release:', error);
+        this.toastService.error('Failed to delete release.');
         this.isLoading.set(false);
         this.selectedRelease.set(null);
       },
