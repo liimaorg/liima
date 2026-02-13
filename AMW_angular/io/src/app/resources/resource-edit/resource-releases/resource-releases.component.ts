@@ -36,9 +36,9 @@ export class ResourceReleasesComponent {
   private toastService = inject(ToastService);
 
   isLoading = signal(false);
-  selectedRelease = signal<Release | null>(null);
+  releaseToDelete = signal<Release | null>(null);
   availableReleases = signal<Release[]>([]);
-  selectedReleaseId: number | null = null;
+  selectedReleaseId = signal<number | null>(null);
   isCreatingRelease = signal(false);
   releaseToChange = signal<Release | null>(null);
   isChangingRelease = signal(false);
@@ -67,7 +67,7 @@ export class ResourceReleasesComponent {
     this.resourceService.getAvailableReleasesForResource(this.id()).subscribe({
       next: (releases) => {
         this.availableReleases.set(releases);
-        this.selectedReleaseId = null;
+        this.selectedReleaseId.set(null);
         this.isLoading.set(false);
         this.showCreateReleaseModal();
       },
@@ -83,12 +83,12 @@ export class ResourceReleasesComponent {
     const modalRef = this.modalService.open(this.createReleaseModal);
     modalRef.result.then(
       () => {
-        if (this.selectedReleaseId) {
-          this.createRelease(this.selectedReleaseId);
+        if (this.selectedReleaseId()) {
+          this.createRelease(this.selectedReleaseId()!);
         }
       },
       () => {
-        this.selectedReleaseId = null;
+        this.selectedReleaseId.set(null);
       },
     );
   }
@@ -118,14 +118,14 @@ export class ResourceReleasesComponent {
       .subscribe({
         next: () => {
           this.isCreatingRelease.set(false);
-          this.selectedReleaseId = null;
+          this.selectedReleaseId.set(null);
           this.resourceService.setIdForResource(this.id());
         },
         error: (error) => {
           console.error('Failed to create release:', error);
           this.toastService.error('Failed to create release.');
           this.isCreatingRelease.set(false);
-          this.selectedReleaseId = null;
+          this.selectedReleaseId.set(null);
         },
       });
   }
@@ -136,7 +136,7 @@ export class ResourceReleasesComponent {
     this.resourceService.getAvailableReleasesForResource(release.id).subscribe({
       next: (releases) => {
         this.availableReleases.set(releases);
-        this.selectedReleaseId = null;
+        this.selectedReleaseId.set(null);
         this.isLoading.set(false);
         this.openChangeReleaseModal();
       },
@@ -153,12 +153,12 @@ export class ResourceReleasesComponent {
     const modalRef = this.modalService.open(this.changeReleaseModal);
     modalRef.result.then(
       () => {
-        if (this.selectedReleaseId && this.releaseToChange()) {
-          this.changeRelease(this.releaseToChange()!.id, this.selectedReleaseId);
+        if (this.selectedReleaseId() && this.releaseToChange()) {
+          this.changeRelease(this.releaseToChange()!.id, this.selectedReleaseId()!);
         }
       },
       () => {
-        this.selectedReleaseId = null;
+        this.selectedReleaseId.set(null);
         this.releaseToChange.set(null);
       },
     );
@@ -169,7 +169,7 @@ export class ResourceReleasesComponent {
     this.resourceService.changeResourceRelease(resourceId, releaseId).subscribe({
       next: () => {
         this.isChangingRelease.set(false);
-        this.selectedReleaseId = null;
+        this.selectedReleaseId.set(null);
         this.releaseToChange.set(null);
         // Reload the resource and releases data to reflect the change
         this.resourceService.setIdForResource(resourceId);
@@ -184,20 +184,20 @@ export class ResourceReleasesComponent {
         console.error('Failed to change release:', error);
         this.toastService.error('Failed to change release.');
         this.isChangingRelease.set(false);
-        this.selectedReleaseId = null;
+        this.selectedReleaseId.set(null);
         this.releaseToChange.set(null);
       },
     });
   }
 
   showDeleteConfirmation(content: unknown, release: Release) {
-    this.selectedRelease.set(release);
+    this.releaseToDelete.set(release);
     this.modalService.open(content).result.then(
       () => {
         this.deleteRelease(release.id);
       },
       () => {
-        this.selectedRelease.set(null);
+        this.releaseToDelete.set(null);
       },
     );
   }
@@ -209,7 +209,7 @@ export class ResourceReleasesComponent {
     this.resourceService.deleteResourceByResourceId(resourceIdToDelete).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.selectedRelease.set(null);
+        this.releaseToDelete.set(null);
         // Only navigate if we deleted the currently selected release
         if (resourceIdToDelete === this.id()) {
           const remainingReleases = this.releases().filter((r) => r.id !== resourceIdToDelete);
@@ -233,7 +233,7 @@ export class ResourceReleasesComponent {
         console.error('Failed to delete release:', error);
         this.toastService.error('Failed to delete release.');
         this.isLoading.set(false);
-        this.selectedRelease.set(null);
+        this.releaseToDelete.set(null);
       },
     });
   }
