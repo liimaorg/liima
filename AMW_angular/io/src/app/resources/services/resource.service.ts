@@ -5,7 +5,6 @@ import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Resource } from '../models/resource';
 import { Release } from '../models/release';
 import { Relation } from '../models/relation';
-import { Property } from '../models/property';
 import { AppWithVersion } from '../../deployment/app-with-version';
 import { BaseService } from '../../base/base.service';
 import { ResourceType } from '../models/resource-type';
