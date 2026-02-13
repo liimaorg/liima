@@ -1,0 +1,21 @@
+.template-header {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+}
+
+.template-path {
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.template-code {
+  background-color: #f8f9fa;
+  overflow-x: auto;
+  max-height: 600px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
