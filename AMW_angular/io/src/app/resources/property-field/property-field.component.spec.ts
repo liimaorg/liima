@@ -184,7 +184,7 @@ describe('PropertyFieldComponent', () => {
 
     expect(component.localValue).toBe('PARENT');
     expect(component.resetChecked()).toBe(true);
-    expect(component.isInputDisabled()).toBe(true);
+    expect(component.isDisabled()).toBe(true);
     expect(resetSpy).toHaveBeenCalledWith(true);
 
     // uncheck reset => value becomes original and input enabled again (if not otherwise disabled)
@@ -196,7 +196,7 @@ describe('PropertyFieldComponent', () => {
 
     expect(component.localValue).toBe('CURRENT');
     expect(component.resetChecked()).toBe(false);
-    expect(component.isInputDisabled()).toBe(false);
+    expect(component.isDisabled()).toBe(false);
     expect(resetSpy).toHaveBeenCalledWith(false);
   });
 });
