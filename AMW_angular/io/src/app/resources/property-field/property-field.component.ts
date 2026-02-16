@@ -4,13 +4,12 @@ import { Property } from '../models/property';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { TooltipComponent } from '../../shared/tooltip/tooltip.component';
-import { PropertyFieldTooltipComponent } from './property-field-tooltip/property-field-tooltip.component';
+import { PropertyFieldTooltipComponent } from './property-field-info/property-field-tooltip.component';
 
 @Component({
   selector: 'app-property-field',
   standalone: true,
-  imports: [FormsModule, ButtonComponent, IconComponent, NgbTooltip, TooltipComponent, PropertyFieldTooltipComponent],
+  imports: [FormsModule, ButtonComponent, IconComponent, NgbTooltip, PropertyFieldTooltipComponent],
   templateUrl: './property-field.component.html',
   styleUrl: './property-field.component.scss',
 })

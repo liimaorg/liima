@@ -24,13 +24,12 @@ describe('PropertyFieldTooltipComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PropertyFieldTooltipComponent]
-    })
-    .compileComponents();
+      imports: [PropertyFieldTooltipComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PropertyFieldTooltipComponent);
     component = fixture.componentInstance;
-    
+
     // Set default input values
     fixture.componentRef.setInput('property', mockProperty);
     fixture.componentRef.setInput('isInfo', true);
@@ -47,7 +46,7 @@ describe('PropertyFieldTooltipComponent', () => {
         definedInContext: true,
         value: null,
         replacedValue: '',
-        originOfValue: null
+        originOfValue: null,
       });
       fixture.componentRef.setInput('isInfo', true);
       fixture.detectChanges();
@@ -59,7 +58,7 @@ describe('PropertyFieldTooltipComponent', () => {
       fixture.componentRef.setInput('property', {
         ...mockProperty,
         definedInContext: true,
-        encrypted: true
+        encrypted: true,
       });
       fixture.componentRef.setInput('isInfo', true);
       fixture.detectChanges();
@@ -79,7 +78,7 @@ describe('PropertyFieldTooltipComponent', () => {
       fixture.componentRef.setInput('property', {
         ...mockProperty,
         definedInContext: false,
-        replacedValue: ''
+        replacedValue: '',
       });
       fixture.componentRef.setInput('isInfo', true);
       fixture.detectChanges();
@@ -91,7 +90,7 @@ describe('PropertyFieldTooltipComponent', () => {
       fixture.componentRef.setInput('property', {
         ...mockProperty,
         definedInContext: false,
-        replacedValue: 'someValue'
+        replacedValue: 'someValue',
       });
       fixture.componentRef.setInput('isInfo', true);
       fixture.detectChanges();
@@ -104,7 +103,7 @@ describe('PropertyFieldTooltipComponent', () => {
         ...mockProperty,
         definedInContext: false,
         replacedValue: '',
-        originOfValue: ''
+        originOfValue: '',
       });
       fixture.componentRef.setInput('isInfo', true);
       fixture.detectChanges();
@@ -125,7 +124,7 @@ describe('PropertyFieldTooltipComponent', () => {
         { label: 'Example value', value: 'example' },
         { label: 'Default', value: 'default' },
         { label: 'Comment', value: 'test comment' },
-        { label: 'Machine Interpretation Key:', value: 'testMIK' }
+        { label: 'Machine Interpretation Key:', value: 'testMIK' },
       ]);
     });
 

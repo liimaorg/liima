@@ -5,7 +5,7 @@
       @if (!hideTooltip()) {
         <app-property-field-tooltip [property]="property()" [isInfo]="true"></app-property-field-tooltip>
       }
-      @if (property().hasOverrideInLowerContext) {
+      @if (property().overwriteInfos?.length > 0) {
         <app-property-field-tooltip [property]="property()" [isInfo]="false"></app-property-field-tooltip>
       }
     </label>

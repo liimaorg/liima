@@ -1,3 +1,5 @@
+import { PropertyDiff } from './property-diff';
+
 export type PropertyDescriptorOrigin = 'INSTANCE' | 'RELATION' | 'TYPE' | 'TYPE_REL';
 
 export interface Property {
@@ -21,5 +23,5 @@ export interface Property {
   cardinality?: number;
   disabled?: boolean;
   originOfValue?: string;
-  hasOverrideInLowerContext?: boolean;
+  overwriteInfos?: PropertyDiff[];
 }
