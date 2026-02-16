@@ -5,8 +5,10 @@ import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,9 +62,14 @@ public class ResourceTypePropertiesRest {
                     context.getId());
 
             for (ResourceEditProperty property : properties) {
-                result.add(new PropertyExtendedDTO(property, context.getName(), context.getId()));
+                result.add(new PropertyExtendedDTO(property, context.getName(), context.getId(), getOverwriteInfos(resourceType, contextId, property)));
             }
         }
         return result;
+    }
+
+    private List<PropertyEditingService.DifferingProperty> getOverwriteInfos(ResourceTypeEntity resource, Integer contextId, ResourceEditProperty property) {
+        List<ContextEntity> contexts = contextLocator.getChildren(contextId);
+        return propertyEditor.getPropertyOverviewForResourceType(resource, property, contexts);
     }
 }

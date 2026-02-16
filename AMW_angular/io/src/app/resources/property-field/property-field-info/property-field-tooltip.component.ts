@@ -13,14 +13,45 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 export class PropertyFieldTooltipComponent {
   property = input.required<Property>();
   isInfo = input.required<boolean>();
+  headers = ['Environment', 'Origin', 'Value'];
+
+  getTitle = computed(() => {
+    const infoTitle = this.property().displayName ? this.property().displayName : this.property().name;
+    return this.isInfo() ? `${infoTitle}` : `Config Overview for ${this.property().name}`;
+  });
 
   infoText = computed(() => {
     const prop = this.property();
-
+    if (!this.isInfo()) {
+      const count = prop.overwriteInfos?.length || 0;
+      return count > 0
+        ? `${count} environment${count > 1 ? 's' : ''} with different values`
+        : 'This property is not overriden by any other child context';
+    }
     if (prop.definedInContext) {
       return this.getDefinedInContextText(prop);
     } else {
       return this.getInheritedContextText(prop);
+    }
+  });
+
+  dataTable = computed(() => {
+    if (this.isInfo()) {
+      return [
+        { col1: 'TechKey', col2: this.property().name || '-' },
+        { col1: 'Example value', col2: this.property().exampleValue || '-' },
+        { col1: 'Default', col2: this.property().defaultValue || '-' },
+        { col1: 'Comment', col2: this.property().generalComment || '-' },
+        { col1: 'Machine Interpretation Key:', col2: this.property().mik || '-' },
+      ];
+    } else {
+      return (
+        this.property().overwriteInfos?.map((info) => ({
+          col1: info.env || '-',
+          col2: info.origin || '-',
+          col3: info.val || '-',
+        })) || []
+      );
     }
   });
 
@@ -54,16 +85,4 @@ export class PropertyFieldTooltipComponent {
   private hasReplacedValue(prop: Property): boolean {
     return prop.replacedValue != null && prop.replacedValue !== '';
   }
-
-  dataTable = computed(() => {
-    if (this.isInfo()) {
-      return [
-        { label: 'TechKey', value: this.property().name },
-        { label: 'Example value', value: this.property().exampleValue },
-        { label: 'Default', value: this.property().defaultValue },
-        { label: 'Comment', value: this.property().generalComment },
-        { label: 'Machine Interpretation Key:', value: this.property().mik },
-      ];
-    }
-  });
 }

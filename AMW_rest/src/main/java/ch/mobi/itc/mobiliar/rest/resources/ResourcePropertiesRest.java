@@ -26,6 +26,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
@@ -81,8 +82,8 @@ public class ResourcePropertiesRest {
         if (resource == null) {
             return new ArrayList<>();
         }
-        
-        ContextEntity context = validateAndGetContext(contextId);
+
+        ContextEntity context = getContext(contextId);
         if (context == null) {
             return new ArrayList<>();
         }
@@ -92,7 +93,7 @@ public class ResourcePropertiesRest {
                 context.getId());
 
         return properties.stream()
-                .map(property -> new PropertyExtendedDTO(property, context.getName(), contextId))
+                .map(property -> new PropertyExtendedDTO(property, context.getName(), contextId, getOverwriteInfos(resource, contextId, property)))
                 .collect(java.util.stream.Collectors.toList());
     }
 
@@ -111,59 +112,35 @@ public class ResourcePropertiesRest {
             return validationResponse;
         }
 
-        ResourceEntity resource = validateAndGetResource(resourceId);
+        ResourceEntity resource = getResource(resourceId);
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        
+
         ResourceEditProperty property = findPropertyByName(resource.getId(), contextId, propertyName);
         if (property != null) {
-            ContextEntity context = validateAndGetContext(contextId);
+            ContextEntity context = getContext(contextId);
             if (context != null) {
-                return Response.ok(new PropertyExtendedDTO(property, context.getName(), contextId)).build();
+                getOverwriteInfos(resource, contextId, property);
+                return Response.ok(new PropertyExtendedDTO(property, context.getName(), contextId, getOverwriteInfos(resource, contextId, property))).build();
             }
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    @GET
-    @Path("/{id : \\d+}/properties/{propertyName}/overview")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get a property overview by name for a resource")
-    public Response getResourcePropertyOverview(
-            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
-            @PathParam("propertyName") String propertyName,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
-            throws NotFoundException {
-        
-        Response validationResponse = validatePropertyName(propertyName);
-        if (validationResponse != null) {
-            return validationResponse;
-        }
-        
-        ResourceEntity resource = validateAndGetResource(resourceId);
-        if (resource == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
+    private List<PropertyEditingService.DifferingProperty> getOverwriteInfos(ResourceEntity resource, Integer contextId, ResourceEditProperty property) {
         List<ContextEntity> contexts = contextLocator.getChildren(contextId);
-        ResourceEditProperty property = findPropertyByName(resource.getId(), contextId, propertyName);
-        
-        if (property != null) {
-            return Response.ok(propertyEditor.getPropertyOverviewForResource(resource, property, contexts)).build();
-        }
-        
-        return Response.status(Response.Status.NOT_FOUND).build();
+        return propertyEditor.getPropertyOverviewForResource(resource, property, contexts);
     }
 
-    private ResourceEntity validateAndGetResource(Integer resourceId) throws NotFoundException {
+    private ResourceEntity getResource(Integer resourceId) throws NotFoundException {
         return resourceBoundary.getResource(resourceId);
     }
-    
-    private ContextEntity validateAndGetContext(Integer contextId) throws NotFoundException {
+
+    private ContextEntity getContext(Integer contextId) throws NotFoundException {
         return contextLocator.getById(contextId);
     }
-    
+
     private Response validatePropertyName(String propertyName) {
         if (propertyName == null || propertyName.trim().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Property name cannot be null or empty").build();
@@ -195,21 +172,21 @@ public class ResourcePropertiesRest {
         if (validationResponse != null) {
             return validationResponse;
         }
-        
+
         if (value == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Property value cannot be null").build();
         }
-        
-        ResourceEntity resource = validateAndGetResource(resourceId);
+
+        ResourceEntity resource = getResource(resourceId);
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        
-        ContextEntity context = validateAndGetContext(contextId);
+
+        ContextEntity context = getContext(contextId);
         if (context == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Context not found").build();
         }
-        
+
         if (resource.getRelease() == null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Resource release information is missing").build();
         }
@@ -241,11 +218,11 @@ public class ResourcePropertiesRest {
         if (bulkRequest == null || isRequestEmpty(bulkRequest)) {
             return Response.status(Response.Status.NO_CONTENT).build();
         }
-        
+
         if (resourceId == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Resource ID cannot be null").build();
         }
-        
+
         if (contextId == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Context ID cannot be null").build();
         }
@@ -254,12 +231,12 @@ public class ResourcePropertiesRest {
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        
+
         ContextEntity context = contextLocator.getById(contextId);
         if (context == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Context not found").build();
         }
-        
+
         if (resource.getRelease() == null) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Resource release information is missing").build();
         }

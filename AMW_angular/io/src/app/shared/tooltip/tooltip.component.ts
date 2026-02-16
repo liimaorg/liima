@@ -1,24 +1,19 @@
-import { Component, input, signal, ViewChild } from '@angular/core';
+import { Component, input, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { NgbPopover, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 
 export interface TooltipTableEntry {
-  label: string;
-  value: string | number;
+  col1: string | number;
+  col2: string | number;
+  col3?: string | number;
 }
+
 @Component({
   selector: 'app-tooltip',
   standalone: true,
   imports: [NgbPopoverModule],
   templateUrl: './tooltip.component.html',
-  styles: [
-    `
-      :host {
-        display: inline-flex;
-        align-items: center;
-        cursor: pointer;
-      }
-    `,
-  ],
+  encapsulation: ViewEncapsulation.None,
+  styleUrl: './tooltip.component.scss',
 })
 export class TooltipComponent {
   @ViewChild('popover') popover!: NgbPopover;
@@ -26,6 +21,7 @@ export class TooltipComponent {
   // Inputs
   title = input<string>('');
   subtitle = input<string>('');
+  headers = input<string[]>(undefined);
   tableData = input<TooltipTableEntry[]>([]);
   canPin = input<boolean>(true);
 
@@ -34,21 +30,32 @@ export class TooltipComponent {
 
   handleToggle(event: MouseEvent) {
     event.stopPropagation();
-
-    // If canPin is false, clicking does nothing to the state
-    if (!this.canPin()) return;
+    event.preventDefault();
 
     this.clearTimer();
-    this.isPinned.set(!this.isPinned);
 
-    if (this.isPinned()) {
-      this.popover.open();
+    if (this.canPin()) {
+      // When canPin is true, toggle the pinned state
+      this.isPinned.set(this.isPinned());
+      if (this.isPinned()) {
+        this.popover.open();
+      } else {
+        this.popover.close();
+      }
     } else {
-      this.popover.close();
+      // When canPin is false, just toggle open/close without changing pinned state
+      if (this.popover.isOpen()) {
+        this.popover.close();
+      } else {
+        this.popover.open();
+      }
     }
   }
 
   handleMouseEnter() {
+    // Only open on mouseover if canPin is false
+    if (this.canPin()) return;
+
     this.clearTimer();
     if (!this.popover.isOpen()) {
       this.popover.open();
@@ -56,7 +63,6 @@ export class TooltipComponent {
   }
 
   handleMouseLeave() {
-    // CRITICAL FIX: Only block closing if we are ALLOWED to pin AND we ARE pinned.
     if (this.canPin() && this.isPinned()) {
       return;
     }

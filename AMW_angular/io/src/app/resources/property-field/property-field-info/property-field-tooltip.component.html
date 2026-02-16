@@ -1,4 +1,10 @@
-<app-tooltip [canPin]="!isInfo()" [title]="property().displayName" [subtitle]="infoText()" [tableData]="dataTable()">
+<app-tooltip
+  [canPin]="!isInfo()"
+  [title]="getTitle()"
+  [subtitle]="infoText()"
+  [tableData]="dataTable()"
+  [headers]="!isInfo() ? headers : undefined"
+>
   @if (isInfo()) {
     <app-icon icon="info-circle-fill" class="label-icon"></app-icon>
   } @else {

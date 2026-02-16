@@ -20,6 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ import lombok.NoArgsConstructor;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(name = "property")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -53,9 +55,9 @@ public class PropertyExtendedDTO {
     private Integer cardinality;
     private Boolean definedInContext;
     private String originOfValue;
-    private Boolean hasOverrideInLowerContext;
+    private List<PropertyEditingService.DifferingProperty> overwriteInfos;
 
-    public PropertyExtendedDTO(ResourceEditProperty property, String context, Integer contextId){
+    public PropertyExtendedDTO(ResourceEditProperty property, String context, Integer contextId, List<PropertyEditingService.DifferingProperty> propertyDiffs) {
         this.name = property.getTechnicalKey();
         this.value = property.getDecryptedPropertyValue() != null ? property.getDecryptedPropertyValue() : property.getDefaultValue();
         this.replacedValue = property.getReplacedValue();
@@ -74,6 +76,6 @@ public class PropertyExtendedDTO {
         this.cardinality = property.getCardinalityProperty();
         this.definedInContext = contextId != null && property.isDefinedInContext(contextId);
         this.originOfValue = property.getOriginOfValue(contextId, ""); // TODO relationIdentifier needed in RelatedResources
-        this.hasOverrideInLowerContext = false; // TODO
+        this.overwriteInfos = propertyDiffs;
     }
 }

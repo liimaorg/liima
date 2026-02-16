@@ -1,0 +1,26 @@
+app-tooltip {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tooltip-container {
+  width: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  --bs-popover-max-width: none !important;
+}
+
+.custom-tooltip-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: auto;
+  max-width: none;
+}
+
+.custom-tooltip-container table {
+  width: auto;
+  min-width: 0;
+  flex: 1;
+}

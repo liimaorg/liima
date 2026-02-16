@@ -8,7 +8,7 @@
   triggers="manual"
   placement="auto"
   container="body"
-  popoverClass="custom-tooltip-width"
+  popoverClass="tooltip-container"
 >
   <ng-content></ng-content>
 </span>
@@ -29,11 +29,26 @@
 
     @if (tableData().length > 0) {
       <table class="table table-sm table-striped border mb-0 small">
-        <tbody>
-          @for (row of tableData(); track row.label) {
+        @if (headers()) {
+          <thead>
             <tr>
-              <td class="fw-bold text-secondary">{{ row.label }}</td>
-              <td class="text-break">{{ row.value }}</td>
+              @for (header of headers(); track $index) {
+                <th>{{ header }}</th>
+              }
+            </tr>
+          </thead>
+        }
+        <tbody>
+          @for (row of tableData(); track $index) {
+            <tr>
+              @if (row.col3 === null) {
+                <td class="fw-bold text-secondary">{{ row.col1 }}</td>
+                <td class="">{{ row.col2 }}</td>
+              } @else {
+                <td class="">{{ row.col1 }}</td>
+                <td class="">{{ row.col2 }}</td>
+                <td class="">{{ row.col3 }}</td>
+              }
             </tr>
           }
         </tbody>
