@@ -3,35 +3,11 @@
     <label [for]="fieldId()" class="property-label justify-content-start">
       {{ displayLabel() }}
       @if (!hideTooltip()) {
-        <!--        propertyTooltip contains some logic about subtiles ???-->
-        <app-tooltip
-          [canPin]="false"
-          [title]="property().displayName"
-          [subtitle]="'Defined in  ' + property().propertyDescriptorOrigin"
-          [tableData]="[
-            { label: 'TechKey', value: property().name },
-            { label: 'Example value', value: property().exampleValue },
-            { label: 'Default', value: property().defaultValue },
-            { label: 'Comment', value: property().generalComment },
-            { label: 'Machine Interpretation Key:', value: property().mik },
-          ]"
-          ><app-icon icon="info-circle-fill" class="label-icon"></app-icon
-        ></app-tooltip>
+        <app-property-field-tooltip [property]="property()" [isInfo]="true"></app-property-field-tooltip>
       }
-      <!--      /* propertyEditDataProvider.hasOverwrittenProperty(prop) */-->
-      <app-tooltip
-        [canPin]="true"
-        [title]="property().displayName"
-        [subtitle]="'Defined in  ' + property().propertyDescriptorOrigin"
-        [tableData]="[
-          { label: 'TechKey', value: property().name },
-          { label: 'Example value', value: property().exampleValue },
-          { label: 'Default', value: property().defaultValue },
-          { label: 'Comment', value: property().generalComment },
-          { label: 'Machine Interpretation Key:', value: property().mik },
-        ]"
-        ><app-icon icon="exclamation-triangle-fill" class="warn-icon"></app-icon
-      ></app-tooltip>
+      @if (property().hasOverrideInLowerContext) {
+        <app-property-field-tooltip [property]="property()" [isInfo]="false"></app-property-field-tooltip>
+      }
     </label>
     <div class="justify-content-end gap-1 align-items-center">
       @if (isEditable()) {

@@ -52,6 +52,8 @@ public class PropertyExtendedDTO {
     private Integer descriptorId;
     private Integer cardinality;
     private Boolean definedInContext;
+    private String originOfValue;
+    private Boolean hasOverrideInLowerContext;
 
     public PropertyExtendedDTO(ResourceEditProperty property, String context, Integer contextId){
         this.name = property.getTechnicalKey();
@@ -71,5 +73,7 @@ public class PropertyExtendedDTO {
         this.descriptorId = property.getDescriptorId();
         this.cardinality = property.getCardinalityProperty();
         this.definedInContext = contextId != null && property.isDefinedInContext(contextId);
+        this.originOfValue = property.getOriginOfValue(contextId, ""); // TODO relationIdentifier needed in RelatedResources
+        this.hasOverrideInLowerContext = false; // TODO
     }
 }

@@ -283,6 +283,7 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
         }
     }
 
+
     public String getOriginOfValue(Integer contextId, String relationIdentifier) {
         if (!isDefinedInContext(contextId)) {
             if (getTypeName() != null) {
