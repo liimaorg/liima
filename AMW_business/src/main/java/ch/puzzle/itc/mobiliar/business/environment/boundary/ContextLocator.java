@@ -39,69 +39,79 @@ import java.util.List;
 @Stateless
 public class ContextLocator {
 
-	@Inject
-	ContextRepository contextRepository;
+    @Inject
+    ContextRepository contextRepository;
 
-	@Inject
-	PermissionService permissionService;
+    @Inject
+    PermissionService permissionService;
 
-	@Inject
-	RestrictionRepository restrictionRepository;
+    @Inject
+    RestrictionRepository restrictionRepository;
 
-	@Inject
-	AuditService auditService;
+    @Inject
+    AuditService auditService;
 
-	public ContextEntity getContextByName(String name) {
-		return contextRepository.getContextByName(name);
-	}
+    public ContextEntity getContextByName(String name) {
+        return contextRepository.getContextByName(name);
+    }
 
-	/* Deprecated use getById instead */
-	@Deprecated
-	public ContextEntity getContextById(Integer id) {
-		return contextRepository.find(id);
-	}
+    /* Deprecated use getById instead */
+    @Deprecated
+    public ContextEntity getContextById(Integer id) {
+        return contextRepository.find(id);
+    }
 
-	public ContextEntity getById(Integer id) throws NotFoundException {
-		ContextEntity entity = contextRepository.find(id);
-		if (entity != null) {
-			return entity;
-		} else throw new NotFoundException("Context with id " + id + " not found");
-	}
+    public ContextEntity getById(Integer id) throws NotFoundException {
+        ContextEntity entity = contextRepository.find(id);
+        if (entity != null) {
+            return entity;
+        } else throw new NotFoundException("Context with id " + id + " not found");
+    }
 
-	public List<ContextEntity> getAllEnvironments() {
-		return contextRepository.getEnvironments();
-	}
+    public List<ContextEntity> getChildren(Integer contextId) {
+        List<ContextEntity> result = new ArrayList<>();
+        for (ContextEntity c : getAllEnvironments()) {
+            if (c.getParent() != null && c.getParent().getId().equals(contextId)) {
+                result.add(c);
+            }
+        }
+        return result;
+    }
 
-	public List<ContextEntity> getAllDeletedEnvironments() {
-		List<Object> results = auditService.getAllDeletedEntities(ContextEntity.class);
-		List<ContextEntity> deletedContexts = new ArrayList<>();
-		for (Object deletedContext : results) {
-			deletedContexts.add((ContextEntity) deletedContext);
-		}
-		return deletedContexts;
-	}
+    public List<ContextEntity> getAllEnvironments() {
+        return contextRepository.getEnvironments();
+    }
 
-	@HasPermission(permission = Permission.REMOVE_ENV_OR_DOM)
-	public String deleteContext(Integer contextId) throws AMWException {
-		String contextName;
-		ContextEntity context = contextRepository.find(contextId);
-		contextName = context.getName();
-		if (!context.getContextType().getName().equals(ContextNames.GLOBAL.name())){
-			context.getContextType().getContexts().remove(context);
-			if (context.getParent() != null) {
-				context.getParent().getChildren().remove(context);
-			}
-			if (context.getChildren() != null) {
-				for (ContextEntity c : context.getChildren()) {
-					restrictionRepository.deleteAllWithContext(c);
-				}
-			}
-			restrictionRepository.deleteAllWithContext(context);
-			contextRepository.remove(context);
-		} else {
-			throw new AMWException("Es wurde versucht den Kontext \"Global\" (id: "+contextId+" zu löschen.");
-		}
-		return contextName;
-	}
+    public List<ContextEntity> getAllDeletedEnvironments() {
+        List<Object> results = auditService.getAllDeletedEntities(ContextEntity.class);
+        List<ContextEntity> deletedContexts = new ArrayList<>();
+        for (Object deletedContext : results) {
+            deletedContexts.add((ContextEntity) deletedContext);
+        }
+        return deletedContexts;
+    }
+
+    @HasPermission(permission = Permission.REMOVE_ENV_OR_DOM)
+    public String deleteContext(Integer contextId) throws AMWException {
+        String contextName;
+        ContextEntity context = contextRepository.find(contextId);
+        contextName = context.getName();
+        if (!context.getContextType().getName().equals(ContextNames.GLOBAL.name())) {
+            context.getContextType().getContexts().remove(context);
+            if (context.getParent() != null) {
+                context.getParent().getChildren().remove(context);
+            }
+            if (context.getChildren() != null) {
+                for (ContextEntity c : context.getChildren()) {
+                    restrictionRepository.deleteAllWithContext(c);
+                }
+            }
+            restrictionRepository.deleteAllWithContext(context);
+            contextRepository.remove(context);
+        } else {
+            throw new AMWException("Es wurde versucht den Kontext \"Global\" (id: " + contextId + " zu löschen.");
+        }
+        return contextName;
+    }
 
 }

@@ -78,20 +78,22 @@ public class ResourcePropertiesRest {
 
     List<PropertyExtendedDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws NotFoundException {
         ResourceEntity resource = resourceBoundary.getResource(resourceId);
-        List<PropertyExtendedDTO> result = new ArrayList<>();
-
-        if (resource != null) {
-            ContextEntity context = contextLocator.getById(contextId);
-
-            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(
-                    resource.getId(),
-                    context.getId());
-
-            for (ResourceEditProperty property : properties) {
-                result.add(new PropertyExtendedDTO(property, context.getName(), contextId));
-            }
+        if (resource == null) {
+            return new ArrayList<>();
         }
-        return result;
+        
+        ContextEntity context = validateAndGetContext(contextId);
+        if (context == null) {
+            return new ArrayList<>();
+        }
+
+        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(
+                resource.getId(),
+                context.getId());
+
+        return properties.stream()
+                .map(property -> new PropertyExtendedDTO(property, context.getName(), contextId))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @GET
@@ -104,20 +106,77 @@ public class ResourcePropertiesRest {
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
             throws NotFoundException {
 
-        ResourceEntity resource = resourceBoundary.getResource(resourceId);
-        if (resource != null) {
-            ContextEntity context = contextLocator.getById(contextId);
-            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(
-                    resource.getId(),
-                    context.getId());
+        Response validationResponse = validatePropertyName(propertyName);
+        if (validationResponse != null) {
+            return validationResponse;
+        }
 
-            for (ResourceEditProperty property : properties) {
-                if (property.getTechnicalKey().equals(propertyName)) {
-                    return Response.ok(new PropertyExtendedDTO(property, context.getName(), contextId)).build();
-                }
+        ResourceEntity resource = validateAndGetResource(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        ResourceEditProperty property = findPropertyByName(resource.getId(), contextId, propertyName);
+        if (property != null) {
+            ContextEntity context = validateAndGetContext(contextId);
+            if (context != null) {
+                return Response.ok(new PropertyExtendedDTO(property, context.getName(), contextId)).build();
             }
         }
         return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    @GET
+    @Path("/{id : \\d+}/properties/{propertyName}/overview")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a property overview by name for a resource")
+    public Response getResourcePropertyOverview(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @PathParam("propertyName") String propertyName,
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws NotFoundException {
+        
+        Response validationResponse = validatePropertyName(propertyName);
+        if (validationResponse != null) {
+            return validationResponse;
+        }
+        
+        ResourceEntity resource = validateAndGetResource(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        List<ContextEntity> contexts = contextLocator.getChildren(contextId);
+        ResourceEditProperty property = findPropertyByName(resource.getId(), contextId, propertyName);
+        
+        if (property != null) {
+            return Response.ok(propertyEditor.getPropertyOverviewForResource(resource, property, contexts)).build();
+        }
+        
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    private ResourceEntity validateAndGetResource(Integer resourceId) throws NotFoundException {
+        return resourceBoundary.getResource(resourceId);
+    }
+    
+    private ContextEntity validateAndGetContext(Integer contextId) throws NotFoundException {
+        return contextLocator.getById(contextId);
+    }
+    
+    private Response validatePropertyName(String propertyName) {
+        if (propertyName == null || propertyName.trim().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Property name cannot be null or empty").build();
+        }
+        return null;
+    }
+
+    private ResourceEditProperty findPropertyByName(Integer resourceId, Integer contextId, String propertyName) {
+        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResource(resourceId, contextId);
+        return properties.stream()
+                .filter(property -> propertyName.equals(property.getTechnicalKey()))
+                .findFirst()
+                .orElse(null);
     }
 
     @PUT
@@ -132,8 +191,28 @@ public class ResourcePropertiesRest {
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
             throws ValidationException, NotFoundException {
 
-        ResourceEntity resource = resourceBoundary.getResource(resourceId);
-        ContextEntity context = contextLocator.getById(contextId);
+        Response validationResponse = validatePropertyName(propertyName);
+        if (validationResponse != null) {
+            return validationResponse;
+        }
+        
+        if (value == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Property value cannot be null").build();
+        }
+        
+        ResourceEntity resource = validateAndGetResource(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        ContextEntity context = validateAndGetContext(contextId);
+        if (context == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Context not found").build();
+        }
+        
+        if (resource.getRelease() == null) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Resource release information is missing").build();
+        }
 
         propertyEditor.setPropertyValueOnResourceForContext(
                 resource.getName(),
@@ -162,9 +241,28 @@ public class ResourcePropertiesRest {
         if (bulkRequest == null || isRequestEmpty(bulkRequest)) {
             return Response.status(Response.Status.NO_CONTENT).build();
         }
+        
+        if (resourceId == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Resource ID cannot be null").build();
+        }
+        
+        if (contextId == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Context ID cannot be null").build();
+        }
 
         ResourceEntity resource = resourceBoundary.getResource(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
         ContextEntity context = contextLocator.getById(contextId);
+        if (context == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Context not found").build();
+        }
+        
+        if (resource.getRelease() == null) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Resource release information is missing").build();
+        }
 
         if (bulkRequest.getUpdates() != null) {
             for (PropertyDTO property : bulkRequest.getUpdates()) {

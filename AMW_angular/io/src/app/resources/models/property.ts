@@ -20,4 +20,6 @@ export interface Property {
   descriptorId?: number;
   cardinality?: number;
   disabled?: boolean;
+  originOfValue?: string;
+  hasOverrideInLowerContext?: boolean;
 }
