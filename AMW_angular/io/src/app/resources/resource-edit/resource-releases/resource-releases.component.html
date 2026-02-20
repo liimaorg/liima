@@ -1,0 +1,157 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Releases'"
+  [actionName]="'New Release'"
+  [canAction]="permissions().canAddRelease"
+  [isVisible]="true"
+  (tileAction)="addRelease()"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+  @if (!releases() || releases().length < 1) {
+    <div class="no-content">
+      <span>No Release for this resource</span>
+    </div>
+  } @else {
+    <table class="table table-borderless">
+      <tbody>
+        @for (release of releases(); track release) {
+          <tr
+            style="cursor: pointer"
+            [routerLink]="['/resource/edit']"
+            [queryParams]="{ ctx: contextId(), id: release.id, selectedResourceTypeId: resource().resourceTypeId }"
+          >
+            <td [class.fw-bold]="release.id === id()">
+              {{ release.name }}
+            </td>
+            <td class="text-end">
+              @if (release.id === id() && permissions().canChangeRelease) {
+                <app-button
+                  title="Change Release"
+                  [size]="'sm'"
+                  [variant]="'link'"
+                  [additionalClasses]="'p-0 link-secondary me-2'"
+                  (click)="showChangeReleaseModal(release); $event.stopPropagation(); $event.preventDefault()"
+                >
+                  <app-icon icon="pencil"></app-icon>
+                </app-button>
+              }
+              @if (permissions().canDeleteRelease) {
+                <app-button
+                  title="Delete"
+                  [size]="'sm'"
+                  [variant]="'link'"
+                  [additionalClasses]="'p-0 link-danger'"
+                  (click)="
+                    showDeleteConfirmation(deleteReleaseConfirmation, release);
+                    $event.stopPropagation();
+                    $event.preventDefault()
+                  "
+                >
+                  <app-icon icon="trash"></app-icon>
+                </app-button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</app-tile-component>
+
+<ng-template #deleteReleaseConfirmation let-modal>
+  <app-modal-header
+    [title]="'Delete release ' + releaseToDelete()?.name"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
+  <div class="modal-body">
+    <p class="text-warning-2">Are you sure that you want to delete this release?</p>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'danger'" (click)="modal.close('Confirm click')" ngbAutofocus>Delete</app-button>
+  </div>
+</ng-template>
+
+<ng-template #createReleaseModal let-modal>
+  <app-modal-header [title]="'Create New Release'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    @if (availableReleases().length === 0) {
+      <p>No available releases to create.</p>
+    } @else {
+      <div class="mb-3">
+        <label for="releaseSelect" class="form-label">Select Release</label>
+        <select
+          id="releaseSelect"
+          class="form-select"
+          [ngModel]="selectedReleaseId()"
+          (ngModelChange)="selectedReleaseId.set($event)"
+          [disabled]="isCreatingRelease()"
+        >
+          <option [ngValue]="null">Select Release</option>
+          @for (release of availableReleases(); track release.id) {
+            <option [ngValue]="release.id">{{ release.name }}</option>
+          }
+        </select>
+      </div>
+    }
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')" [disabled]="isCreatingRelease()">
+      Cancel
+    </app-button>
+    <app-button
+      [variant]="'primary'"
+      (click)="modal.close('Create click')"
+      [disabled]="!selectedReleaseId() || isCreatingRelease()"
+      ngbAutofocus
+    >
+      Create
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #changeReleaseModal let-modal>
+  <app-modal-header
+    [title]="'Change Release for ' + releaseToChange()?.name"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
+  <div class="modal-body">
+    @if (availableReleases().length === 0) {
+      <p>No available releases to change to.</p>
+    } @else {
+      <div class="mb-3">
+        <label for="changeReleaseSelect" class="form-label">Select New Release</label>
+        <select
+          id="changeReleaseSelect"
+          class="form-select"
+          [ngModel]="selectedReleaseId()"
+          (ngModelChange)="selectedReleaseId.set($event)"
+          [disabled]="isChangingRelease()"
+        >
+          <option [ngValue]="null">Select Release</option>
+          @for (release of availableReleases(); track release.id) {
+            <option [ngValue]="release.id">{{ release.name }}</option>
+          }
+        </select>
+      </div>
+      <p class="text-muted small">
+        This will move the current resource to the selected release. The resource will keep its properties and
+        relations.
+      </p>
+    }
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')" [disabled]="isChangingRelease()">
+      Cancel
+    </app-button>
+    <app-button
+      [variant]="'primary'"
+      (click)="modal.close('Change click')"
+      [disabled]="!selectedReleaseId() || isChangingRelease()"
+      ngbAutofocus
+    >
+      Save
+    </app-button>
+  </div>
+</ng-template>

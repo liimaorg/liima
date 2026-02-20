@@ -5,7 +5,6 @@ import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
 import { Resource } from '../models/resource';
 import { Release } from '../models/release';
 import { Relation } from '../models/relation';
-import { Property } from '../models/property';
 import { AppWithVersion } from '../../deployment/app-with-version';
 import { BaseService } from '../../base/base.service';
 import { ResourceType } from '../models/resource-type';
@@ -200,6 +199,40 @@ export class ResourceService extends BaseService {
   getReleasesForResource(resourceId: number): Observable<Release[]> {
     return this.http
       .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`)
+      .pipe(catchError(this.handleError));
+  }
+
+  deleteResourceByResourceId(resourceId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resources/${resourceId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getAvailableReleasesForResource(resourceId: number): Observable<Release[]> {
+    return this.http
+      .get<Release[]>(`${this.getBaseUrl()}/resources/${resourceId}/availableReleases`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  createResourceRelease(resourceGroupName: string, releaseName: string, sourceReleaseName: string): Observable<void> {
+    return this.http
+      .post<void>(
+        `${this.getBaseUrl()}/resources/${resourceGroupName}`,
+        { releaseName, sourceReleaseName },
+        { headers: this.getHeaders() },
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  changeResourceRelease(resourceId: number, releaseId: number): Observable<void> {
+    return this.http
+      .put<void>(`${this.getBaseUrl()}/resources/${resourceId}/release/${releaseId}`, null, {
+        headers: this.getHeaders(),
+      })
       .pipe(catchError(this.handleError));
   }
 }
