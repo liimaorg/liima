@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-contexts-list',
+  standalone: true,
   imports: [NgClass, UpperCasePipe],
   templateUrl: './contexts-list.component.html',
   styleUrl: './contexts-list.component.scss',
