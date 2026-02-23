@@ -1,3 +1,9 @@
+# v1.18.10
+* Deploy filter refact [#953](https://github.com/liimaorg/liima/pull/953)
+  * Fixes an issue where enum deployment filter values weren't displayed correctly
+* ResourceEdit: Context-List [#944](https://github.com/liimaorg/liima/pull/944)
+* Update JS deps [#961](https://github.com/liimaorg/liima/pull/961)
+
 # v1.18.9
 * Maia code was removed: [#938](https://github.com/liimaorg/liima/pull/938)
   * Role overwrite_foreignables is no longer used
