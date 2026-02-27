@@ -1,7 +1,11 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Property } from '../models/property';
 import { PropertyFieldComponent } from '../property-field/property-field.component';
-import { PropertiesResetToggleAction, PropertiesValueChangeAction } from '../models/properties-action';
+import {
+  PropertiesResetToggleAction,
+  PropertiesValidationChangeAction,
+  PropertiesValueChangeAction,
+} from '../models/properties-action';
 import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
@@ -20,6 +24,7 @@ export class PropertiesListComponent {
 
   valueChange = output<PropertiesValueChangeAction>();
   resetToggled = output<PropertiesResetToggleAction>();
+  validationChanged = output<PropertiesValidationChangeAction>();
 
   leftProperties = computed(() => {
     const props = this.properties();

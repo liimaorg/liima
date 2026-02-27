@@ -28,5 +28,6 @@
     [canDelete]="canDelete()"
     (valueChange)="valueChange.emit({ type: 'valueChange', name: property.name, value: $event })"
     (resetChange)="resetToggled.emit({ type: 'resetToggle', name: property.name, checked: $event })"
+    (validationChange)="validationChanged.emit({ type: 'validationChange', name: property.name, invalid: $event })"
   ></app-property-field>
 </ng-template>

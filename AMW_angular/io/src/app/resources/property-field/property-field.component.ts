@@ -21,6 +21,7 @@ export class PropertyFieldComponent {
   canDelete = input<boolean>(false);
   hideTooltip = input<boolean>(false);
   valueChange = output<string>();
+  validationChange = output<boolean>();
   resetChange = output<boolean>();
   editClicked = output<number>();
   deleteClicked = output<number>();
@@ -81,6 +82,7 @@ export class PropertyFieldComponent {
       this.resetChecked.set(false);
       this.touched.set(false);
       this.validationError.set(null);
+      this.validationChange.emit(false);
     });
   }
 
@@ -115,6 +117,7 @@ export class PropertyFieldComponent {
     }
 
     this.touched.set(true);
+    this.validate();
     this.resetChange.emit(checked);
   }
 
@@ -138,11 +141,13 @@ export class PropertyFieldComponent {
 
     if (!isNullable && !isOptional && noValueSet && mik === '') {
       this.validationError.set('This field is required');
+      this.validationChange.emit(true);
       return;
     }
 
     if ((isNullable || isOptional) && noValueSet && mik !== '') {
       this.validationError.set(null);
+      this.validationChange.emit(false);
       return;
     }
 
@@ -154,16 +159,19 @@ export class PropertyFieldComponent {
         const fullMatchRegex = new RegExp(`^(?:${regexString})$`);
         if (!fullMatchRegex.test(regexMatchValue)) {
           this.validationError.set('Value does not match the required pattern');
+          this.validationChange.emit(true);
           return;
         }
       } catch (e) {
         console.error('Invalid regex pattern:', regexString, e);
         this.validationError.set('Value does not match the required pattern');
+        this.validationChange.emit(true);
         return;
       }
     }
 
     this.validationError.set(null);
+    this.validationChange.emit(false);
   }
 
   protected propertyEdit(descriptorId: number) {

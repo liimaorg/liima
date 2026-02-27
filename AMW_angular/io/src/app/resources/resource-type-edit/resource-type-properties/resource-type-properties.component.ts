@@ -1,7 +1,5 @@
 import { Component, input, signal, computed, inject, Signal } from '@angular/core';
 import { Property } from '../../models/property';
-import { PropertyFieldComponent } from '../../property-field/property-field.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceTypesService } from '../../services/resource-types.service';
 import { ResourceType } from '../../models/resource-type';
@@ -31,7 +29,10 @@ export class ResourceTypePropertiesComponent {
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
+  private invalidProperties = signal<Set<string>>(new Set());
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
+
+  hasValidationErrors = computed(() => this.invalidProperties().size > 0);
 
   properties = computed<Property[]>(() => {
     const props = this.propertiesService.propertiesForType;
@@ -104,16 +105,33 @@ export class ResourceTypePropertiesComponent {
     this.editor.onPropertyReset(propertyName, checked);
   }
 
+  onPropertyValidationChange(propertyName: string, invalid: boolean) {
+    this.invalidProperties.update((set) => {
+      const next = new Set(set);
+      if (invalid) {
+        next.add(propertyName);
+      } else {
+        next.delete(propertyName);
+      }
+      return next;
+    });
+  }
+
   resetChanges() {
     this.editor.resetChanges();
     this.errorMessage.set(null);
     this.successMessage.set(null);
+    this.invalidProperties.set(new Set());
   }
 
   saveChanges() {
     const changes = this.editor.changedProperties();
     const resets = this.editor.resetProperties();
     if (changes.size === 0 && resets.size === 0) return;
+
+    if (this.hasValidationErrors()) {
+      return;
+    }
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
