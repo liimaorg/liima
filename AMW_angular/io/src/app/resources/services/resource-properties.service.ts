@@ -1,10 +1,10 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, startWith, Subject } from 'rxjs';
 import { Property } from '../models/property';
-import { catchError, shareReplay, switchMap } from 'rxjs/operators';
+import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
 import { PropertyDiff } from '../models/property-diff';
 
 export interface PropertyUpdate {
@@ -15,6 +15,12 @@ export interface PropertyUpdate {
 @Injectable({ providedIn: 'root' })
 export class ResourcePropertiesService extends BaseService {
   private http = inject(HttpClient);
+
+  private loadingResourceProperties = signal(false);
+  private loadingResourceTypeProperties = signal(false);
+
+  isLoadingResourceProperties = this.loadingResourceProperties.asReadonly();
+  isLoadingResourceTypeProperties = this.loadingResourceTypeProperties.asReadonly();
 
   private path = `${this.getBaseUrl()}`;
   private properties$: Subject<{ id: number; contextId: number }> = new Subject<{
@@ -34,7 +40,8 @@ export class ResourcePropertiesService extends BaseService {
 
   private propertiesForResource$: Observable<Property[]> = this.properties$.pipe(
     switchMap(({ id, contextId }) => {
-      return this.getResourceProperties(id, contextId);
+      this.loadingResourceProperties.set(true);
+      return this.getResourceProperties(id, contextId).pipe(finalize(() => this.loadingResourceProperties.set(false)));
     }),
     startWith([]),
     shareReplay(1),
@@ -42,7 +49,10 @@ export class ResourcePropertiesService extends BaseService {
 
   private propertiesForTypeResource$: Observable<Property[]> = this.propertiesForType$.pipe(
     switchMap(({ id, contextId }) => {
-      return this.getResourceTypeProperties(id, contextId);
+      this.loadingResourceTypeProperties.set(true);
+      return this.getResourceTypeProperties(id, contextId).pipe(
+        finalize(() => this.loadingResourceTypeProperties.set(false)),
+      );
     }),
     startWith([]),
     shareReplay(1),

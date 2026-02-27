@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 describe('ContextsListComponent', () => {
   let component: ContextsListComponent;
@@ -22,6 +23,7 @@ describe('ContextsListComponent', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        provideRouter([]),
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
     }).compileComponents();
