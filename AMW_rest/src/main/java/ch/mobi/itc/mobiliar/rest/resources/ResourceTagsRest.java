@@ -128,24 +128,4 @@ public class ResourceTagsRest {
         }
     }
 
-    @GET
-    @Path("/{resourceId}/canTag")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Check if user can tag the current state of a resource")
-    public Response canTagResource(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId) {
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
-        if (resource == null) {
-            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
-        }
-
-        boolean canTag = permissionService.hasPermission(
-                Permission.RESOURCE,
-                null,
-                Action.UPDATE,
-                resource.getResourceGroup(),
-                null
-        );
-
-        return Response.ok().entity("{\"canTag\": " + canTag + "}").build();
-    }
 }
