@@ -45,6 +45,7 @@ public class ResourceDTO {
     private Integer resourceTypeId;
     private Integer resourceGroupId;
     private String release;
+    private String outOfServiceReleaseName;
 
     private List<ResourceRelationDTO> relations;
     private List<PropertyDTO> properties;
@@ -90,7 +91,7 @@ public class ResourceDTO {
         this.resourceTypeId = resource.getResourceType().getId();
         this.name = resource.getName();
         this.release = resource.getRelease().getName();
-
+        this.outOfServiceReleaseName = resource.getResourceGroup().getOutOfServiceRelease() != null ? resource.getResourceGroup().getOutOfServiceRelease().getName() : "";
 
     }
 }

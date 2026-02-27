@@ -25,7 +25,8 @@ import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;import ch.puzzle.itc.mobiliar.business.property.control.*;
+import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
+import ch.puzzle.itc.mobiliar.business.property.control.*;
 import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
@@ -44,6 +45,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationT
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
@@ -207,7 +209,7 @@ public class PropertyEditor {
      * @return
      */
     public List<ResourceEditProperty> getPropertiesForRelatedResource(Integer masterResourceId,
-            ResourceEditRelation resourceRelation, Integer contextId) {
+                                                                      ResourceEditRelation resourceRelation, Integer contextId) {
         if (masterResourceId != null && resourceRelation != null && contextId != null) {
             ResourceEntity resource = entityManager.find(ResourceEntity.class, masterResourceId);
             ContextEntity context = entityManager.find(ContextEntity.class, contextId);
@@ -295,7 +297,7 @@ public class PropertyEditor {
      * @throws ValidationException
      */
     public void save(Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
-            ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String relationIdentifier) throws AMWException, ValidationException {
+                     ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String relationIdentifier) throws AMWException, ValidationException {
 
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         ResourceEntity editedResource = verifyAndSaveResource(resourceId, resourceName, context);
@@ -372,9 +374,9 @@ public class PropertyEditor {
      * @throws ValidationException
      */
     public void savePropertiesForResourceType(Integer contextId, Integer resourceTypeId,
-            List<ResourceEditProperty> resourceProperties, ResourceEditRelation relation,
-            List<ResourceEditProperty> relationProperties, String resourceTypeName,
-            String typeRelationIdentifier) throws AMWException, ValidationException {
+                                              List<ResourceEditProperty> resourceProperties, ResourceEditRelation relation,
+                                              List<ResourceEditProperty> relationProperties, String resourceTypeName,
+                                              String typeRelationIdentifier) throws AMWException, ValidationException {
         ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
@@ -404,27 +406,26 @@ public class PropertyEditor {
             ConsumedResourceRelationEntity relation = (ConsumedResourceRelationEntity) hasContexts;
             return relation.getMasterResource();
         }
-        log.warning("Unexpected Object "+hasContexts.getClass().getSimpleName());
+        log.warning("Unexpected Object " + hasContexts.getClass().getSimpleName());
         return null;
     }
 
     private void resetSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
-            Integer propertyDescriptorId) {
+                                     Integer propertyDescriptorId) {
         ResourceEntity resource = getRelevantResource(hasContexts);
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
             HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
             ContextEntity contextMerged = entityManager.merge(context);
             ContextDependency<?> contextDependency = hasContextMerged.getOrCreateContext(contextMerged);
             propertyValueService.resetPropertyValue(contextDependency, propertyDescriptorId);
-        }
-        else {
+        } else {
             log.warning("Not allowed to reset property value");
             throw new NotAuthorizedException("Not allowed to reset property value");
         }
     }
 
     private void setSingleProperty(HasContexts<?> hasContexts, ContextEntity context,
-            Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
+                                   Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
         ResourceEntity resource = getRelevantResource(hasContexts);
         if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, resource, null)) {
             HasContexts<?> hasContextMerged = entityManager.merge(hasContexts);
@@ -433,31 +434,88 @@ public class PropertyEditor {
             auditService.storeIdInThreadLocalForAuditLog(contextDependency);
             propertyValueService.setPropertyValue(contextDependency, propertyDescriptorId,
                     unobfuscatedValue);
-        }
-        else {
+        } else {
             log.warning("Not allowed to set property value");
             throw new NotAuthorizedException("Not allowed to set property value");
         }
     }
 
+    private void setSinglePropertyForResourceType(HasContexts<?> hasContexts, ContextEntity context,
+                                                  Integer propertyDescriptorId, String unobfuscatedValue) throws ValidationException {
+        ContextDependency<?> resourceContext = hasContexts.getOrCreateContext(context);
+        propertyValueService.setPropertyValue(resourceContext, propertyDescriptorId, unobfuscatedValue);
+    }
+
+    private void resetSinglePropertyForResourceType(HasContexts<?> hasContexts, ContextEntity context,
+                                                    Integer propertyDescriptorId) {
+        ContextDependency<?> resourceContext = hasContexts.getOrCreateContext(context);
+        propertyValueService.resetPropertyValue(resourceContext, propertyDescriptorId);
+    }
+
+    @HasPermission(permission = Permission.RESOURCETYPE, action = Action.UPDATE)
+    public void setPropertyValueOnResourceTypeForContext(ResourceTypeEntity resourceType,
+                                                         ContextEntity context, String propertyName, String propertyValue) throws ValidationException {
+        ValidationHelper
+                .validateNotNullOrEmptyChecked(context.getName(), propertyValue, propertyName);
+
+        ResourceTypeEntity resourceTypeMerged = entityManager.merge(resourceType);
+        ContextEntity contextMerged = entityManager.merge(context);
+
+        if (!permissionBoundary.hasPermission(Permission.RESOURCETYPE, contextMerged, Action.UPDATE, null, resourceTypeMerged)) {
+            throw new NotAuthorizedException("Not allowed to set property value");
+        }
+
+        if (propertyName.equals("resourceTypeName") && !propertyValue.equals(resourceTypeMerged.getName())) {
+            try {
+                resourceValidationService.validateResourceTypeName(propertyValue, resourceTypeMerged.getName());
+            } catch (AMWException e) {
+                throw new ValidationException(e.getMessage());
+            }
+            resourceTypeMerged.setName(propertyValue);
+        } else {
+            List<ResourceEditProperty> resourceEditProperties = propertyEditingService
+                    .loadPropertiesForEditResourceType(resourceTypeMerged, contextMerged);
+
+            ResourceEditProperty property = findByName(propertyName, resourceEditProperties);
+            setSinglePropertyForResourceType(resourceTypeMerged, contextMerged, property.getDescriptorId(), propertyValue);
+        }
+    }
+
+    @HasPermission(permission = Permission.RESOURCETYPE, action = Action.UPDATE)
+    public void resetPropertyValueOnResourceTypeForContext(ResourceTypeEntity resourceType,
+                                                           ContextEntity context, String propertyName) throws ValidationException {
+        ValidationHelper
+                .validateNotNullOrEmptyChecked(context.getName(), propertyName);
+        if (!permissionBoundary.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
+            throw new NotAuthorizedException("Not allowed to set property value");
+        }
+
+        List<ResourceEditProperty> resourceEditProperties = propertyEditingService
+                .loadPropertiesForEditResourceType(resourceType, context);
+
+        List<ResourceEditProperty> potentiallyDecryptedProperties;
+        if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, null, resourceType)) {
+            potentiallyDecryptedProperties = propertyValueService.decryptProperties(resourceEditProperties);
+        } else {
+            potentiallyDecryptedProperties = resourceEditProperties;
+        }
+
+        ResourceEditProperty property = findByName(propertyName, potentiallyDecryptedProperties);
+        resetSinglePropertyForResourceType(resourceType, context, property.getDescriptorId());
+    }
+
     /**
      * Set property value for resource in release and context.
      *
-     * @param resourceGroupName
-     *             resource group name
-     * @param releaseName
-     *             release name
-     * @param contextName
-     *             context name
-     * @param propertyName
-     *             property name for which tha value should be set
-     * @param propertyValue
-     *             value to set
-     * @throws ValidationException
-     *              thrown if one of the arguments is either empty or null
+     * @param resourceGroupName resource group name
+     * @param releaseName       release name
+     * @param contextName       context name
+     * @param propertyName      property name for which tha value should be set
+     * @param propertyValue     value to set
+     * @throws ValidationException thrown if one of the arguments is either empty or null
      */
     public void setPropertyValueOnResourceForContext(String resourceGroupName, String releaseName,
-            String contextName, String propertyName, String propertyValue) throws ValidationException {
+                                                     String contextName, String propertyName, String propertyValue) throws ValidationException {
         ValidationHelper
                 .validateNotNullOrEmptyChecked(resourceGroupName, releaseName, propertyValue, propertyName);
 
@@ -472,31 +530,35 @@ public class PropertyEditor {
         ContextEntity context = contextLocator.getContextByName(contextName == null ? ContextNames.GLOBAL
                 .getDisplayName() : contextName);
 
-        List<ResourceEditProperty> resourceEditProperties = propertyEditingService
-                .loadPropertiesForEditResource(resourceByNameAndRelease.getId(),
-                        resourceByNameAndRelease.getResourceType(), context);
+        if (propertyName.equals("resourceName")) {
 
-        ResourceEditProperty property = findByName(propertyName, resourceEditProperties);
-        property.setPropertyValue(propertyValue);
-        setSingleProperty(resourceByNameAndRelease, context, property.getDescriptorId(), property.getUnobfuscatedValue());
+            try {
+                verifyAndSaveResource(resourceByNameAndRelease.getId(), propertyValue, context);
+            } catch (AMWException e) {
+                throw new ValidationException(e.getMessage());
+            }
+        } else {
+            List<ResourceEditProperty> resourceEditProperties = propertyEditingService
+                    .loadPropertiesForEditResource(resourceByNameAndRelease.getId(),
+                            resourceByNameAndRelease.getResourceType(), context);
+
+            ResourceEditProperty property = findByName(propertyName, resourceEditProperties);
+            property.setPropertyValue(propertyValue);
+            setSingleProperty(resourceByNameAndRelease, context, property.getDescriptorId(), property.getUnobfuscatedValue());
+        }
     }
 
     /**
      * Reset property value for resource in release and context.
      *
-     * @param resourceGroupName
-     *             resource group name
-     * @param releaseName
-     *             release name
-     * @param contextName
-     *             context name
-     * @param propertyName
-     *             property name for which tha value should be set
-     * @throws ValidationException
-     *              thrown if one of the arguments is either empty or null
+     * @param resourceGroupName resource group name
+     * @param releaseName       release name
+     * @param contextName       context name
+     * @param propertyName      property name for which tha value should be set
+     * @throws ValidationException thrown if one of the arguments is either empty or null
      */
     public void resetPropertyValueOnResourceForContext(String resourceGroupName, String releaseName,
-            String contextName, String propertyName) throws ValidationException {
+                                                       String contextName, String propertyName) throws ValidationException {
         ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, releaseName, propertyName);
 
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName,
@@ -521,20 +583,13 @@ public class PropertyEditor {
      * Set hostname value on all relations between a node release and all releases of an application server
      * where no hostname is defined yet
      *
-     * @param masterResourceGroupName
-     *             name master resource (group)
-     * @param slaveResourceGroupName
-     *             slave resource group name
-     * @param slaveResourceReleaseName
-     *             release name of slave resource
-     * @param contextName
-     *             context name
-     * @param propertyName
-     *             property name for which tha value should be set
-     * @param propertyValue
-     *             value to set
-     * @throws ValidationException
-     *              thrown if one of the arguments is either empty or null
+     * @param masterResourceGroupName  name master resource (group)
+     * @param slaveResourceGroupName   slave resource group name
+     * @param slaveResourceReleaseName release name of slave resource
+     * @param contextName              context name
+     * @param propertyName             property name for which tha value should be set
+     * @param propertyValue            value to set
+     * @throws ValidationException thrown if one of the arguments is either empty or null
      */
     public void setPropertyValueOnAllResourceRelationsForContextWhereNotYetSet(
             String masterResourceGroupName, String slaveResourceGroupName,
@@ -576,7 +631,7 @@ public class PropertyEditor {
     }
 
     private ResourceEditProperty getPropertyForRelationAndContext(String hostName, ContextEntity context,
-            ConsumedResourceRelationEntity resourceRelation) {
+                                                                  ConsumedResourceRelationEntity resourceRelation) {
         List<ResourceEditProperty> propertiesForRelatedResource = getPropertiesForRelatedResource(
                 resourceRelation, context.getId());
         return findByName(hostName, propertiesForRelatedResource);
@@ -585,27 +640,19 @@ public class PropertyEditor {
     /**
      * Set property value on relation between two resource releases and context.
      *
-     * @param resourceGroupName
-     *             resource group name
-     * @param resourceReleaseName
-     *             release name
-     * @param relatedResourceGroupName
-     *             related resource group name
-     * @param relatedResourceReleaseName
-     *             related resource release name
-     * @param contextName
-     *             context name
-     * @param propertyName
-     *             property name for which tha value should be set
-     * @param propertyValue
-     *             value to set
-     * @throws ValidationException
-     *              thrown if one of the arguments is either empty or null
+     * @param resourceGroupName          resource group name
+     * @param resourceReleaseName        release name
+     * @param relatedResourceGroupName   related resource group name
+     * @param relatedResourceReleaseName related resource release name
+     * @param contextName                context name
+     * @param propertyName               property name for which tha value should be set
+     * @param propertyValue              value to set
+     * @throws ValidationException thrown if one of the arguments is either empty or null
      */
     public void setPropertyValueOnResourceRelationForContext(String resourceGroupName,
-            String resourceReleaseName, String relatedResourceGroupName,
-            String relatedResourceReleaseName, String contextName, String propertyName,
-            String propertyValue) throws ValidationException {
+                                                             String resourceReleaseName, String relatedResourceGroupName,
+                                                             String relatedResourceReleaseName, String contextName, String propertyName,
+                                                             String propertyValue) throws ValidationException {
         ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName, propertyValue, propertyName);
 
         ConsumedResourceRelationEntity resourceRelation = resourceRelationLocator.getResourceRelation(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName);
@@ -623,24 +670,17 @@ public class PropertyEditor {
     /**
      * Reset property value on relation between two resource releases and context.
      *
-     * @param resourceGroupName
-     *             resource group name
-     * @param resourceReleaseName
-     *             release name
-     * @param relatedResourceGroupName
-     *             related resource group name
-     * @param relatedResourceReleaseName
-     *             related resource release name
-     * @param contextName
-     *             context name
-     * @param propertyName
-     *             property name for which tha value should be set
-     * @throws ValidationException
-     *              thrown if one of the arguments is either empty or null
+     * @param resourceGroupName          resource group name
+     * @param resourceReleaseName        release name
+     * @param relatedResourceGroupName   related resource group name
+     * @param relatedResourceReleaseName related resource release name
+     * @param contextName                context name
+     * @param propertyName               property name for which tha value should be set
+     * @throws ValidationException thrown if one of the arguments is either empty or null
      */
     public void resetPropertyValueOnResourceRelationForContext(String resourceGroupName,
-            String resourceReleaseName, String relatedResourceGroupName,
-            String relatedResourceReleaseName, String contextName, String propertyName)
+                                                               String resourceReleaseName, String relatedResourceGroupName,
+                                                               String relatedResourceReleaseName, String contextName, String propertyName)
             throws IllegalArgumentException, EJBException, IllegalStateException, NotAuthorizedException,
             ValidationException {
         ValidationHelper.validateNotNullOrEmptyChecked(resourceGroupName, resourceReleaseName, relatedResourceGroupName, relatedResourceReleaseName, propertyName);
@@ -742,7 +782,7 @@ public class PropertyEditor {
     }
 
     private ResourceEditProperty findByName(String propertyName,
-            List<ResourceEditProperty> resourceEditProperties) {
+                                            List<ResourceEditProperty> resourceEditProperties) {
         for (ResourceEditProperty property : resourceEditProperties) {
             if (property.getTechnicalKey().equals(propertyName)) {
                 return property;

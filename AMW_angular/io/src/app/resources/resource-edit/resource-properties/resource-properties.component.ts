@@ -87,7 +87,13 @@ export class ResourcePropertiesComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canAddProperty: this.authService.hasPermission('RESOURCE', 'UPDATE', null, null, this.context()?.name),
+        canAddProperty: this.authService.hasPermission(
+          'RESOURCE',
+          'UPDATE',
+          null,
+          this.resource()?.resourceTypeId,
+          this.context()?.name,
+        ),
       };
     } else {
       return { canAddProperty: false };
@@ -97,7 +103,7 @@ export class ResourcePropertiesComponent {
   // Special property for resource/resource type name (only shown in Global context)
   appNameProperty = computed<Property>(() => ({
     name: 'resourceName',
-    displayName: `${this.resource()?.type || 'Resource'} name`,
+    displayName: `Resource name`,
     value: this.resource()?.name || '',
     replacedValue: '',
     generalComment: '',
@@ -112,7 +118,7 @@ export class ResourcePropertiesComponent {
   outOfServiceProperty = computed<Property>(() => ({
     name: 'outOfService',
     displayName: 'Out Of Service',
-    value: '', // TODO: Get from resource.resourceGroup.outOfServiceRelease.name when available
+    value: this.resource().outOfServiceReleaseName || '',
     replacedValue: '',
     generalComment: '',
     valueComment: 'staticProperty',
