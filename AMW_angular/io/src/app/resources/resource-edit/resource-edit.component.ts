@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, Signal } from '@angular/core';
+import { Component, computed, inject, signal, Signal, ViewChild } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -15,6 +15,7 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 import { ResourcePropertiesComponent } from './resource-properties/resource-properties.component';
 import { ResourceReleasesComponent } from './resource-releases/resource-releases.component';
+import { TagCurrentStateComponent } from './tag-current-state/tag-current-state.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -33,6 +34,7 @@ import { ResourceReleasesComponent } from './resource-releases/resource-releases
     ResourcePropertiesComponent,
     ResourceReleasesComponent,
     RouterLink,
+    TagCurrentStateComponent,
   ],
   templateUrl: './resource-edit.component.html',
   styleUrl: './resource-edit.component.scss',
@@ -42,6 +44,8 @@ export class ResourceEditComponent {
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+
+  @ViewChild(TagCurrentStateComponent) tagCurrentStateComponent!: TagCurrentStateComponent;
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
@@ -61,12 +65,15 @@ export class ResourceEditComponent {
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
+      const resourceTypeName = this.resource()?.type ?? null;
+      const resourceGroupId = this.resource()?.resourceGroupId ?? null;
       return {
         canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
         canTestGenerate: this.authService.hasPermission('RESOURCE_TEST_GENERATION', 'READ'),
+        canTagCurrentState: this.authService.hasPermission('RESOURCE', 'UPDATE', resourceTypeName, resourceGroupId),
       };
     } else {
-      return { canEditResource: false, canTestGenerate: false };
+      return { canEditResource: false, canTestGenerate: false, canTagCurrentState: false };
     }
   });
 
@@ -82,11 +89,23 @@ export class ResourceEditComponent {
     () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
   );
 
+  protected readonly isApplicationServer = computed<boolean>(
+    () => this.resource()?.type === 'APPLICATIONSERVER',
+  );
+
+  protected readonly showMoreMenu = computed<boolean>(
+    () => this.permissions().canTagCurrentState && this.isApplicationServer(),
+  );
+
   loadResourceFromRelease(releaseId: number) {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { id: releaseId },
       queryParamsHandling: 'merge',
     });
+  }
+
+  openTagDialog() {
+    this.tagCurrentStateComponent?.openTagDialog();
   }
 }
