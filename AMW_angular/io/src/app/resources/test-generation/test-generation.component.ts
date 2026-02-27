@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, Signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, Signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { concatMap, finalize, map } from 'rxjs/operators';
@@ -100,6 +100,20 @@ export class TestGenerationComponent {
     id: this.resourceId(),
     ctx: this.contextId(),
   }));
+
+  constructor() {
+    // Auto-generate when context, resource, or compare release changes
+    effect(() => {
+      const contextId = this.contextId();
+      const resourceId = this.resourceId();
+      const compareReleaseId = this.compareReleaseId();
+      
+      // Trigger generation when any of these change
+      if (contextId && resourceId) {
+        this.generate();
+      }
+    });
+  }
 
   generate() {
     const name = this.resourceName();
