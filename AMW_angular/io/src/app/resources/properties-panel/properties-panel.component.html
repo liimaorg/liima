@@ -14,9 +14,19 @@
   @if (hasChanges() && canEdit()) {
     <div class="action-buttons">
       <app-button [variant]="'light'" [size]="'sm'" (click)="cancelAction.emit()">Cancel</app-button>
-      <app-button [variant]="'primary'" [size]="'sm'" (click)="saveAction.emit()" [disabled]="isSaving()">
-        {{ isSaving() ? 'Saving...' : 'Save' }}
-      </app-button>
+      <span
+        [ngbTooltip]="hasValidationErrors() ? 'Fix validation errors to enable saving' : ''"
+        [disableTooltip]="!hasValidationErrors()"
+      >
+        <app-button
+          [variant]="'primary'"
+          [size]="'sm'"
+          (click)="saveAction.emit()"
+          [disabled]="isSaving() || hasValidationErrors()"
+        >
+          {{ isSaving() ? 'Saving...' : 'Save' }}
+        </app-button>
+      </span>
     </div>
   }
 </div>

@@ -120,20 +120,20 @@ describe('PropertyFieldTooltipComponent', () => {
 
       const result = component.dataTable();
       expect(result).toEqual([
-        { label: 'TechKey', value: 'testProperty' },
-        { label: 'Example value', value: 'example' },
-        { label: 'Default', value: 'default' },
-        { label: 'Comment', value: 'test comment' },
-        { label: 'Machine Interpretation Key:', value: 'testMIK' },
+        { col1: 'TechKey', col2: 'testProperty' },
+        { col1: 'Example value', col2: 'example' },
+        { col1: 'Default', col2: 'default' },
+        { col1: 'Comment', col2: 'test comment' },
+        { col1: 'Machine Interpretation Key:', col2: 'testMIK' },
       ]);
     });
 
-    it('should return undefined when isInfo is false', () => {
+    it('should return empty table when isInfo is false and there are no overwrite infos', () => {
       fixture.componentRef.setInput('property', mockProperty);
       fixture.componentRef.setInput('isInfo', false);
       fixture.detectChanges();
 
-      expect(component.dataTable()).toBeUndefined();
+      expect(component.dataTable()).toEqual([]);
     });
   });
 
