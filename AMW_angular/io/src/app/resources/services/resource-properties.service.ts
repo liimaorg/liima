@@ -22,7 +22,6 @@ export class ResourcePropertiesService extends BaseService {
   isLoadingResourceProperties = this.loadingResourceProperties.asReadonly();
   isLoadingResourceTypeProperties = this.loadingResourceTypeProperties.asReadonly();
 
-  private path = `${this.getBaseUrl()}`;
   private properties$: Subject<{ id: number; contextId: number }> = new Subject<{
     id: number;
     contextId: number;
