@@ -23,6 +23,7 @@ import {
   NodeGenerationResult,
 } from '../models/test-generation-result';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
+import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 import { Release } from '../models/release';
 
 @Component({
@@ -42,6 +43,7 @@ import { Release } from '../models/release';
     NgbDropdownToggle,
     NgbDropdownItem,
     NgTemplateOutlet,
+    ContextsListComponent,
   ],
   templateUrl: './test-generation.component.html',
   styleUrl: './test-generation.component.scss',
