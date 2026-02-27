@@ -1,4 +1,4 @@
-import { Component, input, signal, computed, inject, Signal } from '@angular/core';
+import { Component, input, signal, computed, inject, Signal, effect } from '@angular/core';
 import { Property } from '../../models/property';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceTypesService } from '../../services/resource-types.service';
@@ -10,6 +10,7 @@ import { createPropertiesEditor } from '../../properties-editor';
 import { EnvironmentService } from '../../../deployment/environment.service';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
+import { UnsavedPropertyChangesService } from '../../services/unsaved-property-changes.service';
 
 @Component({
   selector: 'app-resource-type-properties',
@@ -25,6 +26,7 @@ export class ResourceTypePropertiesComponent {
   private resourceTypeService = inject(ResourceTypesService);
   private propertiesService = inject(ResourcePropertiesService);
   private environmentsService = inject(EnvironmentService);
+  private unsavedChangesService = inject(UnsavedPropertyChangesService);
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
@@ -55,13 +57,26 @@ export class ResourceTypePropertiesComponent {
   hasChanges = this.editor.hasChanges;
   resetToken = this.editor.resetToken;
 
-  isLoading = computed(() => {
-    if (this.resourceType()?.id && this.contextId()) {
-      this.propertiesService.setIdsForResourceTypeProperties(this.resourceType().id, this.contextId());
-      return false;
-    }
-    return false;
-  });
+  constructor() {
+    effect(() => {
+      this.unsavedChangesService.setDirty('resource-type-properties', this.hasChanges());
+    });
+
+    effect(() => {
+      this.unsavedChangesService.discardChangesToken();
+      this.resetChanges();
+    });
+
+    effect(() => {
+      const resourceTypeId = this.resourceType()?.id;
+      const ctxId = this.contextId();
+      if (!resourceTypeId || !ctxId) return;
+
+      this.propertiesService.setIdsForResourceTypeProperties(resourceTypeId, ctxId);
+    });
+  }
+
+  isLoading = this.propertiesService.isLoadingResourceTypeProperties;
 
   context = computed(() => {
     return this.environmentsService.findEnvironmentById(this.environmentsService.environmentTree(), this.contextId());

@@ -36,7 +36,7 @@ export class PropertyFieldComponent {
   displayLabel = computed(() => this.property().displayName || this.property().name);
   hasError = computed(() => this.touched() && !!this.validationError());
   canReset = computed(() => !!this.property().definedInContext);
-  isDisabled = computed(() => this.property().disabled || this.resetChecked());
+  isDisabled = computed(() => this.property().disabled);
 
   showProperty = computed(() => {
     return this.property().cardinality === null || this.property().cardinality != -1;
@@ -78,6 +78,7 @@ export class PropertyFieldComponent {
   constructor() {
     effect(() => {
       this.resetToken();
+      this.property();
       this.internalValue.set(null);
       this.resetChecked.set(false);
       this.touched.set(false);
