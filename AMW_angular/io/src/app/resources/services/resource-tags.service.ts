@@ -10,10 +10,6 @@ export interface TagRequest {
   tagDate: Date;
 }
 
-export interface CanTagResponse {
-  canTag: boolean;
-}
-
 @Injectable({ providedIn: 'root' })
 export class ResourceTagsService extends BaseService {
   private http = inject(HttpClient);
@@ -29,14 +25,6 @@ export class ResourceTagsService extends BaseService {
   createTag(resourceId: number, tagRequest: TagRequest): Observable<ResourceTag> {
     return this.http
       .post<ResourceTag>(`${this.getBaseUrl()}/resources/${resourceId}/tags`, tagRequest, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
-
-  canTagResource(resourceId: number): Observable<CanTagResponse> {
-    return this.http
-      .get<CanTagResponse>(`${this.getBaseUrl()}/resources/${resourceId}/canTag`, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
