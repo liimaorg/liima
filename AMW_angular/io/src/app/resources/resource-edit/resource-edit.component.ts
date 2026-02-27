@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, inject, signal, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -55,6 +55,10 @@ export class ResourceEditComponent {
     } else return false;
   });
 
+  testGenerationAvailable = computed(() => {
+    return this.resource()?.type === 'APPLICATIONSERVER' || this.resource()?.hasApplicationServer;
+  });
+
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
@@ -74,6 +78,9 @@ export class ResourceEditComponent {
     id: this.id(),
     ctx: this.contextId(),
   }));
+  protected readonly showAnalyze = computed<boolean>(
+    () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
+  );
 
   loadResourceFromRelease(releaseId: number) {
     void this.router.navigate([], {

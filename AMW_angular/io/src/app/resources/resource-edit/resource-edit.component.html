@@ -21,21 +21,23 @@
         }
       </ul>
     </div>
-    @if (permissions().canTestGenerate) {
+    @if (showAnalyze()) {
       <div ngbDropdown>
         <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
           Analyze
         </app-button>
         <ul ngbDropdownMenu>
-          <li ngbDropdownItem>
-            <a
-              class="dropdown-item"
-              [routerLink]="['/resource/test-generation']"
-              [queryParams]="testGenerationQueryParams()"
-            >
-              Test Generation
-            </a>
-          </li>
+          @if (testGenerationAvailable()) {
+            <li ngbDropdownItem>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/resource/test-generation']"
+                [queryParams]="testGenerationQueryParams()"
+              >
+                Test Generation
+              </a>
+            </li>
+          }
         </ul>
       </div>
     }
