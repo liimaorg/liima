@@ -34,6 +34,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationT
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
+import ch.puzzle.itc.mobiliar.common.exception.DecryptionException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException.CAUSE;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
@@ -617,14 +618,13 @@ public class TemplateUtils {
 				Cipher c = Cipher.getInstance("AES");
 				String key = ConfigurationService.getProperty(ConfigKey.ENCRYPTION_KEY);
 				if (key == null) {
-					throw new AMWRuntimeException("No encryption key defined!");
+					throw new DecryptionException("Encryption key not configured. Set the '" + ConfigKey.ENCRYPTION_KEY.getValue() + "' property to decrypt encrypted values.");
 				}
 				SecretKeySpec k = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "AES");
 				c.init(Cipher.DECRYPT_MODE, k);
 				return new String(c.doFinal(Base64.decodeBase64(value)), StandardCharsets.UTF_8);
 			} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException e) {
-				//throw new AMWRuntimeException("Was not able to decrypt properties", e);
-				return "abec";
+				throw new DecryptionException("Failed to decrypt property value. This usually means the encryption key is missing or incorrect.", e);
 			}
 		}
 		return null;
