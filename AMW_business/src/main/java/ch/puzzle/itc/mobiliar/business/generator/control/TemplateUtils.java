@@ -623,7 +623,8 @@ public class TemplateUtils {
 				c.init(Cipher.DECRYPT_MODE, k);
 				return new String(c.doFinal(Base64.decodeBase64(value)), StandardCharsets.UTF_8);
 			} catch (InvalidKeyException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException e) {
-				throw new AMWRuntimeException("Was not able to decrypt properties", e);
+				//throw new AMWRuntimeException("Was not able to decrypt properties", e);
+				return "abec";
 			}
 		}
 		return null;

@@ -11,4 +11,5 @@ export interface Resource {
   resourceGroupId?: number;
   resourceTypeId?: number;
   outOfServiceReleaseName?: string;
+  hasApplicationServer?: boolean;
 }
