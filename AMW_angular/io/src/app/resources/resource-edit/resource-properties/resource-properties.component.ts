@@ -1,4 +1,4 @@
-import { Component, input, signal, computed, inject, Signal } from '@angular/core';
+import { Component, input, signal, computed, inject, Signal, effect } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
@@ -11,6 +11,7 @@ import { EnvironmentService } from '../../../deployment/environment.service';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { createPropertiesEditor } from '../../properties-editor';
+import { UnsavedPropertyChangesService } from '../../services/unsaved-property-changes.service';
 
 @Component({
   selector: 'app-resource-properties',
@@ -26,6 +27,7 @@ export class ResourcePropertiesComponent {
   private resourceService = inject(ResourceService);
   private propertiesService = inject(ResourcePropertiesService);
   private environmentsService = inject(EnvironmentService);
+  private unsavedChangesService = inject(UnsavedPropertyChangesService);
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
@@ -56,13 +58,26 @@ export class ResourcePropertiesComponent {
   hasChanges = this.editor.hasChanges;
   resetToken = this.editor.resetToken;
 
-  isLoading = computed(() => {
-    if (this.resource()?.id && this.contextId()) {
-      this.propertiesService.setIdsForResourceProperties(this.resource().id, this.contextId());
-      return false;
-    }
-    return false;
-  });
+  constructor() {
+    effect(() => {
+      this.unsavedChangesService.setDirty('resource-properties', this.hasChanges());
+    });
+
+    effect(() => {
+      this.unsavedChangesService.discardChangesToken();
+      this.resetChanges();
+    });
+
+    effect(() => {
+      const resourceId = this.resource()?.id;
+      const ctxId = this.contextId();
+      if (!resourceId || !ctxId) return;
+
+      this.propertiesService.setIdsForResourceProperties(resourceId, ctxId);
+    });
+  }
+
+  isLoading = this.propertiesService.isLoadingResourceProperties;
 
   context = computed(() => {
     return this.environmentsService.findEnvironmentById(this.environmentsService.environmentTree(), this.contextId());
