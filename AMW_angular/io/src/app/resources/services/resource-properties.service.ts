@@ -125,4 +125,20 @@ export class ResourcePropertiesService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  bulkUpdateResourceTypePropertiesValues(
+    id: number,
+    updates: PropertyUpdate[],
+    resets: PropertyUpdate[],
+    contextId: number = 1,
+  ): Observable<void> {
+    const params = new HttpParams().set('contextId', contextId.toString());
+    const properties = { updates: updates, resets: resets };
+    return this.http
+      .put<void>(`${this.getBaseUrl()}/resourceTypes/${id}/properties`, properties, {
+        params,
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }

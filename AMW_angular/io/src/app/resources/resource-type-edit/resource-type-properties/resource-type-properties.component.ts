@@ -3,7 +3,7 @@ import { Property } from '../../models/property';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceTypesService } from '../../services/resource-types.service';
 import { ResourceType } from '../../models/resource-type';
-import { ResourcePropertiesService } from '../../services/resource-properties.service';
+import { PropertyUpdate, ResourcePropertiesService } from '../../services/resource-properties.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { AuthService } from '../../../auth/auth.service';
 import { createPropertiesEditor } from '../../properties-editor';
@@ -11,6 +11,7 @@ import { EnvironmentService } from '../../../deployment/environment.service';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { UnsavedPropertyChangesService } from '../../services/unsaved-property-changes.service';
+import { forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-resource-type-properties',
@@ -46,7 +47,6 @@ export class ResourceTypePropertiesComponent {
     return result;
   });
 
-  // TODO check behavier in JSF
   private editor = createPropertiesEditor(() => [...this.properties().filter((p) => !p.disabled)], {
     // preserve current behavior: hasChanges only considers changed values (not reset toggles)
     includeResetsInHasChanges: false,
@@ -82,11 +82,16 @@ export class ResourceTypePropertiesComponent {
     return this.environmentsService.findEnvironmentById(this.environmentsService.environmentTree(), this.contextId());
   });
 
-  // same permissions for crud c-- TODO verify for resource-type + add context
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canAddProperty: this.authService.hasPermission('RESOURCE', 'UPDATE', null, null, this.context()?.name),
+        canAddProperty: this.authService.hasPermission(
+          'RESOURCETYPE',
+          'UPDATE',
+          this.resourceType()?.name,
+          null,
+          this.context()?.name,
+        ),
       };
     } else {
       return { canAddProperty: false };
@@ -96,11 +101,12 @@ export class ResourceTypePropertiesComponent {
   // Special property for resource type name (only shown in Global context)
   resourceTypeNameProperty = computed<Property>(() => ({
     name: 'resourceTypeName',
-    displayName: 'Resource Type name',
+    displayName: 'ResourceType name',
     value: this.resourceType()?.name || '',
     replacedValue: '',
     generalComment: '',
-    valueComment: 'staticProperty',
+    valueComment: 'specialProperty',
+    descriptorId: -1,
     context: 'Global',
     nullable: false,
     optional: false,
@@ -152,27 +158,38 @@ export class ResourceTypePropertiesComponent {
     this.errorMessage.set(null);
     this.successMessage.set(null);
 
-    const updatedProperties: Property[] = Array.from(changes.entries()).map(([name, value]) => {
-      const original = this.properties().find((p) => p.name === name);
-      return {
-        ...original,
-        name,
-        value,
-      } as Property;
-    });
+    const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
 
-    // this.propertiesService.bulkUpdateResourceTypeProperties(res.id, updatedProperties, ctxId).subscribe({
-    //   next: () => {
-    //     this.isSaving.set(false);
-    //     this.successMessage.set('Properties saved successfully');
-    //     this.editor.resetChanges();
-    //     this.propertiesService.setIdsForResourceTypeProperties(res.id, ctxId);
-    //     setTimeout(() => this.successMessage.set(null), 3000);
-    //   },
-    //   error: (error) => {
-    //     this.isSaving.set(false);
-    //     this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
-    //   },
-    // });
+    const resetProperties: PropertyUpdate[] = Array.from(resets.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
+
+    const update$ =
+      updatedProperties.length + resetProperties.length
+        ? this.propertiesService.bulkUpdateResourceTypePropertiesValues(
+            this.resourceType().id,
+            updatedProperties,
+            resetProperties,
+            this.contextId(),
+          )
+        : of(void 0);
+
+    forkJoin([update$]).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+        this.successMessage.set('Properties saved successfully');
+        this.editor.resetChanges();
+        this.propertiesService.setIdsForResourceTypeProperties(this.resourceType().id, this.contextId());
+        setTimeout(() => this.successMessage.set(null), 3000);
+      },
+      error: (error) => {
+        this.isSaving.set(false);
+        this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
+      },
+    });
   }
 }
