@@ -173,17 +173,13 @@ public class PropertyEditor {
      * @param contextId
      * @return
      */
-    public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) throws NotAuthorizedException {
+    public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) {
         ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         List<ResourceEditProperty> properties = propertyEditingService.loadPropertiesForEditResource(
                 resource.getId(), resource.getResourceType(), context);
         if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
-            try {
-                return propertyValueService.decryptProperties(properties);
-            } catch (AMWRuntimeException e) {
-                throw new NotAuthorizedException("Cannot decrypt properties - encryption key not configured: " + e.getMessage());
-            }
+            return propertyValueService.decryptProperties(properties);
         }
         return properties;
     }
@@ -196,16 +192,12 @@ public class PropertyEditor {
      * @param contextId
      * @return
      */
-    public List<ResourceEditProperty> getPropertiesForResourceType(Integer resourceTypeId, Integer contextId) throws NotAuthorizedException {
+    public List<ResourceEditProperty> getPropertiesForResourceType(Integer resourceTypeId, Integer contextId) {
         ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null, resourceType)) {
-            try {
-                return propertyValueService.decryptProperties(propertyEditingService
-                        .loadPropertiesForEditResourceType(resourceType, context));
-            } catch (AMWRuntimeException e) {
-                throw new NotAuthorizedException("Cannot decrypt properties - encryption key not configured: " + e.getMessage());
-            }
+            return propertyValueService.decryptProperties(propertyEditingService
+                    .loadPropertiesForEditResourceType(resourceType, context));
         }
         return propertyEditingService.loadPropertiesForEditResourceType(resourceType, context);
     }
