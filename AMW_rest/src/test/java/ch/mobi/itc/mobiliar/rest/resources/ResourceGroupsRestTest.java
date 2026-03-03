@@ -319,7 +319,7 @@ public class ResourceGroupsRestTest {
 
         // then
         verify(resourceRelationsMock).getResourceRelations(resourceGroupName, closestRelease.getName(), resourceTypeName);
-        verify(resourcePropertiesMock).getResourceProperties(resourceGroupName, closestRelease.getName(), env);
+        verify(resourcePropertiesMock).getPropertiesByResourceGroupNameAndReleaseName(resourceGroupName, closestRelease.getName(), env);
         verify(resourceTemplatesRestMock).getResourceTemplates(resourceGroupName, closestRelease.getName());
     }
 
