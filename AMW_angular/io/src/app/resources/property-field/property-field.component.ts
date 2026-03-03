@@ -18,6 +18,7 @@ export class PropertyFieldComponent {
   mode = input<'resource' | 'resourceType'>('resource');
   resetToken = input<number>(0);
   canEdit = input<boolean>(false);
+  canDecrypt = input<boolean>(false);
   canDelete = input<boolean>(false);
   hideTooltip = input<boolean>(false);
   valueChange = output<string>();
@@ -30,6 +31,7 @@ export class PropertyFieldComponent {
   validationError = signal<string | null>(null);
   touched = signal(false);
   resetChecked = signal(false);
+  showDecrypted = signal(false);
 
   fieldId = computed(() => `property-${this.property().name}`);
   resetId = computed(() => `reset-${this.property().name}`);
@@ -37,6 +39,7 @@ export class PropertyFieldComponent {
   hasError = computed(() => this.touched() && !!this.validationError());
   canReset = computed(() => !!this.property().definedInContext);
   isDisabled = computed(() => this.property().disabled);
+  isEncrypted = computed(() => !!this.property().encrypted);
 
   showProperty = computed(() => {
     return this.property().cardinality === null || this.property().cardinality != -1;
@@ -70,8 +73,13 @@ export class PropertyFieldComponent {
 
   renderTextArea = computed(() => {
     const p = this.property();
-    const check = (val: unknown) => typeof val === 'string' && val.length > 70;
 
+    // Never use textarea for encrypted properties
+    if (p.encrypted) {
+      return false;
+    }
+
+    const check = (val: unknown) => typeof val === 'string' && val.length > 70;
     return check(p.value) || check(p.defaultValue);
   });
 
@@ -81,6 +89,7 @@ export class PropertyFieldComponent {
       this.property();
       this.internalValue.set(null);
       this.resetChecked.set(false);
+      this.showDecrypted.set(false);
       this.touched.set(false);
       this.validationError.set(null);
       this.validationChange.emit(false);
@@ -96,10 +105,20 @@ export class PropertyFieldComponent {
   set localValue(value: string) {
     this.internalValue.set(value);
   }
-  // setUpperContext
-  // ->: if value is the same as before input ? if defined in other context ? black : green)
+
+  onFocus() {
+    // Show decrypted value when user has permission and focuses the field
+    if (this.isEncrypted() && this.canDecrypt()) {
+      this.showDecrypted.set(true);
+    }
+  }
+
   onBlur() {
     this.touched.set(true);
+    // Hide decrypted value when leaving the field
+    if (this.isEncrypted()) {
+      this.showDecrypted.set(false);
+    }
     this.validate();
     this.valueChange.emit(this.localValue);
   }

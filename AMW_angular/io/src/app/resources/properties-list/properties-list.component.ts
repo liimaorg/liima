@@ -18,6 +18,7 @@ import { NgTemplateOutlet } from '@angular/common';
 export class PropertiesListComponent {
   properties = input.required<Property[]>();
   canEdit = input<boolean>(false);
+  canDecrypt = input<boolean>(false);
   canDelete = input<boolean>(false);
   mode = input<'resource' | 'resourceType'>('resource');
   resetToken = input<number>(0);

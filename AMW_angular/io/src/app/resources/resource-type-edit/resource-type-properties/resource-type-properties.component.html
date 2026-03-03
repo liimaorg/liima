@@ -2,14 +2,14 @@
 <app-tile-component
   [title]="'Properties'"
   [actionName]="'New Property'"
-  [canAction]="permissions().canAddProperty"
+  [canAction]="permissions().canUpdateProperty"
   [isVisible]="true"
   (tileAction)="addProperty()"
   [noContent]="false"
   [notAllowed]="false"
 >
   <app-properties-panel
-    [canEdit]="permissions().canAddProperty"
+    [canEdit]="permissions().canUpdateProperty"
     [isSaving]="isSaving()"
     [hasChanges]="hasChanges()"
     [hasValidationErrors]="hasValidationErrors()"
@@ -20,8 +20,9 @@
   >
     <app-properties-list
       [properties]="properties()"
-      [canEdit]="true"
-      [canDelete]="permissions().canAddProperty"
+      [canEdit]="permissions().canUpdateProperty"
+      [canDecrypt]="permissions().canDecryptProperties"
+      [canDelete]="permissions().canUpdateProperty"
       [mode]="'resourceType'"
       [resetToken]="resetToken()"
       (valueChange)="onPropertyChange($event.name, $event.value)"

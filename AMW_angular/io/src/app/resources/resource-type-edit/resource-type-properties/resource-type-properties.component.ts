@@ -85,16 +85,23 @@ export class ResourceTypePropertiesComponent {
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canAddProperty: this.authService.hasPermission(
+        canUpdateProperty: this.authService.hasPermission(
           'RESOURCETYPE',
           'UPDATE',
           this.resourceType()?.name,
           null,
           this.context()?.name,
         ),
+        canDecryptProperties: this.authService.hasPermission(
+          'RESOURCETYPE_PROPERTY_DECRYPT',
+          'ALL',
+          this.resourceType()?.name,
+          null,
+          this.context()?.name,
+        ),
       };
     } else {
-      return { canAddProperty: false };
+      return { canUpdateProperty: false, canDecryptProperties: false };
     }
   });
 

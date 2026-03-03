@@ -25,6 +25,7 @@
     [resetToken]="resetToken()"
     [hideTooltip]="property.valueComment === 'staticProperty'"
     [canEdit]="canEdit()"
+    [canDecrypt]="canDecrypt()"
     [canDelete]="canDelete()"
     (valueChange)="valueChange.emit({ type: 'valueChange', name: property.name, value: $event })"
     (resetChange)="resetToggled.emit({ type: 'resetToggle', name: property.name, checked: $event })"
