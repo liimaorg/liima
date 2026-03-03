@@ -41,12 +41,13 @@
     @if (!renderTextArea()) {
       <input
         [id]="fieldId()"
-        type="{{ property().encrypted ? 'password' : 'text' }}"
+        [type]="isEncrypted() && !showDecrypted() ? 'password' : 'text'"
         class="property-input form-control"
         [class.is-invalid]="hasError()"
         [class.upper-context]="toggleInputColor()"
         [class.has-mik]="toggleMikInput()"
         [(ngModel)]="localValue"
+        (focus)="onFocus()"
         (blur)="onBlur()"
         [placeholder]="placeholder"
         [disabled]="isDisabled()"
@@ -64,7 +65,7 @@
         [disabled]="isDisabled()"
       ></textarea>
     }
-    @if (canReset()) {
+    @if (canReset() && (!property().encrypted || canDecrypt())) {
       <input
         type="checkbox"
         class="btn-check"
