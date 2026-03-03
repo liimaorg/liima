@@ -48,6 +48,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
@@ -172,13 +173,17 @@ public class PropertyEditor {
      * @param contextId
      * @return
      */
-    public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) {
+    public List<ResourceEditProperty> getPropertiesForResource(Integer resourceId, Integer contextId) throws NotAuthorizedException {
         ResourceEntity resource = entityManager.find(ResourceEntity.class, resourceId);
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         List<ResourceEditProperty> properties = propertyEditingService.loadPropertiesForEditResource(
                 resource.getId(), resource.getResourceType(), context);
         if (permissionBoundary.hasPermission(Permission.RESOURCE_PROPERTY_DECRYPT, context, Action.ALL, resource, null)) {
-            return propertyValueService.decryptProperties(properties);
+            try {
+                return propertyValueService.decryptProperties(properties);
+            } catch (AMWRuntimeException e) {
+                throw new NotAuthorizedException("Cannot decrypt properties - encryption key not configured: " + e.getMessage());
+            }
         }
         return properties;
     }
@@ -191,12 +196,16 @@ public class PropertyEditor {
      * @param contextId
      * @return
      */
-    public List<ResourceEditProperty> getPropertiesForResourceType(Integer resourceTypeId, Integer contextId) {
+    public List<ResourceEditProperty> getPropertiesForResourceType(Integer resourceTypeId, Integer contextId) throws NotAuthorizedException {
         ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
         if (permissionBoundary.hasPermission(Permission.RESOURCETYPE_PROPERTY_DECRYPT, context, Action.ALL, null, resourceType)) {
-            return propertyValueService.decryptProperties(propertyEditingService
-                    .loadPropertiesForEditResourceType(resourceType, context));
+            try {
+                return propertyValueService.decryptProperties(propertyEditingService
+                        .loadPropertiesForEditResourceType(resourceType, context));
+            } catch (AMWRuntimeException e) {
+                throw new NotAuthorizedException("Cannot decrypt properties - encryption key not configured: " + e.getMessage());
+            }
         }
         return propertyEditingService.loadPropertiesForEditResourceType(resourceType, context);
     }

@@ -2,7 +2,7 @@
 <app-tile-component
   [title]="'Properties'"
   [actionName]="'New Property'"
-  [canAction]="permissions().canUpdateProperty"
+  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
   [isVisible]="true"
   (tileAction)="addProperty()"
   [noContent]="false"

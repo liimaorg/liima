@@ -77,7 +77,7 @@ public class ResourcePropertiesRest {
         return Response.ok(resourceProperties).build();
     }
 
-    List<PropertyExtendedDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws NotFoundException {
+    List<PropertyExtendedDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws NotFoundException, NotAuthorizedException {
         ResourceEntity resource = resourceBoundary.getResource(resourceId);
         if (resource == null) {
             return new ArrayList<>();
@@ -105,7 +105,7 @@ public class ResourcePropertiesRest {
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @PathParam("propertyName") String propertyName,
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
-            throws NotFoundException {
+            throws NotFoundException, NotAuthorizedException {
 
         Response validationResponse = validatePropertyName(propertyName);
         if (validationResponse != null) {
@@ -121,7 +121,6 @@ public class ResourcePropertiesRest {
         if (property != null) {
             ContextEntity context = getContext(contextId);
             if (context != null) {
-                getOverwriteInfos(resource, contextId, property);
                 return Response.ok(new PropertyExtendedDTO(property, context.getName(), contextId, getOverwriteInfos(resource, contextId, property))).build();
             }
         }
