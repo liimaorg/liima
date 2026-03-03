@@ -52,7 +52,7 @@ public class ResourceTypePropertiesRest {
         return Response.ok(resourceProperties).build();
     }
 
-    List<PropertyExtendedDTO> getResourceTypePropertiesById(Integer resourceTypeId, Integer contextId) throws NotFoundException {
+    List<PropertyExtendedDTO> getResourceTypePropertiesById(Integer resourceTypeId, Integer contextId) throws NotFoundException, NotAuthorizedException {
         ResourceTypeEntity resourceType = resourceBoundary.getResourceType(resourceTypeId);
         List<PropertyExtendedDTO> result = new ArrayList<>();
 

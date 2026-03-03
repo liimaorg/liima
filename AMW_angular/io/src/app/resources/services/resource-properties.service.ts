@@ -30,12 +30,6 @@ export class ResourcePropertiesService extends BaseService {
     id: number;
     contextId: number;
   }>();
-  private propertyOverwriteInfo$: Subject<{ resourceId: number; contextId: number; propertyName: string }> =
-    new Subject<{
-      resourceId: number;
-      contextId: number;
-      propertyName: string;
-    }>();
 
   private propertiesForResource$: Observable<Property[]> = this.properties$.pipe(
     switchMap(({ id, contextId }) => {
@@ -57,17 +51,8 @@ export class ResourcePropertiesService extends BaseService {
     shareReplay(1),
   );
 
-  private overwriteInfoForProperty$: Observable<PropertyDiff[]> = this.propertyOverwriteInfo$.pipe(
-    switchMap(({ resourceId, contextId, propertyName }) => {
-      return this.getOverwriteInfo(resourceId, contextId, propertyName);
-    }),
-    startWith([]),
-    shareReplay(1),
-  );
-
   properties = toSignal(this.propertiesForResource$, { initialValue: [] as Property[] });
   propertiesForType = toSignal(this.propertiesForTypeResource$, { initialValue: [] as Property[] });
-  overwriteInfoForProperty = toSignal(this.overwriteInfoForProperty$, { initialValue: [] as PropertyDiff[] });
 
   setIdsForResourceProperties(id: number, contextId: number) {
     this.properties$.next({ id, contextId });
@@ -94,19 +79,6 @@ export class ResourcePropertiesService extends BaseService {
         params,
         headers: this.getHeaders(),
       })
-      .pipe(catchError(this.handleError));
-  }
-
-  getOverwriteInfo(resourceId: number, contextId: number, propertyName: string): Observable<PropertyDiff[]> {
-    const params = new HttpParams().set('contextId', contextId.toString());
-    return this.http
-      .get<PropertyDiff[]>(
-        `${this.getBaseUrl()}/resourceTypes/${resourceId}/properties/${propertyName}/overwriteInfo`,
-        {
-          params,
-          headers: this.getHeaders(),
-        },
-      )
       .pipe(catchError(this.handleError));
   }
 
