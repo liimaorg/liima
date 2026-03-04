@@ -46,11 +46,14 @@ public class ResourceDTO {
     private Integer resourceGroupId;
     private String release;
     private String outOfServiceReleaseName;
+    private String type;
 
     private List<ResourceRelationDTO> relations;
     private List<PropertyDTO> properties;
     private List<ResourceTagDTO> resourceTags;
     private List<TemplateDTO> templates;
+
+    private boolean hasApplicationServer;
 
     public ResourceDTO(ResourceEntity resource, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
         this.id = resource.getRelease().getId();
@@ -93,5 +96,11 @@ public class ResourceDTO {
         this.release = resource.getRelease().getName();
         this.outOfServiceReleaseName = resource.getResourceGroup().getOutOfServiceRelease() != null ? resource.getResourceGroup().getOutOfServiceRelease().getName() : "";
 
+        this.type = resource.getResourceType().getName();
+    }
+
+    public ResourceDTO(ResourceEntity resource, ResourceEntity applicationServerForApplication) {
+        this(resource);
+        this.hasApplicationServer = applicationServerForApplication != null;
     }
 }

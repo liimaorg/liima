@@ -21,6 +21,26 @@
         }
       </ul>
     </div>
+    @if (showAnalyze()) {
+      <div ngbDropdown>
+        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+          Analyze
+        </app-button>
+        <ul ngbDropdownMenu>
+          @if (testGenerationAvailable()) {
+            <li ngbDropdownItem>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/resource/test-generation']"
+                [queryParams]="testGenerationQueryParams()"
+              >
+                Test Generation
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
   </div>
 
   <div class="page-content d-flex gap-3">

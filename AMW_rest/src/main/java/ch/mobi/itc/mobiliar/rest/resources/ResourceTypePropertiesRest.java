@@ -11,6 +11,7 @@ import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.common.exception.DecryptionException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,7 +53,7 @@ public class ResourceTypePropertiesRest {
         return Response.ok(resourceProperties).build();
     }
 
-    List<PropertyExtendedDTO> getResourceTypePropertiesById(Integer resourceTypeId, Integer contextId) throws NotFoundException, NotAuthorizedException {
+    List<PropertyExtendedDTO> getResourceTypePropertiesById(Integer resourceTypeId, Integer contextId) throws NotFoundException, DecryptionException {
         ResourceTypeEntity resourceType = resourceBoundary.getResourceType(resourceTypeId);
         List<PropertyExtendedDTO> result = new ArrayList<>();
 
