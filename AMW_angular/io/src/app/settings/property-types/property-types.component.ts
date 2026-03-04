@@ -125,7 +125,10 @@ export class PropertyTypesComponent implements OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => this.toastService.success(`${this.PROPERTY_TYPE} saved.`),
-          error: (e) => this.error.set(e),
+          error: (e) => {
+            this.error.set(e);
+            this.isLoading.set(false);
+          },
           complete: () => {
             this.isLoading.set(false);
             this.propertyTypeService.reload();
@@ -143,7 +146,10 @@ export class PropertyTypesComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success(`${this.PROPERTY_TYPE} deleted.`),
-        error: (e) => this.error.set(e),
+        error: (e) => {
+          this.error.set(e);
+          this.isLoading.set(false);
+        },
         complete: () => {
           this.isLoading.set(false);
           this.propertyTypeService.reload();

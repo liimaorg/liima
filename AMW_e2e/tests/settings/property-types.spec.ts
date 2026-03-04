@@ -34,10 +34,10 @@ test.describe('PropertyTypes -CRUD', () => {
         await page.locator('#regex').fill('sd');
         await expect(page.getByTestId('button-save')).toBeEnabled();
         await page.getByTestId('button-save').click();
+        await expect(page.locator('body.modal-open')).toHaveCount(0);
         await expect(page.locator('ngb-toast').filter({ hasText: 'Property type saved.' })).toBeVisible();
         await page.getByTestId('toast-close').last().click();
         await expect(page.locator('ngb-toast')).toHaveCount(0);
-        await expect(page.locator('body.modal-open')).toHaveCount(0);
 
         await page.getByTestId('button-add').click();
         await page.locator('#name').fill(propertyTypeName);
@@ -45,9 +45,9 @@ test.describe('PropertyTypes -CRUD', () => {
         await expect(page.getByTestId('button-save')).toBeEnabled();
         await page.getByTestId('button-save').click();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Property type already exists.' })).toBeVisible();
+        await expect(page.locator('body.modal-open')).toHaveCount(0);
         await page.getByTestId('toast-close').last().click();
         await expect(page.locator('ngb-toast')).toHaveCount(0);
-        await expect(page.locator('body.modal-open')).toHaveCount(0);
 
         const editButton = page.getByRole('row', { name: propertyTypeName }).getByRole('button').first();
         await editButton.click();
@@ -58,16 +58,16 @@ test.describe('PropertyTypes -CRUD', () => {
         await expect(page.getByTestId('button-save')).toBeEnabled();
         await page.getByTestId('button-save').click();
         await expect(page.getByText(/Property type saved\./)).toBeVisible();
+        await expect(page.locator('body.modal-open')).toHaveCount(0);
         await page.getByTestId('toast-close').last().click();
         await expect(page.locator('ngb-toast')).toHaveCount(0);
-        await expect(page.locator('body.modal-open')).toHaveCount(0);
 
         const deleteButton = page.getByRole('row', { name: propertyTypeName }).getByRole('button').last();
         await deleteButton.click();
         await expect(page.getByTestId('button-delete')).toBeVisible();
         await page.getByTestId('button-delete').click();
+        await expect(page.locator('ngb-toast')).toHaveCount(0);
         await expect(page.locator('ngb-toast').filter({ hasText: 'Property type deleted.' })).toBeVisible();
         await page.getByTestId('toast-close').last().click();
-        await expect(page.locator('ngb-toast')).toHaveCount(0);
     });
 });
