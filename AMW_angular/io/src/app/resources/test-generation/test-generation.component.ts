@@ -107,7 +107,7 @@ export class TestGenerationComponent {
       const contextId = this.contextId();
       const resourceId = this.resourceId();
       const compareReleaseId = this.compareReleaseId();
-      
+
       // Trigger generation when any of these change
       if (contextId && resourceId) {
         this.generate();
@@ -137,7 +137,9 @@ export class TestGenerationComponent {
         .generateTest(name, release, env)
         .pipe(
           concatMap((original) =>
-            this.testGenerationService.generateTest(name, compareRelease, env).pipe(map((compared) => ({ original, compared }))),
+            this.testGenerationService
+              .generateTest(name, compareRelease, env)
+              .pipe(map((compared) => ({ original, compared }))),
           ),
           finalize(() => this.generating.set(false)),
         )

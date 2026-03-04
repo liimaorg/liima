@@ -14,10 +14,10 @@ import { ToastService } from './toast.service';
     >
       <div class="content">
         <div class="image"></div>
-        <div class="px-4 align-self-center flex-fill">{{ toast.body }}</div>
+        <div class="px-2 align-self-center flex-fill">{{ toast.body }}</div>
         <button
           type="button"
-          class="btn-close ms-2"
+          class="btn-close me-2"
           aria-label="Close"
           data-testid="toast-close"
           (click)="toastService.remove(toast)"
@@ -41,13 +41,15 @@ import { ToastService } from './toast.service';
     .content {
       display: flex;
       flex-direction: row;
+      min-height: 50px;
     }
 
     .image {
       background-image: url('toast_alert.png');
       background-repeat: no-repeat;
-      height: 50px;
-      width: 50px;
+      background-position: top;
+      min-height: 50px;
+      min-width: 50px;
       border-radius: var(--bs-border-radius) 0 0 var(--bs-border-radius);
     }
 
