@@ -1,6 +1,6 @@
 @if (errorMessage) {
   <div class="alert alert-warning alert-dismissible" role="alert">
-    <span [innerHTML]="errorMessage"></span>
+    <span>{{ errorMessage }}</span>
     <app-button [variant]="'close'" (click)="cancel()"></app-button>
   </div>
 }
