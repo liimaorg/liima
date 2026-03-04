@@ -26,7 +26,6 @@ import ch.puzzle.itc.mobiliar.business.generator.control.AmwModelPreprocessExcep
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratedTemplate;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.templates.BaseTemplateProcessor;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.TemplatePropertyException;
 import freemarker.core.ParseException;
 import freemarker.template.DefaultObjectWrapper;
@@ -49,14 +48,14 @@ public class AmwTemplateModelHelper {
         String mik = property.get_descriptor().getMachineInterpretationKey();
 
         AmwFunctionEntity functionMatchingMik = null;
-        if(functions != null){
-	        for (AmwFunctionEntity function : functions) {
-	            if(function != null && function.getMikNames() != null && function.getMikNames().contains(mik)){
-	                functionMatchingMik = function;
-	            }
-	        }
+        if (functions != null) {
+            for (AmwFunctionEntity function : functions) {
+                if (function != null && function.getMikNames() != null && function.getMikNames().contains(mik)) {
+                    functionMatchingMik = function;
+                }
+            }
         }
-        if(functionMatchingMik !=null){
+        if (functionMatchingMik != null) {
             // evaluate Function
             BaseTemplateProcessor processor = new BaseTemplateProcessor();
 
@@ -67,21 +66,21 @@ public class AmwTemplateModelHelper {
             } catch (ParseException | TemplateException pe) {
                 addMikErrorToHandler(model, functionMatchingMik, pe);
             } catch (IOException e) {
-                throw new AMWRuntimeException("Error evaluating function: "
+                throw new IllegalStateException("Error evaluating function: "
                         + functionMatchingMik.getName());
             }
 
-        }else{
-            if(baseModel.getAmwModelPreprocessExceptionHandler() != null) {
+        } else {
+            if (baseModel.getAmwModelPreprocessExceptionHandler() != null) {
                 baseModel.getAmwModelPreprocessExceptionHandler().addTemplatePropertyException(new TemplatePropertyException("No Function found for Mik: " + mik, TemplatePropertyException.CAUSE.INVALID_PROPERTY));
             }
-            throw new AMWRuntimeException("No Function found for Mik: " + mik);
+            throw new IllegalStateException("No Function found for Mik: " + mik);
         }
         return null;
     }
 
     public static String evaluateValue(AmwTemplateModel baseModel, FreeMarkerProperty property, AmwResourceTemplateModel amwResourceTemplateModel) {
-        if(property != null){
+        if (property != null) {
             BaseTemplateProcessor processor = new BaseTemplateProcessor();
 
             // context Wechsel
@@ -91,7 +90,7 @@ public class AmwTemplateModelHelper {
             } catch (ParseException | TemplateException pe) {
                 addPropertyErrorToHandler(model, property, pe);
             } catch (IOException e) {
-                throw new AMWRuntimeException("Error evaluating property", e);
+                throw new IllegalStateException("Error evaluating property", e);
             }
         }
         return null;
@@ -99,7 +98,7 @@ public class AmwTemplateModelHelper {
 
     private static void addMikErrorToHandler(AmwTemplateModel model, AmwFunctionEntity function, Exception e) {
         String message = "Error evaluating function: ";
-        if(function != null ){
+        if (function != null) {
             message = message + ": " + function.getName();
         }
 
@@ -108,7 +107,7 @@ public class AmwTemplateModelHelper {
 
     private static void addPropertyErrorToHandler(AmwTemplateModel model, FreeMarkerProperty property, Exception e) {
         String message = "Invalid Innerproperty";
-        if(property != null && property.get_descriptor() != null){
+        if (property != null && property.get_descriptor() != null) {
             message = message + ": " + property.get_descriptor().getTechnicalKey();
         }
 
@@ -119,23 +118,23 @@ public class AmwTemplateModelHelper {
         TemplatePropertyException te = new TemplatePropertyException(message + "; " + e.getMessage(), TemplatePropertyException.CAUSE.INVALID_PROPERTY, e);
         if (model != null && model.getAmwModelPreprocessExceptionHandler() != null) {
             model.getAmwModelPreprocessExceptionHandler().addTemplatePropertyException(te);
-        }else{
-            throw new AMWRuntimeException("no Errorhandler defined on Model", te);
+        } else {
+            throw new IllegalStateException("no Errorhandler defined on Model", te);
         }
     }
 
     public static boolean valueContainsEvaluatableElements(FreeMarkerProperty property) {
         // a property with a Value overwrites the Mik
-        if(property == null || !property.hasValue()){
+        if (property == null || !property.hasValue()) {
             return false;
         }
 
         return valueContainsEvaluatableElements(property.getCurrentValue());
     }
 
-    public static boolean valueContainsEvaluatableElements(String value){
+    public static boolean valueContainsEvaluatableElements(String value) {
         // if the value contains { the it must be treated like a template
-        if(value != null && (value.contains("{"))){
+        if (value != null && (value.contains("{"))) {
             return true;
         }
 
@@ -144,13 +143,13 @@ public class AmwTemplateModelHelper {
 
     public static boolean isMikProperty(FreeMarkerProperty property) {
         // a property with a Value overwrites the Mik
-        if(property == null || property.hasValue()){
+        if (property == null || property.hasValue()) {
             return false;
         }
 
-        if(property.get_descriptor() != null){
+        if (property.get_descriptor() != null) {
             FreeMarkerPropertyDescriptor desc = property.get_descriptor();
-            if(desc.getMachineInterpretationKey() != null && !desc.getMachineInterpretationKey().isEmpty()){
+            if (desc.getMachineInterpretationKey() != null && !desc.getMachineInterpretationKey().isEmpty()) {
                 return true;
             }
         }
@@ -158,26 +157,26 @@ public class AmwTemplateModelHelper {
     }
 
 
-    public static AmwTemplateModel getAmwTemplateModelContextSwitched(AmwTemplateModel baseModel, AmwResourceTemplateModel amwResourceTemplateModel){
+    public static AmwTemplateModel getAmwTemplateModelContextSwitched(AmwTemplateModel baseModel, AmwResourceTemplateModel amwResourceTemplateModel) {
         // context Wechsel
         AmwTemplateModel model = new AmwTemplateModel();
         model.setUnitResourceTemplateModel(amwResourceTemplateModel);
-        if(baseModel != null){
-        	model.setGlobalFunctionTemplates(baseModel.getGlobalFunctionTemplates());
+        if (baseModel != null) {
+            model.setGlobalFunctionTemplates(baseModel.getGlobalFunctionTemplates());
             model.setAsProperties(baseModel.getAsProperties());
             model.setNodeProperties(baseModel.getNodeProperties());
             model.setRuntimeProperties(baseModel.getRuntimeProperties());
             model.setContextProperties(baseModel.getContextProperties());
             model.setDeploymentProperties(baseModel.getDeploymentProperties());
             model.setAmwModelPreprocessExceptionHandler(baseModel.getAmwModelPreprocessExceptionHandler());
-        }else{
-        	model.setAmwModelPreprocessExceptionHandler(new AmwModelPreprocessExceptionHandler());
+        } else {
+            model.setAmwModelPreprocessExceptionHandler(new AmwModelPreprocessExceptionHandler());
         }
         return model;
     }
 
-    public static Map<String, Map<String, String>> convertTemplatesToHash(Map<String, GeneratedTemplate> templates){
-        if(templates == null){
+    public static Map<String, Map<String, String>> convertTemplatesToHash(Map<String, GeneratedTemplate> templates) {
+        if (templates == null) {
             return null;
         }
         Map<String, Map<String, String>> result = new LinkedHashMap<>();
@@ -187,9 +186,9 @@ public class AmwTemplateModelHelper {
         }
         return result;
     }
-    
-    public static Map<String, Map<String, String>> convertTemplateDescriptorToHash(Set<TemplateDescriptorEntity> resourceTemplates){
-        if(resourceTemplates == null){
+
+    public static Map<String, Map<String, String>> convertTemplateDescriptorToHash(Set<TemplateDescriptorEntity> resourceTemplates) {
+        if (resourceTemplates == null) {
             return null;
         }
         Map<String, Map<String, String>> result = new LinkedHashMap<>();
@@ -202,9 +201,9 @@ public class AmwTemplateModelHelper {
     }
 
     public static TemplateModel wrapFreemarkerProperty(FreeMarkerProperty property, DefaultObjectWrapper beansWrapper) throws TemplateModelException {
-        if(property!= null && property.hasValue()) {
+        if (property != null && property.hasValue()) {
             return beansWrapper.wrap(property);
-        }else{
+        } else {
             return null;
         }
     }
