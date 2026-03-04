@@ -27,15 +27,9 @@ export class PropertiesListComponent {
   resetToggled = output<PropertiesResetToggleAction>();
   validationChanged = output<PropertiesValidationChangeAction>();
 
-  leftProperties = computed(() => {
+  listProperties = computed(() => {
     const props = this.properties();
     const mid = Math.ceil(props.length / 2);
-    return props.slice(0, mid);
-  });
-
-  rightProperties = computed(() => {
-    const props = this.properties();
-    const mid = Math.ceil(props.length / 2);
-    return props.slice(mid);
+    return { left: props.slice(0, mid), right: props.slice(mid) };
   });
 }
