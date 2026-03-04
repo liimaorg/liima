@@ -31,6 +31,7 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.exception.DecryptionException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,7 +78,7 @@ public class ResourcePropertiesRest {
         return Response.ok(resourceProperties).build();
     }
 
-    List<PropertyExtendedDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws NotFoundException, NotAuthorizedException {
+    List<PropertyExtendedDTO> getResourcePropertiesById(Integer resourceId, Integer contextId) throws NotFoundException, DecryptionException {
         ResourceEntity resource = resourceBoundary.getResource(resourceId);
         if (resource == null) {
             return new ArrayList<>();
@@ -105,7 +106,7 @@ public class ResourcePropertiesRest {
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @PathParam("propertyName") String propertyName,
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
-            throws NotFoundException, NotAuthorizedException {
+            throws NotFoundException, DecryptionException {
 
         Response validationResponse = validatePropertyName(propertyName);
         if (validationResponse != null) {

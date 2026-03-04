@@ -1,7 +1,7 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, inject, signal, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../services/resource.service';
@@ -32,6 +32,7 @@ import { ResourceReleasesComponent } from './resource-releases/resource-releases
     ContextsListComponent,
     ResourcePropertiesComponent,
     ResourceReleasesComponent,
+    RouterLink,
   ],
   templateUrl: './resource-edit.component.html',
   styleUrl: './resource-edit.component.scss',
@@ -54,19 +55,32 @@ export class ResourceEditComponent {
     } else return false;
   });
 
+  testGenerationAvailable = computed(() => {
+    return this.resource()?.type === 'APPLICATIONSERVER' || this.resource()?.hasApplicationServer;
+  });
+
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
         canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
+        canTestGenerate: this.authService.hasPermission('RESOURCE_TEST_GENERATION', 'READ'),
       };
     } else {
-      return { canEditResource: false };
+      return { canEditResource: false, canTestGenerate: false };
     }
   });
 
   selectedRelease = computed(() => {
     return this.releases().find((release) => release.id === this.id());
   });
+
+  testGenerationQueryParams = computed(() => ({
+    id: this.id(),
+    ctx: this.contextId(),
+  }));
+  protected readonly showAnalyze = computed<boolean>(
+    () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
+  );
 
   loadResourceFromRelease(releaseId: number) {
     void this.router.navigate([], {

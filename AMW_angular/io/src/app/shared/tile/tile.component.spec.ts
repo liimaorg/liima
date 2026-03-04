@@ -7,18 +7,6 @@ describe('TileComponent', () => {
   let componentRef: ComponentRef<TileComponent>;
   let fixture: ComponentFixture<TileComponent>;
 
-  const tileData = [
-    {
-      title: 'Instance Templates',
-      entries: [
-        { name: 'startJob_0.sh', description: 'startJob_0.sh', id: 0 },
-        { name: 'startJob_1.sh', description: 'job 2 again', id: 1 },
-      ],
-      canEdit: true,
-      canDelete: true,
-    },
-  ];
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TileComponent],

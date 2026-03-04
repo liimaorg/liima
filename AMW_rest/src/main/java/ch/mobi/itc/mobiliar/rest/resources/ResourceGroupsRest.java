@@ -140,7 +140,10 @@ public class ResourceGroupsRest {
     @Operation(summary = "Get a resource by id")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@Parameter(description = "Resource ID") @PathParam("id") Integer id) throws NotFoundException {
-        return Response.ok(new ResourceDTO(resourceBoundary.getResource(id))).build();
+        ResourceEntity resource = resourceBoundary.getResource(id);
+        ResourceEntity applicationServerForApplication = resourceLocator.getApplicationServerForApplication(resource);
+        ResourceDTO entity = new ResourceDTO(resource, applicationServerForApplication);
+        return Response.ok(entity).build();
     }
 
     @DELETE
