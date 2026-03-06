@@ -20,50 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.CREATED;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.commons.lang3.StringUtils;
-
-import ch.mobi.itc.mobiliar.rest.dtos.AppWithVersionDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.CopyFromCandidateDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.CopyFromReleaseDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.DependencyDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ReleaseDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ResourceDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ResourceGroupDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseCopyDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.deploy.boundary.DeploymentBoundary;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
@@ -79,20 +36,27 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.*;
 
 @RequestScoped
 @Path("/resources")
@@ -137,9 +101,6 @@ public class ResourceGroupsRest {
 
     @Inject
     private ch.puzzle.itc.mobiliar.business.releasing.boundary.Releasing releasing;
-
-    @Inject
-    private PermissionBoundary permissionBoundary;
 
     @GET
     @Path("/{id : \\d+}")
@@ -533,57 +494,5 @@ public class ResourceGroupsRest {
             releaseLocator.getReleaseById(releaseId)
         );
         return Response.ok().build();
-    }
-
-    @Path("/{resourceId}/copyFromCandidates")
-    @GET
-    @Produces(APPLICATION_JSON)
-    @Operation(summary = "Get resource groups of the same type as candidates for copy-from - used by Angular")
-    public Response getCopyFromCandidates(@PathParam("resourceId") Integer resourceId) {
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
-        if (resource == null) {
-            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
-        }
-        if (!permissionBoundary.canCopyFromResource(resource)) {
-            return Response.status(Response.Status.FORBIDDEN).entity(new ExceptionDto("Permission denied")).build();
-        }
-        List<ResourceGroup> groups = copyResource.loadResourceGroupsForType(
-                resource.getResourceType().getId(), resource);
-
-        List<CopyFromCandidateDTO> candidates = new ArrayList<>();
-        for (ResourceGroup group : groups) {
-            LinkedHashMap<String, Integer> releaseMap = group.getReleaseToResourceMap();
-            if (releaseMap.isEmpty()) {
-                continue;
-            }
-            // exclude the target resource's own group if only its own release remains
-            if (group.getId().equals(resource.getResourceGroup().getId()) && releaseMap.size() == 0) {
-                continue;
-            }
-            List<CopyFromReleaseDTO> releases = new ArrayList<>();
-            for (Map.Entry<String, Integer> entry : releaseMap.entrySet()) {
-                releases.add(new CopyFromReleaseDTO(null, entry.getKey(), entry.getValue()));
-            }
-            candidates.add(new CopyFromCandidateDTO(group.getId(), group.getName(), releases));
-        }
-        return Response.ok(candidates).build();
-    }
-
-    @Path("/{targetResourceId}/copyFrom/{originResourceId}")
-    @POST
-    @Produces(APPLICATION_JSON)
-    @Operation(summary = "Copy properties, templates, and relations from one resource to another - used by Angular")
-    public Response copyFromResourceById(
-            @Parameter(description = "Target resource ID (to)") @PathParam("targetResourceId") Integer targetResourceId,
-            @Parameter(description = "Origin resource ID (from)") @PathParam("originResourceId") Integer originResourceId) {
-        try {
-            CopyResourceResult copyResourceResult = copyResource.doCopyResource(targetResourceId, originResourceId);
-            if (!copyResourceResult.isSuccess()) {
-                return Response.status(BAD_REQUEST).entity(new ExceptionDto("Copy from resource failed")).build();
-            }
-            return Response.ok().build();
-        } catch (AMWException e) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto(e.getMessage())).build();
-        }
     }
 }
