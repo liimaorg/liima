@@ -1,5 +1,5 @@
 import { Component, inject, input, signal, TemplateRef, ViewChild } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbDatepickerModule, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
@@ -10,7 +10,7 @@ import { Resource } from '../../models/resource';
 @Component({
   selector: 'app-tag-current-state',
   standalone: true,
-  imports: [FormsModule, ModalHeaderComponent, ButtonComponent],
+  imports: [FormsModule, ModalHeaderComponent, ButtonComponent, NgbDatepickerModule],
   templateUrl: './tag-current-state.component.html',
 })
 export class TagCurrentStateComponent {
@@ -21,14 +21,14 @@ export class TagCurrentStateComponent {
   @ViewChild('tagModal') tagModal!: TemplateRef<void>;
 
   resource = input.required<Resource>();
-
   tagLabel = signal<string>('');
-  tagDate = signal<Date>(new Date());
+  tagDate = signal<NgbDateStruct>(this.dateToNgbDate(new Date()));
   isCreatingTag = signal(false);
 
   openTagDialog() {
+    const now = new Date();
     this.tagLabel.set('');
-    this.tagDate.set(new Date());
+    this.tagDate.set(this.dateToNgbDate(now));
     const modalRef = this.modalService.open(this.tagModal);
     modalRef.result.then(
       () => {
@@ -36,24 +36,26 @@ export class TagCurrentStateComponent {
       },
       () => {
         this.tagLabel.set('');
-        this.tagDate.set(new Date());
+        this.tagDate.set(this.dateToNgbDate(new Date()));
       },
     );
   }
 
   createTag() {
     const label = this.tagLabel();
-    const date = this.tagDate();
+    const ngbDate = this.tagDate();
 
     if (!label || label.trim() === '') {
       this.toastService.error('Tag label must not be empty.');
       return;
     }
 
-    if (!date) {
+    if (!ngbDate) {
       this.toastService.error('Tag date must not be empty.');
       return;
     }
+
+    const date = this.ngbDateToDate(ngbDate);
 
     this.isCreatingTag.set(true);
     this.resourceTagsService
@@ -65,8 +67,9 @@ export class TagCurrentStateComponent {
         next: () => {
           this.toastService.success(`New tag '${label}' created.`);
           this.isCreatingTag.set(false);
+          const now = new Date();
           this.tagLabel.set('');
-          this.tagDate.set(new Date());
+          this.tagDate.set(this.dateToNgbDate(now));
         },
         error: (error) => {
           console.error('Failed to create tag:', error);
@@ -77,19 +80,15 @@ export class TagCurrentStateComponent {
       });
   }
 
-  formatDateForInput(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  private dateToNgbDate(date: Date): NgbDateStruct {
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+    };
   }
 
-  onDateChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.value) {
-      this.tagDate.set(new Date(input.value));
-    }
+  private ngbDateToDate(ngbDate: NgbDateStruct): Date {
+    return new Date(ngbDate.year, ngbDate.month - 1, ngbDate.day, 12, 0, 0);
   }
 }
