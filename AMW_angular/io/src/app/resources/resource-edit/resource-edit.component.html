@@ -22,6 +22,27 @@
         </ul>
       </div>
     }
+    @if (showMore()) {
+      <div ngbDropdown>
+        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+          More
+        </app-button>
+        <ul ngbDropdownMenu>
+          @if (permissions().canCopyFromResource) {
+            <li ngbDropdownItem>
+              <a
+                class="dropdown-item"
+                tabindex="0"
+                (keyup.enter)="openCopyFromResourceDialog()"
+                (click)="openCopyFromResourceDialog()"
+              >
+                Copy from resource
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
   </div>
 
   <div class="page-content d-flex gap-3">
