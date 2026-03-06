@@ -20,15 +20,27 @@
     </div>
 
     <div class="mb-3">
-      <label for="tagDate" class="form-label">Tag timestamp:</label>
-      <input
-        type="datetime-local"
-        class="form-control"
-        id="tagDate"
-        [value]="formatDateForInput(tagDate())"
-        (change)="onDateChange($event)"
-        [disabled]="isCreatingTag()"
-      />
+      <label for="tagDate" class="form-label">Tag date (time will be set to 12:00):</label>
+      <div class="input-group">
+        <input
+          class="form-control"
+          id="tagDate"
+          placeholder="yyyy-mm-dd"
+          name="dp"
+          [(ngModel)]="tagDate"
+          ngbDatepicker
+          #d="ngbDatepicker"
+          [disabled]="isCreatingTag()"
+        />
+        <button
+          class="btn btn-outline-secondary"
+          (click)="d.toggle()"
+          type="button"
+          [disabled]="isCreatingTag()"
+        >
+          <i class="bi bi-calendar3"></i>
+        </button>
+      </div>
     </div>
   </div>
   <div class="modal-footer">
