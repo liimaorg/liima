@@ -1,5 +1,5 @@
 import { Component, input, signal, computed, inject, Signal, effect } from '@angular/core';
-import { forkJoin, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, of, Subject } from 'rxjs';
 import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
 import { ResourceService } from '../../services/resource.service';
@@ -12,6 +12,10 @@ import { PropertiesPanelComponent } from '../../properties-panel/properties-pane
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { createPropertiesEditor } from '../../properties-editor';
 import { UnsavedPropertyChangesService } from '../../services/unsaved-property-changes.service';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntil } from 'rxjs/operators';
+import { PropertyEditComponent } from '../../property-edit/property-edit.component';
+import { ToastService } from '../../../shared/elements/toast/toast.service';
 
 @Component({
   selector: 'app-resource-properties',
@@ -28,6 +32,10 @@ export class ResourcePropertiesComponent {
   private propertiesService = inject(ResourcePropertiesService);
   private environmentsService = inject(EnvironmentService);
   private unsavedChangesService = inject(UnsavedPropertyChangesService);
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
+  private error$ = new BehaviorSubject<string>('');
+  private destroy$ = new Subject<void>();
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
@@ -171,7 +179,26 @@ export class ResourcePropertiesComponent {
   }
 
   addProperty() {
-    console.log('add property');
+    const modalRef: NgbModalRef = this.modalService.open(PropertyEditComponent, { size: 'lg' });
+    modalRef.componentInstance.property = null;
+    modalRef.componentInstance.propertyTypes = propertyTypes;
+    modalRef.componentInstance.globalTags = tags;
+    modalRef.componentInstance.canEdit = true;
+    modalRef.componentInstance.canDecrypt = hasDecryptPermission;
+    modalRef.componentInstance.saveProperty
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((property: any) => this.createProperty(property));
+  }
+
+  createProperty(property: Property): void {
+    this.propertiesService
+      .addProperty(property, this.resource().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Resource type saved successfully.'),
+        error: (err) => this.error$.next(err.message),
+        complete: () => this.propertiesService.refreshData(),
+      });
   }
 
   saveChanges() {
