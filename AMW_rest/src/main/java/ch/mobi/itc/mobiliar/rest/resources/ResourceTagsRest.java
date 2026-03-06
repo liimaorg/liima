@@ -2,7 +2,7 @@
  * AMW - Automated Middleware allows you to manage the configurations of
  * your Java EE applications on an unlimited number of different environments
  * with various versions, including the automated deployment of those apps.
- * Copyright (C) 2013-2016 by Puzzle ITC
+ * Copyright (C) 2013-2026 by Puzzle ITC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
