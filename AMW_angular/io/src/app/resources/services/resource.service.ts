@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, startWith, Subject } from 'rxjs';
-import { map, catchError, switchMap, shareReplay } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Resource } from '../models/resource';
 import { Release } from '../models/release';
 import { Relation } from '../models/relation';
+import { CopyFromCandidate } from '../models/copy-from-candidate';
 import { AppWithVersion } from '../../deployment/app-with-version';
 import { BaseService } from '../../base/base.service';
 import { ResourceType } from '../models/resource-type';
@@ -231,6 +232,22 @@ export class ResourceService extends BaseService {
   changeResourceRelease(resourceId: number, releaseId: number): Observable<void> {
     return this.http
       .put<void>(`${this.getBaseUrl()}/resources/${resourceId}/release/${releaseId}`, null, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getCopyFromCandidates(resourceId: number): Observable<CopyFromCandidate[]> {
+    return this.http
+      .get<CopyFromCandidate[]>(`${this.getBaseUrl()}/resources/${resourceId}/copyFromCandidates`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  copyFromResource(targetResourceId: number, originResourceId: number): Observable<void> {
+    return this.http
+      .post<void>(`${this.getBaseUrl()}/resources/${targetResourceId}/copyFrom/${originResourceId}`, null, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));

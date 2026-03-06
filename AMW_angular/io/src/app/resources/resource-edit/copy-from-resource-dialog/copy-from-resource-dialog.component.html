@@ -1,0 +1,44 @@
+<app-modal-header [title]="'Copy from resource'" (cancel)="activeModal.dismiss('cancel')"></app-modal-header>
+<div class="modal-body">
+  <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+  @if (!isLoading()) {
+    @if (candidates().length === 0) {
+      <p>
+        No resources of type <strong>{{ resourceTypeName }}</strong> available to copy from.
+      </p>
+    } @else {
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Release</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (candidate of candidates(); track candidate.groupId) {
+            <tr>
+              <td>{{ candidate.groupName }}</td>
+              <td>
+                <select
+                  class="form-select form-select-sm"
+                  [ngModel]="selectedReleaseResourceIds()[candidate.groupId]"
+                  (ngModelChange)="onReleaseChange(candidate.groupId, $event)"
+                >
+                  @for (release of candidate.releases; track release.resourceId) {
+                    <option [ngValue]="release.resourceId">{{ release.releaseName }}</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <app-button [variant]="'link'" [disabled]="isCopying()" (click)="copyFrom(candidate.groupId)">
+                  Copy from this resource
+                </app-button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>
