@@ -64,6 +64,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
 import ch.puzzle.itc.mobiliar.business.server.boundary.ServerView;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
@@ -108,6 +109,9 @@ public class ResourceGroupsRestTest {
 
     @Mock
     ResourceDependencyResolverService resourceDependencyResolverServiceMock;
+
+    @Mock
+    PermissionBoundary permissionBoundaryMock;
 
     @Test
     public void getResourcesWhenTypeIsNullAndNoRessourceGroupsShouldReturnEmptyResult() {
@@ -431,6 +435,73 @@ public class ResourceGroupsRestTest {
         // then
         assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
         assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Resource not found"));
+    }
+
+    @Test
+    public void shouldReturnNotFoundWhenGetCopyFromCandidatesForNonExistingResource() {
+        // given
+        when(resourceLocatorMock.getResourceById(999)).thenReturn(null);
+
+        // when
+        Response response = rest.getCopyFromCandidates(999);
+
+        // then
+        assertThat(response.getStatus(), is(NOT_FOUND.getStatusCode()));
+    }
+
+    @Test
+    public void shouldReturnForbiddenWhenNoCopyPermission() {
+        // given
+        ResourceEntity resource = mock(ResourceEntity.class);
+        when(resourceLocatorMock.getResourceById(1)).thenReturn(resource);
+        when(permissionBoundaryMock.canCopyFromResource(resource)).thenReturn(false);
+
+        // when
+        Response response = rest.getCopyFromCandidates(1);
+
+        // then
+        assertThat(response.getStatus(), is(Response.Status.FORBIDDEN.getStatusCode()));
+    }
+
+    @Test
+    public void shouldReturnOkOnSuccessfulCopyFromResourceById() throws AMWException {
+        // given
+        CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
+        when(copyResourceResult.isSuccess()).thenReturn(true);
+        when(copyResourceMock.doCopyResource(1, 2)).thenReturn(copyResourceResult);
+
+        // when
+        Response response = rest.copyFromResourceById(1, 2);
+
+        // then
+        assertThat(response.getStatus(), is(OK.getStatusCode()));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenCopyFromResourceByIdFails() throws AMWException {
+        // given
+        CopyResourceResult copyResourceResult = mock(CopyResourceResult.class);
+        when(copyResourceResult.isSuccess()).thenReturn(false);
+        when(copyResourceMock.doCopyResource(1, 2)).thenReturn(copyResourceResult);
+
+        // when
+        Response response = rest.copyFromResourceById(1, 2);
+
+        // then
+        assertThat(response.getStatus(), is(BAD_REQUEST.getStatusCode()));
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenCopyFromResourceByIdThrowsException() throws AMWException {
+        // given
+        when(copyResourceMock.doCopyResource(1, 2)).thenThrow(new AMWException("Permission Denied"));
+
+        // when
+        Response response = rest.copyFromResourceById(1, 2);
+
+        // then
+        assertThat(response.getStatus(), is(BAD_REQUEST.getStatusCode()));
+        assertThat(((ExceptionDto) response.getEntity()).getMessage(), is("Permission Denied"));
     }
 
 }

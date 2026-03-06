@@ -18,6 +18,7 @@ import { ResourceReleasesComponent } from './resource-releases/resource-releases
 import { TagEditModalComponent, TagData } from './tag-edit-modal/tag-edit-modal.component';
 import { ResourceTagsService } from '../services/resource-tags.service';
 import { ToastService } from '../../shared/elements/toast/toast.service';
+import { CopyFromResourceDialogComponent } from './copy-from-resource-dialog/copy-from-resource-dialog.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -73,9 +74,15 @@ export class ResourceEditComponent {
         canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
         canTestGenerate: this.authService.hasPermission('RESOURCE_TEST_GENERATION', 'READ'),
         canTagCurrentState: this.authService.hasPermission('RESOURCE', 'UPDATE', resourceTypeName, resourceGroupId),
+        canCopyFromResource: this.authService.hasPermission(
+          'RESOURCE_RELEASE_COPY_FROM_RESOURCE',
+          'ALL',
+          resourceTypeName,
+          resourceGroupId,
+        ),
       };
     } else {
-      return { canEditResource: false, canTestGenerate: false, canTagCurrentState: false };
+      return { canEditResource: false, canTestGenerate: false, canTagCurrentState: false, canCopyFromResource: false };
     }
   });
 
@@ -90,6 +97,7 @@ export class ResourceEditComponent {
   protected readonly showAnalyze = computed<boolean>(
     () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
   );
+  protected readonly showMore = computed<boolean>(() => this.permissions().canCopyFromResource);
 
   protected readonly isApplicationServer = computed<boolean>(
     () => this.resource()?.type === 'APPLICATIONSERVER',
@@ -129,5 +137,19 @@ export class ResourceEditComponent {
           this.toastService.error(errorMessage);
         },
       });
+  }
+
+  openCopyFromResourceDialog() {
+    const modalRef = this.modalService.open(CopyFromResourceDialogComponent, { size: 'lg' });
+    modalRef.componentInstance.resourceId = this.id();
+    modalRef.componentInstance.resourceTypeName = this.resource()?.type;
+    modalRef.result.then(
+      (result) => {
+        if (result === 'copied') {
+          this.resourceService.setIdForResource(this.id());
+        }
+      },
+      () => {},
+    );
   }
 }
