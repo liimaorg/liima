@@ -30,3 +30,6 @@ AMW_docker/tmp
 .history/*
 
 generator/
+
+.windsurf
+.tool-versions
