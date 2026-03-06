@@ -17,6 +17,7 @@
             [size]="'sm'"
             [variant]="'link'"
             [additionalClasses]="'mx-2 p-0'"
+            [dataTestId]="'button-edit'"
             (click)="propertyEdit(property().descriptorId)"
           >
             <app-icon icon="pencil"></app-icon>
@@ -28,6 +29,7 @@
             [size]="'sm'"
             [variant]="'link'"
             [additionalClasses]="'p-0 link-danger'"
+            [dataTestId]="'button-delete'"
             (click)="propertyDelete(property().descriptorId)"
           >
             <app-icon icon="trash"></app-icon>
@@ -75,7 +77,7 @@
         (change)="toggleReset($event)"
       />
       <label class="btn btn-outline-primary reset-btn" [ngbTooltip]="'Reset property'" [for]="resetId()">
-        <app-icon icon="arrow-counterclockwise"></app-icon
+        <app-icon icon="arrow-counterclockwise" data-testid="button-reset"></app-icon
       ></label>
     }
   </div>
