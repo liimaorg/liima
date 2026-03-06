@@ -1,0 +1,170 @@
+<app-modal-header [title]="title()" (cancel)="cancel()"></app-modal-header>
+<div class="modal-body">
+  <form [formGroup]="form" class="form-horizontal mx-2">
+    @if (errorMessage()) {
+      <div class="alert alert-warning mb-3" role="alert">
+        <div [innerHTML]="errorMessage()"></div>
+      </div>
+    }
+
+    <div class="mb-3">
+      <label for="propertyName" class="form-label"
+        >Technical Key <span class="text-danger">*</span></label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="propertyName"
+        formControlName="propertyName"
+        [class.is-invalid]="form.controls.propertyName.invalid && form.controls.propertyName.touched"
+      />
+      @if (form.controls.propertyName.invalid && form.controls.propertyName.touched) {
+        <div class="invalid-feedback d-block">Technical Key is required</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="displayName" class="form-label">Display name</label>
+      <input type="text" class="form-control" id="displayName" formControlName="displayName" />
+    </div>
+
+    <div class="mb-3">
+      <label for="propertyType" class="form-label">Property type</label>
+      <ng-select
+        id="propertyType"
+        formControlName="propertyTypeId"
+        [clearable]="false"
+        (change)="onPropertyTypeChange($event)"
+      >
+        @for (type of propertyTypes(); track type.id) {
+          <ng-option [value]="type.id">{{ type.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+
+    <div class="mb-3">
+      <label for="validationLogic" class="form-label"
+        >Validation <span class="text-danger">*</span></label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="validationLogic"
+        formControlName="validationLogic"
+        [class.is-invalid]="form.controls.validationLogic.invalid && form.controls.validationLogic.touched"
+      />
+      @if (form.controls.validationLogic.invalid && form.controls.validationLogic.touched) {
+        <div class="invalid-feedback d-block">Validation is required</div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Options</label>
+      <div class="d-flex gap-4">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="nullable" formControlName="nullable" />
+          <label class="form-check-label" for="nullable">Value optional</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="optional" formControlName="optional" />
+          <label class="form-check-label" for="optional">Key optional</label>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" id="encrypt" formControlName="encrypt" />
+          <label class="form-check-label" for="encrypt">Encrypted</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="machineInterpretationKey" class="form-label">MIK</label>
+      @if (isLongMik()) {
+        <textarea
+          class="form-control"
+          id="machineInterpretationKey"
+          formControlName="machineInterpretationKey"
+          rows="3"
+        ></textarea>
+      } @else {
+        <input
+          type="text"
+          class="form-control"
+          id="machineInterpretationKey"
+          formControlName="machineInterpretationKey"
+        />
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="defaultValue" class="form-label">Default value</label>
+      @if (isLongDefaultValue()) {
+        <textarea class="form-control" id="defaultValue" formControlName="defaultValue" rows="3"></textarea>
+      } @else {
+        <input type="text" class="form-control" id="defaultValue" formControlName="defaultValue" />
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="exampleValue" class="form-label">Example value</label>
+      @if (isLongExampleValue()) {
+        <textarea class="form-control" id="exampleValue" formControlName="exampleValue" rows="3"></textarea>
+      } @else {
+        <input type="text" class="form-control" id="exampleValue" formControlName="exampleValue" />
+      }
+    </div>
+
+    <div class="mb-3">
+      <label for="propertyComment" class="form-label">Comment</label>
+      <textarea class="form-control" id="propertyComment" formControlName="propertyComment" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="tags" class="form-label">Tags</label>
+      <div class="mb-2">
+        @for (tag of tags(); track tag.name) {
+          <span class="badge bg-secondary me-2 mb-1">
+            {{ tag.name }}
+            @if (canEdit()) {
+              <button
+                type="button"
+                class="btn-close btn-close-white ms-1"
+                aria-label="Remove tag"
+                (click)="removeTag(tag.name)"
+                style="font-size: 0.65rem; vertical-align: middle"
+              ></button>
+            }
+          </span>
+        }
+      </div>
+      @if (canEdit()) {
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="tags"
+            placeholder="Type a tag and press Enter"
+            [value]="newTagInput()"
+            (input)="newTagInput.set($any($event.target).value)"
+            (keydown)="onTagInputKeydown($event)"
+          />
+          <button type="button" class="btn btn-outline-secondary" (click)="addTag()">Add</button>
+        </div>
+        <div class="form-text">Available tags: {{ globalTags().map((t) => t.name).join(', ') }}</div>
+      }
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  @if (canEdit() && !isNewMode()) {
+    @if (!showForceDelete()) {
+      <app-button [variant]="'danger'" (click)="delete()">Delete</app-button>
+    } @else {
+      <app-button [variant]="'danger'" (click)="forceDelete()">Force delete</app-button>
+    }
+  }
+  <div class="flex-grow-1"></div>
+  <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
+  @if (canEdit()) {
+    <app-button [variant]="'primary'" [disabled]="form.invalid" (click)="save()">Save</app-button>
+  }
+</div>

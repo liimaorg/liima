@@ -1,0 +1,22 @@
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.form-horizontal {
+  max-width: 800px;
+}
+
+.badge {
+  position: relative;
+  padding-right: 1.5rem;
+
+  .btn-close {
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    right: 0.35rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
