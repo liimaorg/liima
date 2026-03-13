@@ -132,12 +132,31 @@ public class ResourceGroupsRest {
     @Inject
     private ResourceRelationService resourceRelationService;
 
+    @Inject
+    private ch.puzzle.itc.mobiliar.business.releasing.boundary.Releasing releasing;
+
     @GET
     @Path("/{id : \\d+}")
     @Operation(summary = "Get a resource by id")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getById(@Parameter(description = "Resource ID") @PathParam("id") Integer id) throws NotFoundException {
-        return Response.ok(new ResourceDTO(resourceBoundary.getResource(id))).build();
+        ResourceEntity resource = resourceBoundary.getResource(id);
+        ResourceEntity applicationServerForApplication = resourceLocator.getApplicationServerForApplication(resource);
+        ResourceDTO entity = new ResourceDTO(resource, applicationServerForApplication);
+        return Response.ok(entity).build();
+    }
+
+    @DELETE
+    @Path("/{id : \\d+}")
+    @Operation(summary = "Delete a resource by id")
+    @Produces(APPLICATION_JSON)
+    public Response deleteResourceById(@Parameter(description = "Resource ID") @PathParam("id") Integer id) throws NotFoundException, ElementAlreadyExistsException {
+        ResourceEntity resource = resourceLocator.getResourceById(id);
+        if (resource == null) {
+            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
+        }
+        resourceBoundary.removeResource(id);
+        return Response.ok().build();
     }
 
     @GET
@@ -221,7 +240,7 @@ public class ResourceGroupsRest {
                                    @QueryParam("type") String resourceType) throws ValidationException, ResourceNotFoundException {
         ResourceEntity resourceByRelease = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
         return new ResourceDTO(resourceByRelease, resourceRelations.getResourceRelations(resourceGroupName,
-                releaseName, resourceType), resourceProperties.getResourceProperties(resourceGroupName, releaseName,
+                releaseName, resourceType), resourceProperties.getPropertiesByResourceGroupNameAndReleaseName(resourceGroupName, releaseName,
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, releaseName));
     }
 
@@ -238,7 +257,7 @@ public class ResourceGroupsRest {
             throw new NotFoundException("Release or resource not found");
         }
         return new ResourceDTO(release, resourceRelations.getResourceRelations(resourceGroupName,
-                release.getName(), resourceType), resourceProperties.getResourceProperties(resourceGroupName, release.getName(),
+                release.getName(), resourceType), resourceProperties.getPropertiesByResourceGroupNameAndReleaseName(resourceGroupName, release.getName(),
                 environment), resourceTemplatesRest.getResourceTemplates(resourceGroupName, release.getName()));
     }
 
@@ -479,5 +498,34 @@ public class ResourceGroupsRest {
                 .map(entry -> new ReleaseDTO(entry.getValue(), entry.getKey()))
                 .collect(Collectors.toList());
         return Response.ok(releases).build();
+    }
+
+    @Path("/{resourceId}/availableReleases")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get available releases for creating a new resource release - used by Angular")
+    public Response getAvailableReleasesForResource(@PathParam("resourceId") Integer resourceId) {
+        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        if (resource == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        List<ReleaseEntity> availableReleases = releasing.getNotDefinedReleasesForResource(resource);
+        List<ReleaseDTO> releaseDTOs = availableReleases.stream()
+                .map(release -> new ReleaseDTO(release.getId(), release.getName()))
+                .collect(Collectors.toList());
+        return Response.ok(releaseDTOs).build();
+    }
+
+    @Path("/{resourceId}/release/{releaseId}")
+    @PUT
+    @Produces(APPLICATION_JSON)
+    @Operation(summary = "Change the release of a resource - used by Angular")
+    public Response changeResourceRelease(@PathParam("resourceId") Integer resourceId,
+                                         @PathParam("releaseId") Integer releaseId) throws NotFoundException {
+        releaseMgmtService.changeReleaseOfResource(
+            resourceLocator.getResourceById(resourceId),
+            releaseLocator.getReleaseById(releaseId)
+        );
+        return Response.ok().build();
     }
 }

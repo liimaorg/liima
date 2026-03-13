@@ -1,0 +1,88 @@
+@if (showProperty()) {
+  <div class="label-container">
+    <label [for]="fieldId()" class="property-label justify-content-start">
+      {{ displayLabel() }}
+      @if (!hideTooltip()) {
+        <app-property-field-tooltip [property]="property()" [isInfo]="true"></app-property-field-tooltip>
+      }
+      @if (property().overwriteInfos?.length > 0) {
+        <app-property-field-tooltip [property]="property()" [isInfo]="false"></app-property-field-tooltip>
+      }
+    </label>
+    <div class="justify-content-end gap-1 align-items-center">
+      @if (isEditable()) {
+        @if (canEdit()) {
+          <app-button
+            title="Edit"
+            [size]="'sm'"
+            [variant]="'link'"
+            [additionalClasses]="'mx-2 p-0'"
+            [dataTestId]="'button-edit'"
+            (click)="propertyEdit(property().descriptorId)"
+          >
+            <app-icon icon="pencil"></app-icon>
+          </app-button>
+        }
+        @if (canDelete()) {
+          <app-button
+            title="Delete"
+            [size]="'sm'"
+            [variant]="'link'"
+            [additionalClasses]="'p-0 link-danger'"
+            [dataTestId]="'button-delete'"
+            (click)="propertyDelete(property().descriptorId)"
+          >
+            <app-icon icon="trash"></app-icon>
+          </app-button>
+        }
+      }
+    </div>
+  </div>
+  <div class="d-flex align-items-center input-group">
+    @let placeholder = property().defaultValue || property().exampleValue || '';
+    @if (!renderTextArea()) {
+      <input
+        [id]="fieldId()"
+        [type]="isEncrypted() && !showDecrypted() ? 'password' : 'text'"
+        class="property-input form-control"
+        [class.is-invalid]="hasError()"
+        [class.upper-context]="toggleInputColor()"
+        [class.has-mik]="toggleMikInput()"
+        [(ngModel)]="localValue"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        [placeholder]="placeholder"
+        [disabled]="isDisabled()"
+      />
+    } @else {
+      <textarea
+        [id]="fieldId()"
+        class="property-input form-control"
+        [class.is-invalid]="hasError()"
+        [class.upper-context]="toggleInputColor()"
+        [class.has-mik]="toggleMikInput()"
+        [(ngModel)]="localValue"
+        (blur)="onBlur()"
+        [placeholder]="placeholder"
+        [disabled]="isDisabled()"
+      ></textarea>
+    }
+    @if (canReset() && (!property().encrypted || canDecrypt())) {
+      <input
+        type="checkbox"
+        class="btn-check"
+        [id]="resetId()"
+        autocomplete="off"
+        [checked]="resetChecked()"
+        (change)="toggleReset($event)"
+      />
+      <label class="btn btn-outline-primary reset-btn" [ngbTooltip]="'Reset property'" [for]="resetId()">
+        <app-icon icon="arrow-counterclockwise" data-testid="button-reset"></app-icon
+      ></label>
+    }
+  </div>
+
+  @if (validationError()) {
+    <div class="validation-error">{{ validationError() }}</div>
+  }
+}

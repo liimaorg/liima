@@ -1,0 +1,33 @@
+<div>
+  @if (errorMessage()) {
+    <div class="error-banner">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="success-banner">{{ successMessage() }}</div>
+  }
+</div>
+<div class="properties-section">
+  <ng-content></ng-content>
+</div>
+<div class="properties-footer">
+  @if (hasChanges() && canEdit()) {
+    <div class="action-buttons">
+      <app-button [variant]="'light'" [size]="'sm'" [dataTestId]="'button-cancel'" (click)="cancelAction.emit()">Cancel</app-button>
+      <span
+        [ngbTooltip]="hasValidationErrors() ? 'Fix validation errors to enable saving' : ''"
+        [disableTooltip]="!hasValidationErrors()"
+      >
+        <app-button
+          [variant]="'primary'"
+          [size]="'sm'"
+          (click)="saveAction.emit()"
+          [dataTestId]="'button-save'"
+          [disabled]="isSaving() || hasValidationErrors()"
+        >
+          {{ isSaving() ? 'Saving...' : 'Save' }}
+        </app-button>
+      </span>
+    </div>
+  }
+</div>

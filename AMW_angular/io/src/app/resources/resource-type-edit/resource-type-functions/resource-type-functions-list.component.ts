@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
 import { ToastService } from 'src/app/shared/elements/toast/toast.service';
-import { EntryAction, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { EntryAction, TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { TileComponent } from 'src/app/shared/tile/tile.component';
 import { ResourceFunction } from '../../models/resource-function';
 import { ResourceType } from '../../models/resource-type';
@@ -17,7 +17,7 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 @Component({
   selector: 'app-resource-type-functions-list',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent],
+  imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
   templateUrl: './resource-type-functions-list.component.html',
 })
 export class ResourceTypeFunctionsListComponent {

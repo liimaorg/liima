@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
 import { ToastService } from 'src/app/shared/elements/toast/toast.service';
-import { TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { TileComponent } from 'src/app/shared/tile/tile.component';
 import { EntryAction } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { ResourceTemplate } from '../../models/resource-template';
@@ -18,7 +18,7 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 @Component({
   selector: 'app-resource-type-templates-list',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent],
+  imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
   templateUrl: './resource-type-templates-list.component.html',
 })
 export class ResourceTypeTemplatesListComponent implements OnDestroy {

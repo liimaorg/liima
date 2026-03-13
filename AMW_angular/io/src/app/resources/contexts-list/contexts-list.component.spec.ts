@@ -1,20 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ContextsListComponent } from './contexts-list.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 
 describe('ContextsListComponent', () => {
   let component: ContextsListComponent;
   let fixture: ComponentFixture<ContextsListComponent>;
 
-  const mockRoute: any = { queryParamMap: of() };
-  mockRoute.queryParamMap = new Subject<Map<string, number>>();
-  mockRoute.queryParamMap.next({
-    id: 42,
-  });
+  const queryParamMap$ = new Subject<ParamMap>();
+  const mockRoute: Partial<ActivatedRoute> = { queryParamMap: queryParamMap$ };
+  queryParamMap$.next(
+    convertToParamMap({
+      id: '42',
+    }),
+  );
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -22,6 +25,7 @@ describe('ContextsListComponent', () => {
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
+        provideRouter([]),
         { provide: ActivatedRoute, useValue: mockRoute },
       ],
     }).compileComponents();

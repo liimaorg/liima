@@ -14,7 +14,7 @@
 
   .opened {
     border-bottom: 1px solid #ddd;
-    padding-bottom: 0.5em;
+    padding-bottom: 0.75em;
   }
 
   .tile-title {
@@ -29,6 +29,8 @@
 
   .tile-body {
     margin: 1em 0 0.5em;
+    overflow-y: auto;
+    max-height: 60vh;
 
     .no-content {
       font-style: italic;

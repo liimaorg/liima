@@ -26,7 +26,7 @@ export class BaseService {
     let errorMsg = 'Error retrieving your data';
     if (response.error) {
       try {
-        errorMsg = _.escape(response.error.message);
+        errorMsg = response.error.message;
       } catch (e) {
         console.log(e);
       }

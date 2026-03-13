@@ -1,0 +1,33 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Properties'"
+  [actionName]="'New Property'"
+  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
+  [isVisible]="true"
+  (tileAction)="addProperty()"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+  <app-properties-panel
+    [canEdit]="permissions().canUpdateProperty"
+    [isSaving]="isSaving()"
+    [hasChanges]="hasChanges()"
+    [hasValidationErrors]="hasValidationErrors()"
+    [errorMessage]="errorMessage()"
+    [successMessage]="successMessage()"
+    (cancelAction)="resetChanges()"
+    (saveAction)="saveChanges()"
+  >
+    <app-properties-list
+      [properties]="properties()"
+      [canEdit]="permissions().canUpdateProperty"
+      [canDecrypt]="permissions().canDecryptProperties"
+      [canDelete]="permissions().canUpdateProperty"
+      [mode]="'resourceType'"
+      [resetToken]="resetToken()"
+      (valueChange)="onPropertyChange($event.name, $event.value)"
+      (resetToggled)="onPropertyReset($event.name, $event.checked)"
+      (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+    ></app-properties-list>
+  </app-properties-panel>
+</app-tile-component>

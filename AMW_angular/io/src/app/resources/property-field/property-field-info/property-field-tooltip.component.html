@@ -1,0 +1,13 @@
+<app-tooltip
+  [canPin]="!isInfo()"
+  [title]="getTitle()"
+  [subtitle]="infoText()"
+  [tableData]="dataTable()"
+  [headers]="!isInfo() ? headers : undefined"
+>
+  @if (isInfo()) {
+    <app-icon icon="info-circle-fill" class="label-icon"></app-icon>
+  } @else {
+    <app-icon icon="exclamation-triangle-fill" class="warn-icon"></app-icon>
+  }
+</app-tooltip>

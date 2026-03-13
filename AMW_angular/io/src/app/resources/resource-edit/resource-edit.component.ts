@@ -1,7 +1,7 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, inject, signal, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../services/resource.service';
@@ -13,6 +13,8 @@ import { Release } from '../models/release';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
+import { ResourcePropertiesComponent } from './resource-properties/resource-properties.component';
+import { ResourceReleasesComponent } from './resource-releases/resource-releases.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -28,6 +30,9 @@ import { ContextsListComponent } from '../contexts-list/contexts-list.component'
     NgbDropdownToggle,
     NgbDropdownItem,
     ContextsListComponent,
+    ResourcePropertiesComponent,
+    ResourceReleasesComponent,
+    RouterLink,
   ],
   templateUrl: './resource-edit.component.html',
   styleUrl: './resource-edit.component.scss',
@@ -50,19 +55,32 @@ export class ResourceEditComponent {
     } else return false;
   });
 
+  testGenerationAvailable = computed(() => {
+    return this.resource()?.type === 'APPLICATIONSERVER' || this.resource()?.hasApplicationServer;
+  });
+
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
         canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
+        canTestGenerate: this.authService.hasPermission('RESOURCE_TEST_GENERATION', 'READ'),
       };
     } else {
-      return { canEditResource: false };
+      return { canEditResource: false, canTestGenerate: false };
     }
   });
 
   selectedRelease = computed(() => {
     return this.releases().find((release) => release.id === this.id());
   });
+
+  testGenerationQueryParams = computed(() => ({
+    id: this.id(),
+    ctx: this.contextId(),
+  }));
+  protected readonly showAnalyze = computed<boolean>(
+    () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
+  );
 
   loadResourceFromRelease(releaseId: number) {
     void this.router.navigate([], {

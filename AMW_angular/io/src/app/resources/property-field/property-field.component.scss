@@ -1,0 +1,71 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.label-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  height: 1.4rem;
+}
+
+.property-label {
+  font-weight: 500;
+  font-size: 13px;
+  color: #333;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0;
+}
+
+.required {
+  color: #dc3545;
+}
+
+.property-input {
+  width: 85%;
+  padding: 0.2rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  line-height: 21px;
+  color: #0e1687;
+}
+
+.upper-context {
+  color: #000;
+}
+
+.has-mik {
+  border: 1px solid orange;
+}
+
+.property-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.is-invalid {
+  border: 2px solid #ea868f;
+}
+
+.property-input.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.reset-btn {
+  padding: 0.2rem 12px;
+  margin-right: 0;
+  line-height: 21px;
+}
+
+.validation-error {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 0.25rem;
+}

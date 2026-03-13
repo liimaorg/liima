@@ -1,15 +1,20 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IconComponent } from '../icon/icon.component';
 import { ButtonComponent } from '../button/button.component';
-import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-list/tile-list.component';
 
 @Component({
   selector: 'app-tile-component',
   template: `
     <div class="tile rounded">
-      <div class="tile-header" (click)="toggleBody()" [ngClass]="showBody() ? 'opened' : 'closed'">
+      <div
+        tabindex="0"
+        class="tile-header"
+        (keyup.enter)="toggleBody()"
+        (click)="toggleBody()"
+        [ngClass]="showBody() ? 'opened' : 'closed'"
+      >
         <div class="tile-title">
           @if (showBody()) {
             <app-icon icon="caret-down"></app-icon>
@@ -29,27 +34,16 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
       </div>
       @if (showBody()) {
         <div class="tile-body">
-          @if (!lists()) {
+          @if (noContent()) {
             <div class="no-content">
               <span>No {{ title() }} for this resource</span>
             </div>
-          } @else if (lists().length <= 0) {
+          } @else if (notAllowed()) {
             <div class="no-content">
               <span>You are not allowed to view {{ title() }} for this resource</span>
             </div>
-          }
-          <ng-container #container></ng-container>
-          @for (list of lists(); track list) {
-            <app-tile-list
-              [title]="list.title"
-              [data]="list.entries"
-              [canEdit]="list.canEdit"
-              [canDelete]="list.canDelete"
-              [canOverwrite]="list.canOverwrite"
-              (edit)="listAction.emit($event)"
-              (delete)="listAction.emit($event)"
-              (overwrite)="listAction.emit($event)"
-            ></app-tile-list>
+          } @else {
+            <ng-content></ng-content>
           }
         </div>
       }
@@ -58,31 +52,26 @@ import { TileListComponent, TileListEntry, TileListEntryOutput } from './tile-li
   styleUrls: ['./tile.component.scss'],
   providers: [],
   standalone: true,
-  imports: [FormsModule, NgClass, IconComponent, ButtonComponent, TileListComponent],
+  imports: [FormsModule, NgClass, IconComponent, ButtonComponent],
 })
 export class TileComponent {
   title = input.required<string>();
   actionName = input.required<string>();
   canAction = input<boolean>(false);
   isVisible = input<boolean>(false);
-  lists = input.required<
-    {
-      title: string;
-      entries: TileListEntry[];
-      canEdit?: boolean;
-      canDelete?: boolean;
-      canOverwrite?: boolean;
-    }[]
-  >();
-  tileAction = output<void>();
-  listAction = output<TileListEntryOutput>();
 
-  showBody = signal(this.isVisible());
+  noContent = input<boolean>(false);
+  notAllowed = input<boolean>(false);
+
+  tileAction = output<void>();
+
+  showBody = linkedSignal(() => this.isVisible());
+
   toggleBody() {
-    this.showBody.set(!this.showBody());
+    this.showBody.update((current) => !current);
   }
 
-  doTileAction(event: any) {
+  doTileAction(event: PointerEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.tileAction.emit();

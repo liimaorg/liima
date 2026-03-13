@@ -10,4 +10,6 @@ export interface Resource {
   defaultResourceId?: number;
   resourceGroupId?: number;
   resourceTypeId?: number;
+  outOfServiceReleaseName?: string;
+  hasApplicationServer?: boolean;
 }

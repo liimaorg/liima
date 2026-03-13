@@ -1,0 +1,18 @@
+.properties-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 2.5rem;
+}
+
+.properties-column {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.75rem;
+  min-width: 0;
+}
+
+@media (max-width: 992px) {
+  .properties-list {
+    grid-template-columns: 1fr;
+  }
+}

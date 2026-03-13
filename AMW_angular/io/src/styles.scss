@@ -1,14 +1,17 @@
 @use '@ng-select/ng-select/themes/default.theme.css' as *;
-@use 'bootstrap/scss/bootstrap' as * with ($font-size-base: 0.9rem,
+@use 'bootstrap/scss/bootstrap' as * with (
+  $font-size-base: 0.9rem,
   $btn-disabled-opacity: 0.55,
-  $container-max-widths: (sm: 640px,
+  $container-max-widths: (
+    sm: 640px,
     md: 820px,
     lg: 1160px,
     xl: 1440px,
     xxl: 1920px,
   ),
   $toast-padding-x: 0,
-  $toast-padding-y: 0);
+  $toast-padding-y: 0
+);
 
 .text-warning-2 {
   color: #8a6d3b;
@@ -20,12 +23,12 @@
 
 // legacy style definition below - check if they can be deleted
 /* global table styles */
-.table>thead>tr>th,
-.table>thead>tr>td,
-.table>tbody>tr>th,
-.table>tbody>tr>td,
-.table>tfoot>tr>th,
-.table>tfoot>tr>td {
+.table > thead > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > th,
+.table > tbody > tr > td,
+.table > tfoot > tr > th,
+.table > tfoot > tr > td {
   padding: 8px;
   line-height: 1.42857;
   vertical-align: top;
@@ -52,12 +55,12 @@
 }
 
 /* for apps table */
-.li-table-striped>td {
+.li-table-striped > td {
   color: var(--bs-table-striped-color);
   background-color: var(--bs-table-striped-bg);
 }
 
-.li-table-striped>td>app-apps-list>table>tbody>tr>td {
+.li-table-striped > td > app-apps-list > table > tbody > tr > td {
   color: var(--bs-table-striped-color);
   background-color: transparent;
 }
