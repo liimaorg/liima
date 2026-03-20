@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -13,14 +13,6 @@ export interface TagRequest {
 @Injectable({ providedIn: 'root' })
 export class ResourceTagsService extends BaseService {
   private http = inject(HttpClient);
-
-  getTagsForResource(resourceId: number): Observable<ResourceTag[]> {
-    return this.http
-      .get<ResourceTag[]>(`${this.getBaseUrl()}/resources/${resourceId}/tags`, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
 
   createTag(resourceId: number, tagRequest: TagRequest): Observable<ResourceTag> {
     return this.http
