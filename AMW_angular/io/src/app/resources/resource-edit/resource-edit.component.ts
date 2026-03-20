@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, Signal, ViewChild } from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -11,11 +11,13 @@ import { ResourceFunctionsListComponent } from './resource-functions/resource-fu
 import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list/resource-templates-list.component';
 import { Release } from '../models/release';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 import { ResourcePropertiesComponent } from './resource-properties/resource-properties.component';
 import { ResourceReleasesComponent } from './resource-releases/resource-releases.component';
-import { TagCurrentStateComponent } from './tag-current-state/tag-current-state.component';
+import { TagEditModalComponent, TagData } from './tag-edit-modal/tag-edit-modal.component';
+import { ResourceTagsService } from '../services/resource-tags.service';
+import { ToastService } from '../../shared/elements/toast/toast.service';
 
 @Component({
   selector: 'app-resource-edit',
@@ -34,7 +36,6 @@ import { TagCurrentStateComponent } from './tag-current-state/tag-current-state.
     ResourcePropertiesComponent,
     ResourceReleasesComponent,
     RouterLink,
-    TagCurrentStateComponent,
   ],
   templateUrl: './resource-edit.component.html',
   styleUrl: './resource-edit.component.scss',
@@ -44,8 +45,9 @@ export class ResourceEditComponent {
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-
-  @ViewChild(TagCurrentStateComponent) tagCurrentStateComponent!: TagCurrentStateComponent;
+  private modalService = inject(NgbModal);
+  private resourceTagsService = inject(ResourceTagsService);
+  private toastService = inject(ToastService);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
@@ -107,6 +109,26 @@ export class ResourceEditComponent {
   }
 
   openTagDialog() {
-    this.tagCurrentStateComponent?.openTagDialog();
+    const modalRef = this.modalService.open(TagEditModalComponent);
+    modalRef.componentInstance.resource = this.resource();
+    modalRef.componentInstance.saveTag.subscribe((tagData: TagData) => this.createTag(tagData));
+  }
+
+  private createTag(tagData: TagData) {
+    this.resourceTagsService
+      .createTag(this.resource().id, {
+        label: tagData.label,
+        tagDate: tagData.tagDate,
+      })
+      .subscribe({
+        next: () => {
+          this.toastService.success(`New tag '${tagData.label}' created.`);
+        },
+        error: (error) => {
+          console.error('Failed to create tag:', error);
+          const errorMessage = error?.error?.message || 'Failed to create tag.';
+          this.toastService.error(errorMessage);
+        },
+      });
   }
 }
