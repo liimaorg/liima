@@ -66,7 +66,7 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
   }
 
   ngAfterViewInit(): void {
-    this.popover.hidden.subscribe(($event) => {
+    this.popover.hidden.subscribe(() => {
       this.showTimePickerToggle = false;
     });
   }

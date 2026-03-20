@@ -57,7 +57,7 @@ export class DeploymentsComponent implements OnInit {
   filterTypes = signal<DeploymentFilterType[]>([]);
   private filterTypeMap = computed(() => {
     const map = new Map<string, FilterType>();
-    this.filterTypes().forEach(filterType => {
+    this.filterTypes().forEach((filterType) => {
       const validFilterTypes = Object.values(FilterType);
       if (validFilterTypes.includes(filterType.type as FilterType)) {
         map.set(filterType.name, filterType.type as FilterType);
@@ -376,8 +376,10 @@ export class DeploymentsComponent implements OnInit {
         ({
           name: filter.name,
           comp: filter.comp,
-          val: this.getFilterType(filter.name) === FilterType.DATE
-            && filter.val instanceof DateTimeModel ? filter.val.toEpoch().toString() : filter.val,
+          val:
+            this.getFilterType(filter.name) === FilterType.DATE && filter.val instanceof DateTimeModel
+              ? filter.val.toEpoch().toString()
+              : filter.val,
         }) as DeploymentFilter,
     );
     return JSON.stringify(filters);
