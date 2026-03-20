@@ -36,7 +36,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequestScoped
 @Path("/resources")
@@ -48,24 +47,6 @@ public class ResourceTagsRest {
 
     @Inject
     private ResourceLocator resourceLocator;
-
-    @GET
-    @Path("/{resourceId}/tags")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get all tags for a resource")
-    public Response getTagsForResource(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId) throws NotFoundException {
-
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
-        if (resource == null) throw new NotFoundException("Resource not found");
-
-        List<ResourceTagEntity> tags = tagConfigurationService.loadTagLabelsForResource(resource);
-        List<ResourceTagDTO> tagDTOs = tags.stream()
-                .map(ResourceTagDTO::new)
-                .collect(Collectors.toList());
-
-        return Response.ok(tagDTOs).build();
-    }
-
 
     @POST
     @Path("/{resourceId}/tags")
@@ -93,7 +74,7 @@ public class ResourceTagsRest {
     private void checkIfLabelExists(ResourceEntity resource, CreateResourceTagCommand command) {
         List<ResourceTagEntity> existingTags = tagConfigurationService.loadTagLabelsForResource(resource);
         boolean labelExists = existingTags.stream()
-                .anyMatch(tag -> tag.getLabel().trim().equals(command.getResourceTag().getLabel().trim()));
+                .anyMatch(tag -> tag.getLabel().trim().equalsIgnoreCase(command.getResourceTag().getLabel().trim()));
 
         if (labelExists)
             throw new BadRequestException("A label with the value '" + command.getResourceTag().getLabel() + "' already exists for this resource.");
