@@ -3,15 +3,15 @@ import { FormsModule } from '@angular/forms';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PropertyType } from './property-type';
-import { IconComponent } from '../../shared/icon/icon.component';
 import { PropertyTag } from './property-tag';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { TagInputComponent } from '../../shared/tag-input/tag-input.component';
 
 @Component({
   selector: 'app-property-type-edit',
   templateUrl: './property-type-edit.component.html',
-  imports: [IconComponent, FormsModule, ModalHeaderComponent, ButtonComponent],
+  imports: [FormsModule, ModalHeaderComponent, ButtonComponent, TagInputComponent],
 })
 export class PropertyTypeEditComponent {
   activeModal = inject(NgbActiveModal);
@@ -20,7 +20,6 @@ export class PropertyTypeEditComponent {
   @Output() savePropertyType: EventEmitter<PropertyType> = new EventEmitter<PropertyType>();
 
   title = 'property type';
-  newTag: string = '';
 
   getTitle(): string {
     return this.propertyType.id ? `Edit ${this.title}` : `Add ${this.title}`;
@@ -58,17 +57,7 @@ export class PropertyTypeEditComponent {
     this.activeModal.close();
   }
 
-  deleteTag(tag: PropertyTag) {
-    this.propertyType.propertyTags = this.propertyType.propertyTags.filter((value) => {
-      return value.type !== tag.type || value.name !== tag.name;
-    });
-  }
-
-  addTag() {
-    const tag = this.newTag.trim();
-    if (tag !== '') {
-      this.propertyType.propertyTags.push({ name: tag, type: 'LOCAL' });
-    }
-    this.newTag = '';
+  onTagsChange(updatedTags: PropertyTag[]) {
+    this.propertyType.propertyTags = updatedTags;
   }
 }

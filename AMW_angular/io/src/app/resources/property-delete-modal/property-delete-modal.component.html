@@ -1,0 +1,50 @@
+<div class="modal-header">
+  <h4 class="modal-title">
+    {{
+      deleteModalService().descriptorToDelete()?.errorMessage
+        ? 'Force delete property descriptor'
+        : 'Delete property descriptor'
+    }}
+  </h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="onDismiss()"
+    [disabled]="deleteModalService().isDeleting()"
+  ></button>
+</div>
+<div class="modal-body">
+  @if (deleteModalService().descriptorToDelete()?.errorMessage) {
+    <div class="alert alert-danger" role="alert">
+      <div [innerHTML]="deleteModalService().descriptorToDelete()?.errorMessage"></div>
+    </div>
+    <p>
+      Do you really want to force delete the property descriptor
+      <strong>{{ deleteModalService().descriptorToDelete()?.name }}</strong
+      >?
+    </p>
+  } @else {
+    <p>
+      Do you really want to delete the property descriptor
+      <strong>{{ deleteModalService().descriptorToDelete()?.name }}</strong
+      >?
+    </p>
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-light" (click)="onDismiss()" [disabled]="deleteModalService().isDeleting()">
+    Cancel
+  </button>
+  <button
+    type="button"
+    class="btn btn-danger"
+    (click)="onConfirmDelete()"
+    [disabled]="deleteModalService().isDeleting()"
+  >
+    @if (deleteModalService().isDeleting()) {
+      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+    }
+    {{ deleteModalService().descriptorToDelete()?.errorMessage ? 'Force delete' : 'Delete' }}
+  </button>
+</div>
