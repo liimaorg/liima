@@ -20,11 +20,6 @@
 
 package ch.mobi.itc.mobiliar.rest;
 
-import java.util.Set;
-
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
-
 import ch.mobi.itc.mobiliar.rest.analyze.TestGenerationRest;
 import ch.mobi.itc.mobiliar.rest.apps.AppsRest;
 import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
@@ -37,12 +32,17 @@ import ch.mobi.itc.mobiliar.rest.health.HealthCheck;
 import ch.mobi.itc.mobiliar.rest.permissions.RestrictionsRest;
 import ch.mobi.itc.mobiliar.rest.releases.ReleasesRest;
 import ch.mobi.itc.mobiliar.rest.resources.*;
+import ch.mobi.itc.mobiliar.rest.resources.resourceTags.ResourceTagsRest;
 import ch.mobi.itc.mobiliar.rest.servers.HostNamesRest;
 import ch.mobi.itc.mobiliar.rest.servers.ServersRest;
 import ch.mobi.itc.mobiliar.rest.settings.FunctionsRest;
 import ch.mobi.itc.mobiliar.rest.settings.PropertyTypesRest;
 import ch.mobi.itc.mobiliar.rest.settings.SettingsRest;
 import ch.mobi.itc.mobiliar.rest.settings.TagsRest;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+import java.util.Set;
 
 @ApplicationPath("/resources/")
 public class RESTApplication extends Application {
@@ -81,6 +81,7 @@ public class RESTApplication extends Application {
         resources.add(FunctionsRest.class);
         resources.add(ServersRest.class);
         resources.add(ResourceFunctionsRest.class);
+        resources.add(ResourceTagsRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
@@ -106,6 +107,7 @@ public class RESTApplication extends Application {
         resources.add(TemplateNotDeletableExceptionMapper.class);
         resources.add(OptimisticLockExceptionMapper.class);
         resources.add(DecryptionExceptionMapper.class);
+        resources.add(BadRequestExceptionMapper.class);
 
         // health
         resources.add(HealthCheck.class);

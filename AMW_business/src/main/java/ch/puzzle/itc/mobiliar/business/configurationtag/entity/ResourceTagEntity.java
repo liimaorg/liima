@@ -20,9 +20,11 @@
 
 package ch.puzzle.itc.mobiliar.business.configurationtag.entity;
 
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.database.control.Constants;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
@@ -32,6 +34,8 @@ import java.util.Date;
 @Entity
 @Audited
 @Table(name = "TAMW_resourceTag")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResourceTagEntity {
 
 	@Getter
