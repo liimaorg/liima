@@ -24,24 +24,34 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
 public class ValidationHelper {
 
-	/**
-	 * Validate all arguments. If at least one argument is either null or empty an exception is thrown
-	 */
-	public static void validateNotNullOrEmptyChecked(String... arguments) throws ValidationException {
-		for (String argument : arguments) {
-			if (argument == null || argument.isEmpty()) {
-				throw new ValidationException("Argument must not be null or empty");
-			}
-		}
-	}
+    /**
+     * Validate all arguments. If at least one argument is either null or empty an exception is thrown
+     */
+    public static void validateNotNullOrEmptyChecked(String... arguments) throws ValidationException {
+        for (String argument : arguments) {
+            if (argument == null || argument.isEmpty()) {
+                throw new ValidationException("Argument must not be null or empty");
+            }
+        }
+    }
 
-	/**
-	 * Validate argument. If the argument is either null or empty an exception is thrown
-	 */
-	public static String validateNotNullOrEmpty(String argument) {
-		if (argument == null || argument.isEmpty()) {
-			throw new IllegalArgumentException("Argument must not be null or empty");
-		}
-		return argument;
-	}
+    /**
+     * Validate argument. If the argument is either null or empty an exception is thrown
+     */
+    public static String validateNotNullOrEmpty(String argument) {
+        if (argument == null || argument.isEmpty()) {
+            throw new IllegalArgumentException("Argument must not be null or empty");
+        }
+        return argument;
+    }
+
+    public static String validateNotNullOrEmpty(String argument, RuntimeException e) {
+        if (argument == null || argument.trim().isEmpty()) throw e;
+        return argument;
+    }
+
+    public static <T> T validateNotNull(T o, RuntimeException e) {
+        if (o == null) throw e;
+        return o;
+    }
 }
