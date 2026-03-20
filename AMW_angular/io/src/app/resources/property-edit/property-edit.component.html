@@ -8,17 +8,15 @@
     }
 
     <div class="mb-3">
-      <label for="propertyName" class="form-label"
-        >Technical Key <span class="text-danger">*</span></label
-      >
+      <label for="propertyName" class="form-label">Technical Key <span class="text-danger">*</span></label>
       <input
         type="text"
         class="form-control"
         id="propertyName"
         formControlName="propertyName"
-        [class.is-invalid]="form.controls.propertyName.invalid && form.controls.propertyName.touched"
+        [class.is-invalid]="form.controls.name.invalid && form.controls.name.touched"
       />
-      @if (form.controls.propertyName.invalid && form.controls.propertyName.touched) {
+      @if (form.controls.name.invalid && form.controls.name.touched) {
         <div class="invalid-feedback d-block">Technical Key is required</div>
       }
     </div>
@@ -43,17 +41,15 @@
     </div>
 
     <div class="mb-3">
-      <label for="validationLogic" class="form-label"
-        >Validation <span class="text-danger">*</span></label
-      >
+      <label for="validationLogic" class="form-label">Validation <span class="text-danger">*</span></label>
       <input
         type="text"
         class="form-control"
         id="validationLogic"
         formControlName="validationLogic"
-        [class.is-invalid]="form.controls.validationLogic.invalid && form.controls.validationLogic.touched"
+        [class.is-invalid]="form.controls.validationRegex.invalid && form.controls.validationRegex.touched"
       />
-      @if (form.controls.validationLogic.invalid && form.controls.validationLogic.touched) {
+      @if (form.controls.validationRegex.invalid && form.controls.validationRegex.touched) {
         <div class="invalid-feedback d-block">Validation is required</div>
       }
     </div>
@@ -149,7 +145,7 @@
           />
           <button type="button" class="btn btn-outline-secondary" (click)="addTag()">Add</button>
         </div>
-        <div class="form-text">Available tags: {{ globalTags().map((t) => t.name).join(', ') }}</div>
+        <div class="form-text">Available tags: {{ tags().map((t) => t.name).join(', ') }}</div>
       }
     </div>
   </form>

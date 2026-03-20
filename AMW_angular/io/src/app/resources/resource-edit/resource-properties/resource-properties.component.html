@@ -28,6 +28,8 @@
       (valueChange)="onPropertyChange($event.name, $event.value)"
       (resetToggled)="onPropertyReset($event.name, $event.checked)"
       (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+      (editClicked)="onPropertyEdit($event.id)"
+      (deleteClicked)="onPropertyDelete($event.id)"
     ></app-properties-list>
   </app-properties-panel>
 </app-tile-component>

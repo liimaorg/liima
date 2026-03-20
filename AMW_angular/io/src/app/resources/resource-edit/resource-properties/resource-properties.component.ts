@@ -181,8 +181,6 @@ export class ResourcePropertiesComponent {
   addProperty() {
     const modalRef: NgbModalRef = this.modalService.open(PropertyEditComponent, { size: 'lg' });
     modalRef.componentInstance.property = null;
-    modalRef.componentInstance.propertyTypes = propertyTypes;
-    modalRef.componentInstance.globalTags = tags;
     modalRef.componentInstance.canEdit = true;
     modalRef.componentInstance.canDecrypt = hasDecryptPermission;
     modalRef.componentInstance.saveProperty
@@ -248,4 +246,8 @@ export class ResourcePropertiesComponent {
       },
     });
   }
+
+  protected onPropertyEdit(id: number) {}
+
+  protected onPropertyDelete(id: number) {}
 }
