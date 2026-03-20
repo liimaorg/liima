@@ -1,0 +1,31 @@
+@if (canEdit()) {
+  <div
+    class="border rounded p-2"
+    style="min-height: 42px; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem"
+  >
+    @for (tag of tags(); track tag.name) {
+      <span class="badge bg-light text-dark rounded-pill d-inline-flex align-items-center">
+        {{ tag.name }}
+        <app-icon icon="x-circle" (click)="removeTag(tag.name)" style="cursor: pointer; margin-left: 0.25rem">
+        </app-icon>
+      </span>
+    }
+    <input
+      type="text"
+      class="border-0 flex-grow-1"
+      [placeholder]="placeholder()"
+      [value]="newTagInput()"
+      (input)="newTagInput.set($any($event.target).value)"
+      (keydown)="onTagInputKeydown($event)"
+      style="outline: none; min-width: 150px"
+    />
+  </div>
+} @else {
+  <div class="mb-2">
+    @for (tag of tags(); track tag.name) {
+      <span class="badge bg-light text-dark rounded-pill me-2 mb-1">
+        {{ tag.name }}
+      </span>
+    }
+  </div>
+}

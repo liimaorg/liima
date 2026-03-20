@@ -28,6 +28,16 @@
       (valueChange)="onPropertyChange($event.name, $event.value)"
       (resetToggled)="onPropertyReset($event.name, $event.checked)"
       (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+      (editClicked)="onPropertyEdit($event.id)"
+      (deleteClicked)="onPropertyDelete($event.id, deleteModal)"
     ></app-properties-list>
   </app-properties-panel>
 </app-tile-component>
+
+<ng-template #deleteModal let-modal>
+  <app-property-delete-modal
+    [deleteModalService]="deleteModalService"
+    [modal]="modal"
+    (confirmDelete)="confirmDelete($event)"
+  ></app-property-delete-modal>
+</ng-template>

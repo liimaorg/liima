@@ -1,14 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, output, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PropertyType } from '../../settings/property-types/property-type';
 import { PropertyTag } from '../../settings/property-types/property-tag';
 import { CommonModule } from '@angular/common';
 import { PropertyDescriptor } from '../models/property-descriptor';
 import { PropertyTypesService } from '../../settings/property-types/property-types.service';
+import { PropertyDescriptorService } from '../services/property-descriptor.service';
+import { TagInputComponent } from '../../shared/tag-input/tag-input.component';
 
 interface PropertyDescriptorForm {
   name: FormControl<string>;
@@ -32,6 +34,8 @@ interface PropertyDescriptorForm {
     NgSelectComponent,
     ReactiveFormsModule,
     CommonModule,
+    TagInputComponent,
+    FormsModule,
   ],
   templateUrl: './property-edit.component.html',
   styleUrl: './property-edit.component.scss',
@@ -40,22 +44,29 @@ interface PropertyDescriptorForm {
 export class PropertyEditComponent {
   activeModal = inject(NgbActiveModal);
   private propertyTypesService = inject(PropertyTypesService);
+  private descriptorService = inject(PropertyDescriptorService);
 
-  // TODO load propertyDescriptorEnity from backend
-  propertyDescriptor = input<PropertyDescriptor | null>(null);
-  canEdit = input<boolean>(true);
-  canDecrypt = input<boolean>(false);
-  errorMessage = input<string | null>(null);
+  private _descriptorId = signal<number | null>(null);
+  descriptorId = this._descriptorId.asReadonly();
+
+  propertyDescriptor = this.descriptorService.propertyDescriptor;
+  isLoadingDescriptor = this.descriptorService.isLoadingDescriptor;
+
+  private _canEdit = signal<boolean>(true);
+  canEdit = this._canEdit.asReadonly();
+
+  private _canDecrypt = signal<boolean>(false);
+  canDecrypt = this._canDecrypt.asReadonly();
+
+  private _errorMessage = signal<string | null>(null);
+  errorMessage = this._errorMessage.asReadonly();
 
   saveDescriptor = output<PropertyDescriptor>();
-  deleteDescriptor = output<number>();
-  forceDeleteDescriptor = output<number>();
 
   form: FormGroup<PropertyDescriptorForm>;
   propertyTypes = this.propertyTypesService.propertyTypes;
   selectedPropertyType = signal<PropertyType | null>(null);
   tags = signal<PropertyTag[]>([]);
-  newTagInput = signal<string>('');
   showForceDelete = signal<boolean>(false);
 
   isNewMode = computed(() => !this.propertyDescriptor()?.id);
@@ -77,10 +88,17 @@ export class PropertyEditComponent {
   });
 
   constructor() {
+    effect(() => {
+      const id = this._descriptorId();
+      if (id && id > 0) {
+        this.descriptorService.loadPropertyDescriptor(id);
+      }
+    });
+
     this.form = new FormGroup<PropertyDescriptorForm>({
       name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
       displayName: new FormControl('', { nonNullable: true }),
-      validationRegex: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      validationRegex: new FormControl('.*', { nonNullable: true, validators: [Validators.required] }),
       nullable: new FormControl(false, { nonNullable: true }),
       optional: new FormControl(false, { nonNullable: true }),
       encrypted: new FormControl(false, { nonNullable: true }),
@@ -111,7 +129,7 @@ export class PropertyEditComponent {
     });
 
     effect(() => {
-      const error = this.errorMessage();
+      const error = this._errorMessage();
       if (error && error.includes('marked to be deleted')) {
         this.showForceDelete.set(true);
       }
@@ -119,11 +137,11 @@ export class PropertyEditComponent {
 
     effect(
       () => {
-        if (!this.canEdit()) {
+        if (!this._canEdit()) {
           this.form.disable();
         } else {
           this.form.enable();
-          if (!this.canDecrypt()) {
+          if (!this._canDecrypt()) {
             this.form.controls.encrypted.disable();
           }
         }
@@ -132,32 +150,42 @@ export class PropertyEditComponent {
     );
   }
 
+  // Setter methods for modal component instance assignment
+  set descriptorIdInput(value: number | null) {
+    this._descriptorId.set(value);
+  }
+
+  set canEditInput(value: boolean) {
+    this._canEdit.set(value);
+  }
+
+  set canDecryptInput(value: boolean) {
+    this._canDecrypt.set(value);
+  }
+
+  set errorMessageInput(value: string | null) {
+    this._errorMessage.set(value);
+  }
+
   onPropertyTypeChange(typeId: number) {
     const selectedType = this.propertyTypes().find((t) => t.id === typeId);
     if (selectedType) {
       this.selectedPropertyType.set(selectedType);
       this.form.controls.validationRegex.setValue(selectedType.validationRegex);
       this.form.controls.encrypted.setValue(selectedType.encrypted);
+
+      // Merge property type tags with existing tags
+      const existingTags = this.tags();
+      const existingTagNames = new Set(existingTags.map((t) => t.name));
+      const newTags = selectedType.propertyTags.filter((t) => !existingTagNames.has(t.name));
+      if (newTags.length > 0) {
+        this.tags.set([...existingTags, ...newTags]);
+      }
     }
   }
 
-  addTag() {
-    const tagName = this.newTagInput().trim();
-    if (tagName && !this.tags().some((t) => t.name === tagName)) {
-      this.tags.update((tags) => [...tags, { name: tagName, type: 'custom' }]);
-      this.newTagInput.set('');
-    }
-  }
-
-  removeTag(tagName: string) {
-    this.tags.update((tags) => tags.filter((t) => t.name !== tagName));
-  }
-
-  onTagInputKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      this.addTag();
-    }
+  onTagsChange(updatedTags: PropertyTag[]) {
+    this.tags.set(updatedTags);
   }
 
   cancel() {
@@ -173,20 +201,6 @@ export class PropertyEditComponent {
         id: this.propertyDescriptor()?.id,
       };
       this.saveDescriptor.emit(descriptor);
-    }
-  }
-
-  delete() {
-    const id = this.propertyDescriptor()?.id;
-    if (id) {
-      this.deleteDescriptor.emit(id);
-    }
-  }
-
-  forceDelete() {
-    const id = this.propertyDescriptor()?.id;
-    if (id) {
-      this.forceDeleteDescriptor.emit(id);
     }
   }
 }
