@@ -2,6 +2,8 @@ import { Component, computed, input, output } from '@angular/core';
 import { Property } from '../models/property';
 import { PropertyFieldComponent } from '../property-field/property-field.component';
 import {
+  PropertiesDeleteAction,
+  PropertiesEditAction,
   PropertiesResetToggleAction,
   PropertiesValidationChangeAction,
   PropertiesValueChangeAction,
@@ -26,6 +28,8 @@ export class PropertiesListComponent {
   valueChange = output<PropertiesValueChangeAction>();
   resetToggled = output<PropertiesResetToggleAction>();
   validationChanged = output<PropertiesValidationChangeAction>();
+  editClicked = output<PropertiesEditAction>();
+  deleteClicked = output<PropertiesDeleteAction>();
 
   listProperties = computed(() => {
     const props = this.properties();
