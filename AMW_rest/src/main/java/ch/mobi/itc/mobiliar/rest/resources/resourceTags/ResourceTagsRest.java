@@ -18,18 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.mobi.itc.mobiliar.rest.resources;
+package ch.mobi.itc.mobiliar.rest.resources.resourceTags;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTagDTO;
-import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
 import ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
-import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,9 +38,6 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-
 @RequestScoped
 @Path("/resources")
 @Tag(name = "/resources", description = "Resource Tags")
@@ -56,18 +49,14 @@ public class ResourceTagsRest {
     @Inject
     private ResourceLocator resourceLocator;
 
-    @Inject
-    private PermissionService permissionService;
-
     @GET
     @Path("/{resourceId}/tags")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all tags for a resource")
-    public Response getTagsForResource(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId) {
+    public Response getTagsForResource(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId) throws NotFoundException {
+
         ResourceEntity resource = resourceLocator.getResourceById(resourceId);
-        if (resource == null) {
-            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
-        }
+        if (resource == null) throw new NotFoundException("Resource not found");
 
         List<ResourceTagEntity> tags = tagConfigurationService.loadTagLabelsForResource(resource);
         List<ResourceTagDTO> tagDTOs = tags.stream()
@@ -77,6 +66,7 @@ public class ResourceTagsRest {
         return Response.ok(tagDTOs).build();
     }
 
+
     @POST
     @Path("/{resourceId}/tags")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -84,48 +74,28 @@ public class ResourceTagsRest {
     @Operation(summary = "Create a new tag for a resource")
     public Response createTag(
             @Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId,
-            @Parameter(description = "Tag data") ResourceTagDTO tagDTO) {
+            @Parameter(description = "Tag data") ResourceTagDTO tagDTO) throws NotFoundException {
 
-        if (tagDTO.getLabel() == null || tagDTO.getLabel().trim().isEmpty()) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Tag label must not be empty")).build();
-        }
+        CreateResourceTagCommand command = new CreateResourceTagCommand(resourceId, tagDTO);
+        ResourceEntity resource = resourceLocator.getResourceById(command.getResourceId());
+        if (resource == null)
+            throw new NotFoundException("Resource not found for resource id " + command.getResourceId());
 
-        if (tagDTO.getTagDate() == null) {
-            return Response.status(BAD_REQUEST).entity(new ExceptionDto("Tag date must not be empty")).build();
-        }
+        checkIfLabelExists(resource, command);
 
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
-        if (resource == null) {
-            return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
-        }
-
-        // Check if tag label already exists for this resource
-        List<ResourceTagEntity> existingTags = tagConfigurationService.loadTagLabelsForResource(resource);
-        boolean labelExists = existingTags.stream()
-                .anyMatch(tag -> tag.getLabel().trim().equals(tagDTO.getLabel().trim()));
-
-        if (labelExists) {
-            return Response.status(BAD_REQUEST)
-                    .entity(new ExceptionDto("A label with the value '" + tagDTO.getLabel() + "' already exists for this resource."))
-                    .build();
-        }
-
-        try {
-            ResourceTagEntity createdTag = tagConfigurationService.tagConfiguration(
-                    resourceId,
-                    tagDTO.getLabel(),
-                    tagDTO.getTagDate()
-            );
-            return Response.ok(new ResourceTagDTO(createdTag)).build();
-        } catch (NotAuthorizedException e) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity(new ExceptionDto("Not authorized to create tags for this resource"))
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(new ExceptionDto("Failed to create tag: " + e.getMessage()))
-                    .build();
-        }
+        return Response.ok(new ResourceTagDTO(tagConfigurationService.tagConfiguration(
+                command.getResourceId(),
+                command.getResourceTag().getLabel(),
+                command.getResourceTag().getTagDate()
+        ))).build();
     }
 
+    private void checkIfLabelExists(ResourceEntity resource, CreateResourceTagCommand command) {
+        List<ResourceTagEntity> existingTags = tagConfigurationService.loadTagLabelsForResource(resource);
+        boolean labelExists = existingTags.stream()
+                .anyMatch(tag -> tag.getLabel().trim().equals(command.getResourceTag().getLabel().trim()));
+
+        if (labelExists)
+            throw new BadRequestException("A label with the value '" + command.getResourceTag().getLabel() + "' already exists for this resource.");
+    }
 }
