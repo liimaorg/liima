@@ -77,6 +77,7 @@ public class ResourceTagsRest {
                 .anyMatch(tag -> tag.getLabel().trim().equalsIgnoreCase(command.getResourceTag().getLabel().trim()));
 
         if (labelExists)
-            throw new BadRequestException("A label with the value '" + command.getResourceTag().getLabel() + "' already exists for this resource.");
+            throw new IllegalArgumentException("Tag '" + command.getResourceTag().getLabel() + "' already exists for resource id " +
+                    command.getResourceId());
     }
 }
