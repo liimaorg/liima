@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "/AMW_angular/io"
+      - "/AMW_e2e"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-type: "production"
+    groups:
+      npm-production:
+        dependency-type: "production"
+        patterns:
+          - "*"
+
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    allow:
+      - dependency-type: "production"
+    groups:
+      maven-production:
+        dependency-type: "production"
+        patterns:
+          - "*"

@@ -89,13 +89,14 @@ export class ResourceEditComponent {
     () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
   );
 
+  protected readonly showMoreMenu = computed<boolean>(
+    () => this.permissions().canTagCurrentState && this.isApplicationServer(),
+  );
+
   protected readonly isApplicationServer = computed<boolean>(
     () => this.resource()?.type === 'APPLICATIONSERVER',
   );
 
-  protected readonly showMoreMenu = computed<boolean>(
-    () => this.permissions().canTagCurrentState && this.isApplicationServer(),
-  );
 
   loadResourceFromRelease(releaseId: number) {
     void this.router.navigate([], {
