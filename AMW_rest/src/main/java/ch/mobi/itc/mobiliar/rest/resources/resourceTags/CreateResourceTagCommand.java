@@ -12,9 +12,10 @@ import static ch.puzzle.itc.mobiliar.business.utils.ValidationHelper.validateNot
 @Getter
 public class CreateResourceTagCommand {
 
-    @NotNull
+    @NotNull(message = "may not be null")
     private final Integer resourceId;
-    @NotNull
+
+    @NotNull(message = "may not be null")
     private final ResourceTagDTO resourceTag;
 
     public CreateResourceTagCommand(Integer resourceId, ResourceTagDTO resourceTag) {

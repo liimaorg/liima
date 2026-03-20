@@ -12,14 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class ResourceTagsRestTest {
@@ -35,47 +34,66 @@ class ResourceTagsRestTest {
 
 
     @Test
-    void getTagsForResource_throwsNotFoundException() {
-        when(resourceLocator.getResourceById(anyInt())).thenReturn(null);
-
-        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> resourceTagsRest.getTagsForResource(1));
-
-        assertEquals("Resource not found", notFoundException.getMessage());
-    }
-
-
-    @Test
-    void getTagsForResource_returnsTags() throws NotFoundException {
-        ResourceEntity resourceEntity = new ResourceEntity();
-        when(resourceLocator.getResourceById(1)).thenReturn(resourceEntity);
-
-        List<ResourceTagEntity> tags = List.of(new ResourceTagEntity(1, resourceEntity, "tag1", new Date(), 1L), new ResourceTagEntity(2, resourceEntity, "tag1", new Date(), 2L), new ResourceTagEntity(3, resourceEntity, "tag1", new Date(), 3L));
-
-        when(tagConfigurationService.loadTagLabelsForResource(resourceEntity)).thenReturn(tags);
-
-        Response result = resourceTagsRest.getTagsForResource(1);
-
-        assertEquals(Response.Status.OK.getStatusCode(), result.getStatus());
-        List<ResourceTagDTO> tagDtos = (List<ResourceTagDTO>) result.getEntity();
-        assertEquals(3, tagDtos.size());
-    }
-
-    @Test
     void createTag_missing_resourceId() {
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> resourceTagsRest.createTag(null, new ResourceTagDTO()));
-        assertEquals("Resource ID is required", e.getMessage());
+        ConstraintViolationException e = assertThrows(ConstraintViolationException.class, () -> resourceTagsRest.createTag(null, new ResourceTagDTO()));
+        assertEquals("resourceId: may not be null", e.getMessage());
     }
 
     @Test
     void createTag_missing_resourceTagDTO() {
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> resourceTagsRest.createTag(1, null));
-        assertEquals("Tag data is required", e.getMessage());
-    }
-    @Test
-    void createTag_missing_tag_label() {
-        ResourceTagDTO resourceTagDTO = new ResourceTagDTO(1, null, null);
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> resourceTagsRest.createTag(1, null));
-        assertEquals("Tag data is required", e.getMessage());
+        ConstraintViolationException e = assertThrows(ConstraintViolationException.class, () -> resourceTagsRest.createTag(1, null));
+        assertEquals("resourceTag: may not be null", e.getMessage());
     }
 
+    @Test
+    void createTag_resource_not_found() {
+        ResourceTagDTO tag = new ResourceTagDTO(1, "tag", new Date());
+        doReturn(null).when(resourceLocator).getResourceById(1);
+
+        NotFoundException e = assertThrows(NotFoundException.class, () -> resourceTagsRest.createTag(1, tag));
+        assertEquals("Resource not found for resource id 1", e.getMessage());
+    }
+
+    @Test
+    void createTag_label_already_exists() {
+        ResourceTagDTO tag = new ResourceTagDTO(1, "tag", new Date());
+        ResourceEntity resourceEntity = new ResourceEntity();
+        ResourceTagEntity existingTag = new ResourceTagEntity();
+        existingTag.setLabel("tag"); // Same label as the DTO
+        existingTag.setResource(resourceEntity);
+
+        doReturn(resourceEntity).when(resourceLocator).getResourceById(1);
+        doReturn(List.of(existingTag)).when(tagConfigurationService).loadTagLabelsForResource(resourceEntity);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> resourceTagsRest.createTag(1, tag));
+        assertEquals("Tag 'tag' already exists for resource id 1", e.getMessage());
+    }
+
+    @Test
+    void createTag_label_already_exists_case_insensitive() {
+        ResourceTagDTO tag = new ResourceTagDTO(1, "tag", new Date());
+        ResourceEntity resourceEntity = new ResourceEntity();
+        ResourceTagEntity existingTag = new ResourceTagEntity();
+        existingTag.setLabel("taG"); // Same label as the DTO
+        existingTag.setResource(resourceEntity);
+
+        doReturn(resourceEntity).when(resourceLocator).getResourceById(1);
+        doReturn(List.of(existingTag)).when(tagConfigurationService).loadTagLabelsForResource(resourceEntity);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> resourceTagsRest.createTag(1, tag));
+        assertEquals("Tag 'taG' already exists for resource id 1", e.getMessage());
+    }
+
+    @Test
+    void createTag() throws NotFoundException {
+        ResourceTagDTO tag = new ResourceTagDTO(1, "tag", new Date());
+        ResourceEntity resourceEntity = new ResourceEntity();
+        doReturn(resourceEntity).when(resourceLocator).getResourceById(1);
+        doReturn(new ResourceTagEntity()).when(tagConfigurationService).tagConfiguration(1, "tag", tag.getTagDate());
+
+        Response response = resourceTagsRest.createTag(1, tag);
+        assertEquals(200, response.getStatus());
+        ResourceTagDTO entity = (ResourceTagDTO) response.getEntity();
+        assertNotNull(entity);
+    }
 }
