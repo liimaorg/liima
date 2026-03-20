@@ -51,6 +51,7 @@
     "@angular/compiler-cli": "^21.1.5",
     "@angular/language-service": "^21.1.5",
     "@types/bootstrap": "^5.2.10",
+    "@types/lodash-es": "^4.17.12",
     "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
     "eslint": "^9.39.3",

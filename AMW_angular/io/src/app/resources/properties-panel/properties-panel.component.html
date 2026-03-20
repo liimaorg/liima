@@ -13,7 +13,9 @@
 <div class="properties-footer">
   @if (hasChanges() && canEdit()) {
     <div class="action-buttons">
-      <app-button [variant]="'light'" [size]="'sm'" [dataTestId]="'button-cancel'" (click)="cancelAction.emit()">Cancel</app-button>
+      <app-button [variant]="'light'" [size]="'sm'" [dataTestId]="'button-cancel'" (click)="cancelAction.emit()"
+        >Cancel</app-button
+      >
       <span
         [ngbTooltip]="hasValidationErrors() ? 'Fix validation errors to enable saving' : ''"
         [disableTooltip]="!hasValidationErrors()"

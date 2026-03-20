@@ -20,7 +20,7 @@ describe('DeploymentFilterComponent', () => {
     fixture = TestBed.createComponent(DeploymentFilterComponent);
     component = fixture.componentInstance;
     deploymentService = TestBed.inject(DeploymentService);
-    
+
     fixture.componentRef.setInput('filter', { name: 'Test Filter', comp: 'eq', val: 'test' } as DeploymentFilter);
     fixture.componentRef.setInput('index', 0);
     fixture.componentRef.setInput('type', 'StringType');
