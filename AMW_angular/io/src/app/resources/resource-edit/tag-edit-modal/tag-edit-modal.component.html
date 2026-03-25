@@ -1,0 +1,50 @@
+<app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
+<div class="modal-body">
+  <p class="mb-3">
+    You are going to tag the current configuration of the {{ resource.type }} {{ resource.name }} in release
+    {{ resource.release }}.
+  </p>
+  <p class="mb-3">This will save the changes that you have made to the current configuration.</p>
+
+  <div class="mb-3">
+    <label for="tagLabel" class="form-label">Tag name:</label>
+    <input
+      type="text"
+      class="form-control"
+      id="tagLabel"
+      [(ngModel)]="tagLabel"
+      [disabled]="isCreatingTag()"
+      placeholder="Enter tag name"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="tagDate" class="form-label">Tag date (time will be set to 12:00):</label>
+    <div class="input-group">
+      <input
+        class="form-control"
+        id="tagDate"
+        placeholder="yyyy-mm-dd"
+        name="dp"
+        [(ngModel)]="tagDate"
+        ngbDatepicker
+        #d="ngbDatepicker"
+        [disabled]="isCreatingTag()"
+      />
+      <button
+        class="btn btn-outline-secondary"
+        (click)="d.toggle()"
+        type="button"
+        [disabled]="isCreatingTag()"
+      >
+        <i class="bi bi-calendar3"></i>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <app-button [variant]="'secondary'" (click)="cancel()" [disabled]="isCreatingTag()">Cancel</app-button>
+  <app-button [variant]="'primary'" (click)="save()" [disabled]="isCreatingTag() || !tagLabel()">
+    Create Tag
+  </app-button>
+</div>

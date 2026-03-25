@@ -41,6 +41,28 @@
         </ul>
       </div>
     }
+    @if (showMoreMenu()) {
+      <div ngbDropdown>
+        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+          More
+        </app-button>
+        <ul ngbDropdownMenu>
+          @if (permissions().canTagCurrentState && isApplicationServer()) {
+            <li ngbDropdownItem>
+              <a
+                class="dropdown-item"
+                (click)="openTagDialog()"
+                tabindex="0"
+                (keyup.enter)="openTagDialog()"
+                style="cursor: pointer"
+              >
+                Tag Current State
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
   </div>
 
   <div class="page-content d-flex gap-3">
