@@ -20,7 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.presentation.release;
 
-import ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService;
+import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateTagUseCase;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -46,7 +46,7 @@ public class TaggingDataProvider implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Inject
-    TagConfigurationService tagConfigurationService;
+    CreateTagUseCase createTagUseCase;
 
     @Inject
     PermissionService permissions;
@@ -72,7 +72,7 @@ public class TaggingDataProvider implements Serializable {
     public void onResourceChange(@Observes ResourceEntity resourceEntity) {
         this.resource = resourceEntity;
         canTagCurrentState = permissions.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
-        extractTagLabels(tagConfigurationService.loadTagLabelsForResource(resourceEntity));
+        extractTagLabels(createTagUseCase.loadTagLabelsForResource(resourceEntity));
     }
 
     public void onResourceTypeChange(@Observes ResourceTypeEntity resourceTypeEntity) {
@@ -100,7 +100,7 @@ public class TaggingDataProvider implements Serializable {
                 GlobalMessageAppender.addErrorMessage(message);
             }
             else {
-                tagConfigurationService.tagConfiguration(resource.getId(), tagLabel, tagDate);
+                createTagUseCase.tagConfiguration(resource.getId(), tagLabel, tagDate);
                 String message = "New tag '" + tagLabel + "' created.";
                 GlobalMessageAppender.addSuccessMessage(message);
             }

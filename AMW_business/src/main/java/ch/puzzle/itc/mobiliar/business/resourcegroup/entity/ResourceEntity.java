@@ -40,6 +40,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -59,6 +60,7 @@ import static javax.persistence.CascadeType.*;
 @Entity
 @Audited
 @Table(name = "TAMW_resource")
+@EqualsAndHashCode(callSuper = false, of = { "id", "name", "release" })
 public class ResourceEntity extends HasContexts<ResourceContextEntity> implements Serializable,
 		NamedIdentifiable, Comparable<ResourceEntity>, HasTypeContext<ResourceTypeEntity> {
 

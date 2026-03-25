@@ -21,10 +21,8 @@
 package ch.mobi.itc.mobiliar.rest.resources.resourceTags;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTagDTO;
-import ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService;
+import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateTagUseCase;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +33,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @RequestScoped
 @Path("/resources")
@@ -43,42 +40,16 @@ import java.util.List;
 public class ResourceTagsRest {
 
     @Inject
-    private TagConfigurationService tagConfigurationService;
-
-    @Inject
-    private ResourceLocator resourceLocator;
+    private CreateTagUseCase createTagUseCase;
 
     @POST
     @Path("/{resourceId}/tags")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create a new tag for a resource")
-    public Response createTag(
-            @Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId,
-            @Parameter(description = "Tag data") ResourceTagDTO tagDTO) throws NotFoundException {
-
+    public Response createTag(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId, @Parameter(description = "Tag data") ResourceTagDTO tagDTO) throws NotFoundException {
         CreateResourceTagCommand command = new CreateResourceTagCommand(resourceId, tagDTO);
-        ResourceEntity resource = resourceLocator.getResourceById(command.getResourceId());
-        if (resource == null)
-            throw new NotFoundException("Resource not found for resource id " + command.getResourceId());
-
-        checkIfLabelExists(resource, command);
-
-        return Response.ok(new ResourceTagDTO(tagConfigurationService.tagConfiguration(
-                command.getResourceId(),
-                command.getResourceTag().getLabel(),
-                command.getResourceTag().getTagDate()
-        ))).build();
-    }
-
-    private void checkIfLabelExists(ResourceEntity resource, CreateResourceTagCommand command) {
-        List<ResourceTagEntity> existingTags = tagConfigurationService.loadTagLabelsForResource(resource);
-        boolean labelExists = existingTags.stream()
-                .anyMatch(tag -> tag.getLabel().trim().equalsIgnoreCase(command.getResourceTag().getLabel().trim()));
-
-        if (labelExists) {
-            throw new IllegalArgumentException("Tag '" + command.getResourceTag().getLabel() + "' already exists for resource id " +
-                    command.getResourceId());
-        }
+        ResourceTagEntity tag = createTagUseCase.createTag(command.toTagConfiguration());
+        return Response.ok(new ResourceTagDTO(tag)).build();
     }
 }
