@@ -25,6 +25,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -70,6 +71,7 @@ public class TagConfigurationService {
 	 * @param resource
 	 * @return a list with resourceTag entities
 	 */
+	@HasPermission(permission = Permission.RESOURCE, action =  Action.READ)
 	public List<ResourceTagEntity> loadTagLabelsForResource(ResourceEntity resource) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ResourceTagEntity> q = cb.createQuery(ResourceTagEntity.class);
