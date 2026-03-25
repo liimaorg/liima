@@ -81,7 +81,7 @@ class ResourceTagsRestTest {
         doReturn(List.of(existingTag)).when(tagConfigurationService).loadTagLabelsForResource(resourceEntity);
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> resourceTagsRest.createTag(1, tag));
-        assertEquals("Tag 'taG' already exists for resource id 1", e.getMessage());
+        assertEquals("Tag 'tag' already exists for resource id 1", e.getMessage());
     }
 
     @Test

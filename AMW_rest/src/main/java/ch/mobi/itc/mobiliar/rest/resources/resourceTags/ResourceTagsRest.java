@@ -76,8 +76,9 @@ public class ResourceTagsRest {
         boolean labelExists = existingTags.stream()
                 .anyMatch(tag -> tag.getLabel().trim().equalsIgnoreCase(command.getResourceTag().getLabel().trim()));
 
-        if (labelExists)
+        if (labelExists) {
             throw new IllegalArgumentException("Tag '" + command.getResourceTag().getLabel() + "' already exists for resource id " +
                     command.getResourceId());
+        }
     }
 }
