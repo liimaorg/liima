@@ -11,13 +11,10 @@ import { ResourceFunctionsListComponent } from './resource-functions/resource-fu
 import { ResourceTemplatesListComponent } from './resource-templates/resource-templates-list/resource-templates-list.component';
 import { Release } from '../models/release';
 import { ButtonComponent } from '../../shared/button/button.component';
-import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 import { ResourcePropertiesComponent } from './resource-properties/resource-properties.component';
 import { ResourceReleasesComponent } from './resource-releases/resource-releases.component';
-import { TagData, TagEditModalComponent } from './tag-edit-modal/tag-edit-modal.component';
-import { ResourceTagsService } from '../services/resource-tags.service';
-import { ToastService } from '../../shared/elements/toast/toast.service';
 import { ResourceTagsComponent } from './resource-tags/resource-tags.component';
 
 @Component({
@@ -47,9 +44,6 @@ export class ResourceEditComponent {
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private modalService = inject(NgbModal);
-  private resourceTagsService = inject(ResourceTagsService);
-  private toastService = inject(ToastService);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
@@ -69,15 +63,12 @@ export class ResourceEditComponent {
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      const resourceTypeName = this.resource()?.type ?? null;
-      const resourceGroupId = this.resource()?.resourceGroupId ?? null;
       return {
         canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
         canTestGenerate: this.authService.hasPermission('RESOURCE_TEST_GENERATION', 'READ'),
-        canTagCurrentState: this.authService.hasPermission('RESOURCE', 'UPDATE', resourceTypeName, resourceGroupId),
       };
     } else {
-      return { canEditResource: false, canTestGenerate: false, canTagCurrentState: false };
+      return { canEditResource: false, canTestGenerate: false };
     }
   });
 
@@ -95,39 +86,11 @@ export class ResourceEditComponent {
 
   protected readonly isApplicationServer = computed<boolean>(() => this.resource()?.type === 'APPLICATIONSERVER');
 
-  protected readonly showMoreMenu = computed<boolean>(
-    () => this.permissions().canTagCurrentState && this.isApplicationServer(),
-  );
-
   loadResourceFromRelease(releaseId: number) {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { id: releaseId },
       queryParamsHandling: 'merge',
     });
-  }
-
-  openTagDialog() {
-    const modalRef = this.modalService.open(TagEditModalComponent);
-    modalRef.componentInstance.resource = this.resource();
-    modalRef.componentInstance.saveTag.subscribe((tagData: TagData) => this.createTag(tagData));
-  }
-
-  private createTag(tagData: TagData) {
-    this.resourceTagsService
-      .createTag(this.resource().id, {
-        label: tagData.label,
-        tagDate: tagData.tagDate,
-      })
-      .subscribe({
-        next: () => {
-          this.toastService.success(`New tag '${tagData.label}' created.`);
-        },
-        error: (error) => {
-          console.error('Failed to create tag:', error);
-          const errorMessage = error?.error?.message || 'Failed to create tag.';
-          this.toastService.error(errorMessage);
-        },
-      });
   }
 }
