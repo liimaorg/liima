@@ -1,7 +1,7 @@
 package ch.mobi.itc.mobiliar.rest.resources.resourceTags;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceTagDTO;
-import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateTagUseCase;
+import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateResourceTagUseCase;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -30,7 +30,7 @@ class ResourceTagsRestTest {
     ResourceLocator resourceLocator;
 
     @Mock
-    CreateTagUseCase createTagUseCase;
+    CreateResourceTagUseCase createResourceTagUseCase;
 
 
 
@@ -50,7 +50,7 @@ class ResourceTagsRestTest {
     void createTag() throws NotFoundException {
         ResourceTagDTO tag = new ResourceTagDTO(1, "tag", new Date());
         ResourceEntity resourceEntity = new ResourceEntity();
-        doReturn(new ResourceTagEntity()).when(createTagUseCase).createTag(any());
+        doReturn(new ResourceTagEntity()).when(createResourceTagUseCase).createTag(any());
 
         Response response = resourceTagsRest.createTag(1, tag);
         assertEquals(200, response.getStatus());

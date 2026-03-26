@@ -20,23 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.configurationtag.control;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.Spy;
-
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
@@ -44,6 +27,21 @@ import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService}
@@ -83,7 +81,7 @@ public class TagConfigurationServicePersistenceTest {
 	}
 
 	@Test
-	public void test_loadTagLabelsForResource(){
+	public void test_getTags(){
 		// given
 		ResourceEntity as1 = ResourceFactory.createNewResource("appServer1");
 		entityManager.persist(as1);
@@ -107,8 +105,8 @@ public class TagConfigurationServicePersistenceTest {
 		entityManager.persist(tag3);
 
 		// when
-		List<ResourceTagEntity> result1 = service.loadTagLabelsForResource(as1);
-		List<ResourceTagEntity> result2 = service.loadTagLabelsForResource(as2);
+		List<ResourceTagEntity> result1 = service.getTags(as1);
+		List<ResourceTagEntity> result2 = service.getTags(as2);
 		
 		// then
 		assertNotNull(result1);

@@ -20,7 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.configurationtag.control;
 
-import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateTagUseCase;
+import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateResourceTagUseCase;
+import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.ListResourceTagsUseCase;
 import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.TagConfiguration;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
@@ -37,12 +38,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
 @Stateless
-public class TagConfigurationService implements CreateTagUseCase {
+public class TagConfigurationService implements CreateResourceTagUseCase, ListResourceTagsUseCase {
 
 	@Inject
 	private EntityManager entityManager;
@@ -56,12 +58,9 @@ public class TagConfigurationService implements CreateTagUseCase {
 	@Override
 	@HasPermission(permission = Permission.RESOURCE, action =  Action.UPDATE)
 	public ResourceTagEntity createTag(TagConfiguration tagConfiguration) throws NotFoundException {
-		ResourceEntity resource = resourceLocator.getResourceById(tagConfiguration.getResourceId());
-		if (resource == null) {
-			throw new NotFoundException("Resource not found for resource id " + tagConfiguration.getResourceId());
-		}
+		ResourceEntity resource = getResourceEntity(tagConfiguration.getResourceId());
 
-		List<ResourceTagEntity> existingTags = this.loadTagLabelsForResource(resource);
+		List<ResourceTagEntity> existingTags = this.getTags(resource);
         if (labelExists(tagConfiguration, existingTags)) {
 			throw new IllegalArgumentException("Tag '" + tagConfiguration.getTag() + "' already exists for resource id " + tagConfiguration.getResourceId());
 		}
@@ -75,7 +74,7 @@ public class TagConfigurationService implements CreateTagUseCase {
 		permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE,
 				currentResource.getResourceGroup(), null, null);
 		if (currentResource.getResourceTags() == null) {
-			currentResource.setResourceTags(new HashSet<ResourceTagEntity>());
+			currentResource.setResourceTags(new HashSet<>());
 		}
 		ResourceTagEntity entity = new ResourceTagEntity();
 		entity.setLabel(tag);
@@ -84,16 +83,28 @@ public class TagConfigurationService implements CreateTagUseCase {
 		entityManager.persist(entity);
 		return entity;
 	}
-
 	@Override
 	@HasPermission(permission = Permission.RESOURCE, action =  Action.READ)
-	public List<ResourceTagEntity> loadTagLabelsForResource(ResourceEntity resource) {
+	public List<ResourceTagEntity> getTags(Integer resourceId) throws NotFoundException {
+        return this.getTags(getResourceEntity(resourceId));
+	}
+
+	@HasPermission(permission = Permission.RESOURCE, action =  Action.READ)
+	public List<ResourceTagEntity> getTags(@NotNull(message = "must not be null") ResourceEntity resource) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<ResourceTagEntity> q = cb.createQuery(ResourceTagEntity.class);
 		Root<ResourceTagEntity> r = q.from(ResourceTagEntity.class);
 		q.where(cb.equal(r.get("resource"), resource));
 
 		return entityManager.createQuery(q).getResultList();
+	}
+
+	private ResourceEntity getResourceEntity(Integer resourceId) throws NotFoundException {
+		ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+		if (resource == null) {
+			throw new NotFoundException("Resource not found for resource id " + resourceId);
+		}
+		return resource;
 	}
 
 	private boolean labelExists(TagConfiguration tagConfiguration, List<ResourceTagEntity> existingTags) {
