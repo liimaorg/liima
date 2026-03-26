@@ -67,12 +67,19 @@
             </div>
           </div>
           <div class="card-body">
-            <app-resource-releases
-              [id]="id()"
-              [releases]="releases()"
-              [contextId]="contextId()"
-              [resource]="resource()"
-            ></app-resource-releases>
+            <div class="d-flex gap-3">
+              <div class="flex-fill">
+                <app-resource-releases
+                  [id]="id()"
+                  [releases]="releases()"
+                  [contextId]="contextId()"
+                  [resource]="resource()"
+                ></app-resource-releases>
+              </div>
+              <div class="flex-fill">
+                <app-resource-tags [resource]="resource()"></app-resource-tags>
+              </div>
+            </div>
             <app-resource-properties [contextId]="contextId()"></app-resource-properties>
             <app-resource-templates-list
               [resource]="resource()"

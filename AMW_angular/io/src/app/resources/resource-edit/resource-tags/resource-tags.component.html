@@ -1,0 +1,11 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Tags'"
+  [actionName]="'Tag current state'"
+  [canAction]="permissions().canTagCurrentState"
+  [isVisible]="isApplicationServer()"
+  (tileAction)="tagCurrentState()"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+</app-tile-component>

@@ -15,9 +15,10 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbMo
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 import { ResourcePropertiesComponent } from './resource-properties/resource-properties.component';
 import { ResourceReleasesComponent } from './resource-releases/resource-releases.component';
-import { TagEditModalComponent, TagData } from './tag-edit-modal/tag-edit-modal.component';
+import { TagData, TagEditModalComponent } from './tag-edit-modal/tag-edit-modal.component';
 import { ResourceTagsService } from '../services/resource-tags.service';
 import { ToastService } from '../../shared/elements/toast/toast.service';
+import { ResourceTagsComponent } from './resource-tags/resource-tags.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -35,6 +36,7 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
     ContextsListComponent,
     ResourcePropertiesComponent,
     ResourceReleasesComponent,
+    ResourceTagsComponent,
     RouterLink,
   ],
   templateUrl: './resource-edit.component.html',
@@ -91,9 +93,7 @@ export class ResourceEditComponent {
     () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
   );
 
-  protected readonly isApplicationServer = computed<boolean>(
-    () => this.resource()?.type === 'APPLICATIONSERVER',
-  );
+  protected readonly isApplicationServer = computed<boolean>(() => this.resource()?.type === 'APPLICATIONSERVER');
 
   protected readonly showMoreMenu = computed<boolean>(
     () => this.permissions().canTagCurrentState && this.isApplicationServer(),
