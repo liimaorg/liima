@@ -1,68 +1,7 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
   <div class="page-title d-flex">
-    <div class="resource-name">Edit {{ this.resource()?.name }}</div>
-    <div ngbDropdown>
-      <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-        {{ selectedRelease()?.name }}
-      </app-button>
-
-      <ul ngbDropdownMenu>
-        @for (release of releases(); track release) {
-          <li ngbDropdownItem>
-            <a
-              class="dropdown-item"
-              tabindex="0"
-              (keyup.enter)="loadResourceFromRelease(release.id)"
-              (click)="loadResourceFromRelease(release.id)"
-              >{{ release.name }}</a
-            >
-          </li>
-        }
-      </ul>
-    </div>
-    @if (showAnalyze()) {
-      <div ngbDropdown>
-        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-          Analyze
-        </app-button>
-        <ul ngbDropdownMenu>
-          @if (testGenerationAvailable()) {
-            <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                [routerLink]="['/resource/test-generation']"
-                [queryParams]="testGenerationQueryParams()"
-              >
-                Test Generation
-              </a>
-            </li>
-          }
-        </ul>
-      </div>
-    }
-    @if (showMoreMenu()) {
-      <div ngbDropdown>
-        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-          More
-        </app-button>
-        <ul ngbDropdownMenu>
-          @if (permissions().canTagCurrentState && isApplicationServer()) {
-            <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                (click)="openTagDialog()"
-                tabindex="0"
-                (keyup.enter)="openTagDialog()"
-                style="cursor: pointer"
-              >
-                Tag Current State
-              </a>
-            </li>
-          }
-        </ul>
-      </div>
-    }
+    <div class="resource-name">Resources</div>
   </div>
 
   <div class="page-content d-flex gap-3">
@@ -79,15 +18,72 @@
         <app-contexts-list></app-contexts-list>
       </div>
       <div class="flex-grow-1">
-        <app-resource-releases
-          [id]="id()"
-          [releases]="releases()"
-          [contextId]="contextId()"
-          [resource]="resource()"
-        ></app-resource-releases>
-        <app-resource-properties [contextId]="contextId()"></app-resource-properties>
-        <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
-        <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
+        <div class="card">
+          <div class="card-header d-flex justify-content-between">
+            <h2>{{ this.resource()?.name }}</h2>
+            <div class="d-flex gap-3">
+              @if (showAnalyze()) {
+                <div ngbDropdown>
+                  <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+                    Analyze
+                  </app-button>
+                  <ul ngbDropdownMenu>
+                    @if (testGenerationAvailable()) {
+                      <li ngbDropdownItem>
+                        <a
+                          class="dropdown-item"
+                          [routerLink]="['/resource/test-generation']"
+                          [queryParams]="testGenerationQueryParams()"
+                        >
+                          Test Generation
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+              @if (showMoreMenu()) {
+                <div ngbDropdown>
+                  <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+                    More
+                  </app-button>
+                  <ul ngbDropdownMenu>
+                    @if (permissions().canTagCurrentState && isApplicationServer()) {
+                      <li ngbDropdownItem>
+                        <a
+                          class="dropdown-item"
+                          (click)="openTagDialog()"
+                          tabindex="0"
+                          (keyup.enter)="openTagDialog()"
+                          style="cursor: pointer"
+                        >
+                          Tag Current State
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="card-body">
+            <app-resource-releases
+              [id]="id()"
+              [releases]="releases()"
+              [contextId]="contextId()"
+              [resource]="resource()"
+            ></app-resource-releases>
+            <app-resource-properties [contextId]="contextId()"></app-resource-properties>
+            <app-resource-templates-list
+              [resource]="resource()"
+              [contextId]="contextId()"
+            ></app-resource-templates-list>
+            <app-resource-functions-list
+              [resource]="resource()"
+              [contextId]="contextId()"
+            ></app-resource-functions-list>
+          </div>
+        </div>
       </div>
     }
   </div>
