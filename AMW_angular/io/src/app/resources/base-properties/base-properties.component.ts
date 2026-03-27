@@ -100,11 +100,7 @@ export abstract class BasePropertiesComponent {
   saveChanges() {
     const changes = this.editor.changedProperties();
     const resets = this.editor.resetProperties();
-    if (changes.size === 0 && resets.size === 0) return;
-
-    if (this.hasValidationErrors()) {
-      return;
-    }
+    if ((changes.size === 0 && resets.size === 0) || this.hasValidationErros()) return;
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
