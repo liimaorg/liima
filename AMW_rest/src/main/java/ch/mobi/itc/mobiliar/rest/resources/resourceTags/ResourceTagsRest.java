@@ -64,7 +64,7 @@ public class ResourceTagsRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create a new tag for a resource")
-    public Response createTag(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId, @Parameter(description = "Tag data") ResourceTagDTO tagDTO) throws NotFoundException {
+    public Response createResourceTag(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId, @Parameter(description = "Tag data") ResourceTagDTO tagDTO) throws NotFoundException {
         CreateResourceTagCommand command = new CreateResourceTagCommand(resourceId, tagDTO);
         ResourceTagEntity tag = createResourceTagUseCase.createTag(command.toTagConfiguration());
         return Response.ok(new ResourceTagDTO(tag)).build();

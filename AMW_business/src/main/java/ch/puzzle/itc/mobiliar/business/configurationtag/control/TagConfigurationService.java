@@ -83,6 +83,7 @@ public class TagConfigurationService implements CreateResourceTagUseCase, ListRe
 		entityManager.persist(entity);
 		return entity;
 	}
+
 	@Override
 	@HasPermission(permission = Permission.RESOURCE, action =  Action.READ)
 	public List<ResourceTagEntity> getTags(Integer resourceId) throws NotFoundException {
