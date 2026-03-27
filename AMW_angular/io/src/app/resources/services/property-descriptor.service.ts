@@ -87,15 +87,17 @@ export class PropertyDescriptorService extends BaseService {
     resourceId?: number,
     resourceTypeId?: number,
   ): Observable<PropertyDescriptor> {
+    const isResourceTypeDescriptor = !!resourceTypeId;
+
     const params = new URLSearchParams();
-    if (resourceId) {
+    if (isResourceTypeDescriptor) {
+      params.append('resourceTypeId', resourceTypeId!.toString());
+    } else if (resourceId) {
       params.append('resourceId', resourceId.toString());
     }
-    if (resourceTypeId) {
-      params.append('resourceTypeId', resourceTypeId.toString());
-    }
 
-    const url = params.toString() ? `${this.url}?${params.toString()}` : this.url;
+    const baseUrl = isResourceTypeDescriptor ? `${this.url}/resourceType` : this.url;
+    const url = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
 
     return this.http
       .post<PropertyDescriptor>(url, descriptor, {
