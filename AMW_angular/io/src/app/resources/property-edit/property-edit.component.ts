@@ -1,16 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, output, Signal, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ButtonComponent } from '../../shared/button/button.component';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PropertyType } from '../../settings/property-types/property-type';
 import { PropertyTag } from '../../settings/property-types/property-tag';
-import { CommonModule } from '@angular/common';
 import { PropertyDescriptor } from '../models/property-descriptor';
 import { PropertyTypesService } from '../../settings/property-types/property-types.service';
 import { PropertyDescriptorService } from '../services/property-descriptor.service';
 import { TagInputComponent } from '../../shared/tag-input/tag-input.component';
+import { map, startWith } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ButtonComponent } from '../../shared/button/button.component';
 
 interface PropertyDescriptorForm {
   name: FormControl<string>;
@@ -33,12 +34,11 @@ interface PropertyDescriptorForm {
     NgOptionComponent,
     NgSelectComponent,
     ReactiveFormsModule,
-    CommonModule,
     TagInputComponent,
     FormsModule,
   ],
   templateUrl: './property-edit.component.html',
-  styleUrl: './property-edit.component.scss',
+  styleUrls: ['./property-edit.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyEditComponent {
@@ -47,27 +47,36 @@ export class PropertyEditComponent {
   private descriptorService = inject(PropertyDescriptorService);
 
   private _descriptorId = signal<number | null>(null);
-  descriptorId = this._descriptorId.asReadonly();
+  private _canEdit = signal<boolean>(true);
+  private _canDecrypt = signal<boolean>(false);
+
+  canEdit = this._canEdit.asReadonly();
 
   propertyDescriptor = this.descriptorService.propertyDescriptor;
   isLoadingDescriptor = this.descriptorService.isLoadingDescriptor;
-
-  private _canEdit = signal<boolean>(true);
-  canEdit = this._canEdit.asReadonly();
-
-  private _canDecrypt = signal<boolean>(false);
-  canDecrypt = this._canDecrypt.asReadonly();
-
-  private _errorMessage = signal<string | null>(null);
-  errorMessage = this._errorMessage.asReadonly();
+  errorMessage = signal<string | null>(null);
 
   saveDescriptor = output<PropertyDescriptor>();
 
   form: FormGroup<PropertyDescriptorForm>;
-  propertyTypes = this.propertyTypesService.propertyTypes;
+
+  // Add 'Custom' property type to the list
+  propertyTypes = computed(() => {
+    const customType: PropertyType = {
+      id: 0,
+      name: 'Custom',
+      encrypted: false,
+      validationRegex: '.*',
+      propertyTags: [],
+    };
+    return [customType, ...this.propertyTypesService.propertyTypes()];
+  });
+
   selectedPropertyType = signal<PropertyType | null>(null);
   tags = signal<PropertyTag[]>([]);
-  showForceDelete = signal<boolean>(false);
+
+  // Form validity as signal - will be initialized in constructor
+  formValid!: Signal<boolean>;
 
   isNewMode = computed(() => !this.propertyDescriptor()?.id);
   title = computed(() => (this.isNewMode() ? 'New Property Descriptor' : 'Edit Property Descriptor'));
@@ -92,6 +101,12 @@ export class PropertyEditComponent {
       const id = this._descriptorId();
       if (id && id > 0) {
         this.descriptorService.loadPropertyDescriptor(id);
+      } else {
+        // For new descriptors, set 'Custom' (ID 0) as default property type
+        const customType = this.propertyTypes().find((t) => t.id === 0);
+        if (customType) {
+          this.selectedPropertyType.set(customType);
+        }
       }
     });
 
@@ -108,63 +123,94 @@ export class PropertyEditComponent {
       comment: new FormControl('', { nonNullable: true }),
     });
 
+    this.formValid = toSignal(
+      this.form.statusChanges.pipe(
+        startWith(this.form.status),
+        map(() => this.form.valid),
+      ),
+      { initialValue: false },
+    );
+
     effect(() => {
       const property = this.propertyDescriptor();
-      if (property) {
+      const descriptorId = this._descriptorId();
+
+      // Only patch form if we're editing an existing descriptor AND it matches the current ID
+      if (property && descriptorId && property.id === descriptorId) {
         this.form.patchValue({
           name: property.name,
           displayName: property.displayName || '',
-          validationRegex: property.validationRegex,
-          nullable: property.nullable,
-          optional: property.optional,
-          encrypted: property.encrypted,
+          validationRegex: property.validationRegex || '.*',
+          nullable: property.nullable ?? false,
+          optional: property.optional ?? false,
+          encrypted: property.encrypted ?? false,
           mik: property.mik || '',
           defaultValue: property.defaultValue || '',
           exampleValue: property.exampleValue || '',
           comment: property.comment || '',
         });
-        this.selectedPropertyType.set(property.propertyTypeEntity);
+
+        const matchedType = this.findMatchingPropertyType(property);
+        if (matchedType) {
+          this.selectedPropertyType.set(matchedType);
+        }
+
         this.tags.set([...property.propertyTags]);
       }
     });
 
     effect(() => {
-      const error = this._errorMessage();
-      if (error && error.includes('marked to be deleted')) {
-        this.showForceDelete.set(true);
+      if (!this._canEdit()) {
+        this.form.disable();
+      } else {
+        this.form.enable();
+        if (!this._canDecrypt()) {
+          this.form.controls.encrypted.disable();
+        }
       }
     });
+  }
 
-    effect(
-      () => {
-        if (!this._canEdit()) {
-          this.form.disable();
-        } else {
-          this.form.enable();
-          if (!this._canDecrypt()) {
-            this.form.controls.encrypted.disable();
-          }
-        }
-      },
-      { allowSignalWrites: true },
+  configure(config: { descriptorId: number | null; canEdit: boolean; canDecrypt: boolean }): void {
+    // Reset ALL state before configuring
+    this.form.reset({
+      name: '',
+      displayName: '',
+      validationRegex: '.*',
+      nullable: false,
+      optional: false,
+      encrypted: false,
+      mik: '',
+      defaultValue: '',
+      exampleValue: '',
+      comment: '',
+    });
+    this.tags.set([]);
+    this.errorMessage.set(null);
+    this.selectedPropertyType.set(null);
+
+    // Set configuration - this will trigger effects to load data or set defaults
+    this._descriptorId.set(config.descriptorId);
+    this._canEdit.set(config.canEdit);
+    this._canDecrypt.set(config.canDecrypt);
+  }
+
+  private findMatchingPropertyType(property: PropertyDescriptor): PropertyType | null {
+    // If propertyTypeEntity is provided, use it directly
+    if (property.propertyTypeEntity) {
+      return property.propertyTypeEntity;
+    }
+
+    // Try exact match: validation regex + encrypted flag
+    const exactMatch = this.propertyTypes().find(
+      (t) => t.validationRegex === property.validationRegex && t.encrypted === property.encrypted,
     );
-  }
+    if (exactMatch) {
+      return exactMatch;
+    }
 
-  // Setter methods for modal component instance assignment
-  set descriptorIdInput(value: number | null) {
-    this._descriptorId.set(value);
-  }
-
-  set canEditInput(value: boolean) {
-    this._canEdit.set(value);
-  }
-
-  set canDecryptInput(value: boolean) {
-    this._canDecrypt.set(value);
-  }
-
-  set errorMessageInput(value: string | null) {
-    this._errorMessage.set(value);
+    // Fallback: match by validation regex only
+    return this.propertyTypes().find((t) => t.validationRegex === property.validationRegex) ?? null;
   }
 
   onPropertyTypeChange(typeId: number) {
@@ -193,12 +239,12 @@ export class PropertyEditComponent {
   }
 
   save() {
-    if (this.form.valid && this.selectedPropertyType()) {
+    if (this.formValid() && this.selectedPropertyType()) {
       const descriptor: PropertyDescriptor = {
         ...this.form.getRawValue(),
         propertyTypeEntity: this.selectedPropertyType()!,
         propertyTags: this.tags(),
-        id: this.propertyDescriptor()?.id,
+        id: this._descriptorId() || undefined,
       };
       this.saveDescriptor.emit(descriptor);
     }

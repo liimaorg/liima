@@ -123,6 +123,6 @@
   <div class="flex-grow-1"></div>
   <app-button [variant]="'light'" (click)="cancel()">Cancel</app-button>
   @if (canEdit()) {
-    <app-button [variant]="'primary'" [disabled]="form.invalid" (click)="save()">Save</app-button>
+    <app-button [variant]="'primary'" [disabled]="!formValid()" (click)="save()">Save</app-button>
   }
 </div>

@@ -172,9 +172,11 @@ export abstract class BasePropertiesComponent {
     const modalRef: NgbModalRef = this.modalService.open(PropertyEditComponent, { size: 'lg' });
     const component = modalRef.componentInstance;
 
-    component.descriptorIdInput = descriptorId;
-    component.canEditInput = this.permissions().canUpdateProperty;
-    component.canDecryptInput = this.permissions().canDecryptProperties;
+    component.configure({
+      descriptorId,
+      canEdit: this.permissions().canUpdateProperty,
+      canDecrypt: this.permissions().canDecryptProperties,
+    });
 
     component.saveDescriptor.subscribe((updatedDescriptor: PropertyDescriptor) => {
       this.saveDescriptor(updatedDescriptor, modalRef);

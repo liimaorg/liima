@@ -1,10 +1,10 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient } from '@angular/common/http';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, startWith, Subject } from 'rxjs';
-import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { catchError, finalize, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { PropertyDescriptor } from '../models/property-descriptor';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class PropertyDescriptorService extends BaseService {
@@ -27,12 +27,8 @@ export class PropertyDescriptorService extends BaseService {
 
   propertyDescriptor = toSignal(this.descriptor$, { initialValue: null as PropertyDescriptor | null });
 
-  loadPropertyDescriptor(descriptorId: number) {
+  loadPropertyDescriptor(descriptorId: number): void {
     this.descriptorId$.next(descriptorId);
-  }
-
-  getPropertyDescriptor(descriptorId: number): Observable<PropertyDescriptor> {
-    return this.fetchPropertyDescriptor(descriptorId);
   }
 
   save(descriptor: PropertyDescriptor, resourceId?: number, resourceTypeId?: number): Observable<PropertyDescriptor> {
