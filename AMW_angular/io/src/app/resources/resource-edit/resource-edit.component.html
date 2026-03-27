@@ -45,19 +45,28 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="d-flex gap-3">
-              <div class="flex-fill">
-                <app-resource-releases
-                  [id]="id()"
-                  [releases]="releases()"
-                  [contextId]="contextId()"
-                  [resource]="resource()"
-                ></app-resource-releases>
+            @if (isApplicationServer()) {
+              <div class="d-flex gap-3">
+                <div class="flex-1">
+                  <app-resource-releases
+                    [id]="id()"
+                    [releases]="releases()"
+                    [contextId]="contextId()"
+                    [resource]="resource()"
+                  ></app-resource-releases>
+                </div>
+                <div class="flex-1">
+                  <app-resource-tags [resource]="resource()"></app-resource-tags>
+                </div>
               </div>
-              <div class="flex-fill">
-                <app-resource-tags [resource]="resource()"></app-resource-tags>
-              </div>
-            </div>
+            } @else {
+              <app-resource-releases
+                [id]="id()"
+                [releases]="releases()"
+                [contextId]="contextId()"
+                [resource]="resource()"
+              ></app-resource-releases>
+            }
             <app-resource-properties [contextId]="contextId()"></app-resource-properties>
             <app-resource-templates-list
               [resource]="resource()"
