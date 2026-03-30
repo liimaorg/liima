@@ -19,6 +19,15 @@
               </a>
             </li>
           }
+          <li ngbDropdownItem>
+            <a
+              class="dropdown-item"
+              [routerLink]="['/resource/dependencies']"
+              [queryParams]="{ id: id(), ctx: contextId() }"
+            >
+              Show Dependencies
+            </a>
+          </li>
         </ul>
       </div>
     }
