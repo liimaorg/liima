@@ -21,14 +21,16 @@ describe('DependenciesTableComponent', () => {
   });
 
   it('should display title', () => {
-    component.title = 'Test Dependencies';
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
+    const newFixture = TestBed.createComponent(DependenciesTableComponent);
+    const newComponent = newFixture.componentInstance;
+    newComponent.title = 'Test Dependencies';
+    newFixture.detectChanges();
+    const compiled = newFixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h2')?.textContent).toContain('Test Dependencies');
   });
 
   it('should render dependencies table', () => {
-    component.dependencies = [
+    const testDependencies = [
       {
         resourceId: 1,
         resourceName: 'TestResource',
@@ -36,8 +38,13 @@ describe('DependenciesTableComponent', () => {
         releaseName: 'v1.0',
       },
     ];
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
+    
+    const newFixture = TestBed.createComponent(DependenciesTableComponent);
+    const newComponent = newFixture.componentInstance;
+    newComponent.dependencies = testDependencies;
+    newFixture.detectChanges();
+    
+    const compiled = newFixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('tbody tr')).toBeTruthy();
     expect(compiled.textContent).toContain('TestResource');
   });
