@@ -7,10 +7,8 @@ import { ResourceDependency } from '../../models/resource-dependency';
   standalone: true,
   imports: [RouterLink],
   templateUrl: './dependencies-table.component.html',
-  styleUrl: './dependencies-table.component.scss',
 })
 export class DependenciesTableComponent {
   @Input() title: string = '';
   @Input() dependencies: ResourceDependency[] = [];
-  @Input() additionalClasses: string = '';
 }
