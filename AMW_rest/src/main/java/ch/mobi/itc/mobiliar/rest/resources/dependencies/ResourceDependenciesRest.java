@@ -63,7 +63,7 @@ public class ResourceDependenciesRest {
             @PathParam("resourceId") Integer resourceId) throws ResourceNotFoundException {
         GetResourceDependenciesCommand command = new GetResourceDependenciesCommand(resourceId);
         
-        ResourceEntity resource = getResourceUseCase.getWithGroupAndRelatedResources(resourceId);
+        ResourceEntity resource = getResourceUseCase.getWithGroupAndRelatedResources(command.getResourceId());
         List<ConsumedResourceRelationEntity> consumedRelations = getResourceDependenciesUseCase.getConsumedRelations(resource);
         List<ProvidedResourceRelationEntity> providedRelations = getResourceDependenciesUseCase.getProvidedRelations(resource);
         

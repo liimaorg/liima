@@ -5,5 +5,5 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 public interface GetResourceUseCase {
 
-    public ResourceEntity getWithGroupAndRelatedResources(Integer resourceId) throws ResourceNotFoundException;
+    ResourceEntity getWithGroupAndRelatedResources(Integer resourceId) throws ResourceNotFoundException;
 }

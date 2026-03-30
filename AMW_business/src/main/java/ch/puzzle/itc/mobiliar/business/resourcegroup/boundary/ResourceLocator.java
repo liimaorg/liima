@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Stateless
-public class ResourceLocator implements GetResourceUseCase {
+public class ResourceLocator {
 
 	@Inject
 	ResourceRepository resourceRepository;
@@ -187,15 +187,6 @@ public class ResourceLocator implements GetResourceUseCase {
      */
     public ResourceEntity getResourceWithGroupAndRelatedResources(Integer resourceId) {
         return resourceRepository.loadWithResourceGroupAndRelatedResourcesForId(resourceId);
-    }
-
-    @Override
-    public ResourceEntity getWithGroupAndRelatedResources(Integer resourceId) throws ResourceNotFoundException {
-        ResourceEntity resourceWithGroupAndRelatedResources = this.getResourceWithGroupAndRelatedResources(resourceId);
-        if (resourceWithGroupAndRelatedResources == null) {
-            throw new ResourceNotFoundException("Resource with id " + resourceId + " not found");
-        }
-        return resourceWithGroupAndRelatedResources;
     }
 
     /**
