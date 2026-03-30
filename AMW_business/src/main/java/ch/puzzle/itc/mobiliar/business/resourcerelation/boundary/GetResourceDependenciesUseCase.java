@@ -31,25 +31,19 @@ public interface GetResourceDependenciesUseCase {
 
     /**
      * Get consumed relations for a resource (resources that consume this resource)
-     * @param resourceId - ID of the resource
+     *
+     * @param resource - ID of the resource
      * @return List of consumed relations
      * @throws ResourceNotFoundException if resource not found
      */
-    List<ConsumedResourceRelationEntity> getConsumedRelations(Integer resourceId) throws ResourceNotFoundException;
+    List<ConsumedResourceRelationEntity> getConsumedRelations(ResourceEntity resource) throws ResourceNotFoundException;
 
     /**
      * Get provided relations for a resource (resources that provide to this resource)
-     * @param resourceId - ID of the resource
+     *
+     * @param resource - ID of the resource
      * @return List of provided relations
      * @throws ResourceNotFoundException if resource not found
      */
-    List<ProvidedResourceRelationEntity> getProvidedRelations(Integer resourceId) throws ResourceNotFoundException;
-
-    /**
-     * Get the resource entity by ID
-     * @param resourceId - ID of the resource
-     * @return ResourceEntity
-     * @throws ResourceNotFoundException if resource not found
-     */
-    ResourceEntity getResource(Integer resourceId) throws ResourceNotFoundException;
+    List<ProvidedResourceRelationEntity> getProvidedRelations(ResourceEntity resource) throws ResourceNotFoundException;
 }

@@ -27,7 +27,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -47,12 +46,9 @@ public class GetResourceDependenciesService implements GetResourceDependenciesUs
     private CommonDomainService commonDomainService;
 
     @Override
-    public List<ConsumedResourceRelationEntity> getConsumedRelations(Integer resourceId) throws ResourceNotFoundException {
-        ResourceEntity resource = getResource(resourceId);
+    public List<ConsumedResourceRelationEntity> getConsumedRelations(ResourceEntity resource) {
         List<ConsumedResourceRelationEntity> consumed = resourceRelationService.getConsumedSlaveRelations(resource);
-        
         ApplicationServer appWithoutAsContainer = commonDomainService.createOrGetApplicationCollectorServer();
-        
         List<ConsumedResourceRelationEntity> filteredRelations = new ArrayList<>();
         for (ConsumedResourceRelationEntity rel : consumed) {
             if (appWithoutAsContainer == null || !rel.getMasterResource().getId().equals(appWithoutAsContainer.getId())) {
@@ -64,17 +60,7 @@ public class GetResourceDependenciesService implements GetResourceDependenciesUs
     }
 
     @Override
-    public List<ProvidedResourceRelationEntity> getProvidedRelations(Integer resourceId) throws ResourceNotFoundException {
-        ResourceEntity resource = getResource(resourceId);
+    public List<ProvidedResourceRelationEntity> getProvidedRelations(ResourceEntity resource) {
         return resourceRelationService.getProvidedSlaveRelations(resource);
-    }
-
-    @Override
-    public ResourceEntity getResource(Integer resourceId) throws ResourceNotFoundException {
-        ResourceEntity resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceId);
-        if (resource == null) {
-            throw new ResourceNotFoundException("Resource with id " + resourceId + " not found");
-        }
-        return resource;
     }
 }
