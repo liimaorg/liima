@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DependenciesTableComponent } from './dependencies-table.component';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router';
 
 describe('DependenciesTableComponent', () => {
   let component: DependenciesTableComponent;
@@ -8,7 +8,8 @@ describe('DependenciesTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DependenciesTableComponent, RouterTestingModule],
+      imports: [DependenciesTableComponent],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DependenciesTableComponent);

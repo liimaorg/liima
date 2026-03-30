@@ -55,7 +55,7 @@ public class ResourceDependenciesRest {
     private GetResourceUseCase getResourceUseCase;
 
     @GET
-    @Path("/{resourceId}/dependencies")
+    @Path("/{resourceId}/resource-dependencies")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all dependencies for a resource")
     public Response getResourceDependencies(
