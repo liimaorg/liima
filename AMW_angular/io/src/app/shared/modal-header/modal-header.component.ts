@@ -4,7 +4,7 @@ import { Component, input, output } from '@angular/core';
   selector: 'app-modal-header',
   standalone: true,
   imports: [],
-  template: `<div class="modal-header">
+  template: `<div class="modal-header justify-content-between">
     <h5 class="modal-title">{{ title() }}</h5>
     <button type="button" class="btn btn-light close" aria-label="Close" (click)="onCancel()">
       <span>&times;</span>

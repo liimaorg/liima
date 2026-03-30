@@ -12,8 +12,8 @@ export class GlobalErrorHandler implements ErrorHandler {
     if (error.stack) {
       console.error('GlobalErrorHandler: ' + error.stack);
     } else {
-      console.error('GlobalErrorHandler: ' + error.message);
+      console.error('GlobalErrorHandler: ' + (error.message ?? error.toString()));
     }
-    this.toastService.error(error.message);
+    this.toastService.error(error.message ?? error.toString());
   }
 }

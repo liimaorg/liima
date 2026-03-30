@@ -58,21 +58,11 @@ describe('PropertyTypeEditComponent', () => {
     expect(component.isValidRegex()).toBe(false);
   });
 
-  it('addTag trims and adds tag then resets input', () => {
+  it('onTagsChange updates propertyTags', () => {
     component.propertyType.propertyTags = [] as any;
-    component.newTag = '  tag1  ';
-    component.addTag();
-    expect(component.propertyType.propertyTags.length).toBe(1);
-    expect(component.newTag).toBe('');
-  });
-
-  it('deleteTag removes matching tag', () => {
-    component.propertyType.propertyTags = [
-      { name: 'a', type: 'LOCAL' },
-      { name: 'b', type: 'LOCAL' },
-    ] as any;
-    component.deleteTag({ name: 'a', type: 'LOCAL' });
-    expect(component.propertyType.propertyTags.map((t) => t.name)).toEqual(['b']);
+    const newTags = [{ name: 'tag1', type: 'LOCAL' }];
+    component.onTagsChange(newTags);
+    expect(component.propertyType.propertyTags).toEqual(newTags);
   });
 
   it('save emits property type and closes modal', () => {

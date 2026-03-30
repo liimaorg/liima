@@ -1,41 +1,33 @@
-import { Component, input, signal, computed, inject, Signal, effect } from '@angular/core';
+import { Component, computed, inject, Signal } from '@angular/core';
 import { Property } from '../../models/property';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceTypesService } from '../../services/resource-types.service';
 import { ResourceType } from '../../models/resource-type';
-import { PropertyUpdate, ResourcePropertiesService } from '../../services/resource-properties.service';
+import { PropertyUpdate } from '../../services/resource-properties.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
-import { AuthService } from '../../../auth/auth.service';
-import { createPropertiesEditor } from '../../properties-editor';
-import { EnvironmentService } from '../../../deployment/environment.service';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
-import { UnsavedPropertyChangesService } from '../../services/unsaved-property-changes.service';
-import { forkJoin, of } from 'rxjs';
+import { PropertyDeleteModalService } from '../../services/property-delete-modal.service';
+import { PropertyDeleteModalComponent } from '../../property-delete-modal/property-delete-modal.component';
+import { BasePropertiesComponent } from '../../base-properties/base-properties.component';
 
 @Component({
   selector: 'app-resource-type-properties',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent, PropertiesListComponent, PropertiesPanelComponent],
+  imports: [
+    LoadingIndicatorComponent,
+    TileComponent,
+    PropertiesListComponent,
+    PropertiesPanelComponent,
+    PropertyDeleteModalComponent,
+  ],
+  providers: [PropertyDeleteModalService],
   templateUrl: './resource-type-properties.component.html',
   styleUrl: './resource-type-properties.component.scss',
 })
-export class ResourceTypePropertiesComponent {
-  contextId = input.required<number>();
-
-  private authService = inject(AuthService);
+export class ResourceTypePropertiesComponent extends BasePropertiesComponent {
   private resourceTypeService = inject(ResourceTypesService);
-  private propertiesService = inject(ResourcePropertiesService);
-  private environmentsService = inject(EnvironmentService);
-  private unsavedChangesService = inject(UnsavedPropertyChangesService);
-
-  isSaving = signal(false);
-  errorMessage = signal<string | null>(null);
-  successMessage = signal<string | null>(null);
-  private invalidProperties = signal<Set<string>>(new Set());
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
-
-  hasValidationErrors = computed(() => this.invalidProperties().size > 0);
 
   properties = computed<Property[]>(() => {
     const props = this.propertiesService.propertiesForType;
@@ -47,40 +39,7 @@ export class ResourceTypePropertiesComponent {
     return result;
   });
 
-  private editor = createPropertiesEditor(() => [...this.properties().filter((p) => !p.disabled)], {
-    // preserve current behavior: hasChanges only considers changed values (not reset toggles)
-    includeResetsInHasChanges: false,
-    // preserve current behavior: editing a property does not auto-uncheck a previous reset
-    unmarkResetOnChange: false,
-  });
-
-  hasChanges = this.editor.hasChanges;
-  resetToken = this.editor.resetToken;
-
-  constructor() {
-    effect(() => {
-      this.unsavedChangesService.setDirty('resource-type-properties', this.hasChanges());
-    });
-
-    effect(() => {
-      this.unsavedChangesService.discardChangesToken();
-      this.resetChanges();
-    });
-
-    effect(() => {
-      const resourceTypeId = this.resourceType()?.id;
-      const ctxId = this.contextId();
-      if (!resourceTypeId || !ctxId) return;
-
-      this.propertiesService.setIdsForResourceTypeProperties(resourceTypeId, ctxId);
-    });
-  }
-
   isLoading = this.propertiesService.isLoadingResourceTypeProperties;
-
-  context = computed(() => {
-    return this.environmentsService.findEnvironmentById(this.environmentsService.environmentTree(), this.contextId());
-  });
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -105,8 +64,48 @@ export class ResourceTypePropertiesComponent {
     }
   });
 
-  // Special property for resource type name (only shown in Global context)
-  resourceTypeNameProperty = computed<Property>(() => ({
+  protected getEntityId(): number {
+    return this.resourceType()?.id;
+  }
+
+  protected getUnsavedChangesKey(): string {
+    return 'resource-type-properties';
+  }
+
+  protected getEditorOptions() {
+    return {
+      includeResetsInHasChanges: false,
+      unmarkResetOnChange: false,
+    };
+  }
+
+  protected bulkUpdateProperties(
+    entityId: number,
+    updatedProperties: PropertyUpdate[],
+    resetProperties: PropertyUpdate[],
+    contextId: number,
+  ) {
+    return this.propertiesService.bulkUpdateResourceTypePropertiesValues(
+      entityId,
+      updatedProperties,
+      resetProperties,
+      contextId,
+    );
+  }
+
+  protected reloadProperties(entityId: number, contextId: number): void {
+    this.propertiesService.setIdsForResourceTypeProperties(entityId, contextId);
+  }
+
+  protected getDeleteParams(): [number | undefined, number | undefined] {
+    return [undefined, this.resourceType().id];
+  }
+
+  protected getSaveDescriptorParams(): [number | undefined, number | undefined] {
+    return [undefined, this.resourceType().id];
+  }
+
+  private resourceTypeNameProperty = computed<Property>(() => ({
     name: 'resourceTypeName',
     displayName: 'ResourceType name',
     value: this.resourceType()?.name || '',
@@ -119,84 +118,7 @@ export class ResourceTypePropertiesComponent {
     optional: false,
   }));
 
-  showResourceTypeNameProperty = computed(() => {
+  private showResourceTypeNameProperty = computed(() => {
     return this.contextId() === 1;
   });
-
-  protected addProperty() {}
-
-  onPropertyChange(propertyName: string, newValue: string) {
-    this.editor.onPropertyChange(propertyName, newValue);
-  }
-
-  onPropertyReset(propertyName: string, checked: boolean) {
-    this.editor.onPropertyReset(propertyName, checked);
-  }
-
-  onPropertyValidationChange(propertyName: string, invalid: boolean) {
-    this.invalidProperties.update((set) => {
-      const next = new Set(set);
-      if (invalid) {
-        next.add(propertyName);
-      } else {
-        next.delete(propertyName);
-      }
-      return next;
-    });
-  }
-
-  resetChanges() {
-    this.editor.resetChanges();
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-    this.invalidProperties.set(new Set());
-  }
-
-  saveChanges() {
-    const changes = this.editor.changedProperties();
-    const resets = this.editor.resetProperties();
-    if (changes.size === 0 && resets.size === 0) return;
-
-    if (this.hasValidationErrors()) {
-      return;
-    }
-
-    this.isSaving.set(true);
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
-
-    const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
-      name,
-      value,
-    }));
-
-    const resetProperties: PropertyUpdate[] = Array.from(resets.entries()).map(([name, value]) => ({
-      name,
-      value,
-    }));
-
-    const update$ =
-      updatedProperties.length + resetProperties.length
-        ? this.propertiesService.bulkUpdateResourceTypePropertiesValues(
-            this.resourceType().id,
-            updatedProperties,
-            resetProperties,
-            this.contextId(),
-          )
-        : of(void 0);
-
-    forkJoin([update$]).subscribe({
-      next: () => {
-        this.isSaving.set(false);
-        this.successMessage.set('Properties saved successfully');
-        this.editor.resetChanges();
-        this.propertiesService.setIdsForResourceTypeProperties(this.resourceType().id, this.contextId());
-        setTimeout(() => this.successMessage.set(null), 3000);
-      },
-      error: (error) => {
-        this.isSaving.set(false);
-        this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
-      },
-    });
-  }
 }

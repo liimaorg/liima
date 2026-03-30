@@ -1,6 +1,6 @@
 import { inject, Injectable, Provider } from '@angular/core';
 import { HTTP_INTERCEPTORS, HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { catchError, EMPTY, throwError } from 'rxjs';
 import { ToastService } from '../elements/toast/toast.service';
 
 export function provideHttpToastInterceptor(): Provider[] {
@@ -19,6 +19,7 @@ export class HttpToastInterceptor implements HttpInterceptor {
         // Don't show toast for 422 - these are validation errors with structured data
         if (error.status !== 422 && error.error?.message) {
           this.toastService.error(error.error.message);
+          return EMPTY;
         }
         // Re-throw the error so services can handle it
         return throwError(() => error);
