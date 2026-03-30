@@ -30,6 +30,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Stateless
-public class ResourceLocator {
+public class ResourceLocator implements GetResourceUseCase {
 
 	@Inject
 	ResourceRepository resourceRepository;
@@ -188,6 +189,15 @@ public class ResourceLocator {
         return resourceRepository.loadWithResourceGroupAndRelatedResourcesForId(resourceId);
     }
 
+    @Override
+    public ResourceEntity getWithGroupAndRelatedResources(Integer resourceId) throws ResourceNotFoundException {
+        ResourceEntity resourceWithGroupAndRelatedResources = this.getResourceWithGroupAndRelatedResources(resourceId);
+        if (resourceWithGroupAndRelatedResources == null) {
+            throw new ResourceNotFoundException("Resource with id " + resourceId + " not found");
+        }
+        return resourceWithGroupAndRelatedResources;
+    }
+
     /**
      *
      * @param application
@@ -240,5 +250,4 @@ public class ResourceLocator {
             return null;
         }
     }
-
 }

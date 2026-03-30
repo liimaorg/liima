@@ -22,7 +22,7 @@ package ch.mobi.itc.mobiliar.rest.resources.dependencies;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceDependenciesDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceDependencyDTO;
-import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.GetResourceUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceDependenciesUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -51,43 +51,36 @@ public class ResourceDependenciesRest {
     @Inject
     private GetResourceDependenciesUseCase getResourceDependenciesUseCase;
 
+    @Inject
+    private GetResourceUseCase getResourceUseCase;
+
     @GET
     @Path("/{resourceId}/dependencies")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all dependencies for a resource")
     public Response getResourceDependencies(
             @Parameter(description = "Resource ID") 
-            @PathParam("resourceId") Integer resourceId) {
-        try {
-            GetResourceDependenciesCommand command = new GetResourceDependenciesCommand(resourceId);
-            
-            ResourceEntity resource = getResourceDependenciesUseCase.getResource(command.getResourceId());
-            List<ConsumedResourceRelationEntity> consumedRelations = getResourceDependenciesUseCase.getConsumedRelations(command.getResourceId());
-            List<ProvidedResourceRelationEntity> providedRelations = getResourceDependenciesUseCase.getProvidedRelations(command.getResourceId());
-            
-            List<ResourceDependencyDTO> consumedDTOs = consumedRelations.stream()
-                    .map(ResourceDependencyDTO::new)
-                    .collect(Collectors.toList());
-            
-            List<ResourceDependencyDTO> providedDTOs = providedRelations.stream()
-                    .map(ResourceDependencyDTO::new)
-                    .collect(Collectors.toList());
-            
-            ResourceDependenciesDTO dependencies = new ResourceDependenciesDTO(
-                    resource.getName(),
-                    consumedDTOs,
-                    providedDTOs
-            );
-            
-            return Response.ok(dependencies).build();
-        } catch (ResourceNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new ExceptionDto(e.getMessage()))
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ExceptionDto(e.getMessage()))
-                    .build();
-        }
+            @PathParam("resourceId") Integer resourceId) throws ResourceNotFoundException {
+        GetResourceDependenciesCommand command = new GetResourceDependenciesCommand(resourceId);
+        
+        ResourceEntity resource = getResourceUseCase.getWithGroupAndRelatedResources(resourceId);
+        List<ConsumedResourceRelationEntity> consumedRelations = getResourceDependenciesUseCase.getConsumedRelations(resource);
+        List<ProvidedResourceRelationEntity> providedRelations = getResourceDependenciesUseCase.getProvidedRelations(resource);
+        
+        List<ResourceDependencyDTO> consumedDTOs = consumedRelations.stream()
+                .map(ResourceDependencyDTO::new)
+                .collect(Collectors.toList());
+        
+        List<ResourceDependencyDTO> providedDTOs = providedRelations.stream()
+                .map(ResourceDependencyDTO::new)
+                .collect(Collectors.toList());
+        
+        ResourceDependenciesDTO dependencies = new ResourceDependenciesDTO(
+                resource.getName(),
+                consumedDTOs,
+                providedDTOs
+        );
+        
+        return Response.ok(dependencies).build();
     }
 }
