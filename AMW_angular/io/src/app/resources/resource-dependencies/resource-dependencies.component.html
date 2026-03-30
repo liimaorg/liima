@@ -1,8 +1,10 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
-  <div class="page-title d-flex justify-content-between align-items-center">
-    <h1>Dependencies for {{ dependencies()?.resourceName }}</h1>
-    <app-button [variant]="'secondary'" (click)="goBackToEdit()"> Back to Edit Resource </app-button>
+  <div class="page-title d-flex align-items-center gap-3">
+    <a [routerLink]="['/resource/edit']" [queryParams]="{ id: resourceId(), ctx: contextId() }" class="btn btn-link p-0">
+      <app-icon icon="arrow-left"></app-icon>
+    </a>
+    <span class="resource-name">Dependencies for {{ dependencies()?.resourceName }}</span>
   </div>
 
   <div class="page-content">

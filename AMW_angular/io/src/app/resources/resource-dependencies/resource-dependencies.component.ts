@@ -1,18 +1,18 @@
 import { Component, computed, inject, Signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs/operators';
 import { ResourceDependenciesService } from '../services/resource-dependencies.service';
 import { ResourceDependencies } from '../models/resource-dependency';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
-import { ButtonComponent } from '../../shared/button/button.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 import { DependenciesTableComponent } from './dependencies-table/dependencies-table.component';
 
 @Component({
   selector: 'app-resource-dependencies',
   standalone: true,
-  imports: [LoadingIndicatorComponent, PageComponent, ButtonComponent, DependenciesTableComponent],
+  imports: [LoadingIndicatorComponent, PageComponent, IconComponent, DependenciesTableComponent, RouterLink],
   templateUrl: './resource-dependencies.component.html',
   styleUrl: './resource-dependencies.component.scss',
 })
@@ -43,10 +43,4 @@ export class ResourceDependenciesComponent {
   hasProvidedRelations = computed(() => (this.dependencies()?.providedRelations?.length ?? 0) > 0);
 
   hasDependencies = computed(() => this.hasConsumedRelations() || this.hasProvidedRelations());
-
-  goBackToEdit() {
-    void this.router.navigate(['/resource/edit'], {
-      queryParams: { id: this.resourceId(), ctx: this.contextId() },
-    });
-  }
 }
