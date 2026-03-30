@@ -1,7 +1,11 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
   <div class="page-title d-flex align-items-center gap-3">
-    <a [routerLink]="['/resource/edit']" [queryParams]="{ id: resourceId(), ctx: contextId() }" class="btn btn-link p-0">
+    <a
+      [routerLink]="['/resource/edit']"
+      [queryParams]="{ id: resourceId(), ctx: contextId() }"
+      class="btn btn-link p-0"
+    >
       <app-icon icon="arrow-left"></app-icon>
     </a>
     <span class="resource-name">Dependencies for {{ dependencies()?.resourceName }}</span>
@@ -20,7 +24,6 @@
         <app-dependencies-table
           [title]="'Resources providing ' + dependencies()?.resourceName"
           [dependencies]="dependencies()?.providedRelations ?? []"
-          [additionalClasses]="hasConsumedRelations() ? 'mt-4' : ''"
         ></app-dependencies-table>
       }
     } @else {
