@@ -1,0 +1,35 @@
+<div class="card {{ additionalClasses }}">
+  <div class="card-header">
+    <h2>{{ title }}</h2>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-striped mb-0">
+      <thead>
+        <tr>
+          <th>Resource Type</th>
+          <th>Resource Name</th>
+          <th>Release</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (dependency of dependencies; track dependency.resourceId) {
+          <tr>
+            <td>{{ dependency.resourceTypeName }}</td>
+            <td>{{ dependency.resourceName }}</td>
+            <td>{{ dependency.releaseName }}</td>
+            <td>
+              <a
+                [routerLink]="['/resource/edit']"
+                [queryParams]="{ id: dependency.resourceId, ctx: 1 }"
+                class="btn btn-sm btn-primary"
+              >
+                Edit
+              </a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

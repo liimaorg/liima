@@ -1,0 +1,28 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title d-flex justify-content-between align-items-center">
+    <h1>Dependencies for {{ dependencies()?.resourceName }}</h1>
+    <app-button [variant]="'secondary'" (click)="goBackToEdit()"> Back to Edit Resource </app-button>
+  </div>
+
+  <div class="page-content">
+    @if (hasDependencies()) {
+      @if (hasConsumedRelations()) {
+        <app-dependencies-table
+          [title]="'Resources consuming ' + dependencies()?.resourceName"
+          [dependencies]="dependencies()?.consumedRelations ?? []"
+        ></app-dependencies-table>
+      }
+
+      @if (hasProvidedRelations()) {
+        <app-dependencies-table
+          [title]="'Resources providing ' + dependencies()?.resourceName"
+          [dependencies]="dependencies()?.providedRelations ?? []"
+          [additionalClasses]="hasConsumedRelations() ? 'mt-4' : ''"
+        ></app-dependencies-table>
+      }
+    } @else {
+      <div class="alert alert-info">No dependencies found.</div>
+    }
+  </div>
+</app-page>
