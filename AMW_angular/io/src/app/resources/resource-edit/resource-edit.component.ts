@@ -87,9 +87,7 @@ export class ResourceEditComponent {
     id: this.id(),
     ctx: this.contextId(),
   }));
-  protected readonly showAnalyze = computed<boolean>(
-    () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
-  );
+  protected readonly showAnalyze = computed<boolean>(() => true);
 
   protected readonly isApplicationServer = computed<boolean>(
     () => this.resource()?.type === 'APPLICATIONSERVER',
