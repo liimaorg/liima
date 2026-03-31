@@ -1,0 +1,51 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Applications'"
+  [actionName]="'Add Application'"
+  [canAction]="false"
+  [isVisible]="permissions().canListRelations"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+  @if (error()) {
+    <div class="alert alert-danger" role="alert">
+      {{ error() }}
+    </div>
+  } @else if (!applications() || applications().length === 0) {
+    <div class="no-content">
+      <span>No applications configured for this application server.</span>
+    </div>
+  } @else {
+    <table class="table table-borderless">
+      <thead>
+        <tr>
+          <th>Application Name</th>
+          <th>Release</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (app of applications(); track app.id) {
+          <tr>
+            <td>
+              <a [routerLink]="['/resource/edit']" [queryParams]="{ id: app.slaveId, ctx: contextId() }">
+                {{ app.slaveName }}
+              </a>
+            </td>
+            <td>{{ app.slaveRelease }}</td>
+            <td class="text-end">
+              <app-button
+                [size]="'sm'"
+                [variant]="'light'"
+                [routerLink]="['/resource/edit']"
+                [queryParams]="{ id: app.slaveId, ctx: contextId() }"
+              >
+                Edit
+              </app-button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</app-tile-component>
