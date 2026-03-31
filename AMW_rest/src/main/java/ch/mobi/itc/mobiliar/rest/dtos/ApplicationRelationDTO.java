@@ -37,7 +37,6 @@ public class ApplicationRelationDTO {
     private Integer id;
     private Integer slaveId;
     private String slaveName;
-    private String slaveRelease;
     private String identifier;
 
     public static ApplicationRelationDTO from(ConsumedResourceRelationEntity relation) {
@@ -45,7 +44,6 @@ public class ApplicationRelationDTO {
         dto.id = relation.getId();
         dto.slaveId = relation.getSlaveResource().getId();
         dto.slaveName = relation.getSlaveResource().getName();
-        dto.slaveRelease = relation.getSlaveResource().getRelease().getName();
         dto.identifier = relation.buildIdentifer();
         return dto;
     }
