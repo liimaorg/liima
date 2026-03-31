@@ -88,6 +88,9 @@
         <app-resource-properties [contextId]="contextId()"></app-resource-properties>
         <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
         <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>
+        @if (isApplicationServer()) {
+          <app-resource-applications [resource]="resource()" [contextId]="contextId()"></app-resource-applications>
+        }
       </div>
     }
   </div>

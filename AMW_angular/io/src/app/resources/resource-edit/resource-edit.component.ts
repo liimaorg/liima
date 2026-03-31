@@ -18,6 +18,7 @@ import { ResourceReleasesComponent } from './resource-releases/resource-releases
 import { TagEditModalComponent, TagData } from './tag-edit-modal/tag-edit-modal.component';
 import { ResourceTagsService } from '../services/resource-tags.service';
 import { ToastService } from '../../shared/elements/toast/toast.service';
+import { ResourceApplicationsComponent } from './resource-applications/resource-applications.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -36,6 +37,7 @@ import { ToastService } from '../../shared/elements/toast/toast.service';
     ResourcePropertiesComponent,
     ResourceReleasesComponent,
     RouterLink,
+    ResourceApplicationsComponent,
   ],
   templateUrl: './resource-edit.component.html',
   styleUrl: './resource-edit.component.scss',

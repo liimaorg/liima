@@ -84,6 +84,7 @@ public class RESTApplication extends Application {
         resources.add(ResourceFunctionsRest.class);
         resources.add(ResourceTagsRest.class);
         resources.add(PropertyDescriptorRest.class);
+        resources.add(ResourceApplicationsRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
