@@ -2,10 +2,11 @@
 <app-tile-component
   [title]="'Applications'"
   [actionName]="'Add Application'"
-  [canAction]="false"
+  [canAction]="permissions().canAdd"
   [isVisible]="permissions().canListRelations"
   [noContent]="false"
   [notAllowed]="false"
+  (tileAction)="showAddApplicationModal()"
 >
   @if (error()) {
     <div class="alert alert-danger" role="alert">
@@ -57,6 +58,40 @@
     </table>
   }
 </app-tile-component>
+
+<ng-template #addApplicationModal let-modal>
+  <app-modal-header [title]="'Add Application'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    @if (availableApplications().length === 0) {
+      <p>No applications available to add. All applications are already configured.</p>
+    } @else {
+      <div class="mb-3">
+        <label for="applicationSelect" class="form-label">Select Application</label>
+        <select
+          id="applicationSelect"
+          class="form-select"
+          [(ngModel)]="selectedApplicationGroupId"
+          [ngModelOptions]="{ updateOn: 'change' }"
+        >
+          <option [ngValue]="null">-- Select an application --</option>
+          @for (app of availableApplications(); track app.resourceGroupId) {
+            <option [ngValue]="app.resourceGroupId">{{ app.name }}</option>
+          }
+        </select>
+      </div>
+    }
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button
+      [variant]="'primary'"
+      (click)="addApplication()"
+      [disabled]="!selectedApplicationGroupId() || availableApplications().length === 0"
+    >
+      Add
+    </app-button>
+  </div>
+</ng-template>
 
 <ng-template #removeApplicationConfirmation let-modal>
   <app-modal-header

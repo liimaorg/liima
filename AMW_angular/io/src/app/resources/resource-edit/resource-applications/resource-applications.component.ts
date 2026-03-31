@@ -10,11 +10,13 @@ import { Resource } from '../../models/resource';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
+import { ResourceService } from '../../services/resource.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-resource-applications',
   standalone: true,
-  imports: [RouterLink, TileComponent, LoadingIndicatorComponent, ButtonComponent, ModalHeaderComponent],
+  imports: [RouterLink, TileComponent, LoadingIndicatorComponent, ButtonComponent, ModalHeaderComponent, FormsModule],
   templateUrl: './resource-applications.component.html',
   styleUrl: './resource-applications.component.scss',
 })
@@ -23,6 +25,7 @@ export class ResourceApplicationsComponent {
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
+  private resourceService = inject(ResourceService);
 
   resource = input.required<Resource>();
   contextId = input.required<number>();
@@ -31,19 +34,25 @@ export class ResourceApplicationsComponent {
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
   applicationToRemove = signal<ApplicationRelation | null>(null);
+  availableApplications = signal<Resource[]>([]);
+  selectedApplicationGroupId = signal<number | null>(null);
 
   @ViewChild('removeApplicationConfirmation') removeApplicationConfirmation!: TemplateRef<void>;
+  @ViewChild('addApplicationModal') addApplicationModal!: TemplateRef<void>;
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resource()) {
       return {
         canListRelations: this.authService.hasPermission('RESOURCE', 'READ'),
+        canAdd:
+          this.contextId() === 1 &&
+          this.authService.hasPermission('RESOURCE', 'UPDATE', this.resource().type, this.resource().resourceGroupId),
         canRemove:
           this.contextId() === 1 &&
           this.authService.hasPermission('RESOURCE', 'UPDATE', this.resource().type, this.resource().resourceGroupId),
       };
     }
-    return { canListRelations: false, canRemove: false };
+    return { canListRelations: false, canAdd: false, canRemove: false };
   });
 
   constructor() {
@@ -102,6 +111,49 @@ export class ResourceApplicationsComponent {
         this.toastService.error('Failed to remove application.');
         this.isLoading.set(false);
         this.applicationToRemove.set(null);
+      },
+    });
+  }
+
+  showAddApplicationModal(): void {
+    this.loadAvailableApplications();
+    this.selectedApplicationGroupId.set(null);
+    this.modalService.open(this.addApplicationModal, { size: 'lg' });
+  }
+
+  private loadAvailableApplications(): void {
+    this.resourceService.getGroupsForTypeName('APPLICATION').subscribe({
+      next: (apps) => {
+        // Filter out already added applications
+        const currentAppIds = new Set(this.applications().map((a) => a.slaveId));
+        const available = apps.filter((app) => !currentAppIds.has(app.id));
+        this.availableApplications.set(available);
+      },
+      error: (err) => {
+        console.error('Failed to load available applications:', err);
+        this.toastService.error('Failed to load available applications.');
+      },
+    });
+  }
+
+  addApplication(): void {
+    const appGroupId = this.selectedApplicationGroupId();
+    if (!appGroupId) {
+      this.toastService.error('Please select an application.');
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.resourceApplicationsService.addApplication(this.resource().id, appGroupId).subscribe({
+      next: () => {
+        this.toastService.success('Application added successfully.');
+        this.modalService.dismissAll();
+        this.loadApplications(this.resource().id);
+      },
+      error: (err) => {
+        console.error('Failed to add application:', err);
+        this.toastService.error('Failed to add application.');
+        this.isLoading.set(false);
       },
     });
   }

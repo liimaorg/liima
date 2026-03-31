@@ -110,6 +110,17 @@ export class ResourceService extends BaseService {
       );
   }
 
+  getGroupsForTypeName(typeName: string): Observable<Resource[]> {
+    return this.http
+      .get<Resource[]>(`${this.getBaseUrl()}/resources?type=${typeName}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(
+        map((resources) => resources.map(toResource)),
+        catchError(this.handleError),
+      );
+  }
+
   get(resourceGroupName: string): Observable<Resource> {
     return this.http
       .get(`${this.getBaseUrl()}/resources/${resourceGroupName}`, {
