@@ -24,6 +24,7 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceR
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -39,6 +40,6 @@ public interface ListApplicationsForAppServerUseCase {
      * @throws ResourceNotFoundException if the resource is not found
      * @throws ValidationException if the resource ID is invalid
      */
-    List<ConsumedResourceRelationEntity> listApplications(Integer resourceId) 
+    List<ConsumedResourceRelationEntity> listApplications(@NotNull Integer resourceId)
             throws ResourceNotFoundException, ValidationException;
 }

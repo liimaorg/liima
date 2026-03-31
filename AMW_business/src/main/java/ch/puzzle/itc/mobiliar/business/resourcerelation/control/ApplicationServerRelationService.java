@@ -24,17 +24,20 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ListApplicationsForAppServerUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.security.entity.Action;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
+import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Stateless
 public class ApplicationServerRelationService implements ListApplicationsForAppServerUseCase {
@@ -44,32 +47,91 @@ public class ApplicationServerRelationService implements ListApplicationsForAppS
 
     @Override
     @HasPermission(permission = Permission.RESOURCE, action = Action.READ)
-    public List<ConsumedResourceRelationEntity> listApplications(Integer resourceId) 
+    public List<ConsumedResourceRelationEntity> listApplications(@NotNull Integer resourceId)
             throws ResourceNotFoundException, ValidationException {
-        
-        if (resourceId == null) {
-            throw new ValidationException("Resource ID must not be null");
-        }
 
         ResourceEntity resource = resourceLocator.getResourceWithGroupAndRelatedResources(resourceId);
-        
-        if (resource == null) {
-            throw new ResourceNotFoundException("Resource with ID " + resourceId + " not found");
-        }
+        if (resource == null) throw new ResourceNotFoundException("Resource with ID " + resourceId + " not found");
+        if (!resource.getResourceType().isApplicationServerResourceType()) throw new ValidationException("Resource is not an application server");
 
-        if (!resource.getResourceType().isApplicationServerResourceType()) {
-            throw new ValidationException("Resource is not an application server");
-        }
+        // Group applications by resource group to get unique applications
+        Map<Integer, List<ConsumedResourceRelationEntity>> applicationsByGroup = new HashMap<>();
 
-        List<ConsumedResourceRelationEntity> applications = new ArrayList<>();
-        
         for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
             if (DefaultResourceTypeDefinition.APPLICATION.name()
                     .equals(relation.getResourceRelationType().getResourceTypeB().getName())) {
-                applications.add(relation);
+                Integer groupId = relation.getSlaveResource().getResourceGroup().getId();
+                applicationsByGroup.computeIfAbsent(groupId, k -> new ArrayList<>()).add(relation);
             }
         }
 
-        return applications;
+        // Get best matching relation for each application group
+        List<ConsumedResourceRelationEntity> uniqueApplications = new ArrayList<>();
+        long currentTime = resource.getRelease() != null && resource.getRelease().getInstallationInProductionAt() != null
+                ? resource.getRelease().getInstallationInProductionAt().getTime()
+                : System.currentTimeMillis();
+
+        for (List<ConsumedResourceRelationEntity> relations : applicationsByGroup.values()) {
+            ConsumedResourceRelationEntity bestMatch = findBestMatchingRelation(relations, currentTime);
+            if (bestMatch != null) {
+                uniqueApplications.add(bestMatch);
+            }
+        }
+
+        return uniqueApplications;
+    }
+
+    private ConsumedResourceRelationEntity findBestMatchingRelation(
+            List<ConsumedResourceRelationEntity> relations, long currentTime) {
+
+        ConsumedResourceRelationEntity bestMatch = findBestMatchingPastRelation(relations, currentTime);
+        if (bestMatch == null) {
+            bestMatch = findBestMatchingFutureRelation(relations, currentTime);
+        }
+        return bestMatch;
+    }
+
+    private ConsumedResourceRelationEntity findBestMatchingPastRelation(
+            List<ConsumedResourceRelationEntity> relations, long currentTime) {
+
+        ConsumedResourceRelationEntity bestMatch = null;
+        for (ConsumedResourceRelationEntity relation : relations) {
+            if (relation != null && relation.getSlaveResource().getRelease() != null
+                    && relation.getSlaveResource().getRelease().getInstallationInProductionAt() != null) {
+
+                long releaseTime = relation.getSlaveResource().getRelease().getInstallationInProductionAt().getTime();
+                Long bestMatchTime = bestMatch != null && bestMatch.getSlaveResource().getRelease() != null
+                        && bestMatch.getSlaveResource().getRelease().getInstallationInProductionAt() != null
+                        ? bestMatch.getSlaveResource().getRelease().getInstallationInProductionAt().getTime()
+                        : null;
+
+                if (releaseTime <= currentTime && (bestMatchTime == null || releaseTime > bestMatchTime)) {
+                    bestMatch = relation;
+                }
+            }
+        }
+        return bestMatch;
+    }
+
+    private ConsumedResourceRelationEntity findBestMatchingFutureRelation(
+            List<ConsumedResourceRelationEntity> relations, long currentTime) {
+
+        ConsumedResourceRelationEntity bestMatch = null;
+        for (ConsumedResourceRelationEntity relation : relations) {
+            if (relation != null && relation.getSlaveResource().getRelease() != null
+                    && relation.getSlaveResource().getRelease().getInstallationInProductionAt() != null) {
+
+                long releaseTime = relation.getSlaveResource().getRelease().getInstallationInProductionAt().getTime();
+                Long bestMatchTime = bestMatch != null && bestMatch.getSlaveResource().getRelease() != null
+                        && bestMatch.getSlaveResource().getRelease().getInstallationInProductionAt() != null
+                        ? bestMatch.getSlaveResource().getRelease().getInstallationInProductionAt().getTime()
+                        : null;
+
+                if (releaseTime > currentTime && (bestMatchTime == null || releaseTime < bestMatchTime)) {
+                    bestMatch = relation;
+                }
+            }
+        }
+        return bestMatch;
     }
 }
