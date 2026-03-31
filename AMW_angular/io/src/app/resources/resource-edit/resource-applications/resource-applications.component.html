@@ -42,6 +42,16 @@
               >
                 Edit
               </app-button>
+              @if (permissions().canRemove) {
+                <app-button
+                  [size]="'sm'"
+                  [variant]="'light'"
+                  (click)="showRemoveConfirmation(app)"
+                  [additionalClasses]="'ms-1'"
+                >
+                  Remove
+                </app-button>
+              }
             </td>
           </tr>
         }
@@ -49,3 +59,17 @@
     </table>
   }
 </app-tile-component>
+
+<ng-template #removeApplicationConfirmation let-modal>
+  <app-modal-header
+    [title]="'Remove application ' + applicationToRemove()?.slaveName"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
+  <div class="modal-body">
+    <p class="text-warning-2">Are you sure you want to remove this application from the application server?</p>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'danger'" (click)="modal.close('Confirm click')">Remove</app-button>
+  </div>
+</ng-template>

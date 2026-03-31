@@ -22,6 +22,8 @@ package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ApplicationRelationDTO;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ListApplicationsForAppServerUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveApplicationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveApplicationFromAppServerUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -32,10 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +48,9 @@ public class ResourceApplicationsRest {
 
     @Inject
     ListApplicationsForAppServerUseCase listApplicationsUseCase;
+
+    @Inject
+    RemoveApplicationFromAppServerUseCase removeApplicationUseCase;
 
     @GET
     @Produces(APPLICATION_JSON)
@@ -65,5 +67,20 @@ public class ResourceApplicationsRest {
                 .collect(Collectors.toList());
         
         return Response.ok(dtos).build();
+    }
+
+    @DELETE
+    @Path("/{relationId}")
+    @Operation(summary = "Remove an application from an application server")
+    public Response removeApplication(
+            @Parameter(description = "The application server resource ID", required = true)
+            @PathParam("resourceId") @NotNull Integer resourceId,
+            @Parameter(description = "The relation ID to remove", required = true)
+            @PathParam("relationId") @NotNull Integer relationId)
+            throws ResourceNotFoundException, ValidationException {
+
+        RemoveApplicationCommand command = new RemoveApplicationCommand(resourceId, relationId);
+        removeApplicationUseCase.removeApplication(command);
+        return Response.noContent().build();
     }
 }
