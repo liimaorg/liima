@@ -12,11 +12,20 @@ import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.
 import { ToastService } from '../../../shared/elements/toast/toast.service';
 import { ResourceService } from '../../services/resource.service';
 import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-resource-applications',
   standalone: true,
-  imports: [RouterLink, TileComponent, LoadingIndicatorComponent, ButtonComponent, ModalHeaderComponent, FormsModule],
+  imports: [
+    RouterLink,
+    TileComponent,
+    LoadingIndicatorComponent,
+    ButtonComponent,
+    ModalHeaderComponent,
+    FormsModule,
+    NgSelectModule,
+  ],
   templateUrl: './resource-applications.component.html',
   styleUrl: './resource-applications.component.scss',
 })
