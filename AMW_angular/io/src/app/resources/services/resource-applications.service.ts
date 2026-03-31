@@ -16,4 +16,12 @@ export class ResourceApplicationsService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  removeApplication(resourceId: number, relationId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resources/${resourceId}/applications/${relationId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
