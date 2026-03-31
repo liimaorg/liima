@@ -36,6 +36,7 @@ import ch.puzzle.itc.mobiliar.business.security.entity.*;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.utils.Identifiable;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.ejb.Stateless;
@@ -45,6 +46,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 /**
  * A boundary for checking permissions of view elements
@@ -840,5 +842,11 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.ASSIGN_REMOVE_PERMISSION)
     public void reloadCache() {
         permissionService.reloadCache();
+    }
+
+
+    public void assertPermission(BooleanSupplier permissionCheck) {
+        if(permissionCheck.getAsBoolean()) return;
+        throw new NotAuthorizedException("Permission denied");
     }
 }

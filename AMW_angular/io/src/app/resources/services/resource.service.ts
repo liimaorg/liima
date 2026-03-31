@@ -247,9 +247,13 @@ export class ResourceService extends BaseService {
 
   copyFromResource(targetResourceId: number, originResourceId: number): Observable<void> {
     return this.http
-      .post<void>(`${this.getBaseUrl()}/resources/${targetResourceId}/copyFrom/${originResourceId}`, null, {
-        headers: this.getHeaders(),
-      })
+      .post<void>(
+        `${this.getBaseUrl()}/resources/copyFrom`,
+        { targetResourceId, originResourceId },
+        {
+          headers: this.getHeaders(),
+        },
+      )
       .pipe(catchError(this.handleError));
   }
 }
