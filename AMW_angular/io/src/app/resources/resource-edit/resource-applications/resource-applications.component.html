@@ -2,7 +2,7 @@
 <app-tile-component
   [title]="'Applications'"
   [actionName]="'Add Application'"
-  [canAction]="permissions().canAdd"
+  [canAction]="permissions().canUpdate"
   [isVisible]="permissions().canListRelations"
   [noContent]="false"
   [notAllowed]="false"
@@ -41,7 +41,7 @@
               >
                 Edit
               </app-button>
-              @if (permissions().canRemove) {
+              @if (permissions().canUpdate) {
                 <app-button
                   [size]="'sm'"
                   [variant]="'light'"
