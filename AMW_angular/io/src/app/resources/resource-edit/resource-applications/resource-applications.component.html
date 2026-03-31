@@ -67,17 +67,18 @@
     } @else {
       <div class="mb-3">
         <label for="applicationSelect" class="form-label">Select Application</label>
-        <select
+        <ng-select
           id="applicationSelect"
-          class="form-select"
-          [(ngModel)]="selectedApplicationGroupId"
-          [ngModelOptions]="{ updateOn: 'change' }"
+          [ngModel]="selectedApplicationGroupId()"
+          (ngModelChange)="selectedApplicationGroupId.set($event)"
+          placeholder="Search or select an application..."
+          [searchable]="true"
+          [clearable]="true"
         >
-          <option [ngValue]="null">-- Select an application --</option>
-          @for (app of availableApplications(); track app.resourceGroupId) {
-            <option [ngValue]="app.resourceGroupId">{{ app.name }}</option>
+          @for (app of availableApplications(); track app.id) {
+            <ng-option [value]="app.id">{{ app.name }}</ng-option>
           }
-        </select>
+        </ng-select>
       </div>
     }
   </div>
