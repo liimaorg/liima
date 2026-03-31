@@ -21,10 +21,13 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ApplicationRelationDTO;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddApplicationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddApplicationToAppServerUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ListApplicationsForAppServerUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveApplicationCommand;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveApplicationFromAppServerUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,6 +53,9 @@ public class ResourceApplicationsRest {
     ListApplicationsForAppServerUseCase listApplicationsUseCase;
 
     @Inject
+    AddApplicationToAppServerUseCase addApplicationUseCase;
+
+    @Inject
     RemoveApplicationFromAppServerUseCase removeApplicationUseCase;
 
     @GET
@@ -67,6 +73,21 @@ public class ResourceApplicationsRest {
                 .collect(Collectors.toList());
         
         return Response.ok(dtos).build();
+    }
+
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Operation(summary = "Add an application to an application server")
+    public Response addApplication(
+            @Parameter(description = "The application server resource ID", required = true)
+            @PathParam("resourceId") @NotNull Integer resourceId,
+            @Parameter(description = "The application resource group ID", required = true)
+            @QueryParam("applicationGroupId") @NotNull Integer applicationGroupId)
+            throws ResourceNotFoundException, ValidationException, ElementAlreadyExistsException {
+
+        AddApplicationCommand command = new AddApplicationCommand(resourceId, applicationGroupId);
+        addApplicationUseCase.addApplication(command);
+        return Response.status(Response.Status.CREATED).build();
     }
 
     @DELETE

@@ -17,6 +17,18 @@ export class ResourceApplicationsService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
+  addApplication(resourceId: number, applicationGroupId: number): Observable<void> {
+    return this.http
+      .post<void>(
+        `${this.getBaseUrl()}/resources/${resourceId}/applications?applicationGroupId=${applicationGroupId}`,
+        null,
+        {
+          headers: this.postHeaders(),
+        }
+      )
+      .pipe(catchError(this.handleError));
+  }
+
   removeApplication(resourceId: number, relationId: number): Observable<void> {
     return this.http
       .delete<void>(`${this.getBaseUrl()}/resources/${resourceId}/applications/${relationId}`, {
