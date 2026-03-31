@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class ResourceApplicationsService extends BaseService {
         null,
         {
           headers: this.postHeaders(),
-        }
+        },
       )
       .pipe(catchError(this.handleError));
   }

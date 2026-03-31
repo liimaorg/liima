@@ -27,7 +27,6 @@ import { NgSelectModule } from '@ng-select/ng-select';
     NgSelectModule,
   ],
   templateUrl: './resource-applications.component.html',
-  styleUrl: './resource-applications.component.scss',
 })
 export class ResourceApplicationsComponent {
   private resourceApplicationsService = inject(ResourceApplicationsService);
@@ -53,15 +52,12 @@ export class ResourceApplicationsComponent {
     if (this.authService.restrictions().length > 0 && this.resource()) {
       return {
         canListRelations: this.authService.hasPermission('RESOURCE', 'READ'),
-        canAdd:
-          this.contextId() === 1 &&
-          this.authService.hasPermission('RESOURCE', 'UPDATE', this.resource().type, this.resource().resourceGroupId),
-        canRemove:
+        canUpdate:
           this.contextId() === 1 &&
           this.authService.hasPermission('RESOURCE', 'UPDATE', this.resource().type, this.resource().resourceGroupId),
       };
     }
-    return { canListRelations: false, canAdd: false, canRemove: false };
+    return { canListRelations: false, canUpdate: false };
   });
 
   constructor() {
@@ -95,12 +91,8 @@ export class ResourceApplicationsComponent {
   showRemoveConfirmation(application: ApplicationRelation): void {
     this.applicationToRemove.set(application);
     this.modalService.open(this.removeApplicationConfirmation).result.then(
-      () => {
-        this.removeApplication();
-      },
-      () => {
-        this.applicationToRemove.set(null);
-      },
+      () => this.removeApplication(),
+      () => this.applicationToRemove.set(null),
     );
   }
 
