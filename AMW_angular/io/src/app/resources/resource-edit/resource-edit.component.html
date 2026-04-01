@@ -2,25 +2,6 @@
 <app-page>
   <div class="page-title d-flex">
     <div class="resource-name">Edit {{ this.resource()?.name }}</div>
-    <div ngbDropdown>
-      <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-        {{ selectedRelease()?.name }}
-      </app-button>
-
-      <ul ngbDropdownMenu>
-        @for (release of releases(); track release) {
-          <li ngbDropdownItem>
-            <a
-              class="dropdown-item"
-              tabindex="0"
-              (keyup.enter)="loadResourceFromRelease(release.id)"
-              (click)="loadResourceFromRelease(release.id)"
-              >{{ release.name }}</a
-            >
-          </li>
-        }
-      </ul>
-    </div>
     @if (showAnalyze()) {
       <div ngbDropdown>
         <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
@@ -35,28 +16,6 @@
                 [queryParams]="testGenerationQueryParams()"
               >
                 Test Generation
-              </a>
-            </li>
-          }
-        </ul>
-      </div>
-    }
-    @if (showMoreMenu()) {
-      <div ngbDropdown>
-        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-          More
-        </app-button>
-        <ul ngbDropdownMenu>
-          @if (permissions().canTagCurrentState && isApplicationServer()) {
-            <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                (click)="openTagDialog()"
-                tabindex="0"
-                (keyup.enter)="openTagDialog()"
-                style="cursor: pointer"
-              >
-                Tag Current State
               </a>
             </li>
           }
@@ -79,12 +38,28 @@
         <app-contexts-list></app-contexts-list>
       </div>
       <div class="flex-grow-1">
-        <app-resource-releases
-          [id]="id()"
-          [releases]="releases()"
-          [contextId]="contextId()"
-          [resource]="resource()"
-        ></app-resource-releases>
+        @if (isApplicationServer()) {
+          <div class="d-flex gap-3">
+            <div class="flex-1">
+              <app-resource-releases
+                [id]="id()"
+                [releases]="releases()"
+                [contextId]="contextId()"
+                [resource]="resource()"
+              ></app-resource-releases>
+            </div>
+            <div class="flex-1">
+              <app-resource-tags [resource]="resource()"></app-resource-tags>
+            </div>
+          </div>
+        } @else {
+          <app-resource-releases
+            [id]="id()"
+            [releases]="releases()"
+            [contextId]="contextId()"
+            [resource]="resource()"
+          ></app-resource-releases>
+        }
         <app-resource-properties [contextId]="contextId()"></app-resource-properties>
         <app-resource-templates-list [resource]="resource()" [contextId]="contextId()"></app-resource-templates-list>
         <app-resource-functions-list [resource]="resource()" [contextId]="contextId()"></app-resource-functions-list>

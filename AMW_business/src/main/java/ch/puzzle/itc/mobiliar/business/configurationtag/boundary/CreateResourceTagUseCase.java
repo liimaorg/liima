@@ -1,13 +1,11 @@
 package ch.puzzle.itc.mobiliar.business.configurationtag.boundary;
 
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
 import java.util.Date;
-import java.util.List;
 
-public interface CreateTagUseCase {
+public interface CreateResourceTagUseCase {
 
 
     /**
@@ -30,10 +28,5 @@ public interface CreateTagUseCase {
 
 
 
-    /**
-     * added for backwards compatibility
-     * @param resource - resource to load tags for
-     * @return list of tags for the resource
-     */
-    List<ResourceTagEntity> loadTagLabelsForResource(ResourceEntity resource);
+
 }
