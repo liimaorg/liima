@@ -12,6 +12,7 @@ import { TagInputComponent } from '../../shared/tag-input/tag-input.component';
 import { map, startWith } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonComponent } from '../../shared/button/button.component';
+import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 
 interface PropertyDescriptorForm {
   name: FormControl<string>;
@@ -30,6 +31,7 @@ interface PropertyDescriptorForm {
   selector: 'app-property-edit',
   imports: [
     ButtonComponent,
+    LoadingIndicatorComponent,
     ModalHeaderComponent,
     NgOptionComponent,
     NgSelectComponent,
@@ -81,20 +83,20 @@ export class PropertyEditComponent {
   isNewMode = computed(() => !this.propertyDescriptor()?.id);
   title = computed(() => (this.isNewMode() ? 'New Property Descriptor' : 'Edit Property Descriptor'));
 
-  isLongDefaultValue = computed(() => {
+  isLongDefaultValue(): boolean {
     const val = this.form.controls.defaultValue.value;
-    return val && val.length > 70;
-  });
+    return !!val && val.length > 70;
+  }
 
-  isLongExampleValue = computed(() => {
+  isLongExampleValue(): boolean {
     const val = this.form.controls.exampleValue.value;
-    return val && val.length > 70;
-  });
+    return !!val && val.length > 70;
+  }
 
-  isLongMik = computed(() => {
+  isLongMik(): boolean {
     const val = this.form.controls.mik.value;
-    return val && val.length > 70;
-  });
+    return !!val && val.length > 70;
+  }
 
   constructor() {
     effect(() => {

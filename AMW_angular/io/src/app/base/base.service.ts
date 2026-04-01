@@ -22,16 +22,7 @@ export class BaseService {
   }
 
   public handleError(response: HttpErrorResponse) {
-    let errorMsg = 'Error retrieving your data';
-    if (response.error) {
-      try {
-        errorMsg = response.error.message;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    console.error(response);
-    // throw an application level error
-    return throwError(() => errorMsg);
+    // Return the full error response so services can check status codes and handle appropriately
+    return throwError(() => response);
   }
 }

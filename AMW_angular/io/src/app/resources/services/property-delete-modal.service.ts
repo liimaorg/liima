@@ -93,24 +93,30 @@ export class PropertyDeleteModalService {
             return;
           }
 
+          // Extract error message from backend ExceptionDto structure
+          const errorMessage = err.error?.message || err.message || '';
+
           // Check for 409 Conflict status or error message indicating force delete is needed
           const needsForceDelete =
             err.status === 409 ||
-            err.message?.includes('marked to be deleted') ||
-            err.message?.includes('still in use') ||
-            err.message?.includes('cannot be deleted');
+            errorMessage.includes('marked to be deleted') ||
+            errorMessage.includes('still in use') ||
+            errorMessage.includes('cannot be deleted') ||
+            errorMessage.includes('force the deletion');
 
           if (needsForceDelete) {
             // Update descriptor with error message to show force delete option
+            // Modal stays open to allow user to confirm force delete
             const descriptor = this.descriptorToDelete();
             if (descriptor) {
-              const errorMsg =
-                err.error?.message || err.message || 'This property descriptor is still in use and cannot be deleted.';
-              this.descriptorToDelete.set({ ...descriptor, errorMessage: errorMsg });
+              this.descriptorToDelete.set({ 
+                ...descriptor, 
+                errorMessage: errorMessage || 'This property descriptor is still in use and cannot be deleted.' 
+              });
             }
           } else {
             this.toastService.error(
-              'Failed to delete property descriptor: ' + (err.error?.message || err.message || 'Unknown error'),
+              'Failed to delete property descriptor: ' + (errorMessage || 'Unknown error'),
             );
             modal.close();
           }

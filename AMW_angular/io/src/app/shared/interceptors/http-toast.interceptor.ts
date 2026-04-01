@@ -15,13 +15,20 @@ export class HttpToastInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler) {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        console.error('Error in HttpToastInterceptor', error);
         // Don't show toast for 422 - these are validation errors with structured data
-        if (error.status !== 422 && error.error?.message) {
+        // Don't show toast for 409 - these are conflict errors that may need user confirmation (e.g., force delete)
+        if (error.status === 422 || error.status === 409) {
+          // Re-throw these errors so services can handle them
+          return throwError(() => error);
+        }
+        
+        // Show toast for other errors
+        if (error.error?.message) {
           this.toastService.error(error.error.message);
           return EMPTY;
         }
-        // Re-throw the error so services can handle it
+        
+        // Re-throw if no message to show
         return throwError(() => error);
       }),
     );
