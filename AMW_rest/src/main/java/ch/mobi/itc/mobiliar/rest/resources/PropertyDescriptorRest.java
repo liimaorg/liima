@@ -1,10 +1,12 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDescriptorDTO;
+import ch.mobi.itc.mobiliar.rest.resources.propertyDescriptor.*;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyTagEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.PropertyDescriptorNotDeletableException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,19 +34,13 @@ public class PropertyDescriptorRest {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get a property descriptor by ID")
     public Response getPropertyDescriptor(
-            @Parameter(description = "Property Descriptor ID") @PathParam("id") Integer descriptorId) {
+            @Parameter(description = "Property Descriptor ID") @PathParam("id") Integer descriptorId) throws NotFoundException {
         
-        if (descriptorId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Property descriptor ID cannot be null")
-                    .build();
-        }
-
-        PropertyDescriptorEntity descriptor = propertyEditor.getPropertyDescriptor(descriptorId);
+        GetPropertyDescriptorCommand command = new GetPropertyDescriptorCommand(descriptorId);
+        PropertyDescriptorEntity descriptor = propertyEditor.getPropertyDescriptor(command.getDescriptorId());
+        
         if (descriptor == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Property descriptor not found")
-                    .build();
+            throw new NotFoundException("Property descriptor not found");
         }
 
         return Response.ok(new PropertyDescriptorDTO(descriptor)).build();
@@ -56,35 +52,18 @@ public class PropertyDescriptorRest {
     @Operation(summary = "Create a new property descriptor for a resource")
     public Response createPropertyDescriptorForResource(
             @Parameter(description = "Resource ID") @QueryParam("resourceId") Integer resourceId,
-            PropertyDescriptorDTO descriptorDTO) {
+            PropertyDescriptorDTO descriptorDTO) throws AMWException {
 
-        if (resourceId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Resource ID is required")
-                    .build();
-        }
-
-        if (descriptorDTO == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Property descriptor data is required")
-                    .build();
-        }
-
-        try {
-            PropertyDescriptorEntity entity = descriptorDTO.toEntity();
-            String tagsString = convertTagsToString(descriptorDTO.getPropertyTags());
-            
-            PropertyDescriptorEntity saved = propertyEditor.savePropertyDescriptorForResource(
-                    resourceId, entity, tagsString);
-            
-            return Response.status(Response.Status.CREATED)
-                    .entity(new PropertyDescriptorDTO(saved))
-                    .build();
-        } catch (AMWException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
+        CreatePropertyDescriptorCommand command = new CreatePropertyDescriptorCommand(resourceId, null, descriptorDTO);
+        PropertyDescriptorEntity entity = command.getDescriptorDTO().toEntity();
+        String tagsString = convertTagsToString(command.getDescriptorDTO().getPropertyTags());
+        
+        PropertyDescriptorEntity saved = propertyEditor.savePropertyDescriptorForResource(
+                command.getResourceId(), entity, tagsString);
+        
+        return Response.status(Response.Status.CREATED)
+                .entity(new PropertyDescriptorDTO(saved))
+                .build();
     }
 
     @POST
@@ -94,35 +73,18 @@ public class PropertyDescriptorRest {
     @Operation(summary = "Create a new property descriptor for a resource type")
     public Response createPropertyDescriptorForResourceType(
             @Parameter(description = "Resource Type ID") @QueryParam("resourceTypeId") Integer resourceTypeId,
-            PropertyDescriptorDTO descriptorDTO) {
+            PropertyDescriptorDTO descriptorDTO) throws AMWException {
 
-        if (resourceTypeId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Resource type ID is required")
-                    .build();
-        }
-
-        if (descriptorDTO == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Property descriptor data is required")
-                    .build();
-        }
-
-        try {
-            PropertyDescriptorEntity entity = descriptorDTO.toEntity();
-            String tagsString = convertTagsToString(descriptorDTO.getPropertyTags());
-            
-            PropertyDescriptorEntity saved = propertyEditor.savePropertyDescriptorForResourceType(
-                    resourceTypeId, entity, tagsString);
-            
-            return Response.status(Response.Status.CREATED)
-                    .entity(new PropertyDescriptorDTO(saved))
-                    .build();
-        } catch (AMWException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
+        CreatePropertyDescriptorCommand command = new CreatePropertyDescriptorCommand(null, resourceTypeId, descriptorDTO);
+        PropertyDescriptorEntity entity = command.getDescriptorDTO().toEntity();
+        String tagsString = convertTagsToString(command.getDescriptorDTO().getPropertyTags());
+        
+        PropertyDescriptorEntity saved = propertyEditor.savePropertyDescriptorForResourceType(
+                command.getResourceTypeId(), entity, tagsString);
+        
+        return Response.status(Response.Status.CREATED)
+                .entity(new PropertyDescriptorDTO(saved))
+                .build();
     }
 
     @PUT
@@ -134,62 +96,38 @@ public class PropertyDescriptorRest {
             @Parameter(description = "Property Descriptor ID") @PathParam("id") Integer descriptorId,
             @Parameter(description = "Resource ID (for resource-level descriptors)") @QueryParam("resourceId") Integer resourceId,
             @Parameter(description = "Resource Type ID (for resource type-level descriptors)") @QueryParam("resourceTypeId") Integer resourceTypeId,
-            PropertyDescriptorDTO descriptorDTO) {
+            PropertyDescriptorDTO descriptorDTO) throws AMWException, NotFoundException {
 
-        if (descriptorId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Property descriptor ID cannot be null")
-                    .build();
+        UpdatePropertyDescriptorCommand command = new UpdatePropertyDescriptorCommand(descriptorId, resourceId, resourceTypeId, descriptorDTO);
+        
+        PropertyDescriptorEntity existingEntity = propertyEditor.getPropertyDescriptor(command.getDescriptorId());
+        if (existingEntity == null) {
+            throw new NotFoundException("Property descriptor not found");
         }
-
-        if (descriptorDTO == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Property descriptor data is required")
-                    .build();
+        
+        // Update the fields from DTO
+        PropertyDescriptorDTO dto = command.getDescriptorDTO();
+        existingEntity.setPropertyName(dto.getName());
+        existingEntity.setDisplayName(dto.getDisplayName());
+        existingEntity.setValidationLogic(dto.getValidationRegex());
+        existingEntity.setNullable(dto.isNullable());
+        existingEntity.setOptional(dto.isOptional());
+        existingEntity.setEncrypt(dto.isEncrypted());
+        existingEntity.setMachineInterpretationKey(dto.getMik());
+        existingEntity.setDefaultValue(dto.getDefaultValue());
+        existingEntity.setExampleValue(dto.getExampleValue());
+        existingEntity.setPropertyComment(dto.getComment());
+        
+        String tagsString = convertTagsToString(dto.getPropertyTags());
+        
+        PropertyDescriptorEntity saved;
+        if (command.isForResource()) {
+            saved = propertyEditor.savePropertyDescriptorForResource(command.getResourceId(), existingEntity, tagsString);
+        } else {
+            saved = propertyEditor.savePropertyDescriptorForResourceType(command.getResourceTypeId(), existingEntity, tagsString);
         }
-
-        if (resourceId == null && resourceTypeId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Either resourceId or resourceTypeId must be provided")
-                    .build();
-        }
-
-        try {
-            // Load the existing entity to preserve version and other managed fields
-            PropertyDescriptorEntity existingEntity = propertyEditor.getPropertyDescriptor(descriptorId);
-            if (existingEntity == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Property descriptor not found")
-                        .build();
-            }
-            
-            // Update the fields from DTO
-            existingEntity.setPropertyName(descriptorDTO.getName());
-            existingEntity.setDisplayName(descriptorDTO.getDisplayName());
-            existingEntity.setValidationLogic(descriptorDTO.getValidationRegex());
-            existingEntity.setNullable(descriptorDTO.isNullable());
-            existingEntity.setOptional(descriptorDTO.isOptional());
-            existingEntity.setEncrypt(descriptorDTO.isEncrypted());
-            existingEntity.setMachineInterpretationKey(descriptorDTO.getMik());
-            existingEntity.setDefaultValue(descriptorDTO.getDefaultValue());
-            existingEntity.setExampleValue(descriptorDTO.getExampleValue());
-            existingEntity.setPropertyComment(descriptorDTO.getComment());
-            
-            String tagsString = convertTagsToString(descriptorDTO.getPropertyTags());
-            
-            PropertyDescriptorEntity saved;
-            if (resourceId != null) {
-                saved = propertyEditor.savePropertyDescriptorForResource(resourceId, existingEntity, tagsString);
-            } else {
-                saved = propertyEditor.savePropertyDescriptorForResourceType(resourceTypeId, existingEntity, tagsString);
-            }
-            
-            return Response.ok(new PropertyDescriptorDTO(saved)).build();
-        } catch (AMWException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
+        
+        return Response.ok(new PropertyDescriptorDTO(saved)).build();
     }
 
     @DELETE
@@ -200,46 +138,22 @@ public class PropertyDescriptorRest {
             @Parameter(description = "Property Descriptor ID") @PathParam("id") Integer descriptorId,
             @Parameter(description = "Resource ID (for resource-level descriptors)") @QueryParam("resourceId") Integer resourceId,
             @Parameter(description = "Resource Type ID (for resource type-level descriptors)") @QueryParam("resourceTypeId") Integer resourceTypeId,
-            @Parameter(description = "Force delete even if property values exist") @DefaultValue("false") @QueryParam("force") boolean forceDelete) {
+            @Parameter(description = "Force delete even if property values exist") @DefaultValue("false") @QueryParam("force") boolean forceDelete) throws AMWException, NotFoundException, PropertyDescriptorNotDeletableException {
 
-        if (descriptorId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Property descriptor ID cannot be null")
-                    .build();
+        DeletePropertyDescriptorCommand command = new DeletePropertyDescriptorCommand(descriptorId, resourceId, resourceTypeId, forceDelete);
+        
+        PropertyDescriptorEntity descriptor = propertyEditor.getPropertyDescriptor(command.getDescriptorId());
+        if (descriptor == null) {
+            throw new NotFoundException("Property descriptor not found");
         }
 
-        if (resourceId == null && resourceTypeId == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Either resourceId or resourceTypeId must be provided")
-                    .build();
+        if (command.isForResource()) {
+            propertyEditor.deletePropertyDescriptorForResource(command.getResourceId(), descriptor, command.isForceDelete());
+        } else {
+            propertyEditor.deletePropertyDescriptorForResourceType(command.getResourceTypeId(), descriptor, command.isForceDelete());
         }
 
-        try {
-            PropertyDescriptorEntity descriptor = propertyEditor.getPropertyDescriptor(descriptorId);
-            if (descriptor == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Property descriptor not found")
-                        .build();
-            }
-
-            if (resourceId != null) {
-                propertyEditor.deletePropertyDescriptorForResource(resourceId, descriptor, forceDelete);
-            } else {
-                propertyEditor.deletePropertyDescriptorForResourceType(resourceTypeId, descriptor, forceDelete);
-            }
-
-            return Response.status(Response.Status.NO_CONTENT).build();
-        } catch (PropertyDescriptorNotDeletableException e) {
-            String additionalInfo = "If you force the deletion, all those property values will be deleted as well";
-            String errorMessage = String.format("%s. %s", e.getMessage(), additionalInfo);
-            return Response.status(Response.Status.CONFLICT)
-                    .entity(errorMessage)
-                    .build();
-        } catch (AMWException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 
     private String convertTagsToString(java.util.List<ch.mobi.itc.mobiliar.rest.dtos.PropertyTagDTO> tags) {
