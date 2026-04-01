@@ -52,9 +52,7 @@ export class ResourceTagsComponent {
 
   private loadTags() {
     const resourceId = this.resource()?.id;
-    if (!resourceId) {
-      return;
-    }
+    if (!resourceId) return;
 
     this.isLoading.set(true);
     this.resourceTagsService.getResourceTags(resourceId).subscribe({
@@ -78,9 +76,7 @@ export class ResourceTagsComponent {
 
   private createTag(tagData: TagData) {
     const resourceId = this.resource()?.id;
-    if (!resourceId) {
-      return;
-    }
+    if (!resourceId) return;
 
     this.resourceTagsService
       .createTag(resourceId, {

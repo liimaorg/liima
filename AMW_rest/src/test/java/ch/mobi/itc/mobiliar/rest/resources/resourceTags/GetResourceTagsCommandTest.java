@@ -12,13 +12,13 @@ class GetResourceTagsCommandTest {
 
     @Test
     void shouldThrowExceptionWhenResourceIdIsMissing() {
-        ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> new GetResourceTagsCommand(null));
+        ConstraintViolationException ex = assertThrows(ConstraintViolationException.class, () -> new ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.GetResourceTagsCommand(null));
         assertEquals("resourceId: must not be null", ex.getMessage());
     }
 
     @Test
     void shouldCreateGetResourceTagsCommand() {
-        GetResourceTagsCommand command = new GetResourceTagsCommand(1);
+        ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.GetResourceTagsCommand command = new ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.GetResourceTagsCommand(1);
         assertEquals(1, command.getResourceId());
     }
 }

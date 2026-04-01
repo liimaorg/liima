@@ -56,20 +56,18 @@ class ResourceTagsRestTest {
     }
 
     @Test
-    void createResourceTag_missing_resourceId() {
-        ConstraintViolationException e = assertThrows(ConstraintViolationException.class, () -> resourceTagsRest.createResourceTag(null, new ResourceTagDTO()));
-        assertEquals("resourceId: may not be null", e.getMessage());
-    }
+    void createResourceTag_missing_Parameters() {
+        ConstraintViolationException e = assertThrows(ConstraintViolationException.class, () -> resourceTagsRest.createResourceTag(null, new CreateResourceTagPayload(null, null)));
 
-    @Test
-    void createResourceTag_missing_resourceTagDTO() {
-        ConstraintViolationException e = assertThrows(ConstraintViolationException.class, () -> resourceTagsRest.createResourceTag(1, null));
-        assertEquals("resourceTag: may not be null", e.getMessage());
+        assertEquals(3, e.getConstraintViolations().size());
+        assertTrue(e.getMessage().contains("resourceId: resourceId may not be null"));
+        assertTrue(e.getMessage().contains("label: label may not be null"));
+        assertTrue(e.getMessage().contains("tagDate: tagDate may not be null"));
     }
 
     @Test
     void createResourceTag() throws NotFoundException {
-        ResourceTagDTO tag = new ResourceTagDTO(1, "tag", new Date());
+        CreateResourceTagPayload tag = new CreateResourceTagPayload("tag", new Date());
         doReturn(new ResourceTagEntity()).when(createResourceTagUseCase).createTag(any());
 
         Response response = resourceTagsRest.createResourceTag(1, tag);

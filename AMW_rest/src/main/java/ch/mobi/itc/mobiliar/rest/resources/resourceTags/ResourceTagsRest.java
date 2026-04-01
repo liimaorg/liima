@@ -24,6 +24,8 @@ import ch.mobi.itc.mobiliar.rest.dtos.ResourceTagDTO;
 import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateResourceTagUseCase;
 import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.ListResourceTagsUseCase;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CreateResourceTagCommand;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.GetResourceTagsCommand;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -64,8 +67,8 @@ public class ResourceTagsRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Create a new tag for a resource")
-    public Response createResourceTag(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId, @Parameter(description = "Tag data") ResourceTagDTO tagDTO) throws NotFoundException {
-        CreateResourceTagCommand command = new CreateResourceTagCommand(resourceId, tagDTO);
+    public Response createResourceTag(@Parameter(description = "Resource ID") @PathParam("resourceId") Integer resourceId, @NotNull @Parameter(description = "Tag data") CreateResourceTagPayload tagDTO) throws NotFoundException {
+        CreateResourceTagCommand command = new CreateResourceTagCommand(resourceId, tagDTO.getLabel(), tagDTO.getTagDate());
         ResourceTagEntity tag = createResourceTagUseCase.createTag(command.toTagConfiguration());
         return Response.ok(new ResourceTagDTO(tag)).build();
     }

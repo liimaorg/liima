@@ -85,12 +85,4 @@ export class ResourceEditComponent {
   );
 
   protected readonly isApplicationServer = computed<boolean>(() => this.resource()?.type === 'APPLICATIONSERVER');
-
-  loadResourceFromRelease(releaseId: number) {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { id: releaseId },
-      queryParamsHandling: 'merge',
-    });
-  }
 }

@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.resources.resourceTags;
+package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import lombok.Getter;
 
