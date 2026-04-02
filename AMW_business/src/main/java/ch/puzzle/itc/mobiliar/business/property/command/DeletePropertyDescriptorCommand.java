@@ -33,8 +33,4 @@ public class DeletePropertyDescriptorCommand {
     public boolean isForResource() {
         return resourceId != null;
     }
-
-    public boolean isForResourceType() {
-        return resourceTypeId != null;
-    }
 }

@@ -59,8 +59,4 @@ public class UpdatePropertyDescriptorCommand implements PropertyDescriptorComman
     public boolean isForResource() {
         return resourceId != null;
     }
-
-    public boolean isForResourceType() {
-        return resourceTypeId != null;
-    }
 }
