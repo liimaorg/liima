@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { BaseService } from 'src/app/base/base.service';
 import { DeploymentLog } from './deployment-log';
@@ -25,5 +25,11 @@ export class DeploymentLogsService extends BaseService {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
+  }
+
+  // Override to maintain backward compatibility - extract message string
+  override handleError(response: HttpErrorResponse) {
+    const errorMessage = response.error?.message || response.message || 'An error occurred';
+    return throwError(() => errorMessage);
   }
 }

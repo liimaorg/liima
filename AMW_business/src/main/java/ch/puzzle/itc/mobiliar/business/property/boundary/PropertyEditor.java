@@ -26,6 +26,7 @@ import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
+import ch.puzzle.itc.mobiliar.business.property.command.*;
 import ch.puzzle.itc.mobiliar.business.property.control.*;
 import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
@@ -48,8 +49,8 @@ import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.AMWRuntimeException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import ch.puzzle.itc.mobiliar.common.util.ContextNames;
 
@@ -666,6 +667,89 @@ public class PropertyEditor {
 
     public PropertyDescriptorEntity getPropertyDescriptor(Integer propertyDescriptorId) {
         return propertyDescriptorService.getPropertyDescriptorWithTags(propertyDescriptorId);
+    }
+
+    public PropertyDescriptorEntity getDescriptorEntity(GetPropertyDescriptorCommand command) throws NotFoundException {
+        PropertyDescriptorEntity descriptor = propertyDescriptorService.getPropertyDescriptorWithTags(command.getDescriptorId());
+        if (descriptor == null) {
+            throw new NotFoundException("Property descriptor not found");
+        }
+        return descriptor;
+    }
+
+    public PropertyDescriptorEntity createDescriptorEntity(CreatePropertyDescriptorCommand command) throws IllegalStateException {
+        try {
+            PropertyDescriptorEntity entity = new PropertyDescriptorEntity();
+            populatePropertyDescriptorFromCommand(entity, command);
+            
+            String tagsString = convertTagListToString(command.getPropertyTags());
+            
+            if (command.isForResource()) {
+                return savePropertyDescriptorForResource(command.getResourceId(), entity, tagsString);
+            } else {
+                return savePropertyDescriptorForResourceType(command.getResourceTypeId(), entity, tagsString);
+            }
+        } catch (AMWException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    public PropertyDescriptorEntity updateDescriptorEntity(UpdatePropertyDescriptorCommand command) throws NotFoundException, IllegalStateException  {
+        try {
+            PropertyDescriptorEntity existingEntity = propertyDescriptorService.getPropertyDescriptorWithTags(command.getDescriptorId());
+            if (existingEntity == null) {
+                throw new NotFoundException("Property descriptor not found");
+            }
+            
+            populatePropertyDescriptorFromCommand(existingEntity, command);
+            
+            String tagsString = convertTagListToString(command.getPropertyTags());
+            
+            if (command.isForResource()) {
+                return savePropertyDescriptorForResource(command.getResourceId(), existingEntity, tagsString);
+            } else {
+                return savePropertyDescriptorForResourceType(command.getResourceTypeId(), existingEntity, tagsString);
+            }
+        } catch (AMWException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    public void deleteDescriptorEntity(DeletePropertyDescriptorCommand command) throws NotFoundException, IllegalStateException {
+        try {
+            PropertyDescriptorEntity descriptor = propertyDescriptorService.getPropertyDescriptorWithTags(command.getDescriptorId());
+            if (descriptor == null) {
+                throw new NotFoundException("Property descriptor not found");
+            }
+
+            if (command.isForResource()) {
+                deletePropertyDescriptorForResource(command.getResourceId(), descriptor, command.isForceDelete());
+            } else {
+                deletePropertyDescriptorForResourceType(command.getResourceTypeId(), descriptor, command.isForceDelete());
+            }
+        } catch (AMWException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    private void populatePropertyDescriptorFromCommand(PropertyDescriptorEntity entity, PropertyDescriptorCommandData command) {
+        entity.setPropertyName(command.getName());
+        entity.setDisplayName(command.getDisplayName());
+        entity.setValidationLogic(command.getValidationRegex());
+        entity.setNullable(command.isNullable());
+        entity.setOptional(command.isOptional());
+        entity.setEncrypt(command.isEncrypted());
+        entity.setMachineInterpretationKey(command.getMik());
+        entity.setDefaultValue(command.getDefaultValue());
+        entity.setExampleValue(command.getExampleValue());
+        entity.setPropertyComment(command.getComment());
+    }
+
+    private String convertTagListToString(List<String> tags) {
+        if (tags == null || tags.isEmpty()) {
+            return "";
+        }
+        return String.join(",", tags);
     }
 
     /**

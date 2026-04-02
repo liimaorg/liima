@@ -27,10 +27,10 @@
     [canEdit]="canEdit()"
     [canDecrypt]="canDecrypt()"
     [canDelete]="canDelete()"
-    (valueChange)="valueChange.emit({ type: 'valueChange', name: property.name, value: $event })"
-    (resetChange)="resetToggled.emit({ type: 'resetToggle', name: property.name, checked: $event })"
-    (validationChange)="validationChanged.emit({ type: 'validationChange', name: property.name, invalid: $event })"
-    (editClicked)="editClicked.emit({ type: 'editPropertyDescriptor', id: property.descriptorId })"
-    (deleteClicked)="deleteClicked.emit({ type: 'deletePropertyDescriptor', id: property.descriptorId })"
+    (valueChange)="valueChange.emit({ name: property.name, value: $event })"
+    (resetChange)="resetToggled.emit({ name: property.name, checked: $event })"
+    (validationChange)="validationChanged.emit({ name: property.name, invalid: $event })"
+    (editClicked)="editClicked.emit({ id: property.descriptorId })"
+    (deleteClicked)="deleteClicked.emit({ id: property.descriptorId })"
   ></app-property-field>
 </ng-template>

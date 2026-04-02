@@ -1,11 +1,7 @@
 import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
-
-export interface Tag {
-  name: string;
-  type?: string;
-}
+import { PropertyTag } from '../../settings/property-types/property-tag';
 
 @Component({
   selector: 'app-tag-input',
@@ -15,19 +11,19 @@ export interface Tag {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TagInputComponent {
-  tags = input.required<Tag[]>();
+  tags = input.required<PropertyTag[]>();
   canEdit = input<boolean>(true);
   placeholder = input<string>('Type a tag and press Enter');
   tagType = input<string>('LOCAL');
 
-  tagsChange = output<Tag[]>();
+  tagsChange = output<PropertyTag[]>();
 
   newTagInput = signal<string>('');
 
   addTag() {
     const tagName = this.newTagInput().trim();
     if (tagName && !this.tags().some((t) => t.name === tagName)) {
-      const updatedTags = [...this.tags(), { name: tagName, type: this.tagType() }];
+      const updatedTags: PropertyTag[] = [...this.tags(), { name: tagName, type: this.tagType() }];
       this.tagsChange.emit(updatedTags);
       this.newTagInput.set('');
     }

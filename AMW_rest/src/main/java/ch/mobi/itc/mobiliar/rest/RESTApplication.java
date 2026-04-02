@@ -107,6 +107,7 @@ public class RESTApplication extends Application {
         resources.add(ConcurrentModificationExceptionMapper.class);
         resources.add(ElementAlreadyExistsExceptionMapper.class);
         resources.add(TemplateNotDeletableExceptionMapper.class);
+        resources.add(PropertyDescriptorNotDeletableExceptionMapper.class);
         resources.add(OptimisticLockExceptionMapper.class);
         resources.add(DecryptionExceptionMapper.class);
         resources.add(BadRequestExceptionMapper.class);

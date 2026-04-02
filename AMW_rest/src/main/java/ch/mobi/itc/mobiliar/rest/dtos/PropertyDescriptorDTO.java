@@ -1,5 +1,6 @@
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import ch.puzzle.itc.mobiliar.business.property.command.PropertyDescriptorData;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyDescriptorEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @XmlRootElement(name = "propertyDescriptor")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -82,19 +84,34 @@ public class PropertyDescriptorDTO {
         }
     }
 
-    public PropertyDescriptorEntity toEntity() {
-        PropertyDescriptorEntity entity = new PropertyDescriptorEntity();
-        entity.setId(this.id);
-        entity.setPropertyName(this.name);
-        entity.setDisplayName(this.displayName);
-        entity.setValidationLogic(this.validationRegex);
-        entity.setNullable(this.nullable);
-        entity.setOptional(this.optional);
-        entity.setEncrypt(this.encrypted);
-        entity.setMachineInterpretationKey(this.mik);
-        entity.setDefaultValue(this.defaultValue);
-        entity.setExampleValue(this.exampleValue);
-        entity.setPropertyComment(this.comment);
-        return entity;
+    public PropertyDescriptorData asData() {
+        return new PropertyDescriptorData() {
+            @Override
+            public String getName() { return name; }
+            @Override
+            public String getDisplayName() { return displayName; }
+            @Override
+            public String getValidationRegex() { return validationRegex; }
+            @Override
+            public boolean isNullable() { return nullable; }
+            @Override
+            public boolean isOptional() { return optional; }
+            @Override
+            public boolean isEncrypted() { return encrypted; }
+            @Override
+            public String getMik() { return mik; }
+            @Override
+            public String getDefaultValue() { return defaultValue; }
+            @Override
+            public String getExampleValue() { return exampleValue; }
+            @Override
+            public String getComment() { return comment; }
+            @Override
+            public List<String> getPropertyTags() {
+                return propertyTags != null 
+                    ? propertyTags.stream().map(PropertyTagDTO::getName).collect(Collectors.toList())
+                    : null;
+            }
+        };
     }
 }
