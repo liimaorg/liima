@@ -1,10 +1,61 @@
-<app-loading-indicator [isLoading]="isLoading"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-tile-component
   [title]="'Related Resources'"
   [actionName]="'Add Relation'"
   [canAction]="false"
   [isVisible]="false"
-  [noContent]="true"
+  [noContent]="!hasRelations()"
   [notAllowed]="false"
 >
+  @if (hasRelations()) {
+    <div class="relations-container">
+      @if (groupedRelations().consumed.length > 0) {
+        <div class="relations-section">
+          <h3 class="section-title">Consumed Resources</h3>
+          <div class="relations-list">
+            @for (relation of groupedRelations().consumed; track relation.id) {
+              <div class="relation-item">
+                <div class="relation-info">
+                  <div class="relation-name">{{ relation.relatedResourceName }}</div>
+                  <div class="relation-details">
+                    <span class="relation-type">{{ relation.type }}</span>
+                    <span class="relation-separator">•</span>
+                    <span class="relation-release">{{ relation.relatedResourceRelease }}</span>
+                    @if (relation.relationName && relation.relationName !== relation.relatedResourceName) {
+                      <span class="relation-separator">•</span>
+                      <span class="relation-identifier">{{ relation.relationName }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (groupedRelations().provided.length > 0) {
+        <div class="relations-section">
+          <h3 class="section-title">Provided Resources</h3>
+          <div class="relations-list">
+            @for (relation of groupedRelations().provided; track relation.id) {
+              <div class="relation-item">
+                <div class="relation-info">
+                  <div class="relation-name">{{ relation.relatedResourceName }}</div>
+                  <div class="relation-details">
+                    <span class="relation-type">{{ relation.type }}</span>
+                    <span class="relation-separator">•</span>
+                    <span class="relation-release">{{ relation.relatedResourceRelease }}</span>
+                    @if (relation.relationName && relation.relationName !== relation.relatedResourceName) {
+                      <span class="relation-separator">•</span>
+                      <span class="relation-identifier">{{ relation.relationName }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
 </app-tile-component>
