@@ -20,8 +20,16 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import java.util.ArrayList;
-import java.util.List;
+import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -30,19 +38,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
-import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
-import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Rest boundary for Resource-Relation-Templates
@@ -53,13 +50,7 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 public class ResourceRelationTemplatesRest {
 
     @Inject
-    ResourceLocator resourceLocator;
-
-    @Inject
     ResourceRelationLocator resourceRelationLocator;
-
-    @Inject
-    TemplateEditor templateEditor;
 
     @Inject
     TemplatesScreenDomainService templateService;
