@@ -95,6 +95,7 @@
         @if (isApplicationServer()) {
           <app-resource-applications [resource]="resource()" [contextId]="contextId()"></app-resource-applications>
         }
+        <app-resource-relations [contextId]="contextId()"></app-resource-relations>
       </div>
     }
   </div>

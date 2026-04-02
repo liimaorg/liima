@@ -19,6 +19,7 @@ import { ResourceTagsComponent } from './resource-tags/resource-tags.component';
 import { RESOURCE_TYPE } from '../../core/amw-constants';
 import { CopyFromResourceDialogComponent } from './copy-from-resource-dialog/copy-from-resource-dialog.component';
 import { ResourceApplicationsComponent } from './resource-applications/resource-applications.component';
+import { ResourceRelationsComponent } from './resource-relations/resource-relations.component';
 
 @Component({
   selector: 'app-resource-edit',
@@ -37,6 +38,7 @@ import { ResourceApplicationsComponent } from './resource-applications/resource-
     ResourcePropertiesComponent,
     ResourceReleasesComponent,
     ResourceTagsComponent,
+    ResourceRelationsComponent,
     RouterLink,
     ResourceApplicationsComponent,
   ],
