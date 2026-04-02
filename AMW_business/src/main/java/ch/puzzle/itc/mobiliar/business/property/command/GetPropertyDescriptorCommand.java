@@ -1,4 +1,4 @@
-package ch.mobi.itc.mobiliar.rest.resources.propertyDescriptor;
+package ch.puzzle.itc.mobiliar.business.property.command;
 
 import lombok.Getter;
 
