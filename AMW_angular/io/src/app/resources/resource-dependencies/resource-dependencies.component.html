@@ -1,0 +1,33 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title d-flex align-items-center gap-3">
+    <a
+      [routerLink]="['/resource/edit']"
+      [queryParams]="{ id: resourceId(), ctx: contextId() }"
+      class="btn btn-link p-0"
+    >
+      <app-icon icon="arrow-left"></app-icon>
+    </a>
+    <span class="resource-name">Dependencies for {{ dependencies()?.resourceName }}</span>
+  </div>
+
+  <div class="page-content">
+    @if (hasDependencies()) {
+      @if (hasConsumedRelations()) {
+        <app-dependencies-table
+          [title]="'Resources consuming ' + dependencies()?.resourceName"
+          [dependencies]="dependencies()?.consumedRelations ?? []"
+        ></app-dependencies-table>
+      }
+
+      @if (hasProvidedRelations()) {
+        <app-dependencies-table
+          [title]="'Resources providing ' + dependencies()?.resourceName"
+          [dependencies]="dependencies()?.providedRelations ?? []"
+        ></app-dependencies-table>
+      }
+    } @else {
+      <div class="alert alert-info">No dependencies found.</div>
+    }
+  </div>
+</app-page>
