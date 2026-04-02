@@ -21,13 +21,13 @@ export class HttpToastInterceptor implements HttpInterceptor {
           // Re-throw these errors so services can handle them
           return throwError(() => error);
         }
-        
+
         // Show toast for other errors
         if (error.error?.message) {
           this.toastService.error(error.error.message);
           return EMPTY;
         }
-        
+
         // Re-throw if no message to show
         return throwError(() => error);
       }),
