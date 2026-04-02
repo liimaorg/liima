@@ -39,6 +39,7 @@ public class ResourceRelationDTO {
     private final static String CONSUMED = "consumed";
     private final static String PROVIDED = "provided";
 
+    private Integer id;
     private String relatedResourceName;
     private String type;
     private String relatedResourceRelease;
@@ -48,6 +49,7 @@ public class ResourceRelationDTO {
     private List<TemplateDTO> templates;
 
     public ResourceRelationDTO(AbstractResourceRelationEntity relation) {
+        id = relation.getId();
         relatedResourceName = relation.getSlaveResource().getName();
         type = relation.getResourceRelationType().getResourceTypeB().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
