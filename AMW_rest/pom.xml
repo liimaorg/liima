@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>jaxrs-api</artifactId>
-			<version>3.0.11.Final</version>
+			<version>3.0.12.Final</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -144,7 +144,7 @@
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
-			<version>8.0</version>
+			<version>8.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 
