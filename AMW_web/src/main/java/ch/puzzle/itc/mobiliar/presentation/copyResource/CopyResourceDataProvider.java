@@ -20,18 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.presentation.copyResource;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import javax.faces.bean.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.CopyResource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceResult;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -43,6 +31,12 @@ import ch.puzzle.itc.mobiliar.presentation.common.ResourceTypeDataProvider;
 import ch.puzzle.itc.mobiliar.presentation.resourcesedit.EditResourceView;
 import ch.puzzle.itc.mobiliar.presentation.util.GlobalMessageAppender;
 import lombok.Getter;
+
+import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * For copy resource usecase
@@ -168,18 +162,6 @@ public class CopyResourceDataProvider implements Serializable {
 
 		GlobalMessageAppender.addSuccessMessage("Copy successful");
 		return true;
-	}
-
-    /**
-	 * Load all resources for the selected type and exclude resource from excludeList
-	 * 
-	 * @param resourceTypeId
-	 * @param excludedList
-	 * @return
-	 */
-	public List<ResourceGroup> loadResourcesForSelectedType(Integer resourceTypeId,
-			List<Integer> excludedList) {
-		return copyResource.loadResourceGroupsForType(resourceTypeId, resource.getResource());
 	}
 
     public boolean isCanCopyResource() {

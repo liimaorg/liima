@@ -26,16 +26,7 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.ejb.EJBException;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
-
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.CopyResourceDomainService;
@@ -50,6 +41,13 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+
+import javax.ejb.EJBException;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A boundary for copy resourcess
@@ -84,6 +82,7 @@ public class CopyResource {
 	ResourceLocator resourceLocator;
 
 	/**
+	 *
 	 * @param typeId
 	 * @return list of resourceGroups
 	 */

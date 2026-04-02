@@ -233,6 +233,12 @@ public class ResourceLocator {
         return result;
     }
 
+    /**
+     * @deprecated Use {@link GetResourceUseCase} instead
+     * @param resourceId
+     * @return
+     */
+    @Deprecated
     public ResourceEntity getResourceById(Integer resourceId) {
         try {
             return resourceRepository.find(resourceId);

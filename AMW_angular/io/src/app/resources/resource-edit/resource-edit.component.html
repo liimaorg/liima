@@ -60,6 +60,18 @@
               </a>
             </li>
           }
+          @if (permissions().canCopyFromResource) {
+            <li ngbDropdownItem>
+              <a
+                class="dropdown-item"
+                tabindex="0"
+                (keyup.enter)="openCopyFromResourceDialog()"
+                (click)="openCopyFromResourceDialog()"
+              >
+                Copy from resource
+              </a>
+            </li>
+          }
         </ul>
       </div>
     }
