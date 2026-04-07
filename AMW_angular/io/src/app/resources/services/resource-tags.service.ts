@@ -14,6 +14,14 @@ export interface TagRequest {
 export class ResourceTagsService extends BaseService {
   private http = inject(HttpClient);
 
+  getResourceTags(resourceId: number): Observable<ResourceTag[]> {
+    return this.http
+      .get<ResourceTag[]>(`${this.getBaseUrl()}/resources/${resourceId}/tags`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   createTag(resourceId: number, tagRequest: TagRequest): Observable<ResourceTag> {
     return this.http
       .post<ResourceTag>(`${this.getBaseUrl()}/resources/${resourceId}/tags`, tagRequest, {

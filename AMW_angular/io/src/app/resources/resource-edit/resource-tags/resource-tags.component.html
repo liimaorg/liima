@@ -1,0 +1,27 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Tags'"
+  [actionName]="'Tag current state'"
+  [canAction]="permissions().canTagCurrentState"
+  [isVisible]="isApplicationServer()"
+  (tileAction)="tagCurrentState()"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+  @if (!tags() || tags().length < 1) {
+    <div class="no-content">
+      <span>No tags for this resource</span>
+    </div>
+  } @else {
+    <table class="table table-borderless">
+      <tbody>
+        @for (tag of tags(); track tag.id) {
+          <tr>
+            <td>{{ tag.label }}</td>
+            <td class="text-end text-muted">{{ tag.tagDate | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</app-tile-component>

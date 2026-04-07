@@ -8,3 +8,7 @@ export const ENVIRONMENT = {
 export const DATE_TIME_FORMAT = 'dd.MM.yyyy HH:mm';
 export const DATE_FORMAT = 'dd.MM.yyyy';
 export const ISO_FORMAT = 'yyyy-MM-dd';
+
+export const RESOURCE_TYPE = {
+  APPLICATION_SERVER: 'APPLICATIONSERVER',
+};

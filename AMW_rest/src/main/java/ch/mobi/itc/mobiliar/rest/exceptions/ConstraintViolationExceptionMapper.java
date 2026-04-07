@@ -12,6 +12,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     public Response toResponse(ConstraintViolationException e) {
         final String message = e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage)
+                .sorted()
                 .distinct() // since we use CDI and JAX-RS, there is potential that the validation kicks in twice.
                             // calling distinct on the list of messages makes sure, that each message is included only once.
                 .collect(Collectors.joining("\n"));

@@ -20,30 +20,30 @@
 
 package ch.puzzle.itc.mobiliar.business.configurationtag.control;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.Spy;
-
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doReturn;
 
 /**
  * Persistence tests for {@link ch.puzzle.itc.mobiliar.business.configurationtag.control.TagConfigurationService}
@@ -55,10 +55,10 @@ public class TagConfigurationServicePersistenceTest {
 	EntityManager entityManager;
 
 	@Mock
-	Logger log;
+	PermissionService permissionService;
 
 	@Mock
-	PermissionService permissionService;
+	ResourceLocator resourceLocator;
 
 	@Spy
 	@InjectMocks
@@ -67,8 +67,7 @@ public class TagConfigurationServicePersistenceTest {
 	@Test
 	public void test_tagConfiguration() throws ResourceNotFoundException, ElementAlreadyExistsException {
 		// given
-		ResourceEntity as1 = ResourceFactory.createNewResource("appServer1");
-		entityManager.persist(as1);
+		ResourceEntity as1 = createAndPersistResourceEntity("appServer1");
 		String tagLabel = "foo";
 		Date tagDate = new Date();
 
@@ -83,32 +82,17 @@ public class TagConfigurationServicePersistenceTest {
 	}
 
 	@Test
-	public void test_loadTagLabelsForResource(){
+	public void test_getTags(){
 		// given
-		ResourceEntity as1 = ResourceFactory.createNewResource("appServer1");
-		entityManager.persist(as1);
-		ResourceTagEntity tag1 = new ResourceTagEntity();
-		tag1.setLabel("tag1");
-		tag1.setResource(as1);
-		tag1.setTagDate(new Date());
-		entityManager.persist(tag1);
-		ResourceTagEntity tag2 = new ResourceTagEntity();
-		tag2.setLabel("tag2");
-		tag2.setResource(as1);
-		tag2.setTagDate(new Date());
-		entityManager.persist(tag2);
-		
-		ResourceEntity as2 = ResourceFactory.createNewResource("appServer2");
-		entityManager.persist(as2);
-		ResourceTagEntity tag3 = new ResourceTagEntity();
-		tag3.setLabel("tag3");
-		tag3.setResource(as2);
-		tag3.setTagDate(new Date());
-		entityManager.persist(tag3);
+		ResourceEntity as1 = createAndPersistResourceEntity("appServer1");
+		createAndPersistTag("tag1", as1);
+		createAndPersistTag("tag2", as1);
+		ResourceEntity as2 = createAndPersistResourceEntity("appServer2");
+		createAndPersistTag("tag3", as2);
 
 		// when
-		List<ResourceTagEntity> result1 = service.loadTagLabelsForResource(as1);
-		List<ResourceTagEntity> result2 = service.loadTagLabelsForResource(as2);
+		List<ResourceTagEntity> result1 = service.getTags(as1);
+		List<ResourceTagEntity> result2 = service.getTags(as2);
 		
 		// then
 		assertNotNull(result1);
@@ -124,4 +108,37 @@ public class TagConfigurationServicePersistenceTest {
 		}
 	}
 
+	@Test
+	void getTags_byResourceId() throws NotFoundException {
+		// given
+		ResourceEntity as1 = createAndPersistResourceEntity("appServer1");
+		createAndPersistTag("tag1", as1);
+		createAndPersistTag("tag2", as1);
+		ResourceEntity as2 = createAndPersistResourceEntity("appServer2");
+		createAndPersistTag("tag3", as2);
+
+		doReturn(as1).when(resourceLocator).getResourceById(as1.getId());
+
+		// when
+		List<ResourceTagEntity> result = service.getTags(as1.getId());
+
+		// then
+		assertEquals(2, result.size());
+		assertEquals("tag1", result.get(0).getLabel());
+		assertEquals("tag2", result.get(1).getLabel());
+	}
+
+	private ResourceEntity createAndPersistResourceEntity(String name) {
+		ResourceEntity as1 = ResourceFactory.createNewResource(name);
+		entityManager.persist(as1);
+		return as1;
+	}
+
+	private void createAndPersistTag(String label, ResourceEntity resourceEntity) {
+		ResourceTagEntity tag1 = new ResourceTagEntity();
+		tag1.setLabel(label);
+		tag1.setResource(resourceEntity);
+		tag1.setTagDate(new Date());
+		entityManager.persist(tag1);
+	}
 }

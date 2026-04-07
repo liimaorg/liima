@@ -20,7 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.presentation.release;
 
-import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateTagUseCase;
+import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.CreateResourceTagUseCase;
+import ch.puzzle.itc.mobiliar.business.configurationtag.boundary.ListResourceTagsUseCase;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
@@ -46,7 +47,10 @@ public class TaggingDataProvider implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Inject
-    CreateTagUseCase createTagUseCase;
+    CreateResourceTagUseCase createResourceTagUseCase;
+
+    @Inject
+    ListResourceTagsUseCase listResourceTagsUseCase;
 
     @Inject
     PermissionService permissions;
@@ -72,7 +76,7 @@ public class TaggingDataProvider implements Serializable {
     public void onResourceChange(@Observes ResourceEntity resourceEntity) {
         this.resource = resourceEntity;
         canTagCurrentState = permissions.hasPermission(Permission.RESOURCE, null, Action.UPDATE, resourceEntity.getResourceGroup(), null);
-        extractTagLabels(createTagUseCase.loadTagLabelsForResource(resourceEntity));
+        extractTagLabels(listResourceTagsUseCase.getTags(resourceEntity));
     }
 
     public void onResourceTypeChange(@Observes ResourceTypeEntity resourceTypeEntity) {
@@ -100,7 +104,7 @@ public class TaggingDataProvider implements Serializable {
                 GlobalMessageAppender.addErrorMessage(message);
             }
             else {
-                createTagUseCase.tagConfiguration(resource.getId(), tagLabel, tagDate);
+                createResourceTagUseCase.tagConfiguration(resource.getId(), tagLabel, tagDate);
                 String message = "New tag '" + tagLabel + "' created.";
                 GlobalMessageAppender.addSuccessMessage(message);
             }
