@@ -1,7 +1,7 @@
 import { Component, computed, inject, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../services/resource.service';
@@ -16,6 +16,7 @@ import { ContextsListComponent } from '../contexts-list/contexts-list.component'
 import { ResourcePropertiesComponent } from './resource-properties/resource-properties.component';
 import { ResourceReleasesComponent } from './resource-releases/resource-releases.component';
 import { ResourceTagsComponent } from './resource-tags/resource-tags.component';
+import { RESOURCE_TYPE } from '../../core/amw-constants';
 
 @Component({
   selector: 'app-resource-edit',
@@ -43,7 +44,6 @@ export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
@@ -57,8 +57,12 @@ export class ResourceEditComponent {
     } else return false;
   });
 
+  protected readonly isApplicationServer = computed<boolean>(
+    () => this.resource()?.type === RESOURCE_TYPE.APPLICATION_SERVER,
+  );
+
   testGenerationAvailable = computed(() => {
-    return this.resource()?.type === 'APPLICATIONSERVER' || this.resource()?.hasApplicationServer;
+    return this.isApplicationServer() || this.resource()?.hasApplicationServer;
   });
 
   permissions = computed(() => {
@@ -72,10 +76,6 @@ export class ResourceEditComponent {
     }
   });
 
-  selectedRelease = computed(() => {
-    return this.releases().find((release) => release.id === this.id());
-  });
-
   testGenerationQueryParams = computed(() => ({
     id: this.id(),
     ctx: this.contextId(),
@@ -83,6 +83,4 @@ export class ResourceEditComponent {
   protected readonly showAnalyze = computed<boolean>(
     () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
   );
-
-  protected readonly isApplicationServer = computed<boolean>(() => this.resource()?.type === 'APPLICATIONSERVER');
 }

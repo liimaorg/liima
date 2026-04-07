@@ -55,16 +55,9 @@ export class ResourceTagsComponent {
     if (!resourceId) return;
 
     this.isLoading.set(true);
-    this.resourceTagsService.getResourceTags(resourceId).subscribe({
-      next: (tags) => {
-        this.tags.set(tags);
-        this.isLoading.set(false);
-      },
-      error: (error) => {
-        console.error('Failed to load tags:', error);
-        this.isLoading.set(false);
-        this.toastService.error('Failed to load tags.');
-      },
+    this.resourceTagsService.getResourceTags(resourceId).subscribe((tags) => {
+      this.tags.set(tags);
+      this.isLoading.set(false);
     });
   }
 
@@ -83,16 +76,9 @@ export class ResourceTagsComponent {
         label: tagData.label,
         tagDate: tagData.tagDate,
       })
-      .subscribe({
-        next: () => {
-          this.toastService.success(`New tag '${tagData.label}' created.`);
-          this.loadTags();
-        },
-        error: (error) => {
-          console.error('Failed to create tag:', error);
-          const errorMessage = error?.error?.message || 'Failed to create tag.';
-          this.toastService.error(errorMessage);
-        },
+      .subscribe(() => {
+        this.toastService.success(`New tag '${tagData.label}' created.`);
+        this.loadTags();
       });
   }
 }
