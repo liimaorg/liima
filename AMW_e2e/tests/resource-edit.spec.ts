@@ -7,13 +7,12 @@ test.beforeEach(async ({ page }) => {
 test.describe.serial("Resource Edit Page - Properties", () => {
   test("should edit and save a property value", async ({ page }) => {
     await page.getByRole("button", { name: "D (TEST)" }).click();
-    await page.waitForURL(/ctx=\d+/); // Wait for context switch
 
-    const propertyInput = page.locator("#property-Version");
+    const propertyInput = page.getByRole("textbox", { name: "Version" });
     await propertyInput.fill("whatever" + Math.random());
     await page.keyboard.press("Tab");
 
-    const saveButton = page.getByTestId("button-save");
+    const saveButton = page.getByRole("button", { name: "Save" });
     await expect(saveButton).toBeVisible();
     expect(saveButton.isEnabled());
     await saveButton.click();
@@ -21,9 +20,8 @@ test.describe.serial("Resource Edit Page - Properties", () => {
 
   test("should reset property to parent context value", async ({ page }) => {
     await page.getByRole("button", { name: "DEV" }).click();
-    await page.waitForURL(/ctx=\d+/); // Wait for context switch
 
-    const propertyInput = page.locator("#property-Version");
+    const propertyInput = page.getByRole("textbox", { name: "Version" });
     const originalValue = await propertyInput.inputValue();
     await page.getByRole("button", { name: "D (TEST)" }).click();
     await page.waitForURL(/ctx=\d+/); // Wait for context switch
@@ -38,7 +36,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
 
     await expect(propertyInput).toHaveValue(originalValue);
 
-    const saveButton = page.getByTestId("button-save");
+    const saveButton = page.getByRole("button", { name: "Save" });
     await expect(saveButton).toBeVisible();
     expect(saveButton.isEnabled());
     await saveButton.click();
@@ -46,15 +44,14 @@ test.describe.serial("Resource Edit Page - Properties", () => {
 
   test("should cancel property changes", async ({ page }) => {
     await page.getByRole("button", { name: "D (TEST)" }).click();
-    await page.waitForURL(/ctx=\d+/); // Wait for context switch
 
-    const propertyInput = page.locator("#property-Version");
+    const propertyInput = page.getByRole("textbox", { name: "Version" });
     const originalValue = await propertyInput.inputValue();
 
     await propertyInput.fill("temporary-value");
     await page.keyboard.press("Tab");
 
-    const cancelButton = page.getByTestId("button-cancel");
+    const cancelButton = page.getByRole("button", { name: "Cancel" });
     await expect(cancelButton).toBeVisible();
     await cancelButton.click();
 
@@ -95,10 +92,12 @@ test.describe("Resource Edit Page - Navigation", () => {
 });
 
 test.describe("Resource Edit Page - Releases", () => {
-  test("should have release dropdown", async ({ page }) => {
-    // Find the release dropdown button
-    const releaseDropdown = page.locator(".dropdown-toggle").first();
-    await expect(releaseDropdown).toBeVisible();
+  test("should show releases tile", async ({ page }) => {
+    await expect(page.getByText("Releases")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "New Release" }),
+    ).toBeEnabled();
+    await expect(page.getByRole("cell", { name: "RL-" })).toBeVisible();
   });
 });
 
@@ -107,12 +106,11 @@ test.describe("Resource Edit Page - Validation", () => {
     page,
   }) => {
     await page.getByRole("button", { name: "D (TEST)" }).click();
-    await page.waitForURL(/ctx=\d+/);
-    const propertyInput = page.locator("#property-Version");
+    const propertyInput = page.getByRole("textbox", { name: "Version" });
     await propertyInput.fill("");
     await page.keyboard.press("Tab");
 
-    const saveButton = page.getByTestId("button-save");
+    const saveButton = page.getByRole("button", { name: "Save" });
     await expect(saveButton).toBeVisible(); // Wait for button to appear
     await expect(saveButton).toBeDisabled();
   });
