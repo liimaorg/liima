@@ -14,17 +14,41 @@
   <div class="page-content">
     @if (hasDependencies()) {
       @if (hasConsumedRelations()) {
-        <app-dependencies-table
-          [title]="'Resources consuming ' + dependencies()?.resourceName"
-          [dependencies]="dependencies()?.consumedRelations ?? []"
-        ></app-dependencies-table>
+        <div class="card">
+          <div class="card-header">
+            <h2>Resources consuming {{ dependencies()?.resourceName }}</h2>
+          </div>
+          <div class="card-body p-0">
+            <app-table
+              [entityName]="'dependencies'"
+              [headers]="dependenciesHeader()"
+              [data]="consumedRelationsTableData()"
+              [canNavigate]="permissions().canUseAngularEditResource"
+              (navigate)="navigateToResource($event.id)"
+              [canEdit]="permissions().canReadResources"
+              (edit)="openEditResourcePage($event.id)"
+            ></app-table>
+          </div>
+        </div>
       }
 
       @if (hasProvidedRelations()) {
-        <app-dependencies-table
-          [title]="'Resources providing ' + dependencies()?.resourceName"
-          [dependencies]="dependencies()?.providedRelations ?? []"
-        ></app-dependencies-table>
+        <div class="card">
+          <div class="card-header">
+            <h2>Resources providing {{ dependencies()?.resourceName }}</h2>
+          </div>
+          <div class="card-body p-0">
+            <app-table
+              [entityName]="'dependencies'"
+              [headers]="dependenciesHeader()"
+              [data]="providedRelationsTableData()"
+              [canNavigate]="permissions().canUseAngularEditResource"
+              (navigate)="navigateToResource($event.id)"
+              [canEdit]="permissions().canReadResources"
+              (edit)="openEditResourcePage($event.id)"
+            ></app-table>
+          </div>
+        </div>
       }
     } @else {
       <div class="alert alert-info">No dependencies found.</div>
