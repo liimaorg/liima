@@ -22,7 +22,7 @@ package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -34,6 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -46,7 +47,7 @@ import java.util.List;
 public class ResourceRelationsByIdRest {
 
     @Inject
-    ResourceLocator resourceLocator;
+    ResourceRepository resourceRepository;
 
     @Inject
     ResourceRelationTemplatesRest resourceRelationTemplatesRest;
@@ -60,24 +61,34 @@ public class ResourceRelationsByIdRest {
             @Parameter(description = "Optional filter by slave resource type") @QueryParam("type") String resourceType)
             throws ValidationException, ResourceNotFoundException {
 
-        ResourceEntity resource = resourceLocator.getResourceById(resourceId);
+        ResourceEntity resource;
+        try {
+            resource = resourceRepository.getResourceByIdWithRelations(resourceId);
+        } catch (NoResultException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
 
-        for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
-            ResourceRelationDTO resRel = createResourceRelationDTO(resource, resourceType, relation);
-            if (resRel != null) {
-                resourceRelations.add(resRel);
+        if (resource.getConsumedMasterRelations() != null) {
+            for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
+                ResourceRelationDTO resRel = createResourceRelationDTO(resource, resourceType, relation);
+                if (resRel != null) {
+                    resourceRelations.add(resRel);
+                }
             }
         }
 
-        for (ProvidedResourceRelationEntity relation : resource.getProvidedMasterRelations()) {
-            ResourceRelationDTO resRel = createResourceRelationDTO(resource, resourceType, relation);
-            if (resRel != null) {
-                resourceRelations.add(resRel);
+        if (resource.getProvidedMasterRelations() != null) {
+            for (ProvidedResourceRelationEntity relation : resource.getProvidedMasterRelations()) {
+                ResourceRelationDTO resRel = createResourceRelationDTO(resource, resourceType, relation);
+                if (resRel != null) {
+                    resourceRelations.add(resRel);
+                }
             }
         }
 
