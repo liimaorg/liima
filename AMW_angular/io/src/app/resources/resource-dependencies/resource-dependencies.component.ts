@@ -14,7 +14,6 @@ import { DependenciesTableComponent } from './dependencies-table/dependencies-ta
   standalone: true,
   imports: [LoadingIndicatorComponent, PageComponent, IconComponent, DependenciesTableComponent, RouterLink],
   templateUrl: './resource-dependencies.component.html',
-  styleUrl: './resource-dependencies.component.scss',
 })
 export class ResourceDependenciesComponent {
   private route = inject(ActivatedRoute);
