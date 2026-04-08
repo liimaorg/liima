@@ -12,7 +12,7 @@
           <tr>
             <th>Name</th>
             <th>Release</th>
-            <th>Action</th>
+            <th class="text-end">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -20,19 +20,29 @@
             <tr>
               <td>{{ candidate.groupName }}</td>
               <td>
-                <select
-                  class="form-select form-select-sm"
-                  [ngModel]="selectedReleaseResourceIds()[candidate.groupId]"
-                  (ngModelChange)="onReleaseChange(candidate.groupId, $event)"
-                >
-                  @for (release of candidate.releases; track release.resourceId) {
-                    <option [ngValue]="release.resourceId">{{ release.releaseName }}</option>
-                  }
-                </select>
+                <div ngbDropdown>
+                  <app-button ngbDropdownToggle [size]="'sm'">
+                    {{ getSelectedReleaseName(candidate.groupId) || 'Select Release' }}
+                  </app-button>
+                  <ul ngbDropdownMenu>
+                    @for (release of candidate.releases; track release.resourceId) {
+                      <li ngbDropdownItem>
+                        <a
+                          (click)="onReleaseChange(candidate.groupId, release.resourceId)"
+                          (keyup.enter)="onReleaseChange(candidate.groupId, release.resourceId)"
+                          class="dropdown-item"
+                          tabindex="0"
+                        >
+                          {{ release.releaseName }}
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
               </td>
-              <td>
+              <td class="text-end">
                 <app-button [variant]="'link'" [disabled]="isCopying()" (click)="copyFrom(candidate.groupId)">
-                  Copy from this resource
+                  <app-icon icon="copy"></app-icon>
                 </app-button>
               </td>
             </tr>

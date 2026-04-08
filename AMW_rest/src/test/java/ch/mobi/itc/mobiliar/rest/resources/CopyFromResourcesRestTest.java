@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.*;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -128,15 +128,15 @@ class CopyFromResourcesRestTest {
     }
 
     @Test
-    public void shouldThrowAMWExceptionWhenCopyFromResourceThrowsException() throws AMWException {
+    public void shouldThrowIllegalStateExceptionWhenCopyFromResourceThrowsException() {
         // given
         CopyFromResourceRequestDTO request = new CopyFromResourceRequestDTO(1, 2);
-        doThrow(new AMWException("Permission Denied"))
+        doThrow(new IllegalStateException("cannot copy from resource a to b"))
                 .when(copyFromResourceUseCaseMock).copyFromResource(any(CopyFromResourceCommand.class));
 
         // when/then
-        AMWException exception = assertThrows(AMWException.class, () -> rest.copyFromResource(request));
-        assertEquals("Permission Denied", exception.getMessage());
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> rest.copyFromResource(request));
+        assertEquals("cannot copy from resource a to b", exception.getMessage());
     }
 
 }

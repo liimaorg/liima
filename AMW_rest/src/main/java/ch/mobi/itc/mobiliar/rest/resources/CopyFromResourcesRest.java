@@ -6,7 +6,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroup;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -58,7 +57,7 @@ public class CopyFromResourcesRest {
     @Produces(APPLICATION_JSON)
     @Operation(summary = "Copy properties, templates, and relations from one resource to another - used by Angular")
     public Response copyFromResource(
-            @RequestBody(description = "Copy from resource request", required = true) @Valid CopyFromResourceRequestDTO request) throws AMWException {
+            @RequestBody(description = "Copy from resource request", required = true) @Valid CopyFromResourceRequestDTO request) {
 
         CopyFromResourceCommand command = new CopyFromResourceCommand(request.getTargetResourceId(), request.getOriginResourceId());
         copyFromResourceUseCase.copyFromResource(command);

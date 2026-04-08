@@ -13,9 +13,13 @@ public class CopyFromResourceService implements CopyFromResourceUseCase {
     private CopyResource copyResource;
 
     @Override
-    public void copyFromResource(CopyFromResourceCommand command) throws AMWException {
-        CopyResourceResult copyResourceResult = copyResource.doCopyResource(command.getTargetResourceId(), command.getOriginResourceId());
-        if (copyResourceResult.isSuccess()) return;
+    public void copyFromResource(CopyFromResourceCommand command) {
+        try {
+            CopyResourceResult copyResourceResult = copyResource.doCopyResource(command.getTargetResourceId(), command.getOriginResourceId());
+            if (copyResourceResult.isSuccess()) return;
+        } catch (AMWException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
         throw new IllegalStateException("Copy from resource failed");
     }
 }
