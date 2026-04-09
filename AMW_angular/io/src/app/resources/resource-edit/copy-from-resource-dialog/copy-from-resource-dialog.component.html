@@ -1,0 +1,54 @@
+<app-modal-header [title]="'Copy from resource'" (cancel)="activeModal.dismiss('cancel')"></app-modal-header>
+<div class="modal-body">
+  <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+  @if (!isLoading()) {
+    @if (candidates().length === 0) {
+      <p>
+        No resources of type <strong>{{ resourceTypeName }}</strong> available to copy from.
+      </p>
+    } @else {
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Release</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (candidate of candidates(); track candidate.groupId) {
+            <tr>
+              <td>{{ candidate.groupName }}</td>
+              <td>
+                <div ngbDropdown>
+                  <app-button ngbDropdownToggle [size]="'sm'">
+                    {{ getSelectedReleaseName(candidate.groupId) || 'Select Release' }}
+                  </app-button>
+                  <ul ngbDropdownMenu>
+                    @for (release of candidate.releases; track release.resourceId) {
+                      <li ngbDropdownItem>
+                        <a
+                          (click)="onReleaseChange(candidate.groupId, release.resourceId)"
+                          (keyup.enter)="onReleaseChange(candidate.groupId, release.resourceId)"
+                          class="dropdown-item"
+                          tabindex="0"
+                        >
+                          {{ release.releaseName }}
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </td>
+              <td class="text-end">
+                <app-button [variant]="'link'" [disabled]="isCopying()" (click)="copyFrom(candidate.groupId)">
+                  <app-icon icon="copy"></app-icon>
+                </app-button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</div>

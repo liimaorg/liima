@@ -20,6 +20,11 @@
 
 package ch.mobi.itc.mobiliar.rest;
 
+import java.util.Set;
+
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
+
 import ch.mobi.itc.mobiliar.rest.analyze.TestGenerationRest;
 import ch.mobi.itc.mobiliar.rest.apps.AppsRest;
 import ch.mobi.itc.mobiliar.rest.auditview.AuditViewRest;
@@ -84,6 +89,7 @@ public class RESTApplication extends Application {
         resources.add(ResourceFunctionsRest.class);
         resources.add(ResourceTagsRest.class);
         resources.add(PropertyDescriptorRest.class);
+        resources.add(CopyFromResourcesRest.class);
 
         // writers
         resources.add(DeploymentDtoCsvBodyWriter.class);
