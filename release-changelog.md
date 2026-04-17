@@ -1,3 +1,16 @@
+# v1.18.11
+* JavaScript updates [#978](https://github.com/liimaorg/liima/pull/978), [#991](https://github.com/liimaorg/liima/pull/991), [#992](https://github.com/liimaorg/liima/pull/992)
+* chore: add instructions for coding ai in agents.md [#987](https://github.com/liimaorg/liima/pull/987)
+* Angular Edit Resource Page (hidden behind feature flag):
+  * feat: resources can be tagged [#970](https://github.com/liimaorg/liima/pull/970)
+  * Feat/add edit properties [#980](https://github.com/liimaorg/liima/pull/980)
+  * feat: show resource tags in dedicated tile [#984](https://github.com/liimaorg/liima/pull/984)
+  * feat: copy properties from other resource [#986](https://github.com/liimaorg/liima/pull/986)
+  * Fix/property desc issues [#988](https://github.com/liimaorg/liima/pull/988)
+  * Feat/resource properties [#964](https://github.com/liimaorg/liima/pull/964)
+  * feat(ui, rest): manage resource releases [#956](https://github.com/liimaorg/liima/pull/956)
+  * feat(ui): edit resource analyze test generation [#957](https://github.com/liimaorg/liima/pull/957)
+
 # v1.18.10
 * Deploy filter refact [#953](https://github.com/liimaorg/liima/pull/953)
   * Fixes an issue where enum deployment filter values weren't displayed correctly
