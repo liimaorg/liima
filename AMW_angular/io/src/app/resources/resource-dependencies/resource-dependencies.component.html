@@ -1,0 +1,57 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-page>
+  <div class="page-title d-flex align-items-center gap-3">
+    <a
+      [routerLink]="['/resource/edit']"
+      [queryParams]="{ id: resourceId(), ctx: contextId() }"
+      class="btn btn-link p-0"
+    >
+      <app-icon icon="arrow-left"></app-icon>
+    </a>
+    <span class="resource-name">Dependencies for {{ dependencies()?.resourceName }}</span>
+  </div>
+
+  <div class="page-content">
+    @if (hasDependencies()) {
+      @if (hasConsumedRelations()) {
+        <div class="card">
+          <div class="card-header">
+            <h2>Resources consuming {{ dependencies()?.resourceName }}</h2>
+          </div>
+          <div class="card-body p-0">
+            <app-table
+              [entityName]="'dependencies'"
+              [headers]="dependenciesHeader()"
+              [data]="consumedRelationsTableData()"
+              [canNavigate]="permissions().canUseAngularEditResource"
+              (navigate)="navigateToResource($event.id)"
+              [canEdit]="permissions().canReadResources"
+              (edit)="openEditResourcePage($event.id)"
+            ></app-table>
+          </div>
+        </div>
+      }
+
+      @if (hasProvidedRelations()) {
+        <div class="card">
+          <div class="card-header">
+            <h2>Resources providing {{ dependencies()?.resourceName }}</h2>
+          </div>
+          <div class="card-body p-0">
+            <app-table
+              [entityName]="'dependencies'"
+              [headers]="dependenciesHeader()"
+              [data]="providedRelationsTableData()"
+              [canNavigate]="permissions().canUseAngularEditResource"
+              (navigate)="navigateToResource($event.id)"
+              [canEdit]="permissions().canReadResources"
+              (edit)="openEditResourcePage($event.id)"
+            ></app-table>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="alert alert-info">No dependencies found.</div>
+    }
+  </div>
+</app-page>
