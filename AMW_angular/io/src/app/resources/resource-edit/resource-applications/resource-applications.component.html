@@ -35,20 +35,20 @@
             <td class="text-end">
               <app-button
                 [size]="'sm'"
-                [variant]="'light'"
+                [variant]="'link'"
                 [routerLink]="['/resource/edit']"
+                [additionalClasses]="'p-0 link-secondary me-2'"
                 [queryParams]="{ id: app.slaveId, ctx: contextId() }"
-              >
-                Edit
+                ><app-icon icon="pencil"></app-icon>
               </app-button>
               @if (permissions().canUpdate) {
                 <app-button
                   [size]="'sm'"
-                  [variant]="'light'"
+                  [variant]="'link'"
                   (click)="showRemoveConfirmation(app)"
-                  [additionalClasses]="'ms-1'"
+                  [additionalClasses]="'p-0 link-danger'"
                 >
-                  Remove
+                  <app-icon icon="trash"></app-icon>
                 </app-button>
               }
             </td>

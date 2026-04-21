@@ -13,6 +13,7 @@ import { ToastService } from '../../../shared/elements/toast/toast.service';
 import { ResourceService } from '../../services/resource.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { IconComponent } from '../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-resource-applications',
@@ -25,6 +26,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     ModalHeaderComponent,
     FormsModule,
     NgSelectModule,
+    IconComponent,
   ],
   templateUrl: './resource-applications.component.html',
 })
