@@ -150,6 +150,11 @@ Each relation can have:
 - Empty state shown when no relations exist
 - Follows existing UI patterns
 
+**Update**: Backend now returns a grouped response `GroupedResourceRelationsDTO` with four
+lists (`runtime`, `consumed`, `provided`, `unresolved`). Unresolved relations use
+`UnresolvedRelationDTO` (type + name) since they have no concrete resource instance.
+Frontend consumes the grouped structure directly — no more frontend grouping.
+
 ---
 
 ### Phase 5: Add Navigation/Selection to View Individual Related Resource Details

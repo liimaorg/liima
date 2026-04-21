@@ -20,7 +20,9 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.UnresolvedRelationDTO;
 import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
@@ -40,8 +42,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RequestScoped
 @Path("/resources")
@@ -60,10 +64,9 @@ public class ResourceRelationsByIdRest {
     @GET
     @Path("/{id : \\d+}/relations")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get all consumed / provided relations of a resource by ID")
+    @Operation(summary = "Get grouped relations (runtime, consumed, provided, unresolved) of a resource by ID")
     public Response getResourceRelationsById(
-            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
-            @Parameter(description = "Optional filter by slave resource type") @QueryParam("type") String resourceType)
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId)
             throws ValidationException, ResourceNotFoundException {
 
         ResourceEntity resource = resourceRepository.find(resourceId);
@@ -74,41 +77,74 @@ public class ResourceRelationsByIdRest {
         Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> relationsByMode =
                 propertyEditor.getRelationsForResource(resourceId);
 
-        List<ResourceRelationDTO> result = new ArrayList<>();
-        result.addAll(buildConsumedRelationDtos(relationsByMode.get(ResourceEditRelation.Mode.CONSUMED),
-                resource, resourceType));
-        // TODO: provided relations will be added in a follow-up phase
+        List<ResourceEditRelation> consumedRaw = relationsByMode.get(ResourceEditRelation.Mode.CONSUMED);
+        List<ResourceEditRelation> providedRaw = relationsByMode.get(ResourceEditRelation.Mode.PROVIDED);
+        List<ResourceEditRelation> typeRaw = relationsByMode.get(ResourceEditRelation.Mode.TYPE);
 
-        return Response.ok(result).build();
+        GroupedResourceRelationsDTO response = new GroupedResourceRelationsDTO();
+        response.setRuntime(buildRuntimeRelationDtos(consumedRaw, resource));
+        response.setConsumed(buildConsumedRelationDtos(consumedRaw, resource));
+        response.setProvided(buildProvidedRelationDtos(providedRaw, resource));
+        // Unresolved relations are only shown for non-default resource types
+        // (AppServer, Application, Node, Runtime are default types and always suppress this section)
+        if (!isDefaultResourceType(resource)) {
+            response.setUnresolved(buildUnresolvedRelationDtos(typeRaw, consumedRaw, providedRaw));
+        }
+
+        return Response.ok(response).build();
     }
 
     /**
-     * Builds the list of consumed relations to display, mirroring the JSF ResourceRelationModel:
-     *  - Excludes slave types APPLICATION and RUNTIME (these have their own sections in the old GUI)
-     *  - Groups by (slaveGroupId, qualifiedIdentifier) and picks the best-matching release per group
+     * Consumed relations excluding APPLICATION and RUNTIME slave types.
+     * Groups by (slaveGroupId, qualifiedIdentifier) and picks the best-matching release per group.
      */
     private List<ResourceRelationDTO> buildConsumedRelationDtos(List<ResourceEditRelation> consumedRelations,
-                                                                ResourceEntity masterResource,
-                                                                String resourceTypeFilter) {
+                                                                ResourceEntity masterResource) {
+        return buildBestMatchingDtos(consumedRelations, masterResource, relation -> {
+            String slaveTypeName = relation.getSlaveTypeName();
+            return !DefaultResourceTypeDefinition.APPLICATION.name().equals(slaveTypeName)
+                    && !DefaultResourceTypeDefinition.RUNTIME.name().equals(slaveTypeName);
+        });
+    }
+
+    /**
+     * Consumed relations with slave type RUNTIME.
+     */
+    private List<ResourceRelationDTO> buildRuntimeRelationDtos(List<ResourceEditRelation> consumedRelations,
+                                                               ResourceEntity masterResource) {
+        return buildBestMatchingDtos(consumedRelations, masterResource,
+                relation -> DefaultResourceTypeDefinition.RUNTIME.name().equals(relation.getSlaveTypeName()));
+    }
+
+    /**
+     * Provided relations (no type filtering).
+     */
+    private List<ResourceRelationDTO> buildProvidedRelationDtos(List<ResourceEditRelation> providedRelations,
+                                                                ResourceEntity masterResource) {
+        return buildBestMatchingDtos(providedRelations, masterResource, relation -> true);
+    }
+
+    /**
+     * Common grouping + best-matching-release logic used by all three concrete-relation categories.
+     */
+    private List<ResourceRelationDTO> buildBestMatchingDtos(List<ResourceEditRelation> relations,
+                                                            ResourceEntity masterResource,
+                                                            java.util.function.Predicate<ResourceEditRelation> includeFilter) {
         List<ResourceRelationDTO> dtos = new ArrayList<>();
-        if (consumedRelations == null) {
+        if (relations == null) {
             return dtos;
         }
 
-        // Group by slaveGroupId + qualifiedIdentifier (logical relation across releases)
-        Map<String, List<ResourceEditRelation>> groupedRelations = new HashMap<>();
-        for (ResourceEditRelation relation : consumedRelations) {
-            if (shouldExcludeFromConsumedTab(relation)) {
-                continue;
-            }
-            if (resourceTypeFilter != null && !resourceTypeFilter.equals(relation.getSlaveTypeName())) {
+        Map<String, List<ResourceEditRelation>> grouped = new HashMap<>();
+        for (ResourceEditRelation relation : relations) {
+            if (!includeFilter.test(relation)) {
                 continue;
             }
             String key = relation.getSlaveGroupId() + "::" + relation.getQualifiedIdentifier();
-            groupedRelations.computeIfAbsent(key, k -> new ArrayList<>()).add(relation);
+            grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(relation);
         }
 
-        for (List<ResourceEditRelation> group : groupedRelations.values()) {
+        for (List<ResourceEditRelation> group : grouped.values()) {
             ResourceEditRelation best = resourceRelationService.getBestMatchingRelationRelease(group, masterResource);
             if (best != null) {
                 dtos.add(new ResourceRelationDTO(best));
@@ -117,9 +153,40 @@ public class ResourceRelationsByIdRest {
         return dtos;
     }
 
-    private boolean shouldExcludeFromConsumedTab(ResourceEditRelation relation) {
-        String slaveTypeName = relation.getSlaveTypeName();
-        return DefaultResourceTypeDefinition.APPLICATION.name().equals(slaveTypeName)
-                || DefaultResourceTypeDefinition.RUNTIME.name().equals(slaveTypeName);
+    private boolean isDefaultResourceType(ResourceEntity resource) {
+        return resource.getResourceType() != null
+                && DefaultResourceTypeDefinition.contains(resource.getResourceType().getName());
+    }
+
+    /**
+     * Type relations that have no concrete resource instance in consumed or provided
+     * (mirrors ResourceRelationModel.mapUnresolvedRelations).
+     */
+    private List<UnresolvedRelationDTO> buildUnresolvedRelationDtos(List<ResourceEditRelation> typeRelations,
+                                                                    List<ResourceEditRelation> consumedRelations,
+                                                                    List<ResourceEditRelation> providedRelations) {
+        List<UnresolvedRelationDTO> dtos = new ArrayList<>();
+        if (typeRelations == null) {
+            return dtos;
+        }
+
+        Set<Integer> resolvedTypeIds = new HashSet<>();
+        if (consumedRelations != null) {
+            for (ResourceEditRelation rel : consumedRelations) {
+                resolvedTypeIds.add(rel.getResRelTypeId());
+            }
+        }
+        if (providedRelations != null) {
+            for (ResourceEditRelation rel : providedRelations) {
+                resolvedTypeIds.add(rel.getResRelTypeId());
+            }
+        }
+
+        for (ResourceEditRelation rel : typeRelations) {
+            if (!resolvedTypeIds.contains(rel.getResRelTypeId())) {
+                dtos.add(new UnresolvedRelationDTO(rel.getSlaveTypeName(), rel.getDisplayName()));
+            }
+        }
+        return dtos;
     }
 }

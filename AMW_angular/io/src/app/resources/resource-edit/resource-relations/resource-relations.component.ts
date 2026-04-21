@@ -3,7 +3,7 @@ import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceRelationsService } from '../../services/resource-relations.service';
 import { ResourceService } from '../../services/resource.service';
-import { GroupedRelations, ResourceRelation } from '../../models/resource-relation';
+import { GroupedResourceRelations } from '../../models/resource-relation';
 import { Resource } from '../../models/resource';
 
 @Component({
@@ -20,18 +20,13 @@ export class ResourceRelationsComponent {
   contextId = input.required<number>();
   resource: Signal<Resource> = this.resourceService.resource;
 
-  relations: Signal<ResourceRelation[]> = this.relationsService.relations;
+  groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
   isLoading = this.relationsService.isLoadingRelations;
 
-  groupedRelations = computed<GroupedRelations>(() => {
-    const allRelations = this.relations();
-    return {
-      consumed: allRelations.filter((r) => r.relationType === 'consumed'),
-      provided: allRelations.filter((r) => r.relationType === 'provided'),
-    };
+  hasRelations = computed(() => {
+    const g = this.groupedRelations();
+    return g.runtime.length + g.consumed.length + g.provided.length + g.unresolved.length > 0;
   });
-
-  hasRelations = computed(() => this.relations().length > 0);
 
   constructor() {
     effect(() => {

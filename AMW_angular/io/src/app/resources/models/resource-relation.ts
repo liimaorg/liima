@@ -14,7 +14,14 @@ export interface Template {
   relatedResourceIdentifier?: string;
 }
 
-export interface GroupedRelations {
+export interface UnresolvedRelation {
+  type: string;
+  name: string;
+}
+
+export interface GroupedResourceRelations {
+  runtime: ResourceRelation[];
   consumed: ResourceRelation[];
   provided: ResourceRelation[];
+  unresolved: UnresolvedRelation[];
 }
