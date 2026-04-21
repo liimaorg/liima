@@ -21,25 +21,27 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
+import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequestScoped
 @Path("/resources")
@@ -50,81 +52,74 @@ public class ResourceRelationsByIdRest {
     ResourceRepository resourceRepository;
 
     @Inject
-    ResourceRelationTemplatesRest resourceRelationTemplatesRest;
+    PropertyEditor propertyEditor;
+
+    @Inject
+    ResourceRelationService resourceRelationService;
 
     @GET
     @Path("/{id : \\d+}/relations")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Get all relations of a resource by ID")
+    @Operation(summary = "Get all consumed / provided relations of a resource by ID")
     public Response getResourceRelationsById(
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @Parameter(description = "Optional filter by slave resource type") @QueryParam("type") String resourceType)
             throws ValidationException, ResourceNotFoundException {
 
-        ResourceEntity resource;
-        try {
-            resource = resourceRepository.getResourceByIdWithRelations(resourceId);
-        } catch (NoResultException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
+        ResourceEntity resource = resourceRepository.find(resourceId);
         if (resource == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        List<ResourceRelationDTO> resourceRelations = new ArrayList<>();
+        Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> relationsByMode =
+                propertyEditor.getRelationsForResource(resourceId);
 
-        if (resource.getConsumedMasterRelations() != null) {
-            for (ConsumedResourceRelationEntity relation : resource.getConsumedMasterRelations()) {
-                ResourceRelationDTO resRel = createResourceRelationDTO(resource, resourceType, relation);
-                if (resRel != null) {
-                    resourceRelations.add(resRel);
-                }
-            }
-        }
+        List<ResourceRelationDTO> result = new ArrayList<>();
+        result.addAll(buildConsumedRelationDtos(relationsByMode.get(ResourceEditRelation.Mode.CONSUMED),
+                resource, resourceType));
+        // TODO: provided relations will be added in a follow-up phase
 
-        if (resource.getProvidedMasterRelations() != null) {
-            for (ProvidedResourceRelationEntity relation : resource.getProvidedMasterRelations()) {
-                ResourceRelationDTO resRel = createResourceRelationDTO(resource, resourceType, relation);
-                if (resRel != null) {
-                    resourceRelations.add(resRel);
-                }
-            }
-        }
-
-        return Response.ok(resourceRelations).build();
+        return Response.ok(result).build();
     }
 
-    private ResourceRelationDTO createResourceRelationDTO(ResourceEntity resource, String resourceType,
-                                                          ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity relation)
-            throws ValidationException, ResourceNotFoundException {
-        if (resourceType != null && !relation.getResourceRelationType().getResourceTypeB().getName().equals(resourceType)) {
-            return null;
+    /**
+     * Builds the list of consumed relations to display, mirroring the JSF ResourceRelationModel:
+     *  - Excludes slave types APPLICATION and RUNTIME (these have their own sections in the old GUI)
+     *  - Groups by (slaveGroupId, qualifiedIdentifier) and picks the best-matching release per group
+     */
+    private List<ResourceRelationDTO> buildConsumedRelationDtos(List<ResourceEditRelation> consumedRelations,
+                                                                ResourceEntity masterResource,
+                                                                String resourceTypeFilter) {
+        List<ResourceRelationDTO> dtos = new ArrayList<>();
+        if (consumedRelations == null) {
+            return dtos;
         }
-        ResourceRelationDTO resRel = new ResourceRelationDTO(relation);
-        List<TemplateDTO> templates = resourceRelationTemplatesRest.getResourceRelationTemplates(
-                resource.getName(),
-                resource.getRelease().getName(),
-                relation.getSlaveResource().getName(),
-                relation.getSlaveResource().getRelease().getName());
-        addTemplates(resRel, templates);
-        return resRel;
+
+        // Group by slaveGroupId + qualifiedIdentifier (logical relation across releases)
+        Map<String, List<ResourceEditRelation>> groupedRelations = new HashMap<>();
+        for (ResourceEditRelation relation : consumedRelations) {
+            if (shouldExcludeFromConsumedTab(relation)) {
+                continue;
+            }
+            if (resourceTypeFilter != null && !resourceTypeFilter.equals(relation.getSlaveTypeName())) {
+                continue;
+            }
+            String key = relation.getSlaveGroupId() + "::" + relation.getQualifiedIdentifier();
+            groupedRelations.computeIfAbsent(key, k -> new ArrayList<>()).add(relation);
+        }
+
+        for (List<ResourceEditRelation> group : groupedRelations.values()) {
+            ResourceEditRelation best = resourceRelationService.getBestMatchingRelationRelease(group, masterResource);
+            if (best != null) {
+                dtos.add(new ResourceRelationDTO(best));
+            }
+        }
+        return dtos;
     }
 
-    private void addTemplates(ResourceRelationDTO resRel, List<TemplateDTO> templates) {
-        List<TemplateDTO> templatesToAdd = new ArrayList<>();
-        for (TemplateDTO temp : templates) {
-            String tempName;
-            if (temp.getRelatedResourceIdentifier() == null) {
-                tempName = resRel.getRelatedResourceName();
-            } else {
-                tempName = resRel.getRelatedResourceName() + "_" + temp.getRelatedResourceIdentifier();
-            }
-            if (tempName.equals(resRel.getRelationName())) {
-                templatesToAdd.add(temp);
-            }
-        }
-        resRel.setTemplates(new ArrayList<TemplateDTO>());
-        resRel.getTemplates().addAll(templatesToAdd);
+    private boolean shouldExcludeFromConsumedTab(ResourceEditRelation relation) {
+        String slaveTypeName = relation.getSlaveTypeName();
+        return DefaultResourceTypeDefinition.APPLICATION.name().equals(slaveTypeName)
+                || DefaultResourceTypeDefinition.RUNTIME.name().equals(slaveTypeName);
     }
 }

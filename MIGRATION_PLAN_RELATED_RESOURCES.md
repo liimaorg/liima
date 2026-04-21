@@ -82,11 +82,17 @@ Each relation can have:
 **Acceptance Criteria**:
 - Endpoint returns all relations for a resource by ID
 - Each relation includes: id, name, type, release, identifier, relationType
-- Templates included (already working)
 - Returns 404 if resource not found
-- No refactoring of existing code
 
 **Note**: Grouping by type (consumed/provided/runtime) will be done on frontend for now
+
+**Update (revised implementation)**:
+- Switched endpoint to use `PropertyEditor.getRelationsForResource()` (native SQL, no lazy-init issues)
+- Added `ResourceRelationDTO(ResourceEditRelation)` constructor
+- Consumed-relations filter mirrors JSF `ResourceRelationModel`:
+  - Excludes slave types `APPLICATION` and `RUNTIME` (these belong to the Runtime / Apps sections)
+  - Groups by `(slaveGroupId, qualifiedIdentifier)` and picks best-matching release via `ResourceRelationService.getBestMatchingRelationRelease`
+- Provided relations and templates deferred to later phases
 
 ---
 
