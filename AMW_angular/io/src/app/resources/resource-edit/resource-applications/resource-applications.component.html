@@ -2,19 +2,15 @@
 <app-tile-component
   [title]="'Applications'"
   [actionName]="'Add Application'"
-  [canAction]="permissions().canUpdate"
-  [isVisible]="permissions().canListRelations"
-  [noContent]="false"
+  [canAction]="permissions().canUpdate && availableApplications().length === 0"
+  [isVisible]="true"
+  [noContent]="!applications() || applications().length === 0"
   [notAllowed]="false"
   (tileAction)="showAddApplicationModal()"
 >
   @if (error()) {
     <div class="alert alert-danger" role="alert">
       {{ error() }}
-    </div>
-  } @else if (!applications() || applications().length === 0) {
-    <div class="no-content">
-      <span>No applications configured for this application server.</span>
     </div>
   } @else {
     <table class="table table-borderless">

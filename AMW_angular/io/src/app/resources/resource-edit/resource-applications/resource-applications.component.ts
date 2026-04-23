@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, signal, TemplateRef, ViewChild } from '@angular/core';
+import { Component, computed, inject, input, signal, TemplateRef, ViewChild } from '@angular/core';
 import { ResourceApplicationsService } from '../../services/resource-applications.service';
 import { ApplicationRelation } from '../../models/application-relation';
 import { AuthService } from '../../../auth/auth.service';
@@ -14,6 +14,9 @@ import { ResourceService } from '../../services/resource.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, switchMap } from 'rxjs/operators';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-resource-applications',
@@ -40,7 +43,21 @@ export class ResourceApplicationsComponent {
   resource = input.required<Resource>();
   contextId = input.required<number>();
 
-  applications = signal<ApplicationRelation[]>([]);
+  resourceId = computed(() => this.resource().id);
+  private reload = signal(0);
+
+  private applicationsTrigger = computed(() => ({
+    id: this.resourceId(),
+    type: this.resource().type,
+    permissions: this.permissions(),
+    _reload: this.reload(),
+  }));
+
+  applications = toSignal(
+    toObservable(this.applicationsTrigger).pipe(switchMap((command) => this.loadApplications(command))),
+    { initialValue: [] as ApplicationRelation[] },
+  );
+
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
   applicationToRemove = signal<ApplicationRelation | null>(null);
@@ -62,32 +79,27 @@ export class ResourceApplicationsComponent {
     return { canListRelations: false, canUpdate: false };
   });
 
-  constructor() {
-    effect(() => {
-      const id = this.resource().id;
-      if (!id) return;
-      if (this.resource().type === '"APPLICATIONSERVER"') return;
-      if (!this.permissions().canListRelations) return;
+  private loadApplications(command: {
+    id: number;
+    type: string;
+    permissions: { canListRelations: boolean; canUpdate: boolean };
+    _reload: number;
+  }): Observable<ApplicationRelation[]> {
+    if (!command.id) return of([]);
+    if (command.type === '"APPLICATIONSERVER"') return of([]);
+    if (command.permissions.canListRelations) return of([]);
 
-      this.loadApplications(id);
-    });
-  }
-
-  private loadApplications(resourceId: number): void {
     this.isLoading.set(true);
     this.error.set(null);
 
-    this.resourceApplicationsService.getApplicationsForResource(resourceId).subscribe({
-      next: (applications) => {
-        this.applications.set(applications);
-        this.isLoading.set(false);
-      },
-      error: (err) => {
+    return this.resourceApplicationsService.getApplicationsForResource(command.id).pipe(
+      catchError((err) => {
         console.error('Failed to load applications:', err);
         this.error.set('Failed to load applications');
-        this.isLoading.set(false);
-      },
-    });
+        return of([] as ApplicationRelation[]);
+      }),
+      finalize(() => this.isLoading.set(false)),
+    );
   }
 
   showRemoveConfirmation(application: ApplicationRelation): void {
@@ -107,7 +119,8 @@ export class ResourceApplicationsComponent {
       next: () => {
         this.toastService.success('Application removed successfully.');
         this.applicationToRemove.set(null);
-        this.loadApplications(this.resource().id);
+        this.isLoading.set(false);
+        this.reload.update((v) => v + 1);
       },
       error: (err) => {
         console.error('Failed to remove application:', err);
@@ -128,7 +141,7 @@ export class ResourceApplicationsComponent {
     this.resourceService.getGroupsForTypeName('APPLICATION').subscribe({
       next: (apps) => {
         // Filter out already added applications
-        const currentAppIds = new Set(this.applications().map((a) => a.slaveId));
+        const currentAppIds = new Set((this.applications() ?? []).map((a) => a.slaveId));
         const available = apps.filter((app) => !currentAppIds.has(app.id));
         this.availableApplications.set(available);
       },
@@ -151,7 +164,8 @@ export class ResourceApplicationsComponent {
       next: () => {
         this.toastService.success('Application added successfully.');
         this.modalService.dismissAll();
-        this.loadApplications(this.resource().id);
+        this.isLoading.set(false);
+        this.reload.update((v) => v + 1);
       },
       error: (err) => {
         console.error('Failed to add application:', err);
