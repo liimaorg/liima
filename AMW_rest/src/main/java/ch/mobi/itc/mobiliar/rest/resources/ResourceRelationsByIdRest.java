@@ -23,9 +23,10 @@ package ch.mobi.itc.mobiliar.rest.resources;
 import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.UnresolvedRelationDTO;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.GetResourceUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceIdCommand;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
@@ -37,15 +38,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RequestScoped
 @Path("/resources")
@@ -53,10 +52,10 @@ import java.util.Set;
 public class ResourceRelationsByIdRest {
 
     @Inject
-    ResourceRepository resourceRepository;
+    GetResourceUseCase getResourceUseCase;
 
     @Inject
-    PropertyEditor propertyEditor;
+    ResourceEditService resourceEditService;
 
     @Inject
     ResourceRelationService resourceRelationService;
@@ -69,13 +68,10 @@ public class ResourceRelationsByIdRest {
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId)
             throws ValidationException, ResourceNotFoundException {
 
-        ResourceEntity resource = resourceRepository.find(resourceId);
-        if (resource == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        ResourceEntity resource = getResourceUseCase.getResourceById(new ResourceIdCommand(resourceId));
 
         Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> relationsByMode =
-                propertyEditor.getRelationsForResource(resourceId);
+                resourceEditService.loadResourceRelationsForEdit(resourceId);
 
         List<ResourceEditRelation> consumedRaw = relationsByMode.get(ResourceEditRelation.Mode.CONSUMED);
         List<ResourceEditRelation> providedRaw = relationsByMode.get(ResourceEditRelation.Mode.PROVIDED);

@@ -55,9 +55,6 @@ public class ResourceRelationTemplatesRest {
     @Inject
     TemplatesScreenDomainService templateService;
 
-    @Inject
-    ResourceTemplatesRest resourceTemplatesRest;
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get one or all templates for a resource in a specific release")
