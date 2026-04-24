@@ -3,13 +3,17 @@ import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceRelationsService } from '../../services/resource-relations.service';
 import { ResourceService } from '../../services/resource.service';
-import { GroupedResourceRelations } from '../../models/resource-relation';
+import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../../models/resource-relation';
 import { Resource } from '../../models/resource';
+import {
+  RelationGroupItem,
+  ResourceRelationGroupComponent,
+} from './resource-relation-group/resource-relation-group.component';
 
 @Component({
   selector: 'app-resource-relations',
   standalone: true,
-  imports: [TileComponent, LoadingIndicatorComponent],
+  imports: [TileComponent, LoadingIndicatorComponent, ResourceRelationGroupComponent],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
 })
@@ -28,6 +32,11 @@ export class ResourceRelationsComponent {
     return g.runtime.length + g.consumed.length + g.provided.length + g.unresolved.length > 0;
   });
 
+  runtimeItems = computed(() => this.groupedRelations().runtime.map((r) => this.toItem(r)));
+  consumedItems = computed(() => this.groupedRelations().consumed.map((r) => this.toItem(r)));
+  providedItems = computed(() => this.groupedRelations().provided.map((r) => this.toItem(r)));
+  unresolvedItems = computed(() => this.groupedRelations().unresolved.map((u) => this.toUnresolvedItem(u)));
+
   constructor() {
     effect(() => {
       const resourceId = this.resource()?.id;
@@ -35,5 +44,27 @@ export class ResourceRelationsComponent {
         this.relationsService.setIdForResourceRelations(resourceId);
       }
     });
+  }
+
+  private toItem(relation: ResourceRelation): RelationGroupItem {
+    return {
+      key: relation.id,
+      name: relation.relatedResourceName,
+      type: relation.type,
+      release: relation.relatedResourceRelease,
+      identifier:
+        relation.relationName && relation.relationName !== relation.relatedResourceName
+          ? relation.relationName
+          : undefined,
+    };
+  }
+
+  private toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
+    return {
+      key: `${unresolved.type}::${unresolved.name}`,
+      name: unresolved.name,
+      type: unresolved.type,
+      unresolved: true,
+    };
   }
 }
