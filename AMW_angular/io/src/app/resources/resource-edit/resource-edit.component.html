@@ -30,6 +30,51 @@
         </li>
       </ul>
     </div>
+    @if (showGoTo()) {
+      <div ngbDropdown>
+        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+          Go to
+        </app-button>
+        <ul ngbDropdownMenu>
+          @if (goToResourceTypeAvailable()) {
+            <li ngbDropdownItem>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/resourceType/edit']"
+                [queryParams]="resourceTypeQueryParams()"
+              >
+                Resource Type
+              </a>
+            </li>
+          }
+          @if (goToApplicationServerAvailable()) {
+            <li ngbDropdownItem>
+              <a
+                class="dropdown-item"
+                [routerLink]="['/resource/edit']"
+                [queryParams]="applicationServerQueryParams()"
+              >
+                Application Server
+              </a>
+            </li>
+          }
+          @if (goToDeploymentsAvailable()) {
+            <li ngbDropdownItem>
+              <a class="dropdown-item" [routerLink]="['/deployments']" [queryParams]="deploymentsQueryParams()">
+                Deployments
+              </a>
+            </li>
+          }
+          @if (goToAuditViewAvailable()) {
+            <li ngbDropdownItem>
+              <a class="dropdown-item" [routerLink]="['/auditview']" [queryParams]="auditViewQueryParams()">
+                Audit View
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
     @if (showMore()) {
       <div ngbDropdown>
         <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>

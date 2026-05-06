@@ -1,6 +1,24 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
-  <div class="page-title">Edit {{ this.resourceType()?.name }}</div>
+  <div class="page-title d-flex align-items-center gap-3">
+    <div class="resource-name">Edit {{ this.resourceType()?.name }}</div>
+    @if (showGoTo()) {
+      <div ngbDropdown>
+        <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
+          Go to
+        </app-button>
+        <ul ngbDropdownMenu>
+          @if (goToDeploymentsAvailable()) {
+            <li ngbDropdownItem>
+              <a class="dropdown-item" [routerLink]="['/deployments']" [queryParams]="deploymentsQueryParams()">
+                Deployments
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
 
   <div class="page-content d-flex gap-3">
     @if (this.resourceType()?.name && !permissions().canEditResourceType) {

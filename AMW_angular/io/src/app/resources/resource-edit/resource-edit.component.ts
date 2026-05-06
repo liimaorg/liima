@@ -83,9 +83,16 @@ export class ResourceEditComponent {
           resourceTypeName,
           resourceGroupId,
         ),
+        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', 'READ'),
       };
     } else {
-      return { canEditResource: false, canTestGenerate: false, canTagCurrentState: false, canCopyFromResource: false };
+      return {
+        canEditResource: false,
+        canTestGenerate: false,
+        canTagCurrentState: false,
+        canCopyFromResource: false,
+        canEditResourceType: false,
+      };
     }
   });
 
@@ -99,6 +106,54 @@ export class ResourceEditComponent {
   );
 
   protected readonly showMore = computed<boolean>(() => this.permissions().canCopyFromResource);
+
+  protected readonly goToResourceTypeAvailable = computed<boolean>(
+    () => !!this.resource()?.resourceTypeId && this.permissions().canEditResourceType,
+  );
+
+  protected readonly goToApplicationServerAvailable = computed<boolean>(() => !!this.resource()?.applicationServerId);
+
+  protected readonly goToDeploymentsAvailable = computed<boolean>(
+    () => this.isApplicationServer() || !!this.resource()?.hasApplicationServer,
+  );
+
+  protected readonly goToAuditViewAvailable = computed<boolean>(() => !!this.id());
+
+  protected readonly showGoTo = computed<boolean>(
+    () =>
+      this.goToResourceTypeAvailable() ||
+      this.goToApplicationServerAvailable() ||
+      this.goToDeploymentsAvailable() ||
+      this.goToAuditViewAvailable(),
+  );
+
+  protected readonly resourceTypeQueryParams = computed(() => ({
+    id: this.resource()?.resourceTypeId,
+    ctx: this.contextId(),
+  }));
+
+  protected readonly applicationServerQueryParams = computed(() => ({
+    id: this.resource()?.applicationServerId,
+    ctx: this.contextId(),
+  }));
+
+  protected readonly deploymentsQueryParams = computed(() => {
+    const res = this.resource();
+    const filters: { name: string; val: string }[] = [];
+    if (this.isApplicationServer()) {
+      filters.push({ name: 'Application server', val: res?.name ?? '' });
+    } else {
+      if (res?.name) {
+        filters.push({ name: 'Application', val: res.name });
+      }
+      if (res?.applicationServerName) {
+        filters.push({ name: 'Application server', val: res.applicationServerName });
+      }
+    }
+    return { filters: JSON.stringify(filters) };
+  });
+
+  protected readonly auditViewQueryParams = computed(() => ({ resourceId: this.id() }));
 
   openCopyFromResourceDialog() {
     const modalRef = this.modalService.open(CopyFromResourceDialogComponent, { size: 'lg' });

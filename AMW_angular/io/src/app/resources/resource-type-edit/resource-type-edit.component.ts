@@ -1,7 +1,7 @@
 import { Component, computed, inject, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../auth/auth.service';
@@ -11,6 +11,9 @@ import { ResourceTypeFunctionsListComponent } from './resource-type-functions/re
 import { ResourceTypeTemplatesListComponent } from './resource-type-templates/resource-type-templates-list.component';
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 import { ResourceTypePropertiesComponent } from './resource-type-properties/resource-type-properties.component';
+import { ButtonComponent } from '../../shared/button/button.component';
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
+import { RESOURCE_TYPE } from '../../core/amw-constants';
 
 @Component({
   selector: 'app-resource-type-edit',
@@ -22,8 +25,15 @@ import { ResourceTypePropertiesComponent } from './resource-type-properties/reso
     ResourceTypeTemplatesListComponent,
     ContextsListComponent,
     ResourceTypePropertiesComponent,
+    ButtonComponent,
+    NgbDropdown,
+    NgbDropdownMenu,
+    NgbDropdownToggle,
+    NgbDropdownItem,
+    RouterLink,
   ],
   templateUrl: './resource-type-edit.component.html',
+  styleUrl: './resource-type-edit.component.scss',
 })
 export class ResourceTypeEditComponent {
   private authService = inject(AuthService);
@@ -50,4 +60,12 @@ export class ResourceTypeEditComponent {
       return { canEditResourceType: false };
     }
   });
+
+  protected readonly goToDeploymentsAvailable = computed<boolean>(
+    () => this.resourceType()?.isApplication || this.resourceType()?.name === RESOURCE_TYPE.APPLICATION_SERVER,
+  );
+
+  protected readonly showGoTo = computed<boolean>(() => this.goToDeploymentsAvailable());
+
+  protected readonly deploymentsQueryParams = computed(() => ({ filters: JSON.stringify([]) }));
 }

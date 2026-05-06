@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import ch.puzzle.itc.mobiliar.business.configurationtag.entity.ResourceTagEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,8 @@ public class ResourceDTO {
     private List<TemplateDTO> templates;
 
     private boolean hasApplicationServer;
+    private Integer applicationServerId;
+    private String applicationServerName;
 
     public ResourceDTO(ResourceEntity resource, List<ResourceRelationDTO> relations, List<PropertyDTO> properties, List<TemplateDTO> templates){
         this.id = resource.getRelease().getId();
@@ -102,5 +105,10 @@ public class ResourceDTO {
     public ResourceDTO(ResourceEntity resource, ResourceEntity applicationServerForApplication) {
         this(resource);
         this.hasApplicationServer = applicationServerForApplication != null;
+        if (applicationServerForApplication != null
+                && !ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName().equals(applicationServerForApplication.getName())) {
+            this.applicationServerId = applicationServerForApplication.getId();
+            this.applicationServerName = applicationServerForApplication.getName();
+        }
     }
 }
