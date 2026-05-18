@@ -1,6 +1,8 @@
-import { Component, computed, effect, inject, input, output, Signal } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, output, Signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
+import { ButtonComponent } from '../../../shared/button/button.component';
 import { ResourceRelationsService } from '../../services/resource-relations.service';
 import { ResourceService } from '../../services/resource.service';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../../models/resource-relation';
@@ -13,7 +15,7 @@ import {
 @Component({
   selector: 'app-resource-relations',
   standalone: true,
-  imports: [TileComponent, LoadingIndicatorComponent, ResourceRelationGroupComponent],
+  imports: [TileComponent, LoadingIndicatorComponent, ResourceRelationGroupComponent, ButtonComponent, FormsModule],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
 })
@@ -39,6 +41,18 @@ export class ResourceRelationsComponent {
   providedItems = computed(() => this.groupedRelations().provided.map((r) => this.toItem(r)));
   unresolvedItems = computed(() => this.groupedRelations().unresolved.map((u) => this.toUnresolvedItem(u)));
 
+  activeRelationId = linkedSignal(() => this.selectedRelationId());
+
+  selectedRelation = computed<ResourceRelation | null>(() => {
+    const relId = this.activeRelationId();
+    if (relId == null) return null;
+    const g = this.groupedRelations();
+    const all = [...g.runtime, ...g.consumed, ...g.provided];
+    return all.find((r) => r.id === relId) ?? null;
+  });
+
+  selectedReleaseId = linkedSignal(() => this.selectedRelation()?.id ?? null);
+
   constructor() {
     effect(() => {
       const resourceId = this.resource()?.id;
@@ -50,7 +64,13 @@ export class ResourceRelationsComponent {
 
   onItemSelected(item: RelationGroupItem) {
     const id = typeof item.key === 'number' ? item.key : null;
+    this.activeRelationId.set(id);
     this.relationSelected.emit(id);
+  }
+
+  onReleaseChange(relationId: number) {
+    this.activeRelationId.set(relationId);
+    this.relationSelected.emit(relationId);
   }
 
   private toItem(relation: ResourceRelation): RelationGroupItem {

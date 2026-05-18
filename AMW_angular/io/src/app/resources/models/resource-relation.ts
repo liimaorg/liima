@@ -6,12 +6,18 @@ export interface ResourceRelation {
   relationName: string;
   relationType: 'consumed' | 'provided';
   templates?: Template[];
+  availableReleases?: RelationRelease[];
 }
 
 export interface Template {
   id: number;
   name: string;
   relatedResourceIdentifier?: string;
+}
+
+export interface RelationRelease {
+  relationId: number;
+  releaseName: string;
 }
 
 export interface UnresolvedRelation {

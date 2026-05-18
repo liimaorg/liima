@@ -143,7 +143,13 @@ public class ResourceRelationsByIdRest {
         for (List<ResourceEditRelation> group : grouped.values()) {
             ResourceEditRelation best = resourceRelationService.getBestMatchingRelationRelease(group, masterResource);
             if (best != null) {
-                dtos.add(new ResourceRelationDTO(best));
+                ResourceRelationDTO dto = new ResourceRelationDTO(best);
+                group.sort(ResourceEditRelation.releaseComparator());
+                for (ResourceEditRelation rel : group) {
+                    dto.getAvailableReleases().add(
+                            new ResourceRelationDTO.RelationReleaseDTO(rel.getResRelId(), rel.getSlaveReleaseName()));
+                }
+                dtos.add(dto);
             }
         }
         return dtos;

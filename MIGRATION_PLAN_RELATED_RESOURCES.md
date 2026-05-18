@@ -167,14 +167,14 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Show release dropdown for relations with multiple releases
 
 **Tasks**:
-- [ ] Add selection state signal to component
-- [ ] Add click handlers to relation list items
-- [ ] Create detail panel section in template
-- [ ] Display selected relation information
-- [ ] Add release dropdown (if multiple releases available)
-- [ ] Handle release switching
-- [ ] Add visual indicator for selected relation
-- [ ] Add "Remove Relation" button (disabled for now)
+- [x] Add selection state signal to component
+- [x] Add click handlers to relation list items
+- [x] Create detail panel section in template
+- [x] Display selected relation information
+- [x] Add release dropdown (if multiple releases available)
+- [x] Handle release switching
+- [x] Add visual indicator for selected relation
+- [x] Add "Remove Relation" button (disabled for now)
 
 **Acceptance Criteria**:
 - Clicking a relation selects it

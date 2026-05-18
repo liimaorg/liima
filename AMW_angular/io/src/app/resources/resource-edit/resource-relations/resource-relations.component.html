@@ -8,31 +8,73 @@
   [notAllowed]="false"
 >
   @if (hasRelations()) {
-    <div class="relations-container">
-      <app-resource-relation-group
-        [title]="'Runtime'"
-        [items]="runtimeItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
-      <app-resource-relation-group
-        [title]="'Consumed Resources'"
-        [items]="consumedItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
-      <app-resource-relation-group
-        [title]="'Provided Resources'"
-        [items]="providedItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
-      <app-resource-relation-group
-        [title]="'Unresolved'"
-        [items]="unresolvedItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
+    <div class="relations-layout">
+      <div class="relations-container">
+        <app-resource-relation-group
+          [title]="'Runtime'"
+          [items]="runtimeItems()"
+          [selectedKey]="activeRelationId()"
+          (itemSelected)="onItemSelected($event)"
+        />
+        <app-resource-relation-group
+          [title]="'Consumed Resources'"
+          [items]="consumedItems()"
+          [selectedKey]="activeRelationId()"
+          (itemSelected)="onItemSelected($event)"
+        />
+        <app-resource-relation-group
+          [title]="'Provided Resources'"
+          [items]="providedItems()"
+          [selectedKey]="activeRelationId()"
+          (itemSelected)="onItemSelected($event)"
+        />
+        <app-resource-relation-group
+          [title]="'Unresolved'"
+          [items]="unresolvedItems()"
+          [selectedKey]="activeRelationId()"
+          (itemSelected)="onItemSelected($event)"
+        />
+      </div>
+      @if (selectedRelation(); as rel) {
+        <div class="relation-detail-panel">
+          <div class="relation-detail-header">
+            <h4 class="relation-detail-title">{{ rel.relatedResourceName }}</h4>
+            <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true">Remove Relation</app-button>
+          </div>
+          <div class="relation-detail-body">
+            <div class="relation-detail-row">
+              <span class="relation-detail-label">Type</span>
+              <span class="relation-detail-value">{{ rel.type }}</span>
+            </div>
+            <div class="relation-detail-row">
+              <span class="relation-detail-label">Release</span>
+              @if (rel.availableReleases && rel.availableReleases.length > 1) {
+                <select
+                  class="release-dropdown"
+                  [ngModel]="selectedReleaseId()"
+                  (ngModelChange)="onReleaseChange($event)"
+                >
+                  @for (release of rel.availableReleases; track release.relationId) {
+                    <option [value]="release.relationId">{{ release.releaseName }}</option>
+                  }
+                </select>
+              } @else {
+                <span class="relation-detail-value">{{ rel.relatedResourceRelease }}</span>
+              }
+            </div>
+            <div class="relation-detail-row">
+              <span class="relation-detail-label">Relation Type</span>
+              <span class="relation-detail-value">{{ rel.relationType }}</span>
+            </div>
+            @if (rel.relationName && rel.relationName !== rel.relatedResourceName) {
+              <div class="relation-detail-row">
+                <span class="relation-detail-label">Identifier</span>
+                <span class="relation-detail-value">{{ rel.relationName }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
     </div>
   }
 </app-tile-component>
