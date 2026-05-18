@@ -3,7 +3,6 @@
   [title]="'Releases'"
   [actionName]="'New Release'"
   [canAction]="permissions().canAddRelease"
-  [isVisible]="true"
   (tileAction)="addRelease()"
   [noContent]="!releases() || releases().length < 1"
   [notAllowed]="false"

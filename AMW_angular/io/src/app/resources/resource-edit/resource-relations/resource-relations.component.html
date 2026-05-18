@@ -1,0 +1,38 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Related Resources'"
+  [actionName]="'Add Relation'"
+  [canAction]="false"
+  [isCollapsed]="false"
+  [noContent]="!hasRelations()"
+  [notAllowed]="false"
+>
+  @if (hasRelations()) {
+    <div class="relations-container">
+      <app-resource-relation-group
+        [title]="'Runtime'"
+        [items]="runtimeItems()"
+        [selectedKey]="selectedRelationId()"
+        (itemSelected)="onItemSelected($event)"
+      />
+      <app-resource-relation-group
+        [title]="'Consumed Resources'"
+        [items]="consumedItems()"
+        [selectedKey]="selectedRelationId()"
+        (itemSelected)="onItemSelected($event)"
+      />
+      <app-resource-relation-group
+        [title]="'Provided Resources'"
+        [items]="providedItems()"
+        [selectedKey]="selectedRelationId()"
+        (itemSelected)="onItemSelected($event)"
+      />
+      <app-resource-relation-group
+        [title]="'Unresolved'"
+        [items]="unresolvedItems()"
+        [selectedKey]="selectedRelationId()"
+        (itemSelected)="onItemSelected($event)"
+      />
+    </div>
+  }
+</app-tile-component>

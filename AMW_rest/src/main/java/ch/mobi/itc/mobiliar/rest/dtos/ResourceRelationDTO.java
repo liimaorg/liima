@@ -20,6 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.dtos;
 
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class ResourceRelationDTO {
     private final static String CONSUMED = "consumed";
     private final static String PROVIDED = "provided";
 
+    private Integer id;
     private String relatedResourceName;
     private String type;
     private String relatedResourceRelease;
@@ -48,11 +50,21 @@ public class ResourceRelationDTO {
     private List<TemplateDTO> templates;
 
     public ResourceRelationDTO(AbstractResourceRelationEntity relation) {
+        id = relation.getId();
         relatedResourceName = relation.getSlaveResource().getName();
         type = relation.getResourceRelationType().getResourceTypeB().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
         relationName = relation.buildIdentifer();
         relationType = relation instanceof ConsumedResourceRelationEntity ? CONSUMED : PROVIDED;
+    }
+
+    public ResourceRelationDTO(ResourceEditRelation relation) {
+        id = relation.getResRelId();
+        relatedResourceName = relation.getSlaveName();
+        type = relation.getSlaveTypeName();
+        relatedResourceRelease = relation.getSlaveReleaseName();
+        relationName = relation.getDisplayName();
+        relationType = relation.getMode() == ResourceEditRelation.Mode.CONSUMED ? CONSUMED : PROVIDED;
     }
 
 }

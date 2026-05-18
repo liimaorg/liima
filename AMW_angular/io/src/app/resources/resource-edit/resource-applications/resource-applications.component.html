@@ -3,7 +3,7 @@
   [title]="'Applications'"
   [actionName]="'Add Application'"
   [canAction]="permissions().canUpdate && availableApplications().length === 0"
-  [isVisible]="true"
+  [isCollapsed]="false"
   [noContent]="!applications() || applications().length === 0"
   [notAllowed]="false"
   (tileAction)="showAddApplicationModal()"
