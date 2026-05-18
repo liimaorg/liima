@@ -58,14 +58,14 @@ export class TileComponent {
   title = input.required<string>();
   actionName = input.required<string>();
   canAction = input<boolean>(false);
-  isVisible = input<boolean>(false);
+  isCollapsed = input<boolean>(true);
 
   noContent = input<boolean>(false);
   notAllowed = input<boolean>(false);
 
   tileAction = output<void>();
 
-  showBody = linkedSignal(() => this.isVisible());
+  showBody = linkedSignal(() => !this.isCollapsed());
 
   toggleBody() {
     this.showBody.update((current) => !current);

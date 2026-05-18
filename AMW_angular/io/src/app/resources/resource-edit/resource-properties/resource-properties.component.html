@@ -3,7 +3,7 @@
   [title]="'Properties'"
   [actionName]="'New Property'"
   [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
-  [isVisible]="true"
+  [isCollapsed]="false"
   (tileAction)="addProperty()"
   [noContent]="false"
   [notAllowed]="false"

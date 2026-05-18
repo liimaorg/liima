@@ -3,7 +3,6 @@
   [title]="'Tags'"
   [actionName]="'Tag current state'"
   [canAction]="permissions().canTagCurrentState"
-  [isVisible]="isApplicationServer()"
   (tileAction)="tagCurrentState()"
   [noContent]="!tags() || tags().length < 1"
   [notAllowed]="false"
