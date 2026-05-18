@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, Signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, Signal } from '@angular/core';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ResourceRelationsService } from '../../services/resource-relations.service';
@@ -22,6 +22,8 @@ export class ResourceRelationsComponent {
   private resourceService = inject(ResourceService);
 
   contextId = input.required<number>();
+  selectedRelationId = input<number | null>(null);
+  relationSelected = output<number | null>();
   resource: Signal<Resource> = this.resourceService.resource;
 
   groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
@@ -44,6 +46,11 @@ export class ResourceRelationsComponent {
         this.relationsService.setIdForResourceRelations(resourceId);
       }
     });
+  }
+
+  onItemSelected(item: RelationGroupItem) {
+    const id = typeof item.key === 'number' ? item.key : null;
+    this.relationSelected.emit(id);
   }
 
   private toItem(relation: ResourceRelation): RelationGroupItem {

@@ -2,8 +2,15 @@
   <div class="relations-section">
     <h3 class="section-title">{{ title() }}</h3>
     <div class="relations-list">
-      @for (item of items(); track item.key) {
-        <div class="relation-item" [class.relation-item--unresolved]="item.unresolved">
+      @for (item of sortedItems(); track item.key) {
+        <div
+          class="relation-item"
+          [class.relation-item--unresolved]="item.unresolved"
+          [class.relation-item--selected]="item.key === selectedKey()"
+          tabindex="0"
+          (click)="selectItem(item)"
+          (keydown.enter)="selectItem(item)"
+        >
           <div class="relation-info">
             <div class="relation-name">{{ item.name }}</div>
             <div class="relation-details">

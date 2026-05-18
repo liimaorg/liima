@@ -29,6 +29,11 @@
     background-color: var(--background-hover);
     border-color: var(--border-hover);
   }
+
+  &--selected {
+    border-color: var(--primary);
+    background-color: var(--background-hover);
+  }
 }
 
 .relation-info {

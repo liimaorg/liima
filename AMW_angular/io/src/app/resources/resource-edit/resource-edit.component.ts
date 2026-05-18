@@ -1,7 +1,7 @@
 import { Component, computed, inject, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ResourceService } from '../services/resource.service';
@@ -49,10 +49,15 @@ export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private modalService = inject(NgbModal);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
+  relationId = toSignal(
+    this.route.queryParamMap.pipe(map((params) => (params.get('rel') ? Number(params.get('rel')) : null))),
+    { initialValue: null },
+  );
   resource: Signal<Resource> = this.resourceService.resource;
   releases: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
 
@@ -94,7 +99,15 @@ export class ResourceEditComponent {
   testGenerationQueryParams = computed(() => ({
     id: this.id(),
     ctx: this.contextId(),
+    rel: this.relationId(),
   }));
+
+  onRelationSelected(relationId: number | null) {
+    this.router.navigate([], {
+      queryParams: { rel: relationId },
+      queryParamsHandling: 'merge',
+    });
+  }
 
   protected readonly showAnalyze = computed<boolean>(
     () => this.testGenerationAvailable() && this.permissions().canTestGenerate,
