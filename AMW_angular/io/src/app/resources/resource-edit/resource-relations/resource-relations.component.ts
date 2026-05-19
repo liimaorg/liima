@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, linkedSignal, output, Signal } from '@angular/core';
+import { Component, computed, effect, inject, input, linkedSignal, output, signal, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
@@ -11,11 +11,27 @@ import {
   RelationGroupItem,
   ResourceRelationGroupComponent,
 } from './resource-relation-group/resource-relation-group.component';
+import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
+import { PropertiesListComponent } from '../../properties-list/properties-list.component';
+import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
+import { IconComponent } from '../../../shared/icon/icon.component';
+import { Property } from '../../models/property';
 
 @Component({
   selector: 'app-resource-relations',
   standalone: true,
-  imports: [TileComponent, LoadingIndicatorComponent, ResourceRelationGroupComponent, ButtonComponent, FormsModule],
+  imports: [
+    TileComponent,
+    LoadingIndicatorComponent,
+    ResourceRelationGroupComponent,
+    ButtonComponent,
+    FormsModule,
+    PropertiesPanelComponent,
+    PropertiesListComponent,
+    NgOptionComponent,
+    NgSelectComponent,
+    IconComponent,
+  ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
 })
@@ -52,6 +68,7 @@ export class ResourceRelationsComponent {
   });
 
   selectedReleaseId = linkedSignal(() => this.selectedRelation()?.id ?? null);
+  protected readonly properties = signal<Property[] | null>([]);
 
   constructor() {
     effect(() => {
