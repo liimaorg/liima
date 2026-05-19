@@ -201,10 +201,10 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Return list of PropertyDTO
 
 **Tasks**:
-- [ ] Create `GetRelationPropertiesUseCase` in AMW_business
-- [ ] Create REST endpoint method
-- [ ] Ensure proper permission checks
-- [ ] Write unit tests
+- [x] Create `GetRelationPropertiesUseCase` in AMW_business
+- [x] Create REST endpoint method
+- [x] Ensure proper permission checks
+- [x] Write unit tests
 - [ ] Test endpoint manually
 
 **Acceptance Criteria**:
