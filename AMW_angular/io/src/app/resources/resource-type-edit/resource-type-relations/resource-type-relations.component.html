@@ -10,7 +10,7 @@
   @if (hasRelations()) {
     <div class="relations-layout">
       <div class="relations-container">
-        <app-resource-relation-group
+        <app-relation-group
           [title]="'Unresolved'"
           [items]="unresolvedItems()"
           [selectedKey]="activeRelationId()"
@@ -25,8 +25,16 @@
               ><app-icon icon="trash"></app-icon> Remove Relation</app-button
             >
           </div>
-          <app-properties-panel [canEdit]="true">
-            <app-properties-list [properties]="properties()" [mode]="'resource'"></app-properties-list>
+          <app-properties-panel [canEdit]="false">
+            <app-properties-list
+              [properties]="properties()"
+              [mode]="'resourceType'"
+              [canEdit]="false"
+              [canDelete]="false"
+              [resetToken]="resetToken()"
+              (resetToggled)="onPropertyReset($event.name, $event.checked)"
+              (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+            ></app-properties-list>
           </app-properties-panel>
         </div>
       }

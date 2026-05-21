@@ -7,7 +7,6 @@
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
-  color: var(--text-primary);
 }
 
 .relations-list {
@@ -17,9 +16,6 @@
 
 .relation-item {
   padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background-color: var(--background-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -43,7 +39,6 @@
 
 .relation-name {
   font-weight: 500;
-  color: var(--text-primary);
 }
 
 .relation-details {
@@ -59,9 +54,4 @@
 
 .relation-separator {
   color: var(--text-tertiary);
-}
-
-.relation-release,
-.relation-identifier {
-  color: var(--text-secondary);
 }

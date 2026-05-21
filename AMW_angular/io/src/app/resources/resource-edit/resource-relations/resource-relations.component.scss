@@ -10,7 +10,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid var(--bs-border-color);
 }
 
 .relation-detail-panel {
@@ -22,53 +22,19 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 .relation-detail-title {
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
+}
+
+.relation-release-value {
   color: var(--text-primary);
-}
-
-.relation-detail-body {
-  padding: 0.75rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.relation-detail-row {
-  display: flex;
-  gap: 1rem;
-  align-items: baseline;
-}
-
-.relation-detail-label {
-  font-weight: 500;
-  color: var(--text-secondary);
-  min-width: 8rem;
-  font-size: 0.875rem;
-}
-
-.relation-detail-value {
-  color: var(--text-primary);
-  font-size: 0.875rem;
-}
-
-.release-dropdown {
-  padding: 0.25rem 0.5rem;
-  border: 1px solid var(--border-color);
+  font-size: var(￼--bs-body-font-size);
+  border: 1px solid var(--bs-border-color);
   border-radius: 4px;
-  background-color: var(--background-primary);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  min-width: 8rem;
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary-alpha);
-  }
+  padding: 0.25rem 0.5rem;
 }

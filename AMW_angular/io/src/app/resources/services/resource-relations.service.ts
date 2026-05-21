@@ -85,4 +85,68 @@ export class ResourceRelationsService extends BaseService {
       >(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}/properties?contextId=${contextId}`, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
+
+  private loadingRelationProperties = signal(false);
+  isLoadingRelationProperties = this.loadingRelationProperties.asReadonly();
+
+  private relationProperties$: Subject<{ resourceId: number; relationId: number; contextId: number }> = new Subject<{
+    resourceId: number;
+    relationId: number;
+    contextId: number;
+  }>();
+
+  private relationPropertiesForResource$: Observable<Property[]> = this.relationProperties$.pipe(
+    switchMap(({ resourceId, relationId, contextId }) => {
+      this.loadingRelationProperties.set(true);
+      return this.getResourceRelationProperties(resourceId, relationId, contextId).pipe(
+        finalize(() => this.loadingRelationProperties.set(false)),
+      );
+    }),
+    startWith([]),
+    shareReplay(1),
+  );
+
+  relationProperties = toSignal(this.relationPropertiesForResource$, { initialValue: [] as Property[] });
+
+  setIdsForRelationProperties(resourceId: number, relationId: number, contextId: number) {
+    this.relationProperties$.next({ resourceId, relationId, contextId });
+  }
+
+  private loadingTypeRelationProperties = signal(false);
+  isLoadingTypeRelationProperties = this.loadingTypeRelationProperties.asReadonly();
+
+  private typeRelationProperties$: Subject<{ resourceTypeId: number; relTypeId: number; contextId: number }> =
+    new Subject<{
+      resourceTypeId: number;
+      relTypeId: number;
+      contextId: number;
+    }>();
+
+  private typeRelationPropertiesForType$: Observable<Property[]> = this.typeRelationProperties$.pipe(
+    switchMap(({ resourceTypeId, relTypeId, contextId }) => {
+      this.loadingTypeRelationProperties.set(true);
+      return this.getResourceTypeRelationProperties(resourceTypeId, relTypeId, contextId).pipe(
+        finalize(() => this.loadingTypeRelationProperties.set(false)),
+      );
+    }),
+    startWith([]),
+    shareReplay(1),
+  );
+
+  typeRelationProperties = toSignal(this.typeRelationPropertiesForType$, { initialValue: [] as Property[] });
+
+  setIdsForTypeRelationProperties(resourceTypeId: number, relTypeId: number, contextId: number) {
+    this.typeRelationProperties$.next({ resourceTypeId, relTypeId, contextId });
+  }
+
+  getResourceRelationProperties(resourceId: number, relationId: number, contextId: number): Observable<Property[]> {
+    return this.http
+      .get<Property[]>(
+        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/properties?contextId=${contextId}`,
+        {
+          headers: this.getHeaders(),
+        },
+      )
+      .pipe(catchError(this.handleError));
+  }
 }

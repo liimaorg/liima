@@ -7,15 +7,12 @@ import { ResourceRelationsService } from '../../services/resource-relations.serv
 import { ResourceService } from '../../services/resource.service';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../../models/resource-relation';
 import { Resource } from '../../models/resource';
-import {
-  RelationGroupItem,
-  ResourceRelationGroupComponent,
-} from './resource-relation-group/resource-relation-group.component';
+import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/relation-group.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { Property } from '../../models/property';
+import { createPropertiesEditor } from '../../properties-editor';
 
 @Component({
   selector: 'app-resource-relations',
@@ -23,7 +20,7 @@ import { Property } from '../../models/property';
   imports: [
     TileComponent,
     LoadingIndicatorComponent,
-    ResourceRelationGroupComponent,
+    RelationGroupComponent,
     ButtonComponent,
     FormsModule,
     PropertiesPanelComponent,
@@ -73,7 +70,18 @@ export class ResourceRelationsComponent {
   });
 
   selectedReleaseId = linkedSignal(() => this.selectedRelation()?.id ?? null);
-  protected readonly properties = signal<Property[] | null>([]);
+
+  protected readonly properties = this.relationsService.relationProperties;
+  isLoadingProperties = this.relationsService.isLoadingRelationProperties;
+
+  protected invalidProperties = signal<Set<string>>(new Set());
+
+  protected editor = createPropertiesEditor(() => [...this.properties().filter((p) => !p.disabled)], {
+    includeResetsInHasChanges: true,
+    unmarkResetOnChange: true,
+  });
+
+  resetToken = this.editor.resetToken;
 
   constructor() {
     effect(() => {
@@ -81,6 +89,31 @@ export class ResourceRelationsComponent {
       if (resourceId) {
         this.relationsService.setIdForResourceRelations(resourceId);
       }
+    });
+
+    effect(() => {
+      const relId = this.activeRelationId();
+      const resourceId = this.resource()?.id;
+      const ctxId = this.contextId();
+      if (relId != null && resourceId != null && ctxId != null) {
+        this.relationsService.setIdsForRelationProperties(resourceId, relId, ctxId);
+      }
+    });
+  }
+
+  onPropertyReset(propertyName: string, checked: boolean) {
+    this.editor.onPropertyReset(propertyName, checked);
+  }
+
+  onPropertyValidationChange(propertyName: string, invalid: boolean) {
+    this.invalidProperties.update((set) => {
+      const next = new Set(set);
+      if (invalid) {
+        next.add(propertyName);
+      } else {
+        next.delete(propertyName);
+      }
+      return next;
     });
   }
 
