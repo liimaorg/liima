@@ -205,7 +205,7 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - [x] Create REST endpoint method
 - [x] Ensure proper permission checks
 - [x] Write unit tests
-- [ ] Test endpoint manually
+- [x] Test endpoint manually
 
 **Acceptance Criteria**:
 - Endpoint returns properties for specific relation

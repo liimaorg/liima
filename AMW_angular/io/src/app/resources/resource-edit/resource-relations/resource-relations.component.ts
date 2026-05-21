@@ -57,7 +57,12 @@ export class ResourceRelationsComponent {
   providedItems = computed(() => this.groupedRelations().provided.map((r) => this.toItem(r)));
   unresolvedItems = computed(() => this.groupedRelations().unresolved.map((u) => this.toUnresolvedItem(u)));
 
-  activeRelationId = linkedSignal(() => this.selectedRelationId());
+  activeRelationId = linkedSignal(() => {
+    const relId = this.selectedRelationId();
+    if (relId != null) return relId;
+    const g = this.groupedRelations();
+    return [...g.runtime, ...g.consumed, ...g.provided][0]?.id ?? null;
+  });
 
   selectedRelation = computed<ResourceRelation | null>(() => {
     const relId = this.activeRelationId();

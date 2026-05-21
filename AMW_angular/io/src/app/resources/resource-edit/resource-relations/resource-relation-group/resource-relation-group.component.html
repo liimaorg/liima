@@ -2,7 +2,7 @@
   <div class="relations-section">
     <h3 class="section-title">{{ title() }}</h3>
     <div class="relations-list">
-      @for (item of sortedItems(); track item.key) {
+      @for (item of items(); track item.key) {
         <div
           class="relation-item"
           [class.relation-item--unresolved]="item.unresolved"

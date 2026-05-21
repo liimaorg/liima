@@ -1,0 +1,13 @@
+<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Related Resources'"
+  [actionName]="'Add Relation'"
+  [canAction]="false"
+  [isCollapsed]="false"
+  [noContent]="!hasRelations()"
+  [notAllowed]="false"
+>
+  @if (hasRelations()) {
+    <app-resource-relation-group [title]="'Unresolved'" [items]="unresolvedItems()" [selectedKey]="null" />
+  }
+</app-tile-component>

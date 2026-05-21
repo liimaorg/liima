@@ -44,4 +44,32 @@ export class ResourceRelationsService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  private loadingTypeRelations = signal(false);
+  isLoadingTypeRelations = this.loadingTypeRelations.asReadonly();
+
+  private typeRelations$: Subject<number> = new Subject<number>();
+
+  private relationsForResourceType$: Observable<GroupedResourceRelations> = this.typeRelations$.pipe(
+    switchMap((id: number) => {
+      this.loadingTypeRelations.set(true);
+      return this.getResourceTypeRelations(id).pipe(finalize(() => this.loadingTypeRelations.set(false)));
+    }),
+    startWith(EMPTY_GROUPED_RELATIONS),
+    shareReplay(1),
+  );
+
+  typeRelations = toSignal(this.relationsForResourceType$, { initialValue: EMPTY_GROUPED_RELATIONS });
+
+  setIdForResourceTypeRelations(id: number) {
+    this.typeRelations$.next(id);
+  }
+
+  getResourceTypeRelations(id: number): Observable<GroupedResourceRelations> {
+    return this.http
+      .get<GroupedResourceRelations>(`${this.getBaseUrl()}/resourceTypes/${id}/relations`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }
