@@ -1,0 +1,33 @@
+.relations-layout {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.relations-container {
+  flex: 0 0 auto;
+  min-width: 16rem;
+  max-width: 24rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-right: 1px solid #ddd;
+}
+
+.relation-detail-panel {
+  flex: 1 1 auto;
+}
+
+.relation-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.relation-detail-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}

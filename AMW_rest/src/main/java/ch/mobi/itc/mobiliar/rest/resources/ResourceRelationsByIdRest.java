@@ -102,7 +102,7 @@ public class ResourceRelationsByIdRest {
     private List<UnresolvedRelationDTO> toUnresolvedDtos(List<ResourceEditRelation> relations) {
         List<UnresolvedRelationDTO> dtos = new ArrayList<>();
         for (ResourceEditRelation rel : relations) {
-            dtos.add(new UnresolvedRelationDTO(rel.getSlaveTypeName(), rel.getDisplayName()));
+            dtos.add(new UnresolvedRelationDTO(rel.getResRelTypeId(), rel.getSlaveTypeName(), rel.getDisplayName()));
         }
         dtos.sort(Comparator.comparing(UnresolvedRelationDTO::getName, String.CASE_INSENSITIVE_ORDER));
         return dtos;

@@ -21,6 +21,7 @@ export interface RelationRelease {
 }
 
 export interface UnresolvedRelation {
+  resRelTypeId?: number;
   type: string;
   name: string;
 }

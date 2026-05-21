@@ -109,15 +109,13 @@ export class PropertyDeleteModalService {
             // Modal stays open to allow user to confirm force delete
             const descriptor = this.descriptorToDelete();
             if (descriptor) {
-              this.descriptorToDelete.set({ 
-                ...descriptor, 
-                errorMessage: errorMessage || 'This property descriptor is still in use and cannot be deleted.' 
+              this.descriptorToDelete.set({
+                ...descriptor,
+                errorMessage: errorMessage || 'This property descriptor is still in use and cannot be deleted.',
               });
             }
           } else {
-            this.toastService.error(
-              'Failed to delete property descriptor: ' + (errorMessage || 'Unknown error'),
-            );
+            this.toastService.error('Failed to delete property descriptor: ' + (errorMessage || 'Unknown error'));
             modal.close();
           }
         },

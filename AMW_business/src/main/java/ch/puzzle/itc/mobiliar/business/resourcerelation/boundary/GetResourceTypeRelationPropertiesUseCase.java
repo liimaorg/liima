@@ -18,33 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.mobi.itc.mobiliar.rest.dtos;
+package ch.puzzle.itc.mobiliar.business.resourcerelation.boundary;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
-/**
- * A resource-type level relation that has no concrete resource instance yet.
- * Grouped by slave type name in the UI.
- */
-@XmlRootElement(name = "unresolvedRelation")
-@XmlAccessorType(XmlAccessType.FIELD)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class UnresolvedRelationDTO {
+public interface GetResourceTypeRelationPropertiesUseCase {
 
-    /** The resource relation type ID, used to load properties for this type-level relation. */
-    private Integer resRelTypeId;
-
-    /** The slave resource type name (header in the UI). */
-    private String type;
-
-    /** Display name of the unresolved relation (typeIdentifier or slave type name). */
-    private String name;
+    /**
+     * Returns properties for a specific resource type relation.
+     *
+     * @param resourceTypeId the master resource type ID
+     * @param relTypeId      the resource relation type ID (resRelTypeId)
+     * @param contextId      the context ID
+     * @return list of properties for the type relation
+     * @throws NotFoundException if the resource type or relation type is not found
+     */
+    List<ResourceEditProperty> getPropertiesForTypeRelation(Integer resourceTypeId, Integer relTypeId, Integer contextId)
+            throws NotFoundException;
 }

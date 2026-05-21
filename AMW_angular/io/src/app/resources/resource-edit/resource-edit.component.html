@@ -38,22 +38,14 @@
         <ul ngbDropdownMenu>
           @if (goToResourceTypeAvailable()) {
             <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                [routerLink]="['/resourceType/edit']"
-                [queryParams]="resourceTypeQueryParams()"
-              >
+              <a class="dropdown-item" [routerLink]="['/resourceType/edit']" [queryParams]="resourceTypeQueryParams()">
                 Resource Type
               </a>
             </li>
           }
           @if (goToApplicationServerAvailable()) {
             <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                [routerLink]="['/resource/edit']"
-                [queryParams]="applicationServerQueryParams()"
-              >
+              <a class="dropdown-item" [routerLink]="['/resource/edit']" [queryParams]="applicationServerQueryParams()">
                 Application Server
               </a>
             </li>

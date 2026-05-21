@@ -92,7 +92,7 @@ export class ResourceService extends BaseService {
     );
   }
 
-  createResourceForResourceType(resource: any) {
+  createResourceForResourceType(resource: Resource) {
     return this.http
       .post<Resource>(`${this.getBaseUrl()}/resources`, resource, {
         headers: this.getHeaders(),

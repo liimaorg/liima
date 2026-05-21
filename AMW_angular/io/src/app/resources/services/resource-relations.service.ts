@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, startWith, Subject } from 'rxjs';
 import { GroupedResourceRelations } from '../models/resource-relation';
+import { Property } from '../models/property';
 import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
 
 const EMPTY_GROUPED_RELATIONS: GroupedResourceRelations = {
@@ -70,6 +71,18 @@ export class ResourceRelationsService extends BaseService {
       .get<GroupedResourceRelations>(`${this.getBaseUrl()}/resourceTypes/${id}/relations`, {
         headers: this.getHeaders(),
       })
+      .pipe(catchError(this.handleError));
+  }
+
+  getResourceTypeRelationProperties(
+    resourceTypeId: number,
+    relTypeId: number,
+    contextId: number,
+  ): Observable<Property[]> {
+    return this.http
+      .get<
+        Property[]
+      >(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}/properties?contextId=${contextId}`, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
 }

@@ -8,6 +8,28 @@
   [notAllowed]="false"
 >
   @if (hasRelations()) {
-    <app-resource-relation-group [title]="'Unresolved'" [items]="unresolvedItems()" [selectedKey]="null" />
+    <div class="relations-layout">
+      <div class="relations-container">
+        <app-resource-relation-group
+          [title]="'Unresolved'"
+          [items]="unresolvedItems()"
+          [selectedKey]="activeRelationId()"
+          (itemSelected)="onItemSelected($event)"
+        />
+      </div>
+      @if (selectedRelation(); as rel) {
+        <div class="relation-detail-panel">
+          <div class="relation-detail-header">
+            <h4 class="relation-detail-title">{{ rel.name }}</h4>
+            <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true"
+              ><app-icon icon="trash"></app-icon> Remove Relation</app-button
+            >
+          </div>
+          <app-properties-panel [canEdit]="true">
+            <app-properties-list [properties]="properties()" [mode]="'resource'"></app-properties-list>
+          </app-properties-panel>
+        </div>
+      }
+    </div>
   }
 </app-tile-component>
