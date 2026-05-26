@@ -59,17 +59,19 @@
               ><app-icon icon="trash"></app-icon> Remove Relation</app-button
             >
           </div>
-          <app-properties-panel [canEdit]="false">
-            <app-properties-list
-              [properties]="properties()"
-              [mode]="'resource'"
-              [canEdit]="false"
-              [canDelete]="false"
-              [resetToken]="resetToken()"
-              (resetToggled)="onPropertyReset($event.name, $event.checked)"
-              (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
-            ></app-properties-list>
-          </app-properties-panel>
+          <div class="relation-detail-body">
+            <app-properties-panel [canEdit]="false">
+              <app-properties-list
+                [properties]="properties()"
+                [mode]="'resource'"
+                [canEdit]="false"
+                [canDelete]="false"
+                [resetToken]="resetToken()"
+                (resetToggled)="onPropertyReset($event.name, $event.checked)"
+                (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+              ></app-properties-list>
+            </app-properties-panel>
+          </div>
         </div>
       }
     </div>

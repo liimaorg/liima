@@ -12,10 +12,8 @@
           (keydown.enter)="selectItem(item)"
         >
           <div class="relation-info">
+            <div class="relation-type">{{ item.type }}</div>
             <div class="relation-name">{{ item.name }}</div>
-            <div class="relation-details">
-              <span class="relation-type">{{ item.type }}</span>
-            </div>
           </div>
         </div>
       }

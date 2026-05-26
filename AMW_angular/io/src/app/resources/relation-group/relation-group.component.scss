@@ -38,17 +38,15 @@
 }
 
 .relation-name {
-  font-weight: 500;
-}
-
-.relation-details {
   font-size: 0.875rem;
   color: var(--bs-link-color);
   display: flex;
   align-items: center;
 }
 
+
 .relation-type {
+  font-weight: 500;
   font-style: italic;
 }
 
