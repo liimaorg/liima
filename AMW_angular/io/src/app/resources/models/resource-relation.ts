@@ -5,7 +5,7 @@ export interface ResourceRelation {
   type: string; // slaveTypeName
   relatedResourceRelease: string; // slaveRelease
   relationName: string;
-  relationType: 'consumed' | 'provided';
+  relationType: 'consumed' | 'provided'; // FIXME what about runtime
   templates?: Template[];
   availableReleases?: RelationRelease[];
   identifier?: string;
