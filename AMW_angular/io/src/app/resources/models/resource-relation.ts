@@ -1,5 +1,6 @@
 export interface ResourceRelation {
   id: number;
+  slaveId: number;
   relatedResourceName: string;
   type: string;
   relatedResourceRelease: string;

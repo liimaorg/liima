@@ -13,6 +13,7 @@ import { PropertiesListComponent } from '../../properties-list/properties-list.c
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { createPropertiesEditor } from '../../properties-editor';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-resource-relations',
@@ -28,6 +29,7 @@ import { createPropertiesEditor } from '../../properties-editor';
     NgOptionComponent,
     NgSelectComponent,
     IconComponent,
+    RouterLink,
   ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',

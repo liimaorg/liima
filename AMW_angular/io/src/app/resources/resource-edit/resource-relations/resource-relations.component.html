@@ -17,6 +17,12 @@
           (itemSelected)="onItemSelected($event)"
         />
         <app-relation-group
+          [title]="'Unresolved'"
+          [items]="unresolvedItems()"
+          [selectedKey]="activeRelationId()"
+          (itemSelected)="onItemSelected($event)"
+        />
+        <app-relation-group
           [title]="'Consumed Resources'"
           [items]="consumedItems()"
           [selectedKey]="activeRelationId()"
@@ -28,17 +34,13 @@
           [selectedKey]="activeRelationId()"
           (itemSelected)="onItemSelected($event)"
         />
-        <app-relation-group
-          [title]="'Unresolved'"
-          [items]="unresolvedItems()"
-          [selectedKey]="activeRelationId()"
-          (itemSelected)="onItemSelected($event)"
-        />
       </div>
       @if (selectedRelation(); as rel) {
         <div class="relation-detail-panel">
           <div class="relation-detail-header">
-            <h4 class="relation-detail-title">{{ rel.relatedResourceName }}</h4>
+            <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
+              <h4 class="relation-detail-title">{{ rel.relatedResourceName }}</h4>
+            </a>
             @if (rel.availableReleases && rel.availableReleases.length > 1) {
               <ng-select
                 id="selectRelease"

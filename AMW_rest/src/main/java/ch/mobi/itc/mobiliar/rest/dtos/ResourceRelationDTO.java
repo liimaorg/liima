@@ -43,6 +43,7 @@ public class ResourceRelationDTO {
     private final static String PROVIDED = "provided";
 
     private Integer id;
+    private Integer slaveId;
     private String relatedResourceName;
     private String type;
     private String relatedResourceRelease;
@@ -62,6 +63,7 @@ public class ResourceRelationDTO {
 
     public ResourceRelationDTO(AbstractResourceRelationEntity relation) {
         id = relation.getId();
+        slaveId = relation.getSlaveResource().getId();
         relatedResourceName = relation.getSlaveResource().getName();
         type = relation.getResourceRelationType().getResourceTypeB().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
@@ -71,6 +73,7 @@ public class ResourceRelationDTO {
 
     public ResourceRelationDTO(ResourceEditRelation relation) {
         id = relation.getResRelId();
+        slaveId = relation.getSlaveId();
         relatedResourceName = relation.getSlaveName();
         type = relation.getSlaveTypeName();
         relatedResourceRelease = relation.getSlaveReleaseName();
