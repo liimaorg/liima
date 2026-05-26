@@ -95,7 +95,7 @@ public class ResourceRelationsByIdRest {
             }
             dtos.add(dto);
         }
-        dtos.sort(Comparator.comparing(ResourceRelationDTO::getRelatedResourceName, String.CASE_INSENSITIVE_ORDER));
+        dtos.sort(Comparator.comparing(ResourceRelationDTO::getType, String.CASE_INSENSITIVE_ORDER));
         return dtos;
     }
 
