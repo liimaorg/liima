@@ -1,13 +1,14 @@
 export interface ResourceRelation {
   id: number;
   slaveId: number;
-  relatedResourceName: string;
-  type: string;
-  relatedResourceRelease: string;
+  relatedResourceName: string; // slaveName
+  type: string; // slaveTypeName
+  relatedResourceRelease: string; // slaveRelease
   relationName: string;
-  relationType: 'consumed' | 'provided';
+  relationType: 'consumed' | 'provided'; // FIXME what about runtime
   templates?: Template[];
   availableReleases?: RelationRelease[];
+  identifier?: string;
 }
 
 export interface Template {
@@ -25,6 +26,7 @@ export interface UnresolvedRelation {
   resRelTypeId?: number;
   type: string;
   name: string;
+  identifier?: string;
 }
 
 export interface GroupedResourceRelations {

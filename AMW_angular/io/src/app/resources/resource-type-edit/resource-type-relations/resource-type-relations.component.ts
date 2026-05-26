@@ -11,6 +11,8 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { createPropertiesEditor } from '../../properties-editor';
+import { Property } from '../../models/property';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-resource-type-relations',
@@ -28,6 +30,7 @@ import { createPropertiesEditor } from '../../properties-editor';
   styleUrl: './resource-type-relations.component.scss',
 })
 export class ResourceTypeRelationsComponent {
+  private authService = inject(AuthService);
   private relationsService = inject(ResourceRelationsService);
   private resourceTypeService = inject(ResourceTypesService);
 
@@ -38,7 +41,15 @@ export class ResourceTypeRelationsComponent {
 
   groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.typeRelations;
   isLoading = this.relationsService.isLoadingTypeRelations;
-
+  permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', 'UPDATE', this.resourceType().name),
+      };
+    } else {
+      return { canEditResourceType: false };
+    }
+  });
   hasRelations = computed(() => this.groupedRelations().unresolved.length > 0);
 
   unresolvedItems = computed(() => this.groupedRelations().unresolved.map((u) => this.toUnresolvedItem(u)));
@@ -55,7 +66,16 @@ export class ResourceTypeRelationsComponent {
     return this.groupedRelations().unresolved.find((r) => r.resRelTypeId === id) ?? null;
   });
 
-  protected readonly properties = this.relationsService.typeRelationProperties;
+  properties = computed<Property[]>(() => {
+    const props = this.relationsService.typeRelationProperties;
+    const result: Property[] = [];
+    if (this.hasIdentifierProperty()) {
+      result.push(this.relationIdentifier());
+    }
+    result.push(...props());
+    return result;
+  });
+
   isLoadingProperties = this.relationsService.isLoadingTypeRelationProperties;
 
   protected invalidProperties = signal<Set<string>>(new Set());
@@ -107,12 +127,31 @@ export class ResourceTypeRelationsComponent {
     this.relationSelected.emit(id);
   }
 
+  private hasIdentifierProperty() {
+    return this.selectedRelation() != null && !this.resourceType().isDefaultResourceType;
+  }
+
+  private relationIdentifier = computed<Property>(() => ({
+    name: 'relationName',
+    displayName: `Relation name`,
+    value: this.selectedRelation()?.identifier || '',
+    replacedValue: '',
+    generalComment: '',
+    valueComment: 'specialProperty',
+    descriptorId: -1,
+    context: 'Global', // TODO fix context
+    nullable: true,
+    optional: true,
+    disabled: this.permissions().canEditResourceType,
+  }));
+
   private toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
     return {
       key: unresolved.resRelTypeId,
       name: unresolved.name,
       type: unresolved.type,
       unresolved: true,
+      identifier: unresolved.identifier,
     };
   }
 }

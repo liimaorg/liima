@@ -14,6 +14,8 @@ import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { createPropertiesEditor } from '../../properties-editor';
 import { RouterLink } from '@angular/router';
+import { Property } from '../../models/property';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-resource-relations',
@@ -35,6 +37,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './resource-relations.component.scss',
 })
 export class ResourceRelationsComponent {
+  protected authService = inject(AuthService);
   private relationsService = inject(ResourceRelationsService);
   private resourceService = inject(ResourceService);
 
@@ -73,7 +76,16 @@ export class ResourceRelationsComponent {
 
   selectedReleaseId = linkedSignal(() => this.selectedRelation()?.id ?? null);
 
-  protected readonly properties = this.relationsService.relationProperties;
+  properties = computed<Property[]>(() => {
+    const props = this.relationsService.relationProperties;
+    const result: Property[] = [];
+    if (this.hasIdentifierProperty()) {
+      result.push(this.relationIdentifier());
+    }
+    result.push(...props());
+    return result;
+  });
+
   isLoadingProperties = this.relationsService.isLoadingRelationProperties;
 
   protected invalidProperties = signal<Set<string>>(new Set());
@@ -130,12 +142,35 @@ export class ResourceRelationsComponent {
     this.relationSelected.emit(relationId);
   }
 
+  private hasIdentifierProperty() {
+    return (
+      this.selectedRelation() != null &&
+      this.selectedRelation().relationType === 'consumed' &&
+      this.selectedRelation().type !== 'RUNTIME'
+    );
+  }
+
+  private relationIdentifier = computed<Property>(() => ({
+    name: 'relationName',
+    displayName: `Relation name`,
+    value: this.selectedRelation()?.identifier || '',
+    replacedValue: '',
+    generalComment: '',
+    valueComment: 'specialProperty',
+    descriptorId: -1,
+    context: 'Global',
+    nullable: true,
+    optional: true,
+    disabled: this.contextId() !== 1,
+  }));
+
   private toItem(relation: ResourceRelation): RelationGroupItem {
     return {
       key: relation.id,
       name: relation.relatedResourceName,
       type: relation.type,
       release: relation.relatedResourceRelease,
+      // FIxME should be resourceEditRelation.identifier
       identifier:
         relation.relationName && relation.relationName !== relation.relatedResourceName
           ? relation.relationName

@@ -52,6 +52,7 @@ public class ResourceRelationDTO {
     private String relationType;
     private List<TemplateDTO> templates;
     private List<RelationReleaseDTO> availableReleases = new ArrayList<>();
+    private String identifier;
 
     @Data
     @NoArgsConstructor
@@ -69,6 +70,7 @@ public class ResourceRelationDTO {
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
         relationName = relation.buildIdentifer();
         relationType = relation instanceof ConsumedResourceRelationEntity ? CONSUMED : PROVIDED;
+        identifier = relation.getIdentifier();
     }
 
     public ResourceRelationDTO(ResourceEditRelation relation) {
@@ -79,6 +81,7 @@ public class ResourceRelationDTO {
         relatedResourceRelease = relation.getSlaveReleaseName();
         relationName = relation.getDisplayName();
         relationType = relation.getMode() == ResourceEditRelation.Mode.CONSUMED ? CONSUMED : PROVIDED;
+        identifier = relation.getIdentifier();
     }
 
 }
