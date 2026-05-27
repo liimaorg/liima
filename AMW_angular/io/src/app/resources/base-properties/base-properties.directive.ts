@@ -15,7 +15,7 @@ import { PropertyEditComponent } from '../property-edit/property-edit.component'
 import { PropertyDescriptor } from '../models/property-descriptor';
 
 @Directive()
-export abstract class BasePropertiesComponent {
+export abstract class BasePropertiesDirective {
   contextId = input.required<number>();
 
   protected authService = inject(AuthService);

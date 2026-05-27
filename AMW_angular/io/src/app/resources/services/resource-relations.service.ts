@@ -87,7 +87,9 @@ export class ResourceRelationsService extends BaseService {
   }
 
   private loadingRelationProperties = signal(false);
+  private loadingTypeRelationProperties = signal(false);
   isLoadingRelationProperties = this.loadingRelationProperties.asReadonly();
+  isLoadingTypeRelationProperties = this.loadingTypeRelationProperties.asReadonly();
 
   private relationProperties$: Subject<{ resourceId: number; relationId: number; contextId: number }> = new Subject<{
     resourceId: number;
@@ -111,9 +113,6 @@ export class ResourceRelationsService extends BaseService {
   setIdsForRelationProperties(resourceId: number, relationId: number, contextId: number) {
     this.relationProperties$.next({ resourceId, relationId, contextId });
   }
-
-  private loadingTypeRelationProperties = signal(false);
-  isLoadingTypeRelationProperties = this.loadingTypeRelationProperties.asReadonly();
 
   private typeRelationProperties$: Subject<{ resourceTypeId: number; relTypeId: number; contextId: number }> =
     new Subject<{

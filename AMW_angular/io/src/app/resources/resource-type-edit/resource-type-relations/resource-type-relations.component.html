@@ -1,4 +1,4 @@
-<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoadingRelations()"></app-loading-indicator>
 <app-tile-component
   [title]="'Related Resource Types'"
   [actionName]="'Add Relation'"
@@ -26,13 +26,16 @@
             >
           </div>
           <div class="relation-detail-body">
+            <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
             <app-properties-panel [canEdit]="false">
               <app-properties-list
                 [properties]="properties()"
-                [mode]="'resourceType'"
                 [canEdit]="false"
+                [canDecrypt]="false"
                 [canDelete]="false"
+                [mode]="'resourceType'"
                 [resetToken]="resetToken()"
+                (valueChange)="onPropertyChange($event.name, $event.value)"
                 (resetToggled)="onPropertyReset($event.name, $event.checked)"
                 (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
               ></app-properties-list>

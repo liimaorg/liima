@@ -451,7 +451,7 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - `ContextLocator` - context information
 
 ### Existing Angular Patterns to Follow
-- `BasePropertiesComponent` - property editing pattern
+- `BasePropertiesDirective` - property editing pattern
 - `createPropertiesEditor()` - change tracking
 - `ResourcePropertiesService` - service pattern
 - `TileComponent` - UI tile structure

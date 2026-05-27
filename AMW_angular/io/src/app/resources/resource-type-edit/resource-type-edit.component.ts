@@ -44,6 +44,9 @@ export class ResourceTypeEditComponent {
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
+  relationId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('rel')))), {
+    initialValue: null,
+  });
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   isLoading = computed(() => {
