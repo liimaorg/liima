@@ -200,6 +200,7 @@ public class PropertyEditDataProvider implements Serializable {
         filteredRelationProperties = new ArrayList<>();
         currentRelationProperties = new ArrayList<>();
         if (currentRelation != null) {
+            // TODO check identifier mapping for resource/resourceType
             if (currentRelation.isResourceTypeRelation()) {
                 currentRelationProperties = editor.getPropertiesForRelatedResourceType(currentRelation, getContextId());
                 typeRelationIdentifier = currentRelation.getDisplayName();
@@ -225,13 +226,14 @@ public class PropertyEditDataProvider implements Serializable {
         return isNode() || isNodeType();
     }
 
+    //TODO filter properties for NODE
     private void filterHostNameAndActiveFromRelatedNode(ResourceEditRelation relation) {
         if (relation.getSlaveTypeName().equals(DefaultResourceTypeDefinition.NODE.name())
                 && !currentContext.isEnvironment() && currentRelationProperties != null) {
             filterHostNameAndActive(currentRelationProperties);
         }
     }
-
+    //TODO filter properties for NODE
     private void filterHostNameAndActive(List<ResourceEditProperty> props) {
         Iterator<ResourceEditProperty> it = props.iterator();
         while (it.hasNext()) {

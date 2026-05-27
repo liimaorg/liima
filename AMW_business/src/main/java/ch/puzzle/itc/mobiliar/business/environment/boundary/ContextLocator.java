@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
-public class ContextLocator {
+public class ContextLocator implements GetContextUseCase {
 
     @Inject
     ContextRepository contextRepository;
@@ -61,6 +61,7 @@ public class ContextLocator {
         return contextRepository.find(id);
     }
 
+    @Override
     public ContextEntity getById(Integer id) throws NotFoundException {
         ContextEntity entity = contextRepository.find(id);
         if (entity != null) {
@@ -68,6 +69,7 @@ public class ContextLocator {
         } else throw new NotFoundException("Context with id " + id + " not found");
     }
 
+    @Override
     public List<ContextEntity> getChildren(Integer contextId) {
         List<ContextEntity> result = new ArrayList<>();
         for (ContextEntity c : getAllEnvironments()) {
