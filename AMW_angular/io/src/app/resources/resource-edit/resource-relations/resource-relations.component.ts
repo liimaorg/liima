@@ -72,6 +72,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       result.push(this.relationIdentifier());
     }
     result.push(...props());
+    console.log(result);
     return result;
   });
 

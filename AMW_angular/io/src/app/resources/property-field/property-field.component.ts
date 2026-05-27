@@ -12,6 +12,9 @@ import { PropertyFieldTooltipComponent } from './property-field-info/property-fi
   imports: [FormsModule, ButtonComponent, IconComponent, NgbTooltip, PropertyFieldTooltipComponent],
   templateUrl: './property-field.component.html',
   styleUrl: './property-field.component.scss',
+  host: {
+    '[style.display]': 'showProperty() ? "block" : "none"',
+  },
 })
 export class PropertyFieldComponent {
   property = input.required<Property>();
