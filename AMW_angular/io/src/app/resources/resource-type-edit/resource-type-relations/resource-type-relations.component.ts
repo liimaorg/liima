@@ -44,11 +44,12 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     }
   });
 
+  // Resource types currently only have unresolved relations (no runtime/consumed/provided).
   protected hasRelations = computed(() => this.groupedRelations().unresolved.length > 0);
 
   protected activeRelationId = linkedSignal(() => {
     const id = this.selectedRelationId();
-    if (id != null) return id;
+    if (id != null && id > 0) return id;
     return this.groupedRelations().unresolved[0]?.resRelTypeId ?? null;
   });
 
@@ -79,7 +80,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   }
 
   protected getEntityId(): number {
-    return this.resourceType()?.id;
+    return this.resourceType().id;
   }
 
   protected getUnsavedChangesKey(): string {
@@ -106,10 +107,10 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     generalComment: '',
     valueComment: 'specialProperty',
     descriptorId: -1,
-    context: 'Global', // TODO set context for resource type
+    context: 'Global', // TODO set context for resource type?
     nullable: true,
     optional: true,
-    disabled: this.permissions().canEditResourceType,
+    disabled: !this.permissions().canEditResourceType,
   }));
 
   protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {

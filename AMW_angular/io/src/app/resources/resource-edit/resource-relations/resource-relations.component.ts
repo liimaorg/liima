@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, linkedSignal, output, Signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
@@ -48,7 +48,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   protected activeRelationId = linkedSignal(() => {
     const relId = this.selectedRelationId();
-    if (relId != null) return relId;
+    if (relId != null && relId > 0) return relId;
     const g = this.groupedRelations();
     return [...g.runtime, ...g.consumed, ...g.provided][0]?.id ?? null;
   });
@@ -61,7 +61,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return all.find((r) => r.id === relId) ?? null;
   });
 
-  selectedReleaseId = linkedSignal(() => this.selectedRelation()?.id ?? null);
+  selectedRelationIdForRelease = linkedSignal(() => this.selectedRelation()?.id ?? null);
 
   protected isLoadingProperties = this.relationsService.isLoadingRelationProperties;
 
@@ -84,7 +84,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   }
 
   protected getEntityId(): number {
-    return this.resource()?.id;
+    return this.resource().id;
   }
 
   protected getUnsavedChangesKey(): string {
@@ -104,11 +104,8 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   }
 
   protected hasIdentifierProperty() {
-    return (
-      this.selectedRelation() != null &&
-      this.selectedRelation().relationType === 'consumed' &&
-      this.selectedRelation().type !== 'RUNTIME'
-    );
+    const rel = this.selectedRelation();
+    return rel != null && rel.relationType === 'consumed' && rel.type !== 'RUNTIME';
   }
 
   relationIdentifier = computed<Property>(() => ({

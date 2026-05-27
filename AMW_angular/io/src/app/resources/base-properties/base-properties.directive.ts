@@ -37,7 +37,7 @@ export abstract class BasePropertiesDirective {
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
-    this.getEditorOptions(),
+    () => this.getEditorOptions(),
   );
 
   hasChanges = this.editor.hasChanges;

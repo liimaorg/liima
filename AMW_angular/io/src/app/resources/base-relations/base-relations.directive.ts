@@ -37,7 +37,7 @@ export abstract class BaseRelationsDirective {
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
-    this.getEditorOptions(),
+    () => this.getEditorOptions(),
   );
 
   hasChanges = this.editor.hasChanges;
@@ -113,6 +113,7 @@ export abstract class BaseRelationsDirective {
 
   onItemSelected(item: RelationGroupItem) {
     const id = typeof item.key === 'number' ? item.key : null;
+    if (id == null) return;
     this.activeRelationId.set(id);
     this.setQueryParamForRelationId(id);
   }

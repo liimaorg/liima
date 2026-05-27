@@ -38,14 +38,14 @@
       @if (selectedRelation(); as rel) {
         <div class="relation-detail-panel">
           <div class="relation-detail-header">
-            <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
+            <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: contextId(), id: rel.slaveId }">
               <h4 class="relation-detail-title">{{ rel.relatedResourceName }}</h4>
             </a>
             @if (rel.availableReleases && rel.availableReleases.length > 1) {
               <ng-select
                 id="selectRelease"
                 [clearable]="false"
-                [ngModel]="selectedReleaseId()"
+                [ngModel]="selectedRelationIdForRelease()"
                 (ngModelChange)="onReleaseChange($event)"
                 name="release"
               >

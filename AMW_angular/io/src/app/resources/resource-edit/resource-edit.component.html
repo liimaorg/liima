@@ -132,11 +132,7 @@
         @if (isApplicationServer()) {
           <app-resource-applications [resource]="resource()" [contextId]="contextId()"></app-resource-applications>
         }
-        <app-resource-relations
-          [contextId]="contextId()"
-          [selectedRelationId]="relationId()"
-          (relationSelected)="onRelationSelected($event)"
-        ></app-resource-relations>
+        <app-resource-relations [contextId]="contextId()" [selectedRelationId]="relationId()"></app-resource-relations>
       </div>
     }
   </div>
