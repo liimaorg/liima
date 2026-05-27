@@ -2,9 +2,9 @@
 <app-tile-component
   [title]="'Related Resources'"
   [actionName]="'Add Relation'"
-  [canAction]="false"
+  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
   [isCollapsed]="false"
-  [noContent]="!hasRelations()"
+  [noContent]="false"
   [notAllowed]="false"
 >
   @if (hasRelations()) {
@@ -56,19 +56,20 @@
             } @else {
               <span class="relation-release-value">{{ rel.relatedResourceRelease }}</span>
             }
-
-            <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true"
-              ><app-icon icon="trash"></app-icon> Remove Relation</app-button
-            >
+            @if (permissions().canUpdateProperty) {
+              <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true"
+                ><app-icon icon="trash"></app-icon> Remove Relation</app-button
+              >
+            }
           </div>
           <div class="relation-detail-body">
             <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
-            <app-properties-panel [canEdit]="false">
+            <app-properties-panel [canEdit]="permissions().canUpdateProperty">
               <app-properties-list
                 [properties]="properties()"
-                [canEdit]="false"
-                [canDecrypt]="false"
-                [canDelete]="false"
+                [canEdit]="permissions().canUpdateProperty"
+                [canDecrypt]="permissions().canDecryptProperties"
+                [canDelete]="permissions().canUpdateProperty"
                 [mode]="'resource'"
                 [resetToken]="resetToken()"
                 (valueChange)="onPropertyChange($event.name, $event.value)"

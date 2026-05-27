@@ -24,9 +24,10 @@ import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.UnresolvedRelationDTO;
-import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.GetContextUseCase;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.GetRelationPropertiesUseCase;
+import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceRelationsUseCase;
@@ -50,7 +51,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RequestScoped
 @Path("/resources")
@@ -64,7 +65,7 @@ public class ResourceRelationsByIdRest {
     GetRelationPropertiesUseCase getRelationPropertiesUseCase;
 
     @Inject
-    ContextLocator contextLocator;
+    GetContextUseCase getContextUseCase;
 
     @GET
     @Path("/{id : \\d+}/relations")
@@ -118,16 +119,22 @@ public class ResourceRelationsByIdRest {
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
             throws ResourceNotFoundException, NotFoundException {
 
-        ContextEntity context = contextLocator.getById(contextId);
+        ContextEntity context = getContextUseCase.getById(contextId);
 
         List<ResourceEditProperty> properties =
                 getRelationPropertiesUseCase.getPropertiesForRelation(resourceId, relationId, contextId);
 
-        List<PropertyExtendedDTO> dtos = properties.stream()
-                .map(p -> new PropertyExtendedDTO(p, context.getName(), contextId, null))
-                .collect(Collectors.toList());
+        List<PropertyExtendedDTO> dtos = new ArrayList<>();
+        for (ResourceEditProperty p : properties) {
+            dtos.add(new PropertyExtendedDTO(p, context.getName(), contextId, getOverwriteInfos(relationId, contextId, p)));
+        }
 
         return Response.ok(dtos).build();
+    }
+
+    private List<PropertyEditingService.DifferingProperty> getOverwriteInfos(Integer relationId, Integer contextId, ResourceEditProperty property) throws ResourceNotFoundException {
+        List<ContextEntity> contexts = getContextUseCase.getChildren(contextId);
+        return getRelationPropertiesUseCase.getPropertyOverviewForRelation(relationId, property, contexts);
     }
 
 }

@@ -2,7 +2,7 @@
 <app-tile-component
   [title]="'Related Resource Types'"
   [actionName]="'Add Relation'"
-  [canAction]="false"
+  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
   [isCollapsed]="false"
   [noContent]="!hasRelations()"
   [notAllowed]="false"
@@ -27,12 +27,12 @@
           </div>
           <div class="relation-detail-body">
             <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
-            <app-properties-panel [canEdit]="false">
+            <app-properties-panel [canEdit]="permissions().canUpdateProperty">
               <app-properties-list
                 [properties]="properties()"
-                [canEdit]="false"
-                [canDecrypt]="false"
-                [canDelete]="false"
+                [canEdit]="permissions().canUpdateProperty"
+                [canDecrypt]="permissions().canDecryptProperties"
+                [canDelete]="permissions().canUpdateProperty"
                 [mode]="'resourceType'"
                 [resetToken]="resetToken()"
                 (valueChange)="onPropertyChange($event.name, $event.value)"

@@ -12,7 +12,7 @@ import { PropertiesListComponent } from '../../properties-list/properties-list.c
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { Property } from '../../models/property';
-import { BaseRelationsDirective } from '../../base-relations/base-relations.directive';
+import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -40,6 +40,29 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
   protected isLoadingRelations = this.relationsService.isLoadingRelations;
+
+  protected permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canUpdateProperty: this.authService.hasPermission(
+          'RESOURCE',
+          'UPDATE',
+          null,
+          this.resource()?.resourceTypeId,
+          this.context()?.name,
+        ),
+        canDecryptProperties: this.authService.hasPermission(
+          'RESOURCE_PROPERTY_DECRYPT',
+          'ALL',
+          null,
+          this.resource()?.id,
+          this.context()?.name,
+        ),
+      };
+    } else {
+      return { canUpdateProperty: false, canDecryptProperties: false };
+    }
+  });
 
   protected hasRelations = computed(() => {
     const g = this.groupedRelations();
@@ -71,9 +94,23 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     if (this.hasIdentifierProperty()) {
       result.push(this.relationIdentifier());
     }
-    result.push(...props());
-    console.log(result);
+    const allProps = props();
+    const rel = this.selectedRelation();
+    if (rel?.type === 'NODE' && !this.isEnvironment()) {
+      result.push(...allProps.filter((p) => !NODE_FILTERED_PROPERTIES.includes(p.name)));
+    } else {
+      result.push(...allProps);
+    }
     return result;
+  });
+
+  protected filteredRelationProperties = computed<Property[]>(() => {
+    const props = this.relationsService.relationProperties;
+    const rel = this.selectedRelation();
+    if (rel?.type === 'NODE' && !this.isEnvironment()) {
+      return props().filter((p) => NODE_FILTERED_PROPERTIES.includes(p.name));
+    }
+    return [];
   });
 
   protected reloadRelation(entityId: number): void {

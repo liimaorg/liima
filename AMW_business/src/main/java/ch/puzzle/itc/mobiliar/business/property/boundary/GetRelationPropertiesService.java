@@ -25,6 +25,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
@@ -42,8 +44,20 @@ public class GetRelationPropertiesService implements GetRelationPropertiesUseCas
     PropertyEditor propertyEditor;
 
     @Override
-    public List<ResourceEditProperty> getPropertiesForRelation(Integer masterResourceId, Integer relationId, Integer contextId)
+    public List<ResourceEditProperty> getPropertiesForRelation(Integer resourceId, Integer relationId, Integer contextId)
             throws ResourceNotFoundException {
+        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationId);
+        return propertyEditor.getPropertiesForRelatedResource(resourceId, resourceEditRelation, contextId);
+    }
+
+    @Override
+    public List<PropertyEditingService.DifferingProperty> getPropertyOverviewForRelation(Integer relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts)
+            throws ResourceNotFoundException {
+        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationId);
+        return propertyEditor.getPropertyOverviewForRelation(resourceEditRelation, property, relevantContexts);
+    }
+
+    private ResourceEditRelation toResourceEditRelation(Integer relationId) throws ResourceNotFoundException {
         AbstractResourceRelationEntity relation = resourceRelationService.getResourceRelation(relationId);
         if (relation == null) {
             throw new ResourceNotFoundException("Relation with id " + relationId + " not found");
@@ -58,7 +72,7 @@ public class GetRelationPropertiesService implements GetRelationPropertiesUseCas
             throw new ResourceNotFoundException("Relation with id " + relationId + " is not a consumed or provided relation");
         }
 
-        ResourceEditRelation resourceEditRelation = new ResourceEditRelation(
+        return new ResourceEditRelation(
                 relation.getId(),
                 relation.getSlaveResource().getId(),
                 relation.buildIdentifer(),
@@ -73,7 +87,5 @@ public class GetRelationPropertiesService implements GetRelationPropertiesUseCas
                 relation.getResourceRelationType().getIdentifier(),
                 mode.name(),
                 relation.getSlaveResource().getRelease().getInstallationInProductionAt());
-
-        return propertyEditor.getPropertiesForRelatedResource(masterResourceId, resourceEditRelation, contextId);
     }
 }

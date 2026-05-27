@@ -12,6 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../models/resource-relation';
 import { RelationGroupItem } from '../relation-group/relation-group.component';
 
+export const NODE_FILTERED_PROPERTIES = ['hostName', 'active'];
+
 @Directive()
 export abstract class BaseRelationsDirective {
   contextId = input.required<number>();
@@ -77,6 +79,11 @@ export abstract class BaseRelationsDirective {
 
   context = computed(() => {
     return this.environmentsService.findEnvironmentById(this.environmentsService.environmentTree(), this.contextId());
+  });
+
+  protected isEnvironment = computed(() => {
+    const ctx = this.context();
+    return ctx != null && (!ctx.children || ctx.children.length === 0);
   });
 
   getRelationId(): number {
@@ -179,7 +186,7 @@ export abstract class BaseRelationsDirective {
   // }
 
   protected abstract properties: Signal<Property[]>;
-  // abstract permissions: Signal<{ canUpdateProperty: boolean; canDecryptProperties: boolean }>;
+  protected permissions: Signal<{ canUpdateProperty: boolean; canDecryptProperties: boolean }>;
   protected abstract isLoadingRelations: Signal<boolean>;
   protected abstract isLoadingProperties: Signal<boolean>;
   protected abstract groupedRelations: Signal<GroupedResourceRelations>;

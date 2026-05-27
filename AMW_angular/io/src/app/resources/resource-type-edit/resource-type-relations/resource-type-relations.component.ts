@@ -10,7 +10,7 @@ import { IconComponent } from '../../../shared/icon/icon.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { Property } from '../../models/property';
-import { BaseRelationsDirective } from '../../base-relations/base-relations.directive';
+import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
 
 @Component({
   selector: 'app-resource-type-relations',
@@ -37,16 +37,23 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   protected permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canEditResourceType: this.authService.hasPermission(
+        canUpdateProperty: this.authService.hasPermission(
           'RESOURCETYPE',
           'UPDATE',
-          this.resourceType().name,
+          this.resourceType()?.name,
           null,
-          this.context().name,
+          this.context()?.name,
+        ),
+        canDecryptProperties: this.authService.hasPermission(
+          'RESOURCETYPE_PROPERTY_DECRYPT',
+          'ALL',
+          this.resourceType()?.name,
+          null,
+          this.context()?.name,
         ),
       };
     } else {
-      return { canEditResourceType: false };
+      return { canUpdateProperty: false, canDecryptProperties: false };
     }
   });
 
@@ -73,8 +80,23 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     if (this.hasIdentifierProperty()) {
       result.push(this.relationIdentifier());
     }
-    result.push(...props());
+    const allProps = props();
+    const rel = this.selectedRelation();
+    if (rel?.type === 'NODE' && !this.isEnvironment()) {
+      result.push(...allProps.filter((p) => !NODE_FILTERED_PROPERTIES.includes(p.name)));
+    } else {
+      result.push(...allProps);
+    }
     return result;
+  });
+
+  protected filteredRelationProperties = computed<Property[]>(() => {
+    const props = this.relationsService.typeRelationProperties;
+    const rel = this.selectedRelation();
+    if (rel?.type === 'NODE' && !this.isEnvironment()) {
+      return props().filter((p) => NODE_FILTERED_PROPERTIES.includes(p.name));
+    }
+    return [];
   });
 
   protected reloadRelation(entityId: number): void {
@@ -113,7 +135,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     context: 'Global', // TODO set context for resource type?
     nullable: true,
     optional: true,
-    disabled: !this.permissions().canEditResourceType,
+    disabled: !this.permissions().canUpdateProperty,
   }));
 
   protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {

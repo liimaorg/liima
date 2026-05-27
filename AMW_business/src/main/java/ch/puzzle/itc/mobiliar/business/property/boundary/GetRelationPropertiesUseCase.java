@@ -20,6 +20,8 @@
 
 package ch.puzzle.itc.mobiliar.business.property.boundary;
 
+import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
@@ -30,12 +32,23 @@ public interface GetRelationPropertiesUseCase {
     /**
      * Returns properties for a specific resource relation in a given context.
      *
-     * @param masterResourceId the master resource ID
+     * @param resourceId the resource ID
      * @param relationId       the relation ID (resRelId)
      * @param contextId        the context ID
      * @return list of properties for the relation
      * @throws ResourceNotFoundException if the resource or relation is not found
      */
-    List<ResourceEditProperty> getPropertiesForRelation(Integer masterResourceId, Integer relationId, Integer contextId)
+    List<ResourceEditProperty> getPropertiesForRelation(Integer resourceId, Integer relationId, Integer contextId)
+            throws ResourceNotFoundException;
+
+    /**
+     * Returns properties that differ from the parent context for a given resource and property.
+     *
+     * @param relationId       the relation ID
+     * @param property         the property to check
+     * @param relevantContexts the child contexts to compare
+     * @return list of differing properties
+     */
+    List<PropertyEditingService.DifferingProperty> getPropertyOverviewForRelation(Integer relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts)
             throws ResourceNotFoundException;
 }
