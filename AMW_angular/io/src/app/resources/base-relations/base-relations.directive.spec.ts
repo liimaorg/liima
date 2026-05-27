@@ -1,11 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { Component, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { BaseRelationsDirective } from './base-relations.directive';
 import { Property } from '../models/property';
-import { Observable, of } from 'rxjs';
-import { PropertyUpdate } from '../services/resource-properties.service';
 import { GroupedResourceRelations, UnresolvedRelation } from '../models/resource-relation';
 import { RelationGroupItem } from '../relation-group/relation-group.component';
 
@@ -15,12 +14,23 @@ import { RelationGroupItem } from '../relation-group/relation-group.component';
   standalone: true,
 })
 class TestBaseRelationsDirective extends BaseRelationsDirective {
-  protected groupedRelations: Signal<GroupedResourceRelations>;
-  protected hasRelations: Signal<boolean>;
-  protected activeRelationId: WritableSignal<number>;
+  protected groupedRelations = signal<GroupedResourceRelations>({
+    runtime: [],
+    consumed: [],
+    provided: [],
+    unresolved: [],
+  });
+  protected hasRelations = signal(false);
+  protected activeRelationId = signal<number | null>(null);
+  protected isLoadingRelations = signal(false);
+  protected isLoadingProperties = signal(false);
+  protected entityId = signal<number | undefined>(1);
+  properties = signal<Property[]>([]);
+
   protected hasIdentifierProperty(): boolean {
     return false;
   }
+
   protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
     return {
       key: `${unresolved.type}::${unresolved.name}`,
@@ -29,18 +39,10 @@ class TestBaseRelationsDirective extends BaseRelationsDirective {
       unresolved: true,
     };
   }
-  isLoadingRelations: Signal<boolean>;
-  getRelationId(): number {
-    return 1001;
-  }
-  protected reloadRelation(entityId: number): void {
-    // mock implementation
-  }
-  properties = signal<Property[]>([]);
-  permissions = signal({ canUpdateProperty: true, canDecryptProperties: true });
-  isLoadingProperties = signal(false);
 
-  protected entityId = signal(1);
+  protected reloadRelation(entityId: number): void {}
+
+  protected reloadProperties(entityId: number, relationId: number, contextId: number): void {}
 
   protected getUnsavedChangesKey(): string {
     return 'test-key';
@@ -48,27 +50,6 @@ class TestBaseRelationsDirective extends BaseRelationsDirective {
 
   protected getEditorOptions() {
     return { includeResetsInHasChanges: true, unmarkResetOnChange: true };
-  }
-
-  protected bulkUpdateProperties(
-    entityId: number,
-    updatedProperties: PropertyUpdate[],
-    resetProperties: PropertyUpdate[],
-    contextId: number,
-  ): Observable<void> {
-    return of(void 0);
-  }
-
-  protected reloadProperties(entityId: number, contextId: number): void {
-    // Mock implementation
-  }
-
-  protected getDeleteParams(): [number | undefined, number | undefined] {
-    return [1, undefined];
-  }
-
-  protected getSaveDescriptorParams(): [number | undefined, number | undefined] {
-    return [1, undefined];
   }
 }
 
@@ -78,7 +59,7 @@ describe('BaseRelationsDirective', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TestBaseRelationsDirective],
-      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(TestBaseRelationsDirective);
