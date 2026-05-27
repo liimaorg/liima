@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { Component, Signal, signal } from '@angular/core';
+import { Component, Signal, signal, WritableSignal } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BaseRelationsDirective } from './base-relations.directive';
 import { Property } from '../models/property';
 import { Observable, of } from 'rxjs';
 import { PropertyUpdate } from '../services/resource-properties.service';
+import { GroupedResourceRelations, UnresolvedRelation } from '../models/resource-relation';
+import { RelationGroupItem } from '../relation-group/relation-group.component';
 
 @Component({
   selector: 'app-test-base-relations',
@@ -13,8 +15,22 @@ import { PropertyUpdate } from '../services/resource-properties.service';
   standalone: true,
 })
 class TestBaseRelationsDirective extends BaseRelationsDirective {
+  protected groupedRelations: Signal<GroupedResourceRelations>;
+  protected hasRelations: Signal<boolean>;
+  protected activeRelationId: WritableSignal<number>;
+  protected hasIdentifierProperty(): boolean {
+    return false;
+  }
+  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
+    return {
+      key: `${unresolved.type}::${unresolved.name}`,
+      name: unresolved.name,
+      type: unresolved.type,
+      unresolved: true,
+    };
+  }
   isLoadingRelations: Signal<boolean>;
-  protected getRelationId(): number {
+  getRelationId(): number {
     return 1001;
   }
   protected reloadRelation(entityId: number): void {
@@ -24,9 +40,7 @@ class TestBaseRelationsDirective extends BaseRelationsDirective {
   permissions = signal({ canUpdateProperty: true, canDecryptProperties: true });
   isLoadingProperties = signal(false);
 
-  protected getEntityId(): number {
-    return 1;
-  }
+  protected entityId = signal(1);
 
   protected getUnsavedChangesKey(): string {
     return 'test-key';

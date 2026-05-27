@@ -59,14 +59,14 @@ export abstract class BaseRelationsDirective {
     });
 
     effect(() => {
-      const entityId = this.getEntityId();
+      const entityId = this.entityId();
       if (entityId) {
         this.reloadRelation(entityId);
       }
     });
 
     effect(() => {
-      const entityId = this.getEntityId();
+      const entityId = this.entityId();
       const relationId = this.getRelationId();
       const ctxId = this.contextId();
       if (!entityId || !ctxId || !relationId) return;
@@ -186,7 +186,7 @@ export abstract class BaseRelationsDirective {
   protected abstract hasRelations: Signal<boolean>;
   protected abstract activeRelationId: WritableSignal<number | null>;
 
-  protected abstract getEntityId(): number;
+  protected abstract entityId: Signal<number | undefined>;
   protected abstract getUnsavedChangesKey(): string;
   protected abstract getEditorOptions(): { includeResetsInHasChanges: boolean; unmarkResetOnChange: boolean };
   protected abstract hasIdentifierProperty(): boolean;

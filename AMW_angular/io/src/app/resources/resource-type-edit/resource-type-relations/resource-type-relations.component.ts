@@ -37,7 +37,13 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   protected permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
-        canEditResourceType: this.authService.hasPermission('RESOURCETYPE', 'UPDATE', this.resourceType().name),
+        canEditResourceType: this.authService.hasPermission(
+          'RESOURCETYPE',
+          'UPDATE',
+          this.resourceType().name,
+          null,
+          this.context().name,
+        ),
       };
     } else {
       return { canEditResourceType: false };
@@ -79,9 +85,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     this.relationsService.setIdsForTypeRelationProperties(entityId, relationId, contextId);
   }
 
-  protected getEntityId(): number {
-    return this.resourceType().id;
-  }
+  protected entityId = computed(() => this.resourceType()?.id);
 
   protected getUnsavedChangesKey(): string {
     return 'resourceType-relation-properties';
@@ -95,8 +99,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   }
 
   protected hasIdentifierProperty() {
-    //FIXME check if validation is correct
-    return this.selectedRelation() != null && !this.resourceType().isDefaultResourceType;
+    return this.selectedRelation() != null;
   }
 
   relationIdentifier = computed<Property>(() => ({

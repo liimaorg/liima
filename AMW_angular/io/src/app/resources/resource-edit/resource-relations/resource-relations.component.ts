@@ -83,9 +83,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     this.relationsService.setIdsForRelationProperties(entityId, relationId, contextId);
   }
 
-  protected getEntityId(): number {
-    return this.resource().id;
-  }
+  protected entityId = computed(() => this.resource()?.id);
 
   protected getUnsavedChangesKey(): string {
     return 'resource-relation-properties';
