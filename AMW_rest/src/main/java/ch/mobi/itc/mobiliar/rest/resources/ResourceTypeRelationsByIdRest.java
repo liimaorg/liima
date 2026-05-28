@@ -45,10 +45,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * REST resource for resource type relations and their properties.
+ */
 @RequestScoped
 @Path("/resourceTypes")
 @Tag(name = "/resourceTypes/relations", description = "Resource type relations by ID")
@@ -63,6 +67,13 @@ public class ResourceTypeRelationsByIdRest {
     @Inject
     ContextLocator contextLocator;
 
+    /**
+     * Returns the unresolved type-level relations for the given resource type.
+     *
+     * @param id the resource type ID
+     * @return grouped relations containing the unresolved type relations
+     * @throws NotFoundException if the resource type is not found
+     */
     @GET
     @Path("/{id : \\d+}/relations")
     @Produces(MediaType.APPLICATION_JSON)
@@ -84,6 +95,17 @@ public class ResourceTypeRelationsByIdRest {
         return Response.ok(response).build();
     }
 
+    /**
+     * Returns the properties for a specific resource type relation in the given context.
+     * No overview (differing properties) are available for MODE=TYPE (see PropertyEditingServiceL296).
+     * Therefore set overwrite infos to null
+     *
+     * @param resourceTypeId the master resource type ID
+     * @param relTypeId      the resource relation type ID
+     * @param contextId      the context ID (defaults to 1 / Global)
+     * @return list of properties with context and overwrite information
+     * @throws NotFoundException if the resource type, relation type, or context is not found
+     */
     @GET
     @Path("/{id : \\d+}/relations/{relTypeId : \\d+}/properties")
     @Produces(MediaType.APPLICATION_JSON)
