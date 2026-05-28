@@ -24,7 +24,7 @@ import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.UnresolvedRelationDTO;
-import ch.puzzle.itc.mobiliar.business.environment.boundary.GetContextUseCase;
+import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.GetRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
@@ -65,7 +65,7 @@ public class ResourceRelationsByIdRest {
     GetRelationPropertiesUseCase getRelationPropertiesUseCase;
 
     @Inject
-    GetContextUseCase getContextUseCase;
+    ContextLocator contextLocator;
 
     @GET
     @Path("/{id : \\d+}/relations")
@@ -119,7 +119,7 @@ public class ResourceRelationsByIdRest {
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
             throws ResourceNotFoundException, NotFoundException {
 
-        ContextEntity context = getContextUseCase.getById(contextId);
+        ContextEntity context = contextLocator.getById(contextId);
 
         List<ResourceEditProperty> properties =
                 getRelationPropertiesUseCase.getPropertiesForRelation(resourceId, relationId, contextId);
@@ -133,7 +133,7 @@ public class ResourceRelationsByIdRest {
     }
 
     private List<PropertyEditingService.DifferingProperty> getOverwriteInfos(Integer relationId, Integer contextId, ResourceEditProperty property) throws ResourceNotFoundException {
-        List<ContextEntity> contexts = getContextUseCase.getChildren(contextId);
+        List<ContextEntity> contexts = contextLocator.getChildren(contextId);
         return getRelationPropertiesUseCase.getPropertyOverviewForRelation(relationId, property, contexts);
     }
 

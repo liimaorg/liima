@@ -67,9 +67,9 @@
             <app-properties-panel [canEdit]="permissions().canUpdateProperty">
               <app-properties-list
                 [properties]="properties()"
-                [canEdit]="permissions().canUpdateProperty"
+                [canEdit]="false"
                 [canDecrypt]="permissions().canDecryptProperties"
-                [canDelete]="permissions().canUpdateProperty"
+                [canDelete]="false"
                 [mode]="'resource'"
                 [resetToken]="resetToken()"
                 (valueChange)="onPropertyChange($event.name, $event.value)"
