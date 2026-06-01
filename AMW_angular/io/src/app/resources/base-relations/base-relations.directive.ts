@@ -146,45 +146,6 @@ export abstract class BaseRelationsDirective {
     this.invalidProperties.set(new Set());
   }
 
-  // saveChanges() {
-  //   const changes = this.editor.changedProperties();
-  //   const resets = this.editor.resetProperties();
-  //   if ((changes.size === 0 && resets.size === 0) || this.hasValidationErrors()) return;
-  //
-  //   this.isSaving.set(true);
-  //   this.errorMessage.set(null);
-  //   this.successMessage.set(null);
-  //
-  //   const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
-  //     name,
-  //     value,
-  //   }));
-  //
-  //   const resetProperties: PropertyUpdate[] = Array.from(resets.entries()).map(([name, value]) => ({
-  //     name,
-  //     value,
-  //   }));
-  //
-  //   const update$ =
-  //     updatedProperties.length + resetProperties.length
-  //       ? this.bulkUpdateProperties(this.getEntityId(), updatedProperties, resetProperties, this.contextId())
-  //       : of(void 0);
-  //
-  //   forkJoin([update$]).subscribe({
-  //     next: () => {
-  //       this.isSaving.set(false);
-  //       this.successMessage.set('Properties saved successfully');
-  //       this.editor.resetChanges();
-  //       this.reloadProperties(this.getEntityId(), this.getRelationId(), this.contextId());
-  //       setTimeout(() => this.successMessage.set(null), 3000);
-  //     },
-  //     error: (error) => {
-  //       this.isSaving.set(false);
-  //       this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
-  //     },
-  //   });
-  // }
-
   protected abstract properties: Signal<Property[]>;
   protected permissions: Signal<{ canUpdateProperty: boolean; canDecryptProperties: boolean }>;
   protected abstract isLoadingRelations: Signal<boolean>;
@@ -197,12 +158,6 @@ export abstract class BaseRelationsDirective {
   protected abstract getUnsavedChangesKey(): string;
   protected abstract getEditorOptions(): { includeResetsInHasChanges: boolean; unmarkResetOnChange: boolean };
   protected abstract hasIdentifierProperty(): boolean;
-  // protected abstract bulkUpdateProperties(
-  //   entityId: number,
-  //   updatedProperties: PropertyUpdate[],
-  //   resetProperties: PropertyUpdate[],
-  //   contextId: number,
-  // ): Observable<void>;
   protected abstract reloadRelation(entityId: number): void;
   protected abstract reloadProperties(entityId: number, relationId: number, contextId: number): void;
   protected abstract toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem;

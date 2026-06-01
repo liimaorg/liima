@@ -90,15 +90,6 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     return result;
   });
 
-  protected filteredRelationProperties = computed<Property[]>(() => {
-    const props = this.relationsService.typeRelationProperties;
-    const rel = this.selectedRelation();
-    if (rel?.type === 'NODE' && !this.isEnvironment()) {
-      return props().filter((p) => NODE_FILTERED_PROPERTIES.includes(p.name));
-    }
-    return [];
-  });
-
   protected reloadRelation(entityId: number): void {
     this.relationsService.setIdForResourceTypeRelations(entityId);
   }
