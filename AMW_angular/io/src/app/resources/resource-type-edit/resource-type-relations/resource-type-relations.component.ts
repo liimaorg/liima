@@ -1,15 +1,17 @@
 import { Component, computed, inject, linkedSignal, Signal } from '@angular/core';
+import { Observable } from 'rxjs';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { ResourceTypesService } from '../../services/resource-types.service';
-import { GroupedResourceRelations, UnresolvedRelation } from '../../models/resource-relation';
-import { ResourceType } from '../../models/resource-type';
-import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/relation-group.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { ResourceTypesService } from '../../services/resource-types.service';
+import { PropertyUpdate } from '../../services/resource-properties.service';
+import { GroupedResourceRelations, UnresolvedRelation } from '../../models/resource-relation';
+import { ResourceType } from '../../models/resource-type';
+import { Property } from '../../models/property';
+import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/relation-group.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
-import { Property } from '../../models/property';
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
 
 @Component({
@@ -90,6 +92,8 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     return result;
   });
 
+  protected entityId = computed(() => this.resourceType()?.id);
+
   protected reloadRelation(entityId: number): void {
     this.relationsService.setIdForResourceTypeRelations(entityId);
   }
@@ -98,7 +102,20 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     this.relationsService.setIdsForTypeRelationProperties(entityId, relationId, contextId);
   }
 
-  protected entityId = computed(() => this.resourceType()?.id);
+  protected bulkUpdateProperties(
+    entityId: number,
+    updatedProperties: PropertyUpdate[],
+    resetProperties: PropertyUpdate[],
+    contextId: number,
+  ): Observable<void> {
+    throw new Error('Method not implemented.');
+  }
+  // protected afterPropertiesSaved(): void {
+  //   const changes = this.editor.changedProperties();
+  //   if (changes.has('relationName')) {
+  //     this.reloadRelation(this.getEntityId());
+  //   }
+  // }
 
   protected getUnsavedChangesKey(): string {
     return 'resourceType-relation-properties';
@@ -115,6 +132,16 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     return this.selectedRelation() != null;
   }
 
+  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
+    return {
+      key: unresolved.resRelTypeId,
+      name: unresolved.name,
+      type: unresolved.type,
+      unresolved: true,
+      identifier: unresolved.identifier,
+    };
+  }
+
   relationIdentifier = computed<Property>(() => ({
     name: 'relationName',
     displayName: `Relation name`,
@@ -128,14 +155,4 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     optional: true,
     disabled: !this.permissions().canUpdateProperty,
   }));
-
-  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
-    return {
-      key: unresolved.resRelTypeId,
-      name: unresolved.name,
-      type: unresolved.type,
-      unresolved: true,
-      identifier: unresolved.identifier,
-    };
-  }
 }

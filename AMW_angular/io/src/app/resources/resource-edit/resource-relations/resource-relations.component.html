@@ -64,7 +64,16 @@
           </div>
           <div class="relation-detail-body">
             <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
-            <app-properties-panel [canEdit]="permissions().canUpdateProperty">
+            <app-properties-panel
+              [canEdit]="permissions().canUpdateProperty"
+              [isSaving]="isSaving()"
+              [hasChanges]="hasChanges()"
+              [hasValidationErrors]="hasValidationErrors()"
+              [errorMessage]="errorMessage()"
+              [successMessage]="successMessage()"
+              (cancelAction)="resetChanges()"
+              (saveAction)="saveChanges()"
+            >
               <app-properties-list
                 [properties]="properties()"
                 [canEdit]="false"
