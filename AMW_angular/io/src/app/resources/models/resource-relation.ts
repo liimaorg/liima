@@ -19,6 +19,7 @@ export interface Template {
 
 export interface RelationRelease {
   relationId: number;
+  slaveId: number;
   releaseName: string;
 }
 

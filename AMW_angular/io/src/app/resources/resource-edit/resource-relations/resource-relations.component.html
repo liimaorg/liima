@@ -13,25 +13,25 @@
         <app-relation-group
           [title]="'Runtime'"
           [items]="runtimeItems()"
-          [selectedKey]="activeRelationId()"
+          [selectedKey]="selectedItemKey()"
           (itemSelected)="onItemSelected($event)"
         />
         <app-relation-group
           [title]="'Unresolved'"
           [items]="unresolvedItems()"
-          [selectedKey]="activeRelationId()"
+          [selectedKey]="selectedItemKey()"
           (itemSelected)="onItemSelected($event)"
         />
         <app-relation-group
           [title]="'Consumed Resources'"
           [items]="consumedItems()"
-          [selectedKey]="activeRelationId()"
+          [selectedKey]="selectedItemKey()"
           (itemSelected)="onItemSelected($event)"
         />
         <app-relation-group
           [title]="'Provided Resources'"
           [items]="providedItems()"
-          [selectedKey]="activeRelationId()"
+          [selectedKey]="selectedItemKey()"
           (itemSelected)="onItemSelected($event)"
         />
       </div>

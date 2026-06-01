@@ -76,12 +76,34 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return [...g.runtime, ...g.consumed, ...g.provided][0]?.id ?? null;
   });
 
+  selectedItemKey = computed<number | null>(() => {
+    const relId = this.activeRelationId();
+    if (relId == null) return null;
+    const g = this.groupedRelations();
+    const all = [...g.runtime, ...g.consumed, ...g.provided];
+    if (all.some((r) => r.id === relId)) return relId;
+    for (const r of all) {
+      if (r.availableReleases?.some((ar) => ar.relationId === relId)) {
+        return r.id;
+      }
+    }
+    return relId;
+  });
+
   selectedRelation = computed<ResourceRelation | null>(() => {
     const relId = this.activeRelationId();
     if (relId == null) return null;
     const g = this.groupedRelations();
     const all = [...g.runtime, ...g.consumed, ...g.provided];
-    return all.find((r) => r.id === relId) ?? null;
+    const direct = all.find((r) => r.id === relId);
+    if (direct) return direct;
+    for (const r of all) {
+      const release = r.availableReleases?.find((ar) => ar.relationId === relId);
+      if (release) {
+        return { ...r, id: relId, slaveId: release.slaveId, relatedResourceRelease: release.releaseName };
+      }
+    }
+    return null;
   });
 
   selectedRelationIdForRelease = linkedSignal(() => this.selectedRelation()?.id ?? null);
