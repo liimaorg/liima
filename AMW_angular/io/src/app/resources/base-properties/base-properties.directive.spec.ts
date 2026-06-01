@@ -14,6 +14,9 @@ import { PropertyDeleteModalService } from '../services/property-delete-modal.se
   standalone: true,
 })
 class TestBasePropertiesDirective extends BasePropertiesDirective {
+  protected afterPropertiesSaved(): void {
+    // Mock implementation
+  }
   properties = signal<Property[]>([]);
   permissions = signal({ canUpdateProperty: true, canDecryptProperties: true });
   isLoading = signal(false);
