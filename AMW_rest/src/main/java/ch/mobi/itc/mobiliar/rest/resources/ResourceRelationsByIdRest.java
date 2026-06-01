@@ -92,7 +92,7 @@ public class ResourceRelationsByIdRest {
             ResourceRelationDTO dto = new ResourceRelationDTO(group.getBest());
             for (ResourceEditRelation rel : group.getAvailableReleases()) {
                 dto.getAvailableReleases().add(
-                        new ResourceRelationDTO.RelationReleaseDTO(rel.getResRelId(), rel.getSlaveReleaseName()));
+                        new ResourceRelationDTO.RelationReleaseDTO(rel.getResRelId(), rel.getSlaveId(), rel.getSlaveReleaseName()));
             }
             dtos.add(dto);
         }

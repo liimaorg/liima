@@ -59,6 +59,7 @@ public class ResourceRelationDTO {
     @AllArgsConstructor
     public static class RelationReleaseDTO {
         private Integer relationId;
+        private Integer slaveId;
         private String releaseName;
     }
 
