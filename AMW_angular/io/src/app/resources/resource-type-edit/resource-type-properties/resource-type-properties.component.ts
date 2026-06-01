@@ -93,6 +93,13 @@ export class ResourceTypePropertiesComponent extends BasePropertiesDirective {
     );
   }
 
+  afterPropertiesSaved(): void {
+    const changes = this.editor.changedProperties();
+    if (changes.has('resourceTypeName')) {
+      this.resourceTypeService.setIdForResourceType(this.getEntityId());
+    }
+  }
+
   protected reloadProperties(entityId: number, contextId: number): void {
     this.propertiesService.setIdsForResourceTypeProperties(entityId, contextId);
   }
