@@ -142,16 +142,25 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   }
 
   protected bulkUpdateProperties(
-    entityId: number,
+    relationId: number,
     updatedProperties: PropertyUpdate[],
     resetProperties: PropertyUpdate[],
     contextId: number,
   ): Observable<void> {
-    throw new Error('Method not implemented.');
+    return this.relationsService.bulkUpdateResourceRelationProperties(
+      this.entityId(),
+      relationId,
+      updatedProperties,
+      resetProperties,
+      contextId,
+    );
   }
 
   protected afterPropertiesSaved(): void {
-    throw new Error('Method not implemented.');
+    const changes = this.editor.changedProperties();
+    if (changes.has('relationName')) {
+      this.reloadRelation(this.entityId());
+    }
   }
 
   protected getUnsavedChangesKey(): string {

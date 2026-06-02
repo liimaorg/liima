@@ -177,11 +177,7 @@ export abstract class BaseRelationsDirective {
       name: relation.relatedResourceName,
       type: relation.type,
       release: relation.relatedResourceRelease,
-      // FIxME should be resourceEditRelation.identifier
-      identifier:
-        relation.relationName && relation.relationName !== relation.relatedResourceName
-          ? relation.relationName
-          : undefined,
+      identifier: relation.identifier,
     };
   }
 

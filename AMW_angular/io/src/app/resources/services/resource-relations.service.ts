@@ -1,10 +1,11 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { BaseService } from '../../base/base.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, startWith, Subject } from 'rxjs';
 import { GroupedResourceRelations } from '../models/resource-relation';
 import { Property } from '../models/property';
+import { PropertyUpdate } from './resource-properties.service';
 import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
 
 const EMPTY_GROUPED_RELATIONS: GroupedResourceRelations = {
@@ -146,6 +147,40 @@ export class ResourceRelationsService extends BaseService {
           headers: this.getHeaders(),
         },
       )
+      .pipe(catchError(this.handleError));
+  }
+
+  bulkUpdateResourceRelationProperties(
+    resourceId: number,
+    relationId: number,
+    updates: PropertyUpdate[],
+    resets: PropertyUpdate[],
+    contextId: number = 1,
+  ): Observable<void> {
+    const params = new HttpParams().set('contextId', contextId.toString());
+    const body = { updates, resets };
+    return this.http
+      .put<void>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/properties`, body, {
+        params,
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  bulkUpdateResourceTypeRelationProperties(
+    resourceTypeId: number,
+    relTypeId: number,
+    updates: PropertyUpdate[],
+    resets: PropertyUpdate[],
+    contextId: number = 1,
+  ): Observable<void> {
+    const params = new HttpParams().set('contextId', contextId.toString());
+    const body = { updates, resets };
+    return this.http
+      .put<void>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}/properties`, body, {
+        params,
+        headers: this.getHeaders(),
+      })
       .pipe(catchError(this.handleError));
   }
 }

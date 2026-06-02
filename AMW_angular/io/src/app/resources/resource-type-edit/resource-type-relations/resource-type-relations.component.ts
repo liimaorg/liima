@@ -103,16 +103,25 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   }
 
   protected bulkUpdateProperties(
-    entityId: number,
+    relationId: number,
     updatedProperties: PropertyUpdate[],
     resetProperties: PropertyUpdate[],
     contextId: number,
   ): Observable<void> {
-    throw new Error('Method not implemented.');
+    return this.relationsService.bulkUpdateResourceTypeRelationProperties(
+      this.entityId(),
+      relationId,
+      updatedProperties,
+      resetProperties,
+      contextId,
+    );
   }
 
   protected afterPropertiesSaved(): void {
-    throw new Error('Method not implemented.');
+    const changes = this.editor.changedProperties();
+    if (changes.has('relationName')) {
+      this.reloadRelation(this.entityId());
+    }
   }
 
   protected getUnsavedChangesKey(): string {
@@ -148,7 +157,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     generalComment: '',
     valueComment: 'specialProperty',
     descriptorId: -1,
-    context: 'Global', // TODO set context for resource type?
+    context: 'Global',
     nullable: true,
     optional: true,
     disabled: !this.permissions().canUpdateProperty,
