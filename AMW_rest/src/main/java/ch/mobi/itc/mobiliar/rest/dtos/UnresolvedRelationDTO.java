@@ -47,4 +47,7 @@ public class UnresolvedRelationDTO {
 
     /** Display name of the unresolved relation (typeIdentifier or slave type name). */
     private String name;
+
+    /** The raw type-level identifier (editable relation name). */
+    private String identifier;
 }

@@ -85,7 +85,7 @@ public class ResourceTypeRelationsByIdRest {
 
         List<UnresolvedRelationDTO> unresolved = new ArrayList<>();
         for (ResourceEditRelation rel : typeRelations) {
-            unresolved.add(new UnresolvedRelationDTO(rel.getResRelTypeId(), rel.getSlaveTypeName(), rel.getDisplayName()));
+            unresolved.add(new UnresolvedRelationDTO(rel.getResRelTypeId(), rel.getSlaveTypeName(), rel.getDisplayName(), rel.getTypeIdentifier()));
         }
         unresolved.sort(Comparator.comparing(UnresolvedRelationDTO::getName, String.CASE_INSENSITIVE_ORDER));
 

@@ -110,12 +110,10 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   ): Observable<void> {
     throw new Error('Method not implemented.');
   }
-  // protected afterPropertiesSaved(): void {
-  //   const changes = this.editor.changedProperties();
-  //   if (changes.has('relationName')) {
-  //     this.reloadRelation(this.getEntityId());
-  //   }
-  // }
+
+  protected afterPropertiesSaved(): void {
+    throw new Error('Method not implemented.');
+  }
 
   protected getUnsavedChangesKey(): string {
     return 'resourceType-relation-properties';

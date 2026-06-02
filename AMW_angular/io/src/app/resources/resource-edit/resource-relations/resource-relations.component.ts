@@ -150,6 +150,10 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     throw new Error('Method not implemented.');
   }
 
+  protected afterPropertiesSaved(): void {
+    throw new Error('Method not implemented.');
+  }
+
   protected getUnsavedChangesKey(): string {
     return 'resource-relation-properties';
   }

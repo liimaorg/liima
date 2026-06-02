@@ -251,11 +251,11 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Add validation
 
 **Tasks**:
-- [ ] Add identifier input field to detail panel
-- [ ] Add signal for identifier changes
+- [x] Add identifier input field to detail panel
+- [x] Add signal for identifier changes
 - [ ] Add validation (if required)
 - [ ] Add visual indicator for unsaved changes
-- [ ] Disable if user lacks permission
+- [x] Disable if user lacks permission
 - [ ] Add to save operation (Phase 9)
 
 **Acceptance Criteria**:
