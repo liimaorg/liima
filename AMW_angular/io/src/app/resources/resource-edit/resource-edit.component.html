@@ -38,22 +38,14 @@
         <ul ngbDropdownMenu>
           @if (goToResourceTypeAvailable()) {
             <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                [routerLink]="['/resourceType/edit']"
-                [queryParams]="resourceTypeQueryParams()"
-              >
+              <a class="dropdown-item" [routerLink]="['/resourceType/edit']" [queryParams]="resourceTypeQueryParams()">
                 Resource Type
               </a>
             </li>
           }
           @if (goToApplicationServerAvailable()) {
             <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                [routerLink]="['/resource/edit']"
-                [queryParams]="applicationServerQueryParams()"
-              >
+              <a class="dropdown-item" [routerLink]="['/resource/edit']" [queryParams]="applicationServerQueryParams()">
                 Application Server
               </a>
             </li>
@@ -140,11 +132,12 @@
         @if (isApplicationServer()) {
           <app-resource-applications [resource]="resource()" [contextId]="contextId()"></app-resource-applications>
         }
-        <app-resource-relations
-          [contextId]="contextId()"
-          [selectedRelationId]="relationId()"
-          (relationSelected)="onRelationSelected($event)"
-        ></app-resource-relations>
+        @if (!isNodeType()) {
+          <app-resource-relations
+            [contextId]="contextId()"
+            [selectedRelationId]="relationId()"
+          ></app-resource-relations>
+        }
       </div>
     }
   </div>

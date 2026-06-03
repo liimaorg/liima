@@ -1,11 +1,14 @@
 export interface ResourceRelation {
   id: number;
-  relatedResourceName: string;
-  type: string;
-  relatedResourceRelease: string;
+  slaveId: number;
+  relatedResourceName: string; // slaveName
+  type: string; // slaveTypeName
+  relatedResourceRelease: string; // slaveRelease
   relationName: string;
   relationType: 'consumed' | 'provided';
   templates?: Template[];
+  availableReleases?: RelationRelease[];
+  identifier?: string;
 }
 
 export interface Template {
@@ -14,9 +17,17 @@ export interface Template {
   relatedResourceIdentifier?: string;
 }
 
+export interface RelationRelease {
+  relationId: number;
+  slaveId: number;
+  releaseName: string;
+}
+
 export interface UnresolvedRelation {
+  resRelTypeId?: number;
   type: string;
   name: string;
+  identifier?: string;
 }
 
 export interface GroupedResourceRelations {

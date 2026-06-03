@@ -23,12 +23,14 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name = "relations")
@@ -41,6 +43,7 @@ public class ResourceRelationDTO {
     private final static String PROVIDED = "provided";
 
     private Integer id;
+    private Integer slaveId;
     private String relatedResourceName;
     private String type;
     private String relatedResourceRelease;
@@ -48,23 +51,38 @@ public class ResourceRelationDTO {
     private String relationName;
     private String relationType;
     private List<TemplateDTO> templates;
+    private List<RelationReleaseDTO> availableReleases = new ArrayList<>();
+    private String identifier;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RelationReleaseDTO {
+        private Integer relationId;
+        private Integer slaveId;
+        private String releaseName;
+    }
 
     public ResourceRelationDTO(AbstractResourceRelationEntity relation) {
         id = relation.getId();
+        slaveId = relation.getSlaveResource().getId();
         relatedResourceName = relation.getSlaveResource().getName();
         type = relation.getResourceRelationType().getResourceTypeB().getName();
         relatedResourceRelease = relation.getSlaveResource().getRelease().getName();
         relationName = relation.buildIdentifer();
         relationType = relation instanceof ConsumedResourceRelationEntity ? CONSUMED : PROVIDED;
+        identifier = relation.getIdentifier();
     }
 
     public ResourceRelationDTO(ResourceEditRelation relation) {
         id = relation.getResRelId();
+        slaveId = relation.getSlaveId();
         relatedResourceName = relation.getSlaveName();
         type = relation.getSlaveTypeName();
         relatedResourceRelease = relation.getSlaveReleaseName();
         relationName = relation.getDisplayName();
         relationType = relation.getMode() == ResourceEditRelation.Mode.CONSUMED ? CONSUMED : PROVIDED;
+        identifier = relation.getIdentifier();
     }
 
 }

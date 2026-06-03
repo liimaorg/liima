@@ -31,12 +31,7 @@
         #d="ngbDatepicker"
         [disabled]="isCreatingTag()"
       />
-      <button
-        class="btn btn-outline-secondary"
-        (click)="d.toggle()"
-        type="button"
-        [disabled]="isCreatingTag()"
-      >
+      <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button" [disabled]="isCreatingTag()">
         <i class="bi bi-calendar3"></i>
       </button>
     </div>

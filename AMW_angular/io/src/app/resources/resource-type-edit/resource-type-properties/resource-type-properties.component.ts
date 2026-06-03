@@ -9,7 +9,7 @@ import { PropertiesListComponent } from '../../properties-list/properties-list.c
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { PropertyDeleteModalService } from '../../services/property-delete-modal.service';
 import { PropertyDeleteModalComponent } from '../../property-delete-modal/property-delete-modal.component';
-import { BasePropertiesComponent } from '../../base-properties/base-properties.component';
+import { BasePropertiesDirective } from '../../base-properties/base-properties.directive';
 
 @Component({
   selector: 'app-resource-type-properties',
@@ -25,7 +25,7 @@ import { BasePropertiesComponent } from '../../base-properties/base-properties.c
   templateUrl: './resource-type-properties.component.html',
   styleUrl: './resource-type-properties.component.scss',
 })
-export class ResourceTypePropertiesComponent extends BasePropertiesComponent {
+export class ResourceTypePropertiesComponent extends BasePropertiesDirective {
   private resourceTypeService = inject(ResourceTypesService);
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
@@ -91,6 +91,13 @@ export class ResourceTypePropertiesComponent extends BasePropertiesComponent {
       resetProperties,
       contextId,
     );
+  }
+
+  afterPropertiesSaved(): void {
+    const changes = this.editor.changedProperties();
+    if (changes.has('resourceTypeName')) {
+      this.resourceTypeService.setIdForResourceType(this.getEntityId());
+    }
   }
 
   protected reloadProperties(entityId: number, contextId: number): void {

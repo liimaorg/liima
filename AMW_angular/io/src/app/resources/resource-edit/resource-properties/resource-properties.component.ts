@@ -9,7 +9,7 @@ import { PropertiesPanelComponent } from '../../properties-panel/properties-pane
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertyDeleteModalService } from '../../services/property-delete-modal.service';
 import { PropertyDeleteModalComponent } from '../../property-delete-modal/property-delete-modal.component';
-import { BasePropertiesComponent } from '../../base-properties/base-properties.component';
+import { BasePropertiesDirective } from '../../base-properties/base-properties.directive';
 
 @Component({
   selector: 'app-resource-properties',
@@ -25,7 +25,7 @@ import { BasePropertiesComponent } from '../../base-properties/base-properties.c
   templateUrl: './resource-properties.component.html',
   styleUrl: './resource-properties.component.scss',
 })
-export class ResourcePropertiesComponent extends BasePropertiesComponent {
+export class ResourcePropertiesComponent extends BasePropertiesDirective {
   private resourceService = inject(ResourceService);
   resource: Signal<Resource> = this.resourceService.resource;
 
@@ -94,6 +94,13 @@ export class ResourcePropertiesComponent extends BasePropertiesComponent {
       resetProperties,
       contextId,
     );
+  }
+
+  afterPropertiesSaved(): void {
+    const changes = this.editor.changedProperties();
+    if (changes.has('resourceName')) {
+      this.resourceService.setIdForResource(this.getEntityId());
+    }
   }
 
   protected reloadProperties(entityId: number, contextId: number): void {

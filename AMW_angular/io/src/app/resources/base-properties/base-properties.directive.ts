@@ -1,6 +1,6 @@
 import { computed, Directive, effect, inject, input, Signal, signal } from '@angular/core';
 import { forkJoin, Observable, of, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Property } from '../models/property';
 import { PropertyUpdate, ResourcePropertiesService } from '../services/resource-properties.service';
@@ -15,7 +15,7 @@ import { PropertyEditComponent } from '../property-edit/property-edit.component'
 import { PropertyDescriptor } from '../models/property-descriptor';
 
 @Directive()
-export abstract class BasePropertiesComponent {
+export abstract class BasePropertiesDirective {
   contextId = input.required<number>();
 
   protected authService = inject(AuthService);
@@ -37,7 +37,7 @@ export abstract class BasePropertiesComponent {
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
-    this.getEditorOptions(),
+    () => this.getEditorOptions(),
   );
 
   hasChanges = this.editor.hasChanges;
@@ -121,19 +121,24 @@ export abstract class BasePropertiesComponent {
         ? this.bulkUpdateProperties(this.getEntityId(), updatedProperties, resetProperties, this.contextId())
         : of(void 0);
 
-    forkJoin([update$]).subscribe({
-      next: () => {
-        this.isSaving.set(false);
-        this.successMessage.set('Properties saved successfully');
-        this.editor.resetChanges();
-        this.reloadProperties(this.getEntityId(), this.contextId());
-        setTimeout(() => this.successMessage.set(null), 3000);
-      },
-      error: (error) => {
-        this.isSaving.set(false);
-        this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
-      },
-    });
+    forkJoin([update$])
+      .pipe(
+        finalize(() => {
+          this.isSaving.set(false);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.successMessage.set('Properties saved successfully');
+          this.reloadProperties(this.getEntityId(), this.contextId());
+          this.afterPropertiesSaved();
+          this.editor.resetChanges();
+          setTimeout(() => this.successMessage.set(null), 3000);
+        },
+        error: (error) => {
+          this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
+        },
+      });
   }
 
   protected onPropertyEdit(id: number) {
@@ -209,6 +214,7 @@ export abstract class BasePropertiesComponent {
     resetProperties: PropertyUpdate[],
     contextId: number,
   ): Observable<void>;
+  protected abstract afterPropertiesSaved(): void;
   protected abstract reloadProperties(entityId: number, contextId: number): void;
   protected abstract getDeleteParams(): [number | undefined, number | undefined];
   protected abstract getSaveDescriptorParams(): [number | undefined, number | undefined];

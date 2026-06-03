@@ -18,33 +18,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package ch.mobi.itc.mobiliar.rest.dtos;
+package ch.puzzle.itc.mobiliar.business.resourcerelation.boundary;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+public interface GetResourceRelationsUseCase {
 
-/**
- * A resource-type level relation that has no concrete resource instance yet.
- * Grouped by slave type name in the UI.
- */
-@XmlRootElement(name = "unresolvedRelation")
-@XmlAccessorType(XmlAccessType.FIELD)
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class UnresolvedRelationDTO {
-
-    /** The resource relation type ID, used to load properties for this type-level relation. */
-    private Integer resRelTypeId;
-
-    /** The slave resource type name (header in the UI). */
-    private String type;
-
-    /** Display name of the unresolved relation (typeIdentifier or slave type name). */
-    private String name;
+    /**
+     * Returns the relations of a resource grouped into runtime, consumed, provided and unresolved categories.
+     *
+     * @param resourceId the resource ID
+     * @return grouped relations
+     * @throws ResourceNotFoundException if the resource is not found
+     */
+    GroupedRelations getGroupedRelations(Integer resourceId) throws ResourceNotFoundException;
 }

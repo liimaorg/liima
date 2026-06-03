@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 export interface RelationGroupItem {
   key: string | number;
@@ -10,20 +10,16 @@ export interface RelationGroupItem {
 }
 
 @Component({
-  selector: 'app-resource-relation-group',
+  selector: 'app-relation-group',
   standalone: true,
-  templateUrl: './resource-relation-group.component.html',
-  styleUrl: './resource-relation-group.component.scss',
+  templateUrl: './relation-group.component.html',
+  styleUrl: './relation-group.component.scss',
 })
-export class ResourceRelationGroupComponent {
+export class RelationGroupComponent {
   title = input.required<string>();
   items = input.required<RelationGroupItem[]>();
   selectedKey = input<string | number | null>(null);
   itemSelected = output<RelationGroupItem>();
-
-  sortedItems = computed(() =>
-    [...this.items()].sort((a, b) => a.name.localeCompare(b.name))
-  );
 
   selectItem(item: RelationGroupItem) {
     this.itemSelected.emit(item);

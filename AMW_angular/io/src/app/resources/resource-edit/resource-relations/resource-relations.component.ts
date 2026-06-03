@@ -1,72 +1,177 @@
-import { Component, computed, effect, inject, input, output, Signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, Signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { ResourceRelationsService } from '../../services/resource-relations.service';
+import { ButtonComponent } from '../../../shared/button/button.component';
 import { ResourceService } from '../../services/resource.service';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../../models/resource-relation';
 import { Resource } from '../../models/resource';
-import {
-  RelationGroupItem,
-  ResourceRelationGroupComponent,
-} from './resource-relation-group/resource-relation-group.component';
+import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/relation-group.component';
+import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
+import { PropertiesListComponent } from '../../properties-list/properties-list.component';
+import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
+import { IconComponent } from '../../../shared/icon/icon.component';
+import { Property } from '../../models/property';
+import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-resource-relations',
   standalone: true,
-  imports: [TileComponent, LoadingIndicatorComponent, ResourceRelationGroupComponent],
+  imports: [
+    TileComponent,
+    LoadingIndicatorComponent,
+    RelationGroupComponent,
+    ButtonComponent,
+    FormsModule,
+    PropertiesPanelComponent,
+    PropertiesListComponent,
+    NgOptionComponent,
+    NgSelectComponent,
+    IconComponent,
+    RouterLink,
+  ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
 })
-export class ResourceRelationsComponent {
-  private relationsService = inject(ResourceRelationsService);
+export class ResourceRelationsComponent extends BaseRelationsDirective {
   private resourceService = inject(ResourceService);
-
-  contextId = input.required<number>();
-  selectedRelationId = input<number | null>(null);
-  relationSelected = output<number | null>();
   resource: Signal<Resource> = this.resourceService.resource;
 
-  groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
-  isLoading = this.relationsService.isLoadingRelations;
+  protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
+  protected isLoadingRelations = this.relationsService.isLoadingRelations;
 
-  hasRelations = computed(() => {
+  protected permissions = computed(() => {
+    if (this.authService.restrictions().length > 0) {
+      return {
+        canUpdateProperty: this.authService.hasPermission(
+          'RESOURCE',
+          'UPDATE',
+          null,
+          this.resource()?.resourceTypeId,
+          this.context()?.name,
+        ),
+        canDecryptProperties: this.authService.hasPermission(
+          'RESOURCE_PROPERTY_DECRYPT',
+          'ALL',
+          null,
+          this.resource()?.id,
+          this.context()?.name,
+        ),
+      };
+    } else {
+      return { canUpdateProperty: false, canDecryptProperties: false };
+    }
+  });
+
+  protected hasRelations = computed(() => {
     const g = this.groupedRelations();
     return g.runtime.length + g.consumed.length + g.provided.length + g.unresolved.length > 0;
   });
 
-  runtimeItems = computed(() => this.groupedRelations().runtime.map((r) => this.toItem(r)));
-  consumedItems = computed(() => this.groupedRelations().consumed.map((r) => this.toItem(r)));
-  providedItems = computed(() => this.groupedRelations().provided.map((r) => this.toItem(r)));
-  unresolvedItems = computed(() => this.groupedRelations().unresolved.map((u) => this.toUnresolvedItem(u)));
+  protected activeRelationId = linkedSignal(() => {
+    const relId = this.selectedRelationId();
+    if (relId != null && relId > 0) return relId;
+    const g = this.groupedRelations();
+    return [...g.runtime, ...g.consumed, ...g.provided][0]?.id ?? null;
+  });
 
-  constructor() {
-    effect(() => {
-      const resourceId = this.resource()?.id;
-      if (resourceId) {
-        this.relationsService.setIdForResourceRelations(resourceId);
+  selectedItemKey = computed<number | null>(() => {
+    const relId = this.activeRelationId();
+    if (relId == null) return null;
+    const g = this.groupedRelations();
+    const all = [...g.runtime, ...g.consumed, ...g.provided];
+    if (all.some((r) => r.id === relId)) return relId;
+    for (const r of all) {
+      if (r.availableReleases?.some((ar) => ar.relationId === relId)) {
+        return r.id;
       }
-    });
+    }
+    return relId;
+  });
+
+  selectedRelation = computed<ResourceRelation | null>(() => {
+    const relId = this.activeRelationId();
+    if (relId == null) return null;
+    const g = this.groupedRelations();
+    const all = [...g.runtime, ...g.consumed, ...g.provided];
+    const direct = all.find((r) => r.id === relId);
+    if (direct) return direct;
+    for (const r of all) {
+      const release = r.availableReleases?.find((ar) => ar.relationId === relId);
+      if (release) {
+        return { ...r, id: relId, slaveId: release.slaveId, relatedResourceRelease: release.releaseName };
+      }
+    }
+    return null;
+  });
+
+  selectedRelationIdForRelease = linkedSignal(() => this.selectedRelation()?.id ?? null);
+
+  protected isLoadingProperties = this.relationsService.isLoadingRelationProperties;
+
+  protected properties = computed<Property[]>(() => {
+    const props = this.relationsService.relationProperties;
+    const result: Property[] = [];
+    if (this.hasIdentifierProperty()) {
+      result.push(this.relationIdentifier());
+    }
+    const allProps = props();
+    const rel = this.selectedRelation();
+    if (rel?.type === 'NODE' && !this.isEnvironment()) {
+      result.push(...allProps.filter((p) => !NODE_FILTERED_PROPERTIES.includes(p.name)));
+    } else {
+      result.push(...allProps);
+    }
+    return result;
+  });
+
+  protected reloadRelation(entityId: number): void {
+    this.relationsService.setIdForResourceRelations(entityId);
   }
 
-  onItemSelected(item: RelationGroupItem) {
-    const id = typeof item.key === 'number' ? item.key : null;
-    this.relationSelected.emit(id);
+  protected reloadProperties(entityId: number, relationId: number, contextId: number): void {
+    this.relationsService.setIdsForRelationProperties(entityId, relationId, contextId);
   }
 
-  private toItem(relation: ResourceRelation): RelationGroupItem {
+  protected entityId = computed(() => this.resource()?.id);
+
+  protected getUnsavedChangesKey(): string {
+    return 'resource-relation-properties';
+  }
+
+  protected getEditorOptions(): { includeResetsInHasChanges: boolean; unmarkResetOnChange: boolean } {
     return {
-      key: relation.id,
-      name: relation.relatedResourceName,
-      type: relation.type,
-      release: relation.relatedResourceRelease,
-      identifier:
-        relation.relationName && relation.relationName !== relation.relatedResourceName
-          ? relation.relationName
-          : undefined,
+      includeResetsInHasChanges: true,
+      unmarkResetOnChange: true,
     };
   }
 
-  private toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
+  onReleaseChange(relationId: number) {
+    this.activeRelationId.set(relationId);
+    this.setQueryParamForRelationId(relationId);
+  }
+
+  protected hasIdentifierProperty() {
+    const rel = this.selectedRelation();
+    return rel != null && rel.relationType === 'consumed' && rel.type !== 'RUNTIME';
+  }
+
+  relationIdentifier = computed<Property>(() => ({
+    name: 'relationName',
+    displayName: `Relation name`,
+    value: this.selectedRelation()?.identifier || '',
+    replacedValue: '',
+    generalComment: '',
+    valueComment: 'specialProperty',
+    descriptorId: -1,
+    context: 'Global',
+    nullable: true,
+    optional: true,
+    disabled: this.contextId() !== 1,
+  }));
+
+  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
     return {
       key: `${unresolved.type}::${unresolved.name}`,
       name: unresolved.name,

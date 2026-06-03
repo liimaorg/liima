@@ -14,6 +14,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.DecryptionException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RequestScoped
@@ -44,10 +46,7 @@ public class ResourceTypePropertiesRest {
     @Path("/{id : \\d+}/properties")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get all properties for a resource type")
-    public Response getResourceTypeProperties(
-            @Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) throws
-            NotFoundException {
+    public Response getResourceTypeProperties(@Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId, @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) throws NotFoundException {
 
         List<PropertyExtendedDTO> resourceProperties = getResourceTypePropertiesById(resourceTypeId, contextId);
         return Response.ok(resourceProperties).build();
@@ -60,9 +59,7 @@ public class ResourceTypePropertiesRest {
         if (resourceType != null) {
             ContextEntity context = contextLocator.getById(contextId);
 
-            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResourceType(
-                    resourceType.getId(),
-                    context.getId());
+            List<ResourceEditProperty> properties = propertyEditor.getPropertiesForResourceType(resourceType.getId(), context.getId());
 
             for (ResourceEditProperty property : properties) {
                 result.add(new PropertyExtendedDTO(property, context.getName(), context.getId(), getOverwriteInfos(resourceType, contextId, property)));
@@ -81,11 +78,7 @@ public class ResourceTypePropertiesRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Bulk update/ reset multiple property values using resourceType ID and context ID")
-    public Response bulkUpdateResourceProperties(
-            @Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId,
-            PropertyBulkUpdateDTO bulkRequest,
-            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
-            throws ValidationException, NotFoundException {
+    public Response bulkUpdateResourceProperties(@Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId, PropertyBulkUpdateDTO bulkRequest, @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId) throws ValidationException, NotFoundException {
 
         if (bulkRequest == null || isRequestEmpty(bulkRequest)) {
             return Response.status(Response.Status.NO_CONTENT).build();
@@ -110,30 +103,34 @@ public class ResourceTypePropertiesRest {
         }
 
         if (bulkRequest.getUpdates() != null) {
-            for (PropertyDTO property : bulkRequest.getUpdates()) {
+            List<PropertyDTO> updates = new ArrayList<>(bulkRequest.getUpdates());
+            updates.sort(Comparator.comparing(p -> "resourceTypeName".equals(p.getName()) ? 1 : 0));
+
+            for (PropertyDTO property : updates) {
                 validateProperty(property);
-                propertyEditor.setPropertyValueOnResourceTypeForContext(
-                        resourceType,
-                        context,
-                        property.getName(),
-                        property.getValue());
+                propertyEditor.setPropertyValueOnResourceTypeForContext(resourceType, context, property.getName(), property.getValue());
             }
         }
 
         if (bulkRequest.getResets() != null) {
             for (PropertyDTO property : bulkRequest.getResets()) {
                 validateProperty(property);
-                propertyEditor.resetPropertyValueOnResourceTypeForContext(
-                        resourceType,
-                        context,
-                        property.getName());
+                propertyEditor.resetPropertyValueOnResourceTypeForContext(resourceType, context, property.getName());
             }
         }
 
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
-        private void validateProperty(PropertyDTO property) throws ValidationException {
+    private void validateProperty(PropertyDTO property) throws ValidationException {
+
+        if (property.getName().equals("resourceTypeName") && !NameChecker.isNameValid(property.getValue())) {
+            throw new ValidationException(NameChecker.getErrorTextForResourceType(property.getName(), property.getValue()));
+        }
+        if (property.getName().equals("resourceTypeName") && !NameChecker.isValidAlphanumericWithUnderscoreHyphenName(property.getValue())) {
+            throw new ValidationException(NameChecker.getErrorTextForResourceType(property.getName(), property.getValue()));
+        }
+
         if (property == null || property.getName() == null || property.getName().trim().isEmpty()) {
             throw new ValidationException("Property name cannot be null or empty");
         }

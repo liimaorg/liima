@@ -167,14 +167,14 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Show release dropdown for relations with multiple releases
 
 **Tasks**:
-- [ ] Add selection state signal to component
-- [ ] Add click handlers to relation list items
-- [ ] Create detail panel section in template
-- [ ] Display selected relation information
-- [ ] Add release dropdown (if multiple releases available)
-- [ ] Handle release switching
-- [ ] Add visual indicator for selected relation
-- [ ] Add "Remove Relation" button (disabled for now)
+- [x] Add selection state signal to component
+- [x] Add click handlers to relation list items
+- [x] Create detail panel section in template
+- [x] Display selected relation information
+- [x] Add release dropdown (if multiple releases available)
+- [x] Handle release switching
+- [x] Add visual indicator for selected relation
+- [x] Add "Remove Relation" button (disabled for now)
 
 **Acceptance Criteria**:
 - Clicking a relation selects it
@@ -201,11 +201,11 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Return list of PropertyDTO
 
 **Tasks**:
-- [ ] Create `GetRelationPropertiesUseCase` in AMW_business
-- [ ] Create REST endpoint method
-- [ ] Ensure proper permission checks
-- [ ] Write unit tests
-- [ ] Test endpoint manually
+- [x] Create `GetRelationPropertiesUseCase` in AMW_business
+- [x] Create REST endpoint method
+- [x] Ensure proper permission checks
+- [x] Write unit tests
+- [x] Test endpoint manually
 
 **Acceptance Criteria**:
 - Endpoint returns properties for specific relation
@@ -451,7 +451,7 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - `ContextLocator` - context information
 
 ### Existing Angular Patterns to Follow
-- `BasePropertiesComponent` - property editing pattern
+- `BasePropertiesDirective` - property editing pattern
 - `createPropertiesEditor()` - change tracking
 - `ResourcePropertiesService` - service pattern
 - `TileComponent` - UI tile structure

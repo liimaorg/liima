@@ -1,0 +1,48 @@
+<app-loading-indicator [isLoading]="isLoadingRelations()"></app-loading-indicator>
+<app-tile-component
+  [title]="'Related Resource Types'"
+  [actionName]="'Add Relation'"
+  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
+  [isCollapsed]="false"
+  [noContent]="!hasRelations()"
+  [notAllowed]="false"
+>
+  @if (hasRelations()) {
+    <div class="relations-layout">
+      <div class="relations-container">
+        <app-relation-group
+          [title]="'Unresolved'"
+          [items]="unresolvedItems()"
+          [selectedKey]="activeRelationId()"
+          (itemSelected)="onItemSelected($event)"
+        />
+      </div>
+      @if (selectedRelation(); as rel) {
+        <div class="relation-detail-panel">
+          <div class="relation-detail-header">
+            <h4 class="relation-detail-title">{{ rel.name }}</h4>
+            <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true"
+              ><app-icon icon="trash"></app-icon> Remove Relation</app-button
+            >
+          </div>
+          <div class="relation-detail-body">
+            <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
+            <app-properties-panel [canEdit]="permissions().canUpdateProperty">
+              <app-properties-list
+                [properties]="properties()"
+                [canEdit]="permissions().canUpdateProperty"
+                [canDecrypt]="permissions().canDecryptProperties"
+                [canDelete]="permissions().canUpdateProperty"
+                [mode]="'resourceType'"
+                [resetToken]="resetToken()"
+                (valueChange)="onPropertyChange($event.name, $event.value)"
+                (resetToggled)="onPropertyReset($event.name, $event.checked)"
+                (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+              ></app-properties-list>
+            </app-properties-panel>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</app-tile-component>

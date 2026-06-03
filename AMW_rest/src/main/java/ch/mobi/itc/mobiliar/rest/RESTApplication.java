@@ -68,6 +68,7 @@ public class RESTApplication extends Application {
         resources.add(ResourceTemplatesRest.class);
         resources.add(ResourceRelationsRest.class);
         resources.add(ResourceRelationsByIdRest.class);
+        resources.add(ResourceTypeRelationsByIdRest.class);
         resources.add(ResourceRelationPropertiesRest.class);
         resources.add(ResourceRelationTemplatesRest.class);
         resources.add(HostNamesRest.class);

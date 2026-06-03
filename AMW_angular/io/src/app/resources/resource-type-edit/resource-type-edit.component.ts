@@ -11,6 +11,7 @@ import { ResourceTypeFunctionsListComponent } from './resource-type-functions/re
 import { ResourceTypeTemplatesListComponent } from './resource-type-templates/resource-type-templates-list.component';
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
 import { ResourceTypePropertiesComponent } from './resource-type-properties/resource-type-properties.component';
+import { ResourceTypeRelationsComponent } from './resource-type-relations/resource-type-relations.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { RESOURCE_TYPE } from '../../core/amw-constants';
@@ -25,6 +26,7 @@ import { RESOURCE_TYPE } from '../../core/amw-constants';
     ResourceTypeTemplatesListComponent,
     ContextsListComponent,
     ResourceTypePropertiesComponent,
+    ResourceTypeRelationsComponent,
     ButtonComponent,
     NgbDropdown,
     NgbDropdownMenu,
@@ -42,6 +44,9 @@ export class ResourceTypeEditComponent {
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
+  relationId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('rel')))), {
+    initialValue: null,
+  });
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   isLoading = computed(() => {

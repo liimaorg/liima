@@ -1,0 +1,55 @@
+.relations-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.relations-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.relation-item {
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  &--selected {
+    font-weight: 600;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 255, 0.03);
+  }
+}
+
+.relation-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.relation-name {
+  font-size: 0.875rem;
+  color: var(--bs-link-color);
+  display: flex;
+  align-items: center;
+}
+
+
+.relation-type {
+  font-weight: 500;
+  font-style: italic;
+}
+
+.relation-separator {
+  color: var(--text-tertiary);
+}

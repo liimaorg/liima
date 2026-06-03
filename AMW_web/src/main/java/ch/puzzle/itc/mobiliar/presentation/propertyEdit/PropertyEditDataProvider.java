@@ -292,7 +292,7 @@ public class PropertyEditDataProvider implements Serializable {
         }
         reloadResourceEditProperties();
     }
-
+// todo check
     private void preventDuplicateIdentifiers() throws AMWException {
         Collection<List<ResourceEditRelation>> resourceEditRelations = resourceRelation.getConsumedRelations().values();
         for (List<ResourceEditRelation> consumedRelations : resourceEditRelations) {

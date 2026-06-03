@@ -1,38 +1,85 @@
-<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
+<app-loading-indicator [isLoading]="isLoadingRelations()"></app-loading-indicator>
 <app-tile-component
   [title]="'Related Resources'"
   [actionName]="'Add Relation'"
-  [canAction]="false"
+  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
   [isCollapsed]="false"
-  [noContent]="!hasRelations()"
+  [noContent]="false"
   [notAllowed]="false"
 >
   @if (hasRelations()) {
-    <div class="relations-container">
-      <app-resource-relation-group
-        [title]="'Runtime'"
-        [items]="runtimeItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
-      <app-resource-relation-group
-        [title]="'Consumed Resources'"
-        [items]="consumedItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
-      <app-resource-relation-group
-        [title]="'Provided Resources'"
-        [items]="providedItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
-      <app-resource-relation-group
-        [title]="'Unresolved'"
-        [items]="unresolvedItems()"
-        [selectedKey]="selectedRelationId()"
-        (itemSelected)="onItemSelected($event)"
-      />
+    <div class="relations-layout">
+      <div class="relations-container">
+        <app-relation-group
+          [title]="'Runtime'"
+          [items]="runtimeItems()"
+          [selectedKey]="selectedItemKey()"
+          (itemSelected)="onItemSelected($event)"
+        />
+        <app-relation-group
+          [title]="'Unresolved'"
+          [items]="unresolvedItems()"
+          [selectedKey]="selectedItemKey()"
+          (itemSelected)="onItemSelected($event)"
+        />
+        <app-relation-group
+          [title]="'Consumed Resources'"
+          [items]="consumedItems()"
+          [selectedKey]="selectedItemKey()"
+          (itemSelected)="onItemSelected($event)"
+        />
+        <app-relation-group
+          [title]="'Provided Resources'"
+          [items]="providedItems()"
+          [selectedKey]="selectedItemKey()"
+          (itemSelected)="onItemSelected($event)"
+        />
+      </div>
+      @if (selectedRelation(); as rel) {
+        <div class="relation-detail-panel">
+          <div class="relation-detail-header">
+            <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
+              <h4 class="relation-detail-title">{{ rel.relatedResourceName }}</h4>
+            </a>
+            @if (rel.availableReleases && rel.availableReleases.length > 1) {
+              <ng-select
+                id="selectRelease"
+                [clearable]="false"
+                [ngModel]="selectedRelationIdForRelease()"
+                (ngModelChange)="onReleaseChange($event)"
+                name="release"
+              >
+                @for (release of rel.availableReleases; track release.relationId) {
+                  <ng-option [value]="release.relationId">{{ release.releaseName }}</ng-option>
+                }
+              </ng-select>
+            } @else {
+              <span class="relation-release-value">{{ rel.relatedResourceRelease }}</span>
+            }
+            @if (permissions().canUpdateProperty) {
+              <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true"
+                ><app-icon icon="trash"></app-icon> Remove Relation</app-button
+              >
+            }
+          </div>
+          <div class="relation-detail-body">
+            <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
+            <app-properties-panel [canEdit]="permissions().canUpdateProperty">
+              <app-properties-list
+                [properties]="properties()"
+                [canEdit]="false"
+                [canDecrypt]="permissions().canDecryptProperties"
+                [canDelete]="false"
+                [mode]="'resource'"
+                [resetToken]="resetToken()"
+                (valueChange)="onPropertyChange($event.name, $event.value)"
+                (resetToggled)="onPropertyReset($event.name, $event.checked)"
+                (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+              ></app-properties-list>
+            </app-properties-panel>
+          </div>
+        </div>
+      }
     </div>
   }
 </app-tile-component>

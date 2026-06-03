@@ -183,4 +183,9 @@ export class ResourceEditComponent {
       () => {},
     );
   }
+
+  protected isNodeType() {
+    // TODO editRelatedProperties.L16
+    return false;
+  }
 }

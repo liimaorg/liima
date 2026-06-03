@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { BasePropertiesComponent } from './base-properties.component';
+import { BasePropertiesDirective } from './base-properties.directive';
 import { Property } from '../models/property';
 import { Observable, of } from 'rxjs';
 import { PropertyUpdate } from '../services/resource-properties.service';
@@ -13,7 +13,10 @@ import { PropertyDeleteModalService } from '../services/property-delete-modal.se
   template: '',
   standalone: true,
 })
-class TestBasePropertiesComponent extends BasePropertiesComponent {
+class TestBasePropertiesDirective extends BasePropertiesDirective {
+  protected afterPropertiesSaved(): void {
+    // Mock implementation
+  }
   properties = signal<Property[]>([]);
   permissions = signal({ canUpdateProperty: true, canDecryptProperties: true });
   isLoading = signal(false);
@@ -52,16 +55,16 @@ class TestBasePropertiesComponent extends BasePropertiesComponent {
   }
 }
 
-describe('BasePropertiesComponent', () => {
-  let component: TestBasePropertiesComponent;
+describe('BasePropertiesDirective', () => {
+  let component: TestBasePropertiesDirective;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TestBasePropertiesComponent],
+      imports: [TestBasePropertiesDirective],
       providers: [PropertyDeleteModalService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(TestBasePropertiesComponent);
+    const fixture = TestBed.createComponent(TestBasePropertiesDirective);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('contextId', 1);
     fixture.detectChanges();

@@ -34,6 +34,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.exception.DecryptionException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import ch.puzzle.itc.mobiliar.common.util.NameChecker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,6 +45,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -242,7 +244,10 @@ public class ResourcePropertiesRest {
         }
 
         if (bulkRequest.getUpdates() != null) {
-            for (PropertyDTO property : bulkRequest.getUpdates()) {
+            List<PropertyDTO> updates = new ArrayList<>(bulkRequest.getUpdates());
+            updates.sort(Comparator.comparing(p -> "resourceName".equals(p.getName()) ? 1 : 0));
+
+            for (PropertyDTO property : updates) {
                 validateProperty(property);
                 propertyEditor.setPropertyValueOnResourceForContext(
                         resource.getName(),
@@ -268,6 +273,14 @@ public class ResourcePropertiesRest {
     }
 
     private void validateProperty(PropertyDTO property) throws ValidationException {
+
+        if (property.getName().equals("resourceName") && !NameChecker.isNameValid(property.getValue())) {
+            throw new ValidationException(NameChecker.getErrorTextForInvalidResourceName(property.getName(), property.getValue()));
+        }
+        if (property.getName().equals("resourceName") && !NameChecker.isValidAlphanumericWithUnderscoreHyphenName(property.getValue())) {
+            throw new ValidationException(NameChecker.getErrorTextForInvalidResourceName(property.getName(), property.getValue()));
+        }
+
         if (property == null || property.getName() == null || property.getName().trim().isEmpty()) {
             throw new ValidationException("Property name cannot be null or empty");
         }
