@@ -188,10 +188,4 @@ public class ResourceRelationsByIdRest {
         boolean resetsEmpty = request.getResets() == null || request.getResets().isEmpty();
         return updatesEmpty && resetsEmpty;
     }
-
-    private List<PropertyEditingService.DifferingProperty> getOverwriteInfos(Integer relationId, Integer contextId, ResourceEditProperty property) throws ResourceNotFoundException {
-        List<ContextEntity> contexts = contextLocator.getChildren(contextId);
-        return getRelationPropertiesUseCase.getPropertyOverviewForRelation(relationId, property, contexts);
-    }
-
 }
