@@ -57,6 +57,7 @@ public class ResourceEditRelation {
 	@Getter
 	private Integer resRelTypeId;
 
+	@Getter
 	private String typeIdentifier;
 	@Getter
 	private String identifier;

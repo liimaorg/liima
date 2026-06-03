@@ -1,5 +1,5 @@
 import { computed, Directive, effect, inject, input, Signal, signal, WritableSignal } from '@angular/core';
-import { Subject } from 'rxjs';
+import { forkJoin, Observable, of, Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Property } from '../models/property';
 import { AuthService } from '../../auth/auth.service';
@@ -11,6 +11,8 @@ import { ResourceRelationsService } from '../services/resource-relations.service
 import { ActivatedRoute, Router } from '@angular/router';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../models/resource-relation';
 import { RelationGroupItem } from '../relation-group/relation-group.component';
+import { PropertyUpdate } from '../services/resource-properties.service';
+import { finalize } from 'rxjs/operators';
 
 export const NODE_FILTERED_PROPERTIES = ['hostName', 'active'];
 
@@ -98,6 +100,50 @@ export abstract class BaseRelationsDirective {
     });
   }
 
+  saveChanges() {
+    const changes = this.editor.changedProperties();
+    const resets = this.editor.resetProperties();
+    if ((changes.size === 0 && resets.size === 0) || this.hasValidationErrors()) return;
+
+    this.isSaving.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+
+    const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
+
+    const resetProperties: PropertyUpdate[] = Array.from(resets.entries()).map(([name, value]) => ({
+      name,
+      value,
+    }));
+
+    const update$ =
+      updatedProperties.length + resetProperties.length
+        ? this.bulkUpdateProperties(this.getRelationId(), updatedProperties, resetProperties, this.contextId())
+        : of(void 0);
+
+    forkJoin([update$])
+      .pipe(
+        finalize(() => {
+          this.isSaving.set(false);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.successMessage.set('Properties saved successfully');
+          this.reloadProperties(this.entityId(), this.getRelationId(), this.contextId());
+          this.afterPropertiesSaved();
+          this.editor.resetChanges();
+          setTimeout(() => this.successMessage.set(null), 3000);
+        },
+        error: (error) => {
+          this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
+        },
+      });
+  }
+
   onPropertyChange(propertyName: string, newValue: string) {
     this.editor.onPropertyChange(propertyName, newValue);
   }
@@ -131,11 +177,7 @@ export abstract class BaseRelationsDirective {
       name: relation.relatedResourceName,
       type: relation.type,
       release: relation.relatedResourceRelease,
-      // FIxME should be resourceEditRelation.identifier
-      identifier:
-        relation.relationName && relation.relationName !== relation.relatedResourceName
-          ? relation.relationName
-          : undefined,
+      identifier: relation.identifier,
     };
   }
 
@@ -157,6 +199,13 @@ export abstract class BaseRelationsDirective {
   protected abstract entityId: Signal<number | undefined>;
   protected abstract getUnsavedChangesKey(): string;
   protected abstract getEditorOptions(): { includeResetsInHasChanges: boolean; unmarkResetOnChange: boolean };
+  protected abstract bulkUpdateProperties(
+    entityId: number,
+    updatedProperties: PropertyUpdate[],
+    resetProperties: PropertyUpdate[],
+    contextId: number,
+  ): Observable<void>;
+  protected abstract afterPropertiesSaved(): void;
   protected abstract hasIdentifierProperty(): boolean;
   protected abstract reloadRelation(entityId: number): void;
   protected abstract reloadProperties(entityId: number, relationId: number, contextId: number): void;

@@ -225,12 +225,12 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Reuse `<app-properties-list>` component
 
 **Tasks**:
-- [ ] Add `getRelationProperties(resourceId, relationId, contextId)` to service
-- [ ] Add properties signal to component
-- [ ] Include `<app-properties-list>` in detail panel template
-- [ ] Pass relation properties to component
-- [ ] Handle loading state for properties
-- [ ] Display in read-only mode initially
+- [x] Add `getRelationProperties(resourceId, relationId, contextId)` to service
+- [x] Add properties signal to component
+- [x] Include `<app-properties-list>` in detail panel template
+- [x] Pass relation properties to component
+- [x] Handle loading state for properties
+- [x] Display in read-only mode initially
 
 **Acceptance Criteria**:
 - Properties displayed when relation selected
@@ -251,11 +251,11 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Add validation
 
 **Tasks**:
-- [ ] Add identifier input field to detail panel
-- [ ] Add signal for identifier changes
+- [x] Add identifier input field to detail panel
+- [x] Add signal for identifier changes
 - [ ] Add validation (if required)
 - [ ] Add visual indicator for unsaved changes
-- [ ] Disable if user lacks permission
+- [x] Disable if user lacks permission
 - [ ] Add to save operation (Phase 9)
 
 **Acceptance Criteria**:

@@ -1,19 +1,21 @@
 import { Component, computed, inject, linkedSignal, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
+import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
+import { IconComponent } from '../../../shared/icon/icon.component';
 import { ResourceService } from '../../services/resource.service';
+import { PropertyUpdate } from '../../services/resource-properties.service';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../../models/resource-relation';
 import { Resource } from '../../models/resource';
+import { Property } from '../../models/property';
 import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/relation-group.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
-import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
-import { IconComponent } from '../../../shared/icon/icon.component';
-import { Property } from '../../models/property';
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-resource-relations',
@@ -69,6 +71,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return g.runtime.length + g.consumed.length + g.provided.length + g.unresolved.length > 0;
   });
 
+  // set by url, input, onItemSelected and onReleaseChange
   protected activeRelationId = linkedSignal(() => {
     const relId = this.selectedRelationId();
     if (relId != null && relId > 0) return relId;
@@ -76,6 +79,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return [...g.runtime, ...g.consumed, ...g.provided][0]?.id ?? null;
   });
 
+  // needed for css highlighting on switching releases
   selectedItemKey = computed<number | null>(() => {
     const relId = this.activeRelationId();
     if (relId == null) return null;
@@ -90,6 +94,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return relId;
   });
 
+  // resolves selected releation and handles releases fallback
   selectedRelation = computed<ResourceRelation | null>(() => {
     const relId = this.activeRelationId();
     if (relId == null) return null;
@@ -106,7 +111,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return null;
   });
 
-  selectedRelationIdForRelease = linkedSignal(() => this.selectedRelation()?.id ?? null);
+  selectedRelationIdForRelease = computed(() => this.selectedRelation()?.id ?? null);
 
   protected isLoadingProperties = this.relationsService.isLoadingRelationProperties;
 
@@ -126,6 +131,8 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return result;
   });
 
+  protected entityId = computed(() => this.resource()?.id);
+
   protected reloadRelation(entityId: number): void {
     this.relationsService.setIdForResourceRelations(entityId);
   }
@@ -134,7 +141,27 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     this.relationsService.setIdsForRelationProperties(entityId, relationId, contextId);
   }
 
-  protected entityId = computed(() => this.resource()?.id);
+  protected bulkUpdateProperties(
+    relationId: number,
+    updatedProperties: PropertyUpdate[],
+    resetProperties: PropertyUpdate[],
+    contextId: number,
+  ): Observable<void> {
+    return this.relationsService.bulkUpdateResourceRelationProperties(
+      this.entityId(),
+      relationId,
+      updatedProperties,
+      resetProperties,
+      contextId,
+    );
+  }
+
+  protected afterPropertiesSaved(): void {
+    const changes = this.editor.changedProperties();
+    if (changes.has('relationName')) {
+      this.reloadRelation(this.entityId());
+    }
+  }
 
   protected getUnsavedChangesKey(): string {
     return 'resource-relation-properties';
@@ -147,14 +174,23 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     };
   }
 
-  onReleaseChange(relationId: number) {
-    this.activeRelationId.set(relationId);
-    this.setQueryParamForRelationId(relationId);
-  }
-
   protected hasIdentifierProperty() {
     const rel = this.selectedRelation();
     return rel != null && rel.relationType === 'consumed' && rel.type !== 'RUNTIME';
+  }
+
+  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
+    return {
+      key: `${unresolved.type}::${unresolved.name}`,
+      name: unresolved.name,
+      type: unresolved.type,
+      unresolved: true,
+    };
+  }
+
+  onReleaseChange(relationId: number) {
+    this.activeRelationId.set(relationId);
+    this.setQueryParamForRelationId(relationId);
   }
 
   relationIdentifier = computed<Property>(() => ({
@@ -170,13 +206,4 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     optional: true,
     disabled: this.contextId() !== 1,
   }));
-
-  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
-    return {
-      key: `${unresolved.type}::${unresolved.name}`,
-      name: unresolved.name,
-      type: unresolved.type,
-      unresolved: true,
-    };
-  }
 }

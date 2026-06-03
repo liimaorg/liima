@@ -21,23 +21,29 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.PropertyBulkUpdateDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.UnresolvedRelationDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
+import ch.puzzle.itc.mobiliar.business.property.boundary.UpdateRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceTypeRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceTypeRelationsUseCase;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -65,6 +71,9 @@ public class ResourceTypeRelationsByIdRest {
     GetResourceTypeRelationPropertiesUseCase getResourceTypeRelationPropertiesUseCase;
 
     @Inject
+    UpdateRelationPropertiesUseCase updateRelationPropertiesUseCase;
+
+    @Inject
     ContextLocator contextLocator;
 
     /**
@@ -85,7 +94,7 @@ public class ResourceTypeRelationsByIdRest {
 
         List<UnresolvedRelationDTO> unresolved = new ArrayList<>();
         for (ResourceEditRelation rel : typeRelations) {
-            unresolved.add(new UnresolvedRelationDTO(rel.getResRelTypeId(), rel.getSlaveTypeName(), rel.getDisplayName()));
+            unresolved.add(new UnresolvedRelationDTO(rel.getResRelTypeId(), rel.getSlaveTypeName(), rel.getDisplayName(), rel.getTypeIdentifier()));
         }
         unresolved.sort(Comparator.comparing(UnresolvedRelationDTO::getName, String.CASE_INSENSITIVE_ORDER));
 
@@ -125,5 +134,48 @@ public class ResourceTypeRelationsByIdRest {
                 .collect(Collectors.toList());
 
         return Response.ok(dtos).build();
+    }
+
+    @PUT
+    @Path("/{id : \\d+}/relations/{relTypeId : \\d+}/properties")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Bulk update/reset property values on a resource type relation")
+    public Response bulkUpdateTypeRelationProperties(
+            @Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId,
+            @Parameter(description = "Relation Type ID") @PathParam("relTypeId") Integer relTypeId,
+            PropertyBulkUpdateDTO bulkRequest,
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws NotFoundException, ValidationException {
+
+        if (bulkRequest == null || isRequestEmpty(bulkRequest)) {
+            return Response.status(Response.Status.NO_CONTENT).build();
+        }
+
+        if (bulkRequest.getUpdates() != null) {
+            for (PropertyDTO property : bulkRequest.getUpdates()) {
+                if ("relationName".equals(property.getName())) {
+                    updateRelationPropertiesUseCase.updateResourceTypeRelationIdentifier(relTypeId, property.getValue());
+                } else {
+                    updateRelationPropertiesUseCase.setPropertyOnResourceTypeRelation(
+                            relTypeId, contextId, property.getName(), property.getValue());
+                }
+            }
+        }
+
+        if (bulkRequest.getResets() != null) {
+            for (PropertyDTO property : bulkRequest.getResets()) {
+                updateRelationPropertiesUseCase.resetPropertyOnResourceTypeRelation(
+                        relTypeId, contextId, property.getName());
+            }
+        }
+
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    private boolean isRequestEmpty(PropertyBulkUpdateDTO request) {
+        boolean updatesEmpty = request.getUpdates() == null || request.getUpdates().isEmpty();
+        boolean resetsEmpty = request.getResets() == null || request.getResets().isEmpty();
+        return updatesEmpty && resetsEmpty;
     }
 }

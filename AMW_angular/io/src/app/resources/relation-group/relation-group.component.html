@@ -13,7 +13,7 @@
         >
           <div class="relation-info">
             <div class="relation-type">{{ item.type }}</div>
-            <div class="relation-name">{{ item.name }} {{ item.identifier ?? '' }}</div>
+            <div class="relation-name">{{ item.name }} {{ item.identifier ? `(${item.identifier})` : '' }}</div>
           </div>
         </div>
       }
