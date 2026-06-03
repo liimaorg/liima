@@ -110,8 +110,8 @@
       </div>
     </div>
     <div class="container mb-3 p-0">
-      <label class="form-label" for="targetPlatforms">Valid for:</label>
-      <div class="row align-items-center">
+      <label for="platform-container" class="form-label">Valid for:</label>
+      <div id="platform-container" class="row align-items-center">
         <div [class]="revision() ? 'col-sm-6' : 'col-sm-12'">
           @for (targetPlatform of targetPlatformModels(); track targetPlatform.name) {
             <div class="form-check form-check-inline">

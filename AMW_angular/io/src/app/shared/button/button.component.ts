@@ -6,6 +6,7 @@ import { NgClass } from '@angular/common';
   template: `
     <button
       [type]="type()"
+      [title]="title()"
       class="btn"
       [ngClass]="[variantClass(), sizeClass(), additionalClasses()]"
       [disabled]="disabled()"
@@ -26,6 +27,7 @@ export class ButtonComponent {
   isOutlined = input<boolean>(false);
   dataTestId = input<string>('');
   type = input<'button' | 'submit' | 'reset'>('button');
+  title = input<string>('');
 
   variantClass(): string {
     return this.variant() ? (this.isOutlined() ? `btn-outline-${this.variant()}` : `btn-${this.variant()}`) : '';
