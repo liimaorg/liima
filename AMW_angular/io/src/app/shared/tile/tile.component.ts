@@ -7,13 +7,15 @@ import { ButtonComponent } from '../button/button.component';
 @Component({
   selector: 'app-tile-component',
   template: `
-    <div class="tile rounded" role="group">
+    <section class="tile rounded" role="group">
       <div
         tabindex="0"
         class="tile-header"
         (keyup.enter)="toggleBody()"
         (click)="toggleBody()"
         [ngClass]="showBody() ? 'opened' : 'closed'"
+        role="button"
+        [attr.aria-expanded]="showBody()"
       >
         <div class="tile-title" aria-level="2" role="heading">
           @if (showBody()) {
@@ -47,7 +49,7 @@ import { ButtonComponent } from '../button/button.component';
           }
         </div>
       }
-    </div>
+    </section>
   `,
   styleUrls: ['./tile.component.scss'],
   providers: [],
