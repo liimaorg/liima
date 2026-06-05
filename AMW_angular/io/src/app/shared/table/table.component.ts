@@ -39,10 +39,13 @@ export class TableComponent<T> {
   canDelete = input<boolean>(false);
   canNavigate = input<boolean>(false);
   fixed = input<boolean>(false);
+  rowStyle = input<(row: T) => string>();
+  canRowClick = input<boolean>(false);
   hasAction = computed(() => this.canEdit() || this.canDelete() || this.canNavigate());
   edit = output<EntryActionOutput>();
   delete = output<EntryActionOutput>();
   navigate = output<EntryActionOutput>();
+  rowClick = output<any>();
   protected readonly EntryAction = EntryAction;
   dateFormat = DATE_FORMAT;
 

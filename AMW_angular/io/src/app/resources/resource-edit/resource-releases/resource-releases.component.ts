@@ -3,8 +3,7 @@ import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indi
 import { AuthService } from '../../../auth/auth.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { Release } from '../../models/release';
-import { RouterLink, Router, ActivatedRoute } from '@angular/router';
-import { IconComponent } from '../../../shared/icon/icon.component';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResourceService } from '../../services/resource.service';
@@ -12,6 +11,7 @@ import { Resource } from '../../models/resource';
 import { FormsModule } from '@angular/forms';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { ToastService } from '../../../shared/elements/toast/toast.service';
+import { TableComponent, TableColumnType, EntryAction, EntryActionOutput } from '../../../shared/table/table.component';
 
 @Component({
   selector: 'app-resource-releases',
@@ -19,11 +19,10 @@ import { ToastService } from '../../../shared/elements/toast/toast.service';
   imports: [
     LoadingIndicatorComponent,
     TileComponent,
-    RouterLink,
-    IconComponent,
     ButtonComponent,
     FormsModule,
     ModalHeaderComponent,
+    TableComponent,
   ],
   templateUrl: './resource-releases.component.html',
 })
@@ -36,20 +35,49 @@ export class ResourceReleasesComponent {
   private toastService = inject(ToastService);
 
   isLoading = signal(false);
-  releaseToDelete = signal<Release | null>(null);
+  releaseIdToDelete = signal<number | null>(null);
   availableReleases = signal<Release[]>([]);
   selectedReleaseId = signal<number | null>(null);
   isCreatingRelease = signal(false);
-  releaseToChange = signal<Release | null>(null);
+  releaseIdToChange = signal<number | null>(null);
   isChangingRelease = signal(false);
 
   @ViewChild('createReleaseModal') createReleaseModal!: TemplateRef<void>;
   @ViewChild('changeReleaseModal') changeReleaseModal!: TemplateRef<void>;
+  @ViewChild('deleteReleaseConfirmation') deleteConfirmationTemplate!: TemplateRef<void>;
 
   id = input.required<number>();
   releases = input.required<Release[]>();
   contextId = input.required<number>();
   resource = input.required<Resource>();
+
+  tableHeaders: TableColumnType<Release>[] = [{ key: 'name', columnTitle: 'Release' }];
+
+  rowStyle = computed(() => {
+    const currentId = this.id();
+    return (row: Release) => (row.id === currentId ? 'font-weight: bold' : '');
+  });
+
+  releaseToDeleteName = computed(() => this.releases().find((r) => r.id === this.releaseIdToDelete())?.name ?? '');
+  releaseToChangeName = computed(() => this.releases().find((r) => r.id === this.releaseIdToChange())?.name ?? '');
+
+  onRowClick(row: Release) {
+    void this.router.navigate(['/resource/edit'], {
+      queryParams: { ctx: this.contextId(), id: row.id, selectedResourceTypeId: this.resource()?.resourceTypeId },
+    });
+  }
+
+  onTableAction(event: EntryActionOutput) {
+    if (event.action === EntryAction.navigate) {
+      void this.router.navigate(['/resource/edit'], {
+        queryParams: { ctx: this.contextId(), id: event.id, selectedResourceTypeId: this.resource()?.resourceTypeId },
+      });
+    } else if (event.action === EntryAction.edit) {
+      this.showChangeReleaseModal(event.id);
+    } else if (event.action === EntryAction.delete) {
+      this.showDeleteConfirmation(this.deleteConfirmationTemplate, event.id);
+    }
+  }
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -132,10 +160,10 @@ export class ResourceReleasesComponent {
       });
   }
 
-  showChangeReleaseModal(release: Release) {
-    this.releaseToChange.set(release);
+  showChangeReleaseModal(releaseId: number) {
+    this.releaseIdToChange.set(releaseId);
     this.isLoading.set(true);
-    this.resourceService.getAvailableReleasesForResource(release.id).subscribe({
+    this.resourceService.getAvailableReleasesForResource(releaseId).subscribe({
       next: (releases) => {
         this.availableReleases.set(releases);
         this.selectedReleaseId.set(null);
@@ -146,7 +174,7 @@ export class ResourceReleasesComponent {
         console.error('Failed to load available releases:', error);
         this.toastService.error('Failed to load available releases.');
         this.isLoading.set(false);
-        this.releaseToChange.set(null);
+        this.releaseIdToChange.set(null);
       },
     });
   }
@@ -155,13 +183,13 @@ export class ResourceReleasesComponent {
     const modalRef = this.modalService.open(this.changeReleaseModal);
     modalRef.result.then(
       () => {
-        if (this.selectedReleaseId() && this.releaseToChange()) {
-          this.changeRelease(this.releaseToChange()!.id, this.selectedReleaseId()!);
+        if (this.selectedReleaseId() && this.releaseIdToChange()) {
+          this.changeRelease(this.releaseIdToChange()!, this.selectedReleaseId()!);
         }
       },
       () => {
         this.selectedReleaseId.set(null);
-        this.releaseToChange.set(null);
+        this.releaseIdToChange.set(null);
       },
     );
   }
@@ -172,7 +200,7 @@ export class ResourceReleasesComponent {
       next: () => {
         this.isChangingRelease.set(false);
         this.selectedReleaseId.set(null);
-        this.releaseToChange.set(null);
+        this.releaseIdToChange.set(null);
         // Reload the resource and releases data to reflect the change
         this.resourceService.setIdForResource(resourceId);
         // Navigate to the changed resource (stays on the same resource, now in new release)
@@ -187,19 +215,19 @@ export class ResourceReleasesComponent {
         this.toastService.error('Failed to change release.');
         this.isChangingRelease.set(false);
         this.selectedReleaseId.set(null);
-        this.releaseToChange.set(null);
+        this.releaseIdToChange.set(null);
       },
     });
   }
 
-  showDeleteConfirmation(content: unknown, release: Release) {
-    this.releaseToDelete.set(release);
+  showDeleteConfirmation(content: unknown, releaseId: number) {
+    this.releaseIdToDelete.set(releaseId);
     this.modalService.open(content).result.then(
       () => {
-        this.deleteRelease(release.id);
+        this.deleteRelease(releaseId);
       },
       () => {
-        this.releaseToDelete.set(null);
+        this.releaseIdToDelete.set(null);
       },
     );
   }
@@ -211,7 +239,7 @@ export class ResourceReleasesComponent {
     this.resourceService.deleteResourceByResourceId(resourceIdToDelete).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.releaseToDelete.set(null);
+        this.releaseIdToDelete.set(null);
         // Only navigate if we deleted the currently selected release
         if (resourceIdToDelete === this.id()) {
           const remainingReleases = this.releases().filter((r) => r.id !== resourceIdToDelete);
@@ -235,7 +263,7 @@ export class ResourceReleasesComponent {
         console.error('Failed to delete release:', error);
         this.toastService.error('Failed to delete release.');
         this.isLoading.set(false);
-        this.releaseToDelete.set(null);
+        this.releaseIdToDelete.set(null);
       },
     });
   }

@@ -7,7 +7,7 @@ import { ButtonComponent } from '../button/button.component';
 @Component({
   selector: 'app-tile-component',
   template: `
-    <div class="tile rounded">
+    <div class="tile rounded" role="group">
       <div
         tabindex="0"
         class="tile-header"
@@ -15,7 +15,7 @@ import { ButtonComponent } from '../button/button.component';
         (click)="toggleBody()"
         [ngClass]="showBody() ? 'opened' : 'closed'"
       >
-        <div class="tile-title">
+        <div class="tile-title" aria-level="2" role="heading">
           @if (showBody()) {
             <app-icon icon="caret-down"></app-icon>
           } @else {
