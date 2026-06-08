@@ -13,8 +13,13 @@
       </app-button>
       <ul ngbDropdownMenu>
         @for (revision of revisions().slice().reverse(); track revision) {
-          <li ngbDropdownItem>
-            <a class="dropdown-item" (click)="selectRevision(revision)">
+          <li ngbDropdownItem tabindex="-1">
+            <a
+              class="dropdown-item"
+              tabindex="0"
+              (click)="selectRevision(revision)"
+              (keydown.enter)="selectRevision(revision)"
+            >
               {{ revision.displayName }}
             </a>
           </li>
@@ -23,8 +28,10 @@
           <hr class="dropdown-divider" />
         </li>
         <!-- Clear Selection Option -->
-        <li ngbDropdownItem>
-          <a class="dropdown-item text-danger" (click)="resetRevision()"> Clear Selection </a>
+        <li ngbDropdownItem tabindex="-1">
+          <a class="dropdown-item text-danger" tabindex="0" (click)="resetRevision()" (keydown.enter)="resetRevision()">
+            Clear Selection
+          </a>
         </li>
       </ul>
     </div>
