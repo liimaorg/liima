@@ -24,7 +24,7 @@
             <h3 class="relation-detail-title">{{ rel.name }}</h3>
             @if (permissions().canUpdateProperty && contextId() === 1) {
               <app-button [variant]="'danger'" [size]="'sm'" (click)="showRemoveTypeRelationConfirmation()"
-              ><app-icon icon="trash"></app-icon> Remove Relation</app-button
+                ><app-icon icon="trash"></app-icon> Remove Relation</app-button
               >
             }
           </div>
