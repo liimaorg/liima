@@ -60,7 +60,7 @@ import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
  * @author cweber
  */
 @Stateless
-public class RelationEditor {
+public class RelationEditor implements AddResourceTypeRelationUseCase, RemoveResourceTypeRelationUseCase {
 
 	@Inject
 	EntityManager entityManager;
@@ -260,4 +260,19 @@ public class RelationEditor {
 				.anyMatch(type -> type.name().equalsIgnoreCase(resourceRelationTypeString));
 	}
 
+	@Override
+	public void addResourceTypeRelation(AddResourceTypeRelationCommand command)
+			throws ResourceTypeNotFoundException {
+		ResourceTypeEntity masterType = entityManager.find(ResourceTypeEntity.class, command.getMasterResourceTypeId());
+		if (masterType == null) {
+			throw new ResourceTypeNotFoundException("Resource type with ID " + command.getMasterResourceTypeId() + " not found");
+		}
+		addResourceTypeRelation(masterType, command.getSlaveResourceTypeId());
+	}
+
+	@Override
+	public void removeResourceTypeRelation(RemoveResourceTypeRelationCommand command)
+			throws ResourceTypeNotFoundException {
+		removeResourceTypeRelation(command.getResourceTypeRelationId());
+	}
 }
