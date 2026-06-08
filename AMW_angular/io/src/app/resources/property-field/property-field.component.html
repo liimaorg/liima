@@ -75,7 +75,12 @@
       [checked]="resetChecked()"
       (change)="toggleReset($event)"
     />
-    <label class="btn btn-outline-primary reset-btn" [ngbTooltip]="'Reset property'" [for]="resetId()">
+    <label
+      aria-label="Reset property"
+      class="btn btn-outline-primary reset-btn"
+      [ngbTooltip]="'Reset property'"
+      [for]="resetId()"
+    >
       <app-icon icon="arrow-counterclockwise" data-testid="button-reset"></app-icon
     ></label>
   }

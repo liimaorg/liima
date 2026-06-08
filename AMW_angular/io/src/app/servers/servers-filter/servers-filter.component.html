@@ -12,8 +12,8 @@
       />
     </div>
     <div class="col-md-3">
-      <label class="form-label">Runtime</label>
-      <select class="form-select" [(ngModel)]="filter.runtimeName" name="runtimeName">
+      <label for="runtimeNameSelect" class="form-label">Runtime</label>
+      <select id="runtimeNameSelect" class="form-select" [(ngModel)]="filter.runtimeName" name="runtimeName">
         <option [value]="'All'">All</option>
         @for (runtime of runtimes(); track runtime.id) {
           <option [value]="runtime.name">{{ runtime.name }}</option>
@@ -21,8 +21,13 @@
       </select>
     </div>
     <div class="col-md-3">
-      <label class="form-label">Env</label>
-      <select class="form-select in" [(ngModel)]="filter.environmentName" name="environmentName">
+      <label for="environmentNameSelect" class="form-label">Env</label>
+      <select
+        id="environmentNameSelect"
+        class="form-select in"
+        [(ngModel)]="filter.environmentName"
+        name="environmentName"
+      >
         <option [value]="'All'">All</option>
         @for (env of environments(); track env.id) {
           <option [value]="env.name">{{ env.name }}</option>

@@ -21,7 +21,7 @@ export interface TileListEntryOutput {
 @Component({
   selector: 'app-tile-list',
   template: `
-    <div class="title">{{ title() }}</div>
+    <h3 class="title">{{ title() }}</h3>
 
     @if (!data() || data().length <= 0) {
       <div class="no-content">

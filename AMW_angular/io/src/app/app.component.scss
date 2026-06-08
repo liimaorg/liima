@@ -2,29 +2,6 @@ $icon-font-path: '~bootstrap-sass/assets/fonts/bootstrap/';
 
 @use 'deployments/deployments.scss';
 
-/* Move down content because we have a fixed navbar that is 50px tall */
-/*
-body {
-  padding-top: 50px;
-}
-*/
-
-.page-header {
-  margin: 0;
-  padding-bottom: 0;
-  background-color: #cfcfcf;
-  /*  position: fixed;
-  top: 50px;
-  left: 0px;*/
-  width: 100%;
-
-  h1 {
-    width: 100%;
-    margin-top: 8px;
-    font-size: 30px;
-  }
-}
-
 .dropdown-menu .checkbox {
   padding-left: 20px;
 }

@@ -1,5 +1,7 @@
 <div class="card row offset-1">
-  <div class="card-header">{{ getTitle() }}</div>
+  <div class="card-header">
+    <h3 class="card-title">{{ getTitle() }}</h3>
+  </div>
   <div class="card-body">
     @if (permissions.length > 0) {
       <div class="form-group row">

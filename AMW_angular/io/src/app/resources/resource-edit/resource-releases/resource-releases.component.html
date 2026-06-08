@@ -7,54 +7,25 @@
   [noContent]="!releases() || releases().length < 1"
   [notAllowed]="false"
 >
-  <table class="table table-borderless">
-    <tbody>
-      @for (release of releases(); track release) {
-        <tr
-          style="cursor: pointer"
-          [routerLink]="['/resource/edit']"
-          [queryParams]="{ ctx: contextId(), id: release.id, selectedResourceTypeId: resource()?.resourceTypeId }"
-        >
-          <td [class.fw-bold]="release.id === id()">
-            {{ release.name }}
-          </td>
-          <td class="text-end">
-            @if (release.id === id() && permissions().canChangeRelease) {
-              <app-button
-                title="Change Release"
-                [size]="'sm'"
-                [variant]="'link'"
-                [additionalClasses]="'p-0 link-secondary me-2'"
-                (click)="showChangeReleaseModal(release); $event.stopPropagation(); $event.preventDefault()"
-              >
-                <app-icon icon="pencil"></app-icon>
-              </app-button>
-            }
-            @if (permissions().canDeleteRelease) {
-              <app-button
-                title="Delete"
-                [size]="'sm'"
-                [variant]="'link'"
-                [additionalClasses]="'p-0 link-danger'"
-                (click)="
-                  showDeleteConfirmation(deleteReleaseConfirmation, release);
-                  $event.stopPropagation();
-                  $event.preventDefault()
-                "
-              >
-                <app-icon icon="trash"></app-icon>
-              </app-button>
-            }
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+  <app-table
+    entityName="Release"
+    [data]="releases()"
+    [headers]="tableHeaders"
+    [canNavigate]="false"
+    [canDelete]="permissions().canDeleteRelease"
+    [canEdit]="permissions().canChangeRelease"
+    [rowStyle]="rowStyle()"
+    [canRowClick]="true"
+    (rowClick)="onRowClick($event)"
+    (navigate)="onTableAction($event)"
+    (edit)="onTableAction($event)"
+    (delete)="onTableAction($event)"
+  ></app-table>
 </app-tile-component>
 
 <ng-template #deleteReleaseConfirmation let-modal>
   <app-modal-header
-    [title]="'Delete release ' + releaseToDelete()?.name"
+    [title]="'Delete release ' + releaseToDeleteName()"
     (cancel)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
@@ -106,7 +77,7 @@
 
 <ng-template #changeReleaseModal let-modal>
   <app-modal-header
-    [title]="'Change Release for ' + releaseToChange()?.name"
+    [title]="'Change Release for ' + releaseToChangeName()"
     (cancel)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">

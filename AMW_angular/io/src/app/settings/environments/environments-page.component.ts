@@ -11,11 +11,13 @@ import { EnvironmentDeleteComponent } from './environment-delete/environment-del
 import { AuthService } from '../../auth/auth.service';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { TableComponent, TableColumnType } from '../../shared/table/table.component';
+import { UpperCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-environments-page',
-  imports: [IconComponent, ButtonComponent, TableComponent],
+  imports: [IconComponent, ButtonComponent, TableComponent, UpperCasePipe],
   templateUrl: './environments-page.component.html',
+  styleUrls: ['./environments-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnvironmentsPageComponent {

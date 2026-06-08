@@ -1,7 +1,7 @@
 @if (revisions().length > 0) {
   <div class="d-flex">
-    <label class="form-label align-self-center my-0 me-2">Compare with history</label>
-    <div ngbDropdown>
+    <label for="selectRevisionDropdown" class="form-label align-self-center my-0 me-2">Compare with history</label>
+    <div ngbDropdown id="selectRevisionDropdown">
       <app-button
         ngbDropdownToggle
         [additionalClasses]="'dropdown-toggle'"

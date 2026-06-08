@@ -10,13 +10,13 @@
         <app-notification [message]="errorMessage()" [messageType]="'warning'"></app-notification>
       }
       <span class="form-horizontal">
-        <h1 class="offset-2 mb-4">
+        <h2 class="offset-2 mb-4">
           @if (isRedeployment()) {
             Redeployment
           } @else {
             Create new deployment
           }
-        </h1>
+        </h2>
         @if (!isRedeployment()) {
           <div class="form-group row">
             <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end">Applicationserver</label>
@@ -104,9 +104,9 @@
             <label class="col-sm-2 fw-bold text-end">Runtime</label>
             <div class="col-sm-10 col-md-5">
               @if (runtime()) {
-                <h5 class="environments-title">
+                <h3 class="environments-title">
                   {{ runtime().identifier }}
-                </h5>
+                </h3>
               }
             </div>
           </div>

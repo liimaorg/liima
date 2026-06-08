@@ -70,10 +70,10 @@
           @for (node of res.nodeGenerationResults; track node.nodeName; let ni = $index) {
             <div class="card mb-3">
               <div class="card-header">
-                <h5 class="mb-0">
+                <h2 class="mb-0">
                   <app-icon icon="hdd"></app-icon>
                   {{ res.applicationServerName }} on {{ node.nodeName }}
-                </h5>
+                </h2>
               </div>
               <div class="card-body">
                 @if (hasErrors(node)) {
@@ -218,10 +218,10 @@
           @for (node of cmp.nodes; track node.nodeName; let ni = $index) {
             <div class="card mb-3">
               <div class="card-header">
-                <h5 class="mb-0">
+                <h2 class="mb-0">
                   <app-icon icon="hdd"></app-icon>
                   {{ cmp.applicationServerName }} on {{ node.nodeName }}
-                </h5>
+                </h2>
               </div>
               <div class="card-body">
                 @if (node.originalErrors.length > 0 || node.comparedErrors.length > 0) {

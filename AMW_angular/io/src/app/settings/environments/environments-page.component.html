@@ -9,8 +9,8 @@
     <div class="card mb-5">
       <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-          <h3>
-            {{ domain.name }}
+          <h2 class="card-title">
+            {{ domain.name | uppercase }}
             @if (permissions().canEdit) {
               <app-button title="Edit" [variant]="'link'" (click)="editContext(domain.id)">
                 <app-icon icon="pencil"></app-icon>
@@ -26,7 +26,7 @@
                 <app-icon icon="trash"></app-icon>
               </app-button>
             }
-          </h3>
+          </h2>
           @if (permissions().canAdd) {
             <app-button
               style="padding: 0"

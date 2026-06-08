@@ -39,7 +39,7 @@
         <div class="relation-detail-panel">
           <div class="relation-detail-header">
             <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
-              <h4 class="relation-detail-title">{{ rel.relatedResourceName }}</h4>
+              <h3 class="relation-detail-title">{{ rel.relatedResourceName }}</h3>
             </a>
             @if (rel.availableReleases && rel.availableReleases.length > 1) {
               <ng-select

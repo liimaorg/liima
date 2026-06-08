@@ -12,7 +12,11 @@
     </thead>
     <tbody>
       @for (row of data(); track row.id) {
-        <tr>
+        <tr
+          [style]="rowStyle() ? rowStyle()(row) : ''"
+          [class.cursor-pointer]="canRowClick()"
+          (click)="canRowClick() && rowClick.emit(row)"
+        >
           @for (header of headers(); track header.key) {
             @switch (header.cellType) {
               @case ('badge-list') {
@@ -63,6 +67,7 @@
               }
               @if (canNavigate() && !row[readonlyFlag()]) {
                 <app-button
+                  title="Edit Rocket"
                   [size]="'sm'"
                   [variant]="'link'"
                   [additionalClasses]="'me-4 p-0'"
