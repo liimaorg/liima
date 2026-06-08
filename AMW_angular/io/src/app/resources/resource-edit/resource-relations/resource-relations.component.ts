@@ -57,7 +57,9 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   addAsProvided = signal<boolean>(false);
   isAddingRelation = signal<boolean>(false);
 
-  isApplicationType = computed(() => this.resource()?.type === '"APPLICATION"' || this.resource()?.type === 'APPLICATION');
+  isApplicationType = computed(
+    () => this.resource()?.type === '"APPLICATION"' || this.resource()?.type === 'APPLICATION',
+  );
 
   hasNewerRelease = computed(() => {
     const res = this.resource();
@@ -300,7 +302,11 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
         const firstRelease = selectedGroup.releases[0];
         const currentReleaseName = res.release;
         if (firstRelease?.release && firstRelease.release > currentReleaseName) {
-          if (!confirm(`The selected resource does not exist for the release ${currentReleaseName}. Are you sure you want to add it for this release?`)) {
+          if (
+            !confirm(
+              `The selected resource does not exist for the release ${currentReleaseName}. Are you sure you want to add it for this release?`,
+            )
+          ) {
             return;
           }
         }
@@ -308,21 +314,19 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     }
 
     this.isAddingRelation.set(true);
-    this.relationsService
-      .addResourceRelation(this.entityId(), groupId, this.addAsProvided())
-      .subscribe({
-        next: () => {
-          this.toastService.success('Relation added successfully.');
-          this.modalService.dismissAll();
-          this.isAddingRelation.set(false);
-          this.reloadRelation(this.entityId());
-        },
-        error: (err) => {
-          console.error('Failed to add relation:', err);
-          this.toastService.error('Failed to add relation: ' + (err.message || 'Unknown error'));
-          this.isAddingRelation.set(false);
-        },
-      });
+    this.relationsService.addResourceRelation(this.entityId(), groupId, this.addAsProvided()).subscribe({
+      next: () => {
+        this.toastService.success('Relation added successfully.');
+        this.modalService.dismissAll();
+        this.isAddingRelation.set(false);
+        this.reloadRelation(this.entityId());
+      },
+      error: (err) => {
+        console.error('Failed to add relation:', err);
+        this.toastService.error('Failed to add relation: ' + (err.message || 'Unknown error'));
+        this.isAddingRelation.set(false);
+      },
+    });
   }
 
   showRemoveRelationConfirmation(): void {
