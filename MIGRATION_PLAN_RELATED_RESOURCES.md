@@ -331,19 +331,19 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Add confirmation dialog for removal
 
 **Tasks**:
-- [ ] Create `AddResourceRelationCommand` in AMW_business
-- [ ] Create `RemoveResourceRelationCommand` in AMW_business
-- [ ] Create/enhance REST endpoints
-- [ ] Add service methods for add/remove
-- [ ] Create add relation modal component
-- [ ] Implement resource selection in modal
-- [ ] Add relation type selection (consumed/provided)
-- [ ] Implement add logic
-- [ ] Enable remove button
-- [ ] Add confirmation dialog for removal
-- [ ] Implement remove logic
-- [ ] Reload relations after add/remove
-- [ ] Add permission checks
+- [x] Create `AddResourceRelationCommand` in AMW_business
+- [x] Create `RemoveResourceRelationCommand` in AMW_business
+- [x] Create/enhance REST endpoints
+- [x] Add service methods for add/remove
+- [x] Create add relation modal component
+- [x] Implement resource selection in modal
+- [x] Add relation type selection (consumed/provided)
+- [x] Implement add logic
+- [x] Enable remove button
+- [x] Add confirmation dialog for removal
+- [x] Implement remove logic
+- [x] Reload relations after add/remove
+- [x] Add permission checks
 
 **Acceptance Criteria**:
 - "Add Relation" button opens modal
