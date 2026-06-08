@@ -58,7 +58,7 @@
               <span class="relation-release-value">{{ rel.relatedResourceRelease }}</span>
             }
             @if (permissions().canUpdateProperty && contextId() === 1) {
-              <app-button [variant]="'danger'" [size]="'sm'" (click)="showRemoveRelationConfirmation()"
+              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveRelationConfirmation()"
                 ><app-icon icon="trash"></app-icon> Remove Relation</app-button
               >
             }
@@ -95,8 +95,15 @@
 </app-tile-component>
 
 <ng-template #addRelationModal let-modal>
-  <app-modal-header [title]="'Add Relation'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header [title]="'Add Related Resource'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
+    @if (hasNewerRelease()) {
+      <div class="alert alert-warning" role="alert">
+        A newer release for this resource exists. You are adding a relation to release
+        <strong>{{ resource()?.release }}</strong
+        >.
+      </div>
+    }
     <div class="mb-3">
       <label for="resourceTypeSelect" class="form-label">Resource Type</label>
       <ng-select
@@ -112,7 +119,24 @@
         }
       </ng-select>
     </div>
-    @if (selectedResourceTypeId()) {
+    @if (childResourceTypes().length > 0) {
+      <div class="mb-3">
+        <label for="childTypeSelect" class="form-label">Sub Type</label>
+        <ng-select
+          id="childTypeSelect"
+          [ngModel]="selectedChildTypeId()"
+          (ngModelChange)="onChildTypeChange($event)"
+          placeholder="Search or select a sub type..."
+          [searchable]="true"
+          [clearable]="true"
+        >
+          @for (child of childResourceTypes(); track child.id) {
+            <ng-option [value]="child.id">{{ child.name }}</ng-option>
+          }
+        </ng-select>
+      </div>
+    }
+    @if (availableResourceGroups().length > 0 || (selectedResourceTypeId() && childResourceTypes().length === 0)) {
       <div class="mb-3">
         <label for="resourceGroupSelect" class="form-label">Resource</label>
         <ng-select
@@ -143,7 +167,7 @@
     }
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
     <app-button
       [variant]="'primary'"
       (click)="addRelation()"
@@ -155,15 +179,16 @@
 </ng-template>
 
 <ng-template #removeRelationConfirmation let-modal>
-  <app-modal-header
-    [title]="'Remove relation ' + selectedRelation()?.relatedResourceName"
-    (cancel)="modal.dismiss('Cross click')"
-  ></app-modal-header>
+  <app-modal-header [title]="'Remove Resource Relation'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
-    <p class="text-warning-2">Are you sure you want to remove this relation?</p>
+    <p class="text">
+      Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.relatedResourceName }}</b
+      >?
+    </p>
+    <p class="text">If you continue, all defined property values for the relation will be lost.</p>
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
-    <app-button [variant]="'danger'" (click)="modal.close('Confirm click')">Remove</app-button>
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'danger'" (click)="modal.close('Confirm click')">Delete</app-button>
   </div>
 </ng-template>

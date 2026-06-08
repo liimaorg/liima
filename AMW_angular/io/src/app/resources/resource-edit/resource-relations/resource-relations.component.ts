@@ -49,13 +49,23 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   @ViewChild('removeRelationConfirmation') removeRelationConfirmation!: TemplateRef<void>;
 
   resourceTypes = signal<ResourceType[]>([]);
+  childResourceTypes = signal<ResourceType[]>([]);
   availableResourceGroups = signal<Resource[]>([]);
   selectedResourceTypeId = signal<number | null>(null);
+  selectedChildTypeId = signal<number | null>(null);
   selectedResourceGroupId = signal<number | null>(null);
   addAsProvided = signal<boolean>(false);
   isAddingRelation = signal<boolean>(false);
 
   isApplicationType = computed(() => this.resource()?.type === '"APPLICATION"' || this.resource()?.type === 'APPLICATION');
+
+  hasNewerRelease = computed(() => {
+    const res = this.resource();
+    const releases = this.resourceService.releasesForResourceGroup();
+    if (!res?.release || !releases?.length) return false;
+    const last = releases[releases.length - 1];
+    return last?.release !== res.release;
+  });
 
   protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
   protected isLoadingRelations = this.relationsService.isLoadingRelations;
@@ -226,8 +236,10 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   showAddRelationModal(): void {
     this.selectedResourceTypeId.set(null);
+    this.selectedChildTypeId.set(null);
     this.selectedResourceGroupId.set(null);
     this.addAsProvided.set(false);
+    this.childResourceTypes.set([]);
     this.availableResourceGroups.set([]);
     this.resourceTypesService.getRootResourceTypes().subscribe({
       next: (types) => this.resourceTypes.set(types),
@@ -241,17 +253,37 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   onResourceTypeChange(typeId: number | null): void {
     this.selectedResourceTypeId.set(typeId);
+    this.selectedChildTypeId.set(null);
+    this.selectedResourceGroupId.set(null);
+    this.childResourceTypes.set([]);
+    this.availableResourceGroups.set([]);
+    if (!typeId) return;
+
+    const type = this.resourceTypes().find((t) => t.id === typeId);
+    if (type?.hasChildren && type.children?.length > 0) {
+      this.childResourceTypes.set(type.children);
+    } else {
+      this.loadResourceGroups(typeId);
+    }
+  }
+
+  onChildTypeChange(childTypeId: number | null): void {
+    this.selectedChildTypeId.set(childTypeId);
     this.selectedResourceGroupId.set(null);
     this.availableResourceGroups.set([]);
-    if (typeId) {
-      this.resourceService.getGroupsForType({ id: typeId } as ResourceType).subscribe({
-        next: (groups) => this.availableResourceGroups.set(groups),
-        error: (err) => {
-          console.error('Failed to load resource groups:', err);
-          this.toastService.error('Failed to load resource groups.');
-        },
-      });
+    if (childTypeId) {
+      this.loadResourceGroups(childTypeId);
     }
+  }
+
+  private loadResourceGroups(typeId: number): void {
+    this.resourceService.getGroupsForType({ id: typeId } as ResourceType).subscribe({
+      next: (groups) => this.availableResourceGroups.set(groups),
+      error: (err) => {
+        console.error('Failed to load resource groups:', err);
+        this.toastService.error('Failed to load resource groups.');
+      },
+    });
   }
 
   addRelation(): void {
@@ -259,6 +291,20 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     if (!groupId) {
       this.toastService.error('Please select a resource.');
       return;
+    }
+
+    const res = this.resource();
+    if (res?.release) {
+      const selectedGroup = this.availableResourceGroups().find((g) => g.id === groupId);
+      if (selectedGroup?.releases?.length) {
+        const firstRelease = selectedGroup.releases[0];
+        const currentReleaseName = res.release;
+        if (firstRelease?.release && firstRelease.release > currentReleaseName) {
+          if (!confirm(`The selected resource does not exist for the release ${currentReleaseName}. Are you sure you want to add it for this release?`)) {
+            return;
+          }
+        }
+      }
     }
 
     this.isAddingRelation.set(true);
