@@ -34,6 +34,10 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ApplicationServer;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceRelationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceRelationUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
@@ -59,7 +63,7 @@ import java.util.logging.Logger;
  * @author oschmid
  */
 @Stateless
-public class ResourceRelationService implements Serializable{
+public class ResourceRelationService implements Serializable, AddResourceRelationUseCase, RemoveResourceRelationUseCase {
 
 	@Inject
 	EntityManager entityManager;
@@ -543,4 +547,28 @@ public class ResourceRelationService implements Serializable{
         return bestMatch;
     }
 
+	@Override
+	public void addRelation(AddResourceRelationCommand command)
+			throws ResourceNotFoundException, ElementAlreadyExistsException {
+		addRelationByGroup(
+				command.getMasterResourceId(),
+				command.getSlaveResourceGroupId(),
+				command.getProvided(),
+				command.getRelationName(),
+				null);
+	}
+
+	@Override
+	public void removeRelation(RemoveResourceRelationCommand command)
+			throws ResourceNotFoundException {
+		AbstractResourceRelationEntity relation = getResourceRelation(command.getRelationId());
+		if (relation == null) {
+			throw new ResourceNotFoundException("Relation with ID " + command.getRelationId() + " not found");
+		}
+		try {
+			removeRelation(relation);
+		} catch (ElementAlreadyExistsException e) {
+			throw new ResourceNotFoundException("Failed to remove relation: " + e.getMessage());
+		}
+	}
 }

@@ -6,6 +6,7 @@
   [isCollapsed]="false"
   [noContent]="!hasRelations()"
   [notAllowed]="false"
+  (tileAction)="showAddTypeRelationModal()"
 >
   @if (hasRelations()) {
     <div class="relations-layout">
@@ -21,9 +22,11 @@
         <div class="relation-detail-panel">
           <div class="relation-detail-header">
             <h3 class="relation-detail-title">{{ rel.name }}</h3>
-            <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true"
+            @if (permissions().canUpdateProperty && contextId() === 1) {
+              <app-button [variant]="'danger'" [size]="'sm'" (click)="showRemoveTypeRelationConfirmation()"
               ><app-icon icon="trash"></app-icon> Remove Relation</app-button
-            >
+              >
+            }
           </div>
           <div class="relation-detail-body">
             <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
@@ -55,3 +58,48 @@
     </div>
   }
 </app-tile-component>
+
+<ng-template #addTypeRelationModal let-modal>
+  <app-modal-header [title]="'Add Related Resource Type'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="slaveTypeSelect" class="form-label">Resource Type</label>
+      <ng-select
+        id="slaveTypeSelect"
+        [ngModel]="selectedSlaveTypeId()"
+        (ngModelChange)="selectedSlaveTypeId.set($event)"
+        placeholder="Search or select a resource type..."
+        [searchable]="true"
+        [clearable]="true"
+      >
+        @for (type of allResourceTypes(); track type.id) {
+          <ng-option [value]="type.id">{{ type.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button
+      [variant]="'primary'"
+      (click)="addTypeRelation()"
+      [disabled]="!selectedSlaveTypeId() || isAddingRelation()"
+    >
+      Add
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #removeTypeRelationConfirmation let-modal>
+  <app-modal-header
+    [title]="'Remove relation ' + selectedRelation()?.name"
+    (cancel)="modal.dismiss('Cross click')"
+  ></app-modal-header>
+  <div class="modal-body">
+    <p class="text-warning-2">Are you sure you want to remove this resource type relation?</p>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'danger'" (click)="modal.close('Confirm click')">Remove</app-button>
+  </div>
+</ng-template>
