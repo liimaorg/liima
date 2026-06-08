@@ -3,7 +3,7 @@
   <div class="page-title">Resources</div>
   <div class="page-content d-flex gap-3">
     <div class="col-2">
-      <h5 class="mb-3">Resource types</h5>
+      <h3 class="mb-3">Resource types</h3>
       @if (permissions().canViewResourceTypes) {
         <ul class="nav flex-column">
           @for (resourceType of predefinedResourceTypes(); track resourceType.name) {

@@ -13,6 +13,22 @@
   $toast-padding-y: 0
 );
 
+h1 {
+  font-size: 1.4rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1rem;
+}
+
+h4 {
+  font-size: 0.8rem;
+}
+
 .text-warning-2 {
   color: #8a6d3b;
 }
@@ -63,4 +79,11 @@
 .li-table-striped > td > app-apps-list > table > tbody > tr > td {
   color: var(--bs-table-striped-color);
   background-color: transparent;
+}
+
+.card-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }

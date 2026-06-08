@@ -17,10 +17,5 @@ import { ReactiveFormsModule } from '@angular/forms';
       <ng-content select=".page-content"></ng-content>
     </div>
   `,
-  styles: `
-    h1 {
-      font-size: 1.35rem;
-    }
-  `,
 })
 export class PageComponent {}
