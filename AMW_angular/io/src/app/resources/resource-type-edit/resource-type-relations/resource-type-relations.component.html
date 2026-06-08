@@ -23,7 +23,7 @@
           <div class="relation-detail-header">
             <h3 class="relation-detail-title">{{ rel.name }}</h3>
             @if (permissions().canUpdateProperty && contextId() === 1) {
-              <app-button [variant]="'danger'" [size]="'sm'" (click)="showRemoveTypeRelationConfirmation()"
+              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveTypeRelationConfirmation()"
                 ><app-icon icon="trash"></app-icon> Remove Relation</app-button
               >
             }
@@ -60,7 +60,7 @@
 </app-tile-component>
 
 <ng-template #addTypeRelationModal let-modal>
-  <app-modal-header [title]="'Add Related Resource Type'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header [title]="'Add Related Resource'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
     <div class="mb-3">
       <label for="slaveTypeSelect" class="form-label">Resource Type</label>
@@ -79,7 +79,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
     <app-button
       [variant]="'primary'"
       (click)="addTypeRelation()"
@@ -91,15 +91,16 @@
 </ng-template>
 
 <ng-template #removeTypeRelationConfirmation let-modal>
-  <app-modal-header
-    [title]="'Remove relation ' + selectedRelation()?.name"
-    (cancel)="modal.dismiss('Cross click')"
-  ></app-modal-header>
+  <app-modal-header [title]="'Remove Resource Relation'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
-    <p class="text-warning-2">Are you sure you want to remove this resource type relation?</p>
+    <p class="text">
+      Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.name }}</b
+      >?
+    </p>
+    <p class="text">If you continue, all defined property values for the relation will be lost.</p>
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
     <app-button [variant]="'danger'" (click)="modal.close('Confirm click')">Remove</app-button>
   </div>
 </ng-template>
