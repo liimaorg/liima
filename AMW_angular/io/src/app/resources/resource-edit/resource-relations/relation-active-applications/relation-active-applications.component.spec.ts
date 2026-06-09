@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ComponentRef } from '@angular/core';
-import { of } from 'rxjs';
+import { ComponentRef, signal } from '@angular/core';
 
 import { RelationActiveApplicationsComponent } from './relation-active-applications.component';
 import { ResourceActivationService, ResourceActivation } from '../../../services/resource-activation.service';
@@ -9,7 +8,11 @@ describe('RelationActiveApplicationsComponent', () => {
   let component: RelationActiveApplicationsComponent;
   let fixture: ComponentFixture<RelationActiveApplicationsComponent>;
   let componentRef: ComponentRef<RelationActiveApplicationsComponent>;
-  let mockActivationService: jasmine.SpyObj<ResourceActivationService>;
+  let mockActivationService: {
+    setRelationParams: ReturnType<typeof vi.fn>;
+    activations: ReturnType<typeof signal<ResourceActivation[]>>;
+    isLoading: ReturnType<typeof signal<boolean>>;
+  };
 
   const mockActivations: ResourceActivation[] = [
     { resourceGroupId: 1, resourceGroupName: 'Application A', active: true },
@@ -18,18 +21,15 @@ describe('RelationActiveApplicationsComponent', () => {
   ];
 
   beforeEach(async () => {
-    mockActivationService = jasmine.createSpyObj('ResourceActivationService', [
-      'setRelationParams',
-    ], {
-      activations: mockActivations,
-      isLoading: false,
-    });
+    mockActivationService = {
+      setRelationParams: vi.fn(),
+      activations: signal(mockActivations),
+      isLoading: signal(false),
+    };
 
     await TestBed.configureTestingModule({
       imports: [RelationActiveApplicationsComponent],
-      providers: [
-        { provide: ResourceActivationService, useValue: mockActivationService },
-      ],
+      providers: [{ provide: ResourceActivationService, useValue: mockActivationService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RelationActiveApplicationsComponent);
@@ -63,7 +63,7 @@ describe('RelationActiveApplicationsComponent', () => {
     expect(component.hasApplications()).toBe(true);
 
     // Test empty activations
-    mockActivationService.activations = [];
+    mockActivationService.activations.set([]);
     fixture.detectChanges();
     expect(component.hasApplications()).toBe(false);
   });
@@ -76,7 +76,7 @@ describe('RelationActiveApplicationsComponent', () => {
 
   describe('onCheckboxChange', () => {
     it('should emit activationChange with added app ID when checked', () => {
-      spyOn(component.activationChange, 'emit');
+      vi.spyOn(component.activationChange, 'emit');
 
       component.onCheckboxChange(2, true);
 
@@ -84,7 +84,7 @@ describe('RelationActiveApplicationsComponent', () => {
     });
 
     it('should emit activationChange with removed app ID when unchecked', () => {
-      spyOn(component.activationChange, 'emit');
+      vi.spyOn(component.activationChange, 'emit');
 
       component.onCheckboxChange(1, false);
 
@@ -92,7 +92,7 @@ describe('RelationActiveApplicationsComponent', () => {
     });
 
     it('should handle multiple changes correctly', () => {
-      spyOn(component.activationChange, 'emit');
+      vi.spyOn(component.activationChange, 'emit');
 
       // First uncheck app 1
       component.onCheckboxChange(1, false);
@@ -119,7 +119,7 @@ describe('RelationActiveApplicationsComponent', () => {
     });
 
     it('should not render when hasApplications is false', () => {
-      mockActivationService.activations = [];
+      mockActivationService.activations.set([]);
       fixture.detectChanges();
 
       const section = fixture.nativeElement.querySelector('.active-applications-section');
