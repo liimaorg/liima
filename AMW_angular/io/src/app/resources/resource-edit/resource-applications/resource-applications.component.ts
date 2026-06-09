@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal, TemplateRef, ViewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, signal, TemplateRef, ViewChild } from '@angular/core';
 import { ResourceApplicationsService } from '../../services/resource-applications.service';
 import { ApplicationRelation } from '../../models/application-relation';
 import { AuthService } from '../../../auth/auth.service';
@@ -14,9 +14,6 @@ import { ResourceService } from '../../services/resource.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { IconComponent } from '../../../shared/icon/icon.component';
-import { Observable, of } from 'rxjs';
-import { catchError, finalize, switchMap } from 'rxjs/operators';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-resource-applications',
@@ -44,28 +41,6 @@ export class ResourceApplicationsComponent {
   contextId = input.required<number>();
 
   resourceId = computed(() => this.resource().id);
-  private reload = signal(0);
-
-  private applicationsTrigger = computed(() => ({
-    id: this.resourceId(),
-    type: this.resource().type,
-    permissions: this.permissions(),
-    _reload: this.reload(),
-  }));
-
-  applications = toSignal(
-    toObservable(this.applicationsTrigger).pipe(switchMap((command) => this.loadApplications(command))),
-    { initialValue: [] as ApplicationRelation[] },
-  );
-
-  isLoading = signal<boolean>(false);
-  error = signal<string | null>(null);
-  applicationToRemove = signal<ApplicationRelation | null>(null);
-  availableApplications = signal<Resource[]>([]);
-  selectedApplicationGroupId = signal<number | null>(null);
-
-  @ViewChild('removeApplicationConfirmation') removeApplicationConfirmation!: TemplateRef<void>;
-  @ViewChild('addApplicationModal') addApplicationModal!: TemplateRef<void>;
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resource()) {
@@ -79,27 +54,33 @@ export class ResourceApplicationsComponent {
     return { canListRelations: false, canUpdate: false };
   });
 
-  private loadApplications(command: {
-    id: number;
-    type: string;
-    permissions: { canListRelations: boolean; canUpdate: boolean };
-    _reload: number;
-  }): Observable<ApplicationRelation[]> {
-    if (!command.id) return of([]);
-    if (command.type === '"APPLICATIONSERVER"') return of([]);
-    if (command.permissions.canListRelations) return of([]);
+  private canLoadApplications = computed(() => {
+    const resource = this.resource();
+    const perms = this.permissions();
+    return !!resource.id && resource.type !== '"APPLICATIONSERVER"' && perms.canListRelations;
+  });
 
-    this.isLoading.set(true);
-    this.error.set(null);
+  applications = computed(() => {
+    if (!this.canLoadApplications()) return [];
+    return this.resourceApplicationsService.applications();
+  });
 
-    return this.resourceApplicationsService.getApplicationsForResource(command.id).pipe(
-      catchError((err) => {
-        console.error('Failed to load applications:', err);
-        this.error.set('Failed to load applications');
-        return of([] as ApplicationRelation[]);
-      }),
-      finalize(() => this.isLoading.set(false)),
-    );
+  isLoading = this.resourceApplicationsService.isLoading;
+  error = signal<string | null>(null);
+  applicationToRemove = signal<ApplicationRelation | null>(null);
+  availableApplications = signal<Resource[]>([]);
+  selectedApplicationGroupId = signal<number | null>(null);
+
+  @ViewChild('removeApplicationConfirmation') removeApplicationConfirmation!: TemplateRef<void>;
+  @ViewChild('addApplicationModal') addApplicationModal!: TemplateRef<void>;
+
+  constructor() {
+    effect(() => {
+      const id = this.resourceId();
+      if (this.canLoadApplications()) {
+        this.resourceApplicationsService.setResourceId(id);
+      }
+    });
   }
 
   showRemoveConfirmation(application: ApplicationRelation): void {
@@ -114,18 +95,15 @@ export class ResourceApplicationsComponent {
     const app = this.applicationToRemove();
     if (!app) return;
 
-    this.isLoading.set(true);
     this.resourceApplicationsService.removeApplication(this.resource().id, app.id).subscribe({
       next: () => {
         this.toastService.success('Application removed successfully.');
         this.applicationToRemove.set(null);
-        this.isLoading.set(false);
-        this.reload.update((v) => v + 1);
+        this.resourceApplicationsService.setResourceId(this.resource().id);
       },
       error: (err) => {
         console.error('Failed to remove application:', err);
         this.toastService.error('Failed to remove application.');
-        this.isLoading.set(false);
         this.applicationToRemove.set(null);
       },
     });
@@ -159,18 +137,15 @@ export class ResourceApplicationsComponent {
       return;
     }
 
-    this.isLoading.set(true);
     this.resourceApplicationsService.addApplication(this.resource().id, appGroupId).subscribe({
       next: () => {
         this.toastService.success('Application added successfully.');
         this.modalService.dismissAll();
-        this.isLoading.set(false);
-        this.reload.update((v) => v + 1);
+        this.resourceApplicationsService.setResourceId(this.resource().id);
       },
       error: (err) => {
         console.error('Failed to add application:', err);
         this.toastService.error('Failed to add application.');
-        this.isLoading.set(false);
       },
     });
   }
