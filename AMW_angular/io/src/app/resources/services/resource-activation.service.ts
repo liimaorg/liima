@@ -28,10 +28,10 @@ export class ResourceActivationService extends BaseService {
     switchMap((params) => {
       this.loading.set(true);
       return this.getActivations(params.resourceId, params.relationId, params.contextId).pipe(
-        finalize(() => this.loading.set(false))
+        finalize(() => this.loading.set(false)),
       );
     }),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   activations = toSignal(this.activationsForRelation$, { initialValue: [] as ResourceActivation[] });
@@ -42,10 +42,9 @@ export class ResourceActivationService extends BaseService {
 
   getActivations(resourceId: number, relationId: number, contextId: number): Observable<ResourceActivation[]> {
     return this.http
-      .get<ResourceActivation[]>(
-        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`,
-        { headers: this.getHeaders() }
-      )
+      .get<
+        ResourceActivation[]
+      >(`${this.getBaseUrl()}/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
 
@@ -53,13 +52,13 @@ export class ResourceActivationService extends BaseService {
     resourceId: number,
     relationId: number,
     contextId: number,
-    request: ResourceActivationsRequest
+    request: ResourceActivationsRequest,
   ): Observable<void> {
     return this.http
       .put<void>(
-        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`,
+        `${this.getBaseUrl()}/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`,
         request,
-        { headers: this.getHeaders() }
+        { headers: this.getHeaders() },
       )
       .pipe(catchError(this.handleError));
   }

@@ -9,11 +9,7 @@ describe('ResourceActivationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        ResourceActivationService,
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+      providers: [ResourceActivationService, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
     });
 
     httpTestingController = TestBed.inject(HttpTestingController);
@@ -39,9 +35,7 @@ describe('ResourceActivationService', () => {
         expect(activations).toEqual(mockActivations);
       });
 
-      const req = httpTestingController.expectOne(
-        '/AMW_rest/resources/100/relations/200/activations?contextId=1'
-      );
+      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
       expect(req.request.method).toEqual('GET');
       req.flush(mockActivations);
     });
@@ -49,13 +43,11 @@ describe('ResourceActivationService', () => {
     it('should use default contextId when not provided', () => {
       const mockActivations: ResourceActivation[] = [];
 
-      service.getActivations(100, 200).subscribe((activations) => {
+      service.getActivations(100, 200, 1).subscribe((activations) => {
         expect(activations).toEqual(mockActivations);
       });
 
-      const req = httpTestingController.expectOne(
-        '/AMW_rest/resources/100/relations/200/activations?contextId=1'
-      );
+      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
       expect(req.request.method).toEqual('GET');
       req.flush(mockActivations);
     });
@@ -69,9 +61,7 @@ describe('ResourceActivationService', () => {
         // Success
       });
 
-      const req = httpTestingController.expectOne(
-        '/AMW_rest/resources/100/relations/200/activations?contextId=5'
-      );
+      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=5');
       expect(req.request.method).toEqual('PUT');
       expect(req.request.body).toEqual(request);
       req.flush(null);
@@ -80,15 +70,11 @@ describe('ResourceActivationService', () => {
 
   describe('activations signal', () => {
     it('should update activations signal when setRelationParams is called', () => {
-      const mockActivations: ResourceActivation[] = [
-        { resourceGroupId: 1, resourceGroupName: 'App1', active: true },
-      ];
+      const mockActivations: ResourceActivation[] = [{ resourceGroupId: 1, resourceGroupName: 'App1', active: true }];
 
       service.setRelationParams(100, 200, 1);
 
-      const req = httpTestingController.expectOne(
-        '/AMW_rest/resources/100/relations/200/activations?contextId=1'
-      );
+      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
       req.flush(mockActivations);
 
       expect(service.activations()).toEqual(mockActivations);
@@ -105,9 +91,7 @@ describe('ResourceActivationService', () => {
 
       expect(service.isLoading()).toBe(true);
 
-      const req = httpTestingController.expectOne(
-        '/AMW_rest/resources/100/relations/200/activations?contextId=1'
-      );
+      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
       req.flush(mockActivations);
 
       expect(service.isLoading()).toBe(false);
