@@ -1,8 +1,19 @@
-import { Component, computed, inject, linkedSignal, signal, Signal, TemplateRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+  Signal,
+  TemplateRef,
+  ViewChild,
+  effect,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
+import { finalize } from 'rxjs/operators';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
@@ -19,6 +30,8 @@ import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
+import { RelationActiveApplicationsComponent } from './relation-active-applications/relation-active-applications.component';
+import { ResourceActivationService, ResourceActivation } from '../../services/resource-activation.service';
 
 @Component({
   selector: 'app-resource-relations',
@@ -36,6 +49,7 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
     IconComponent,
     RouterLink,
     ModalHeaderComponent,
+    RelationActiveApplicationsComponent,
   ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
@@ -43,6 +57,7 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
 export class ResourceRelationsComponent extends BaseRelationsDirective {
   private resourceService = inject(ResourceService);
   private resourceTypesService = inject(ResourceTypesService);
+  private resourceActivationService = inject(ResourceActivationService);
   resource: Signal<Resource> = this.resourceService.resource;
 
   @ViewChild('addRelationModal') addRelationModal!: TemplateRef<void>;
@@ -61,6 +76,19 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   selectedResourceGroupId = signal<number | null>(null);
   addAsProvided = signal<boolean>(false);
   isAddingRelation = signal<boolean>(false);
+
+  originalActiveAppIds = signal<number[]>([]);
+  currentActiveAppIds = signal<number[]>([]);
+  isSavingActivations = signal(false);
+
+  protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
+  protected isLoadingRelations = this.relationsService.isLoadingRelations;
+  protected isLoadingProperties = this.relationsService.isLoadingRelationProperties;
+
+  protected hasRelations = computed(() => {
+    const g = this.groupedRelations();
+    return g.runtime.length + g.consumed.length + g.provided.length + g.unresolved.length > 0;
+  });
 
   isResource = computed(
     () =>
@@ -90,9 +118,6 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return releases.some((r) => r.release > res.release);
   });
 
-  protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
-  protected isLoadingRelations = this.relationsService.isLoadingRelations;
-
   protected permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
       return {
@@ -114,11 +139,6 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     } else {
       return { canUpdateProperty: false, canDecryptProperties: false };
     }
-  });
-
-  protected hasRelations = computed(() => {
-    const g = this.groupedRelations();
-    return g.runtime.length + g.consumed.length + g.provided.length + g.unresolved.length > 0;
   });
 
   // set by url, input, onItemSelected and onReleaseChange
@@ -163,7 +183,16 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   selectedRelationIdForRelease = computed(() => this.selectedRelation()?.id ?? null);
 
-  protected isLoadingProperties = this.relationsService.isLoadingRelationProperties;
+  protected isApplicationServerToNodeRelation = computed(() => {
+    const resource = this.resource();
+    const relation = this.selectedRelation();
+    if (!resource || !relation) return false;
+
+    const isAppServer = resource.type === 'APPLICATIONSERVER' || resource.type === '"APPLICATIONSERVER"';
+    const isNode = relation.type === 'NODE' || relation.type === '"NODE"';
+
+    return isAppServer && isNode;
+  });
 
   protected properties = computed<Property[]>(() => {
     const props = this.relationsService.relationProperties;
@@ -181,68 +210,6 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return result;
   });
 
-  protected entityId = computed(() => this.resource()?.id);
-
-  protected reloadRelation(entityId: number): void {
-    this.relationsService.setIdForResourceRelations(entityId);
-  }
-
-  protected reloadProperties(entityId: number, relationId: number, contextId: number): void {
-    this.relationsService.setIdsForRelationProperties(entityId, relationId, contextId);
-  }
-
-  protected bulkUpdateProperties(
-    relationId: number,
-    updatedProperties: PropertyUpdate[],
-    resetProperties: PropertyUpdate[],
-    contextId: number,
-  ): Observable<void> {
-    return this.relationsService.bulkUpdateResourceRelationProperties(
-      this.entityId(),
-      relationId,
-      updatedProperties,
-      resetProperties,
-      contextId,
-    );
-  }
-
-  protected afterPropertiesSaved(): void {
-    const changes = this.editor.changedProperties();
-    if (changes.has('relationName')) {
-      this.reloadRelation(this.entityId());
-    }
-  }
-
-  protected getUnsavedChangesKey(): string {
-    return 'resource-relation-properties';
-  }
-
-  protected getEditorOptions(): { includeResetsInHasChanges: boolean; unmarkResetOnChange: boolean } {
-    return {
-      includeResetsInHasChanges: true,
-      unmarkResetOnChange: true,
-    };
-  }
-
-  protected hasIdentifierProperty() {
-    const rel = this.selectedRelation();
-    return rel != null && rel.relationType === 'consumed' && rel.type !== 'RUNTIME';
-  }
-
-  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
-    return {
-      key: `${unresolved.type}::${unresolved.name}`,
-      name: unresolved.name,
-      type: unresolved.type,
-      unresolved: true,
-    };
-  }
-
-  onReleaseChange(relationId: number) {
-    this.activeRelationId.set(relationId);
-    this.setQueryParamForRelationId(relationId);
-  }
-
   relationIdentifier = computed<Property>(() => ({
     name: 'relationName',
     displayName: `Relation name`,
@@ -256,6 +223,42 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     optional: true,
     disabled: this.contextId() !== 1,
   }));
+
+  hasActivationChanges = computed(() => {
+    const original = this.originalActiveAppIds();
+    const current = this.currentActiveAppIds();
+    if (original.length !== current.length) return true;
+    const originalSet = new Set(original);
+    for (const id of current) {
+      if (!originalSet.has(id)) return true;
+    }
+    return false;
+  });
+
+  override hasChanges = computed(() => this.editor.hasChanges() || this.hasActivationChanges());
+
+  protected entityId = computed(() => this.resource()?.id);
+
+  constructor() {
+    super();
+    effect(() => {
+      const activations = this.resourceActivationService.activations();
+      const activeIds = activations
+        .filter((a: ResourceActivation) => a.active)
+        .map((a: ResourceActivation) => a.resourceGroupId);
+      this.originalActiveAppIds.set(activeIds);
+      this.currentActiveAppIds.set(activeIds);
+    });
+  }
+
+  onActivationChange(appIds: number[]) {
+    this.currentActiveAppIds.set(appIds);
+  }
+
+  onReleaseChange(relationId: number) {
+    this.activeRelationId.set(relationId);
+    this.setQueryParamForRelationId(relationId);
+  }
 
   showAddRelationModal(): void {
     this.selectedResourceTypeId.set(null);
@@ -343,16 +346,6 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     }
   }
 
-  private loadResourceGroups(typeId: number): void {
-    this.resourceService.getGroupsForType({ id: typeId } as ResourceType).subscribe({
-      next: (groups) => this.availableResourceGroups.set(groups),
-      error: (err) => {
-        console.error('Failed to load resource groups:', err);
-        this.toastService.error('Failed to load resource groups.');
-      },
-    });
-  }
-
   addRelation(): void {
     const groupId = this.selectedResourceGroupId();
     if (!groupId) {
@@ -399,6 +392,144 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       () => this.removeRelation(),
       () => {},
     );
+  }
+
+  // ==================== OVERRIDE METHODS - Save/Reset ====================
+  override saveChanges() {
+    const propertyChanges = this.editor.changedProperties();
+    const propertyResets = this.editor.resetProperties();
+    const hasPropertyChanges = propertyChanges.size > 0 || propertyResets.size > 0;
+    const hasActivationChanges = this.hasActivationChanges();
+
+    if ((!hasPropertyChanges && !hasActivationChanges) || this.hasValidationErrors()) return;
+
+    this.isSaving.set(true);
+    this.errorMessage.set(null);
+    this.successMessage.set(null);
+
+    let propertyUpdate$: Observable<void> = of(void 0);
+    if (hasPropertyChanges) {
+      const updatedProperties: PropertyUpdate[] = Array.from(propertyChanges.entries()).map(([name, value]) => ({
+        name,
+        value,
+      }));
+      const resetProperties: PropertyUpdate[] = Array.from(propertyResets.entries()).map(([name, value]) => ({
+        name,
+        value,
+      }));
+      propertyUpdate$ = this.bulkUpdateProperties(
+        this.getRelationId(),
+        updatedProperties,
+        resetProperties,
+        this.contextId(),
+      );
+    }
+
+    let activationUpdate$: Observable<void> = of(void 0);
+    if (hasActivationChanges && this.isApplicationServerToNodeRelation()) {
+      this.isSavingActivations.set(true);
+      activationUpdate$ = this.resourceActivationService.updateActivations(
+        this.entityId()!,
+        this.getRelationId(),
+        this.contextId(),
+        { activeResourceGroupIds: this.currentActiveAppIds() },
+      );
+    }
+
+    forkJoin([propertyUpdate$, activationUpdate$])
+      .pipe(
+        finalize(() => {
+          this.isSaving.set(false);
+          this.isSavingActivations.set(false);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.successMessage.set('Changes saved successfully');
+          if (hasPropertyChanges) {
+            this.reloadProperties(this.entityId(), this.getRelationId(), this.contextId());
+            this.afterPropertiesSaved();
+            this.editor.resetChanges();
+          }
+          if (hasActivationChanges) {
+            this.resourceActivationService.setRelationParams(this.entityId()!, this.getRelationId(), this.contextId());
+          }
+          setTimeout(() => this.successMessage.set(null), 3000);
+        },
+        error: (error) => {
+          this.errorMessage.set('Failed to save changes: ' + (error.message || 'Unknown error'));
+        },
+      });
+  }
+
+  override resetChanges() {
+    super.resetChanges();
+    this.currentActiveAppIds.set(this.originalActiveAppIds());
+  }
+
+  protected reloadRelation(entityId: number): void {
+    this.relationsService.setIdForResourceRelations(entityId);
+  }
+
+  protected reloadProperties(entityId: number, relationId: number, contextId: number): void {
+    this.relationsService.setIdsForRelationProperties(entityId, relationId, contextId);
+  }
+
+  protected bulkUpdateProperties(
+    relationId: number,
+    updatedProperties: PropertyUpdate[],
+    resetProperties: PropertyUpdate[],
+    contextId: number,
+  ): Observable<void> {
+    return this.relationsService.bulkUpdateResourceRelationProperties(
+      this.entityId(),
+      relationId,
+      updatedProperties,
+      resetProperties,
+      contextId,
+    );
+  }
+
+  protected afterPropertiesSaved(): void {
+    const changes = this.editor.changedProperties();
+    if (changes.has('relationName')) {
+      this.reloadRelation(this.entityId());
+    }
+  }
+
+  protected getUnsavedChangesKey(): string {
+    return 'resource-relation-properties';
+  }
+
+  protected getEditorOptions(): { includeResetsInHasChanges: boolean; unmarkResetOnChange: boolean } {
+    return {
+      includeResetsInHasChanges: true,
+      unmarkResetOnChange: true,
+    };
+  }
+
+  protected hasIdentifierProperty() {
+    const rel = this.selectedRelation();
+    return rel != null && rel.relationType === 'consumed' && rel.type !== 'RUNTIME';
+  }
+
+  protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
+    return {
+      key: `${unresolved.type}::${unresolved.name}`,
+      name: unresolved.name,
+      type: unresolved.type,
+      unresolved: true,
+    };
+  }
+
+  private loadResourceGroups(typeId: number): void {
+    this.resourceService.getGroupsForType({ id: typeId } as ResourceType).subscribe({
+      next: (groups) => this.availableResourceGroups.set(groups),
+      error: (err) => {
+        console.error('Failed to load resource groups:', err);
+        this.toastService.error('Failed to load resource groups.');
+      },
+    });
   }
 
   private removeRelation(): void {
