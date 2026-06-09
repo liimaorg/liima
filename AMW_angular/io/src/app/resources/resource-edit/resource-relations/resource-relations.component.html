@@ -86,6 +86,16 @@
                 (resetToggled)="onPropertyReset($event.name, $event.checked)"
                 (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
               ></app-properties-list>
+
+              <app-relation-active-applications
+                [resourceId]="resource()?.id!"
+                [relationId]="selectedRelation()?.id!"
+                [contextId]="contextId()"
+                [isApplicationServerToNode]="isApplicationServerToNodeRelation()"
+                [canEdit]="permissions().canUpdateProperty"
+                [activeApplicationIds]="currentActiveAppIds()"
+                (activationChange)="onActivationChange($event)"
+              ></app-relation-active-applications>
             </app-properties-panel>
           </div>
         </div>
