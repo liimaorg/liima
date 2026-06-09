@@ -47,6 +47,11 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   @ViewChild('addRelationModal') addRelationModal!: TemplateRef<void>;
   @ViewChild('removeRelationConfirmation') removeRelationConfirmation!: TemplateRef<void>;
+  @ViewChild('setRuntimeModal') setRuntimeModal!: TemplateRef<void>;
+
+  availableRuntimes = signal<Resource[]>([]);
+  selectedRuntimeId = signal<number | null>(null);
+  isSettingRuntime = signal(false);
 
   resourceTypes = signal<ResourceType[]>([]);
   childResourceTypes = signal<ResourceType[]>([]);
@@ -59,6 +64,17 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   isApplicationType = computed(
     () => this.resource()?.type === '"APPLICATION"' || this.resource()?.type === 'APPLICATION',
+  );
+
+  isApplicationServer = computed(
+    () => this.resource()?.type === 'APPLICATIONSERVER' || this.resource()?.type === '"APPLICATIONSERVER"',
+  );
+
+  canSetRuntime = computed(() =>
+    this.isApplicationServer() &&
+    this.contextId() === 1 &&
+    this.permissions().canUpdateProperty &&
+    this.groupedRelations().runtime.length === 0,
   );
 
   hasNewerRelease = computed(() => {
@@ -251,6 +267,50 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       },
     });
     this.modalService.open(this.addRelationModal, { size: 'lg' });
+  }
+
+  showSetRuntimeModal(): void {
+    this.selectedRuntimeId.set(null);
+    this.availableRuntimes.set([]);
+    this.loadAvailableRuntimes();
+    this.modalService.open(this.setRuntimeModal, { size: 'md' });
+  }
+
+  private loadAvailableRuntimes(): void {
+    this.resourceService.getGroupsForTypeName('RUNTIME').subscribe({
+      next: (runtimes) => {
+        // Filter out already set runtime if any
+        const currentRuntimeId = this.groupedRelations().runtime[0]?.slaveId;
+        this.availableRuntimes.set(runtimes.filter((r) => r.id !== currentRuntimeId));
+      },
+      error: (err) => {
+        console.error('Failed to load runtimes:', err);
+        this.toastService.error('Failed to load available runtimes.');
+      },
+    });
+  }
+
+  setRuntime(): void {
+    const runtimeId = this.selectedRuntimeId();
+    if (!runtimeId) {
+      this.toastService.error('Please select a runtime.');
+      return;
+    }
+
+    this.isSettingRuntime.set(true);
+    this.relationsService.addResourceRelation(this.entityId(), runtimeId, false).subscribe({
+      next: () => {
+        this.toastService.success('Runtime set successfully.');
+        this.modalService.dismissAll();
+        this.isSettingRuntime.set(false);
+        this.reloadRelation(this.entityId());
+      },
+      error: (err) => {
+        console.error('Failed to set runtime:', err);
+        this.toastService.error('Failed to set runtime: ' + (err.message || 'Unknown error'));
+        this.isSettingRuntime.set(false);
+      },
+    });
   }
 
   onResourceTypeChange(typeId: number | null): void {
