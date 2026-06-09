@@ -11,6 +11,13 @@
   @if (hasRelations()) {
     <div class="relations-layout">
       <div class="relations-container">
+        @if (canSetRuntime()) {
+          <div class="set-runtime-container">
+            <app-button [variant]="'secondary'" [size]="'sm'" (click)="showSetRuntimeModal()">
+              <app-icon icon="plus"></app-icon> Set Runtime
+            </app-button>
+          </div>
+        }
         <app-relation-group
           [title]="'Runtime'"
           [items]="runtimeItems()"
@@ -174,6 +181,33 @@
       [disabled]="!selectedResourceGroupId() || isAddingRelation()"
     >
       Add
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #setRuntimeModal let-modal>
+  <app-modal-header [title]="'Set Runtime'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="runtimeSelect" class="form-label">Runtime</label>
+      <ng-select
+        id="runtimeSelect"
+        [ngModel]="selectedRuntimeId()"
+        (ngModelChange)="selectedRuntimeId.set($event)"
+        placeholder="Search or select a runtime..."
+        [searchable]="true"
+        [clearable]="true"
+      >
+        @for (runtime of availableRuntimes(); track runtime.id) {
+          <ng-option [value]="runtime.id">{{ runtime.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'primary'" (click)="setRuntime()" [disabled]="!selectedRuntimeId() || isSettingRuntime()">
+      Set Runtime
     </app-button>
   </div>
 </ng-template>
