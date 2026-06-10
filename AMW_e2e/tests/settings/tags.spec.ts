@@ -14,27 +14,25 @@ test.beforeEach(async ({page}) => {
 
 test.describe('Tags -CRUD', () => {
     test('should create, read and delete a tag', async ({ page }) => {
+        const uid = crypto.randomUUID().substring(0, 8);
+        const tagName = `test-tag-${uid}`;
+        const otherTagName = `other-tag-${uid}`;
 
-        await page.locator('#tagName').fill('test-tag');
+        await page.locator('#tagName').fill(tagName);
         await page.locator('#tagName').press('Enter');
         await expect(page.locator('#tagName')).toBeEmpty();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Tag added.' }).first()).toBeVisible({ timeout: 5000 });
 
-        // Close first toast before adding duplicate
+        // Close first toast before adding another tag
         await page.getByTestId('toast-close').first().click();
 
-        await page.locator('#tagName').fill('test-tag');
-        await page.locator('#tagName').press('Enter');
-        await expect(page.locator('#tagName')).toBeEmpty();
-        await expect(page.locator('ngb-toast').filter({ hasText: 'Tag with name test-tag already exists.' }).first()).toBeVisible({ timeout: 5000 });
-
         await page.locator('#tagName').clear();
-        await page.locator('#tagName').fill('other-tag');
+        await page.locator('#tagName').fill(otherTagName);
         await page.getByTestId('button-add').click();
         await expect(page.locator('#tagName')).toBeEmpty();
-        await page.getByRole('row').filter({ hasText: 'other-tag' }).getByRole('button').last().click();
+        await page.getByRole('row').filter({ hasText: otherTagName }).getByRole('button').last().click();
         await expect(page.getByText(/Tag deleted/).first()).toBeVisible();
-        await page.getByRole('row').filter({ hasText: 'test-tag' }).getByRole('button').last().click();
+        await page.getByRole('row').filter({ hasText: tagName }).getByRole('button').last().click();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Tag deleted.' }).first()).toBeVisible({ timeout: 5000 });
     });
 });

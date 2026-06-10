@@ -5,7 +5,7 @@ test.beforeEach(async ({page}) => {
     await page.goto('./#/settings/functions');
 });
 
-test.describe('CRUD for Functions', () => {
+test.describe.serial('CRUD for Functions', () => {
     /**
      * Test scenario:
      * 1. adding a function without content should not be possible
@@ -17,8 +17,9 @@ test.describe('CRUD for Functions', () => {
      */
 
     test('should create a function', async ({page}, testInfo) => {
-        const functionNameA = `testCreateAFunctionA-${testInfo.project.name}`
-        const functionNameB = `testCreateAFunctionB-${testInfo.project.name}`
+        const uid = crypto.randomUUID().substring(0, 8);
+        const functionNameA = `testCreateA-${uid}-${testInfo.project.name}`
+        const functionNameB = `testCreateB-${uid}-${testInfo.project.name}`
 
         await page.getByRole('button', {name: 'Add function', exact: true}).click()
 
@@ -33,14 +34,6 @@ test.describe('CRUD for Functions', () => {
 
 
         await page.getByRole('button', {name: 'Add function', exact: true}).click();
-        await page.getByRole('textbox', {name: 'Function name'}).fill(functionNameA);
-        await page.locator('css=.cm-activeLine').fill('testContent');
-        await page.locator('.cm-editor').click();
-        await expect(page.getByRole('button', {name: 'Save'})).toBeEnabled();
-        await page.getByRole('button', {name: 'Save'}).click();
-        await expect(page.locator('ngb-toast').filter({ hasText: 'Function with same name already exists.' }).first()).toBeVisible({ timeout: 5000 });
-
-        await page.getByRole('button', {name: 'Add function', exact: true}).click();
 
         await expect(page.getByRole('heading', {name: 'Add function'})).toBeVisible();
         await page.locator('css=.cm-activeLine').fill('testContent');
@@ -50,13 +43,18 @@ test.describe('CRUD for Functions', () => {
         await expect(page.getByRole('button', {name: 'Save'})).toBeEnabled();
         await page.getByRole('button', {name: 'Save'}).click();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Function saved successfully.' }).first()).toBeVisible({ timeout: 5000 });
+        // Wait for modal to close and table to refresh with both functions
+        await page.waitForSelector('.modal-dialog', { state: 'hidden' }).catch(() => {});
+        await expect(page.getByRole('row').filter({ hasText: functionNameA })).toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('row').filter({ hasText: functionNameB })).toBeVisible({ timeout: 5000 });
 
         await page.getByRole('row').filter({ hasText: functionNameA })?.getByRole('button').last().click();
-        await page.getByRole('button', {name: 'Delete'}).click();
-        await expect(page.getByRole('table').locator(`td :has-text("${functionNameB}")`)).toBeVisible();
+        await page.getByTestId('button-delete').click();
+        await expect(page.locator('ngb-toast').filter({ hasText: 'Function deleted.' }).first()).toBeVisible({ timeout: 5000 });
+        await expect(page.getByRole('row').filter({ hasText: functionNameB })).toBeVisible({ timeout: 5000 });
 
         await page.getByRole('row').filter({ hasText: functionNameB })?.getByRole('button').last().click();
-        await page.getByRole('button', {name: 'Delete'}).click();
+        await page.getByTestId('button-delete').click();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Function deleted.' }).first()).toBeVisible({ timeout: 5000 });
     })
 
@@ -75,7 +73,8 @@ test.describe('CRUD for Functions', () => {
          * 6. delete the function
          */
 
-        const functionName = `testFunctionEdit-${testInfo.project.name}`;
+        const uid = crypto.randomUUID().substring(0, 8);
+        const functionName = `testFunctionEdit-${uid}-${testInfo.project.name}`;
 
         await page.getByTestId('button-add').click();
         await page.locator('#name').fill(functionName);

@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.describe.serial("Resource Edit Page - Properties", () => {
-  test.skip("should edit and save a property value", async ({ page }) => {
+  test("should edit and save a property value", async ({ page }) => {
     await page.getByRole("button", { name: "D (TEST)" }).click();
     await page.waitForURL(/ctx=\d+/); // Wait for context switch
 
@@ -22,7 +22,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
     await saveButton.click();
   });
 
-  test.skip("should reset property to parent context value", async ({
+  test("should reset property to parent context value", async ({
     page,
   }) => {
     await page.getByRole("button", { name: "DEV" }).click();
@@ -49,7 +49,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
     await saveButton.click();
   });
 
-  test.skip("should cancel property changes", async ({ page }) => {
+  test("should cancel property changes", async ({ page }) => {
     await page.getByRole("button", { name: "D (TEST)" }).click();
     await page.waitForURL(/ctx=\d+/); // Wait for context switch
 
@@ -66,7 +66,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
     await expect(propertyInput).toHaveValue(originalValue);
   });
 
-  test.skip("should switch between contexts", async ({ page }) => {
+  test("should switch between contexts", async ({ page }) => {
     // Click on GLOBAL context
     await page.getByRole("button", { name: "GLOBAL" }).click();
     await page.waitForURL(/ctx=\d+/); // Wait for context switch
@@ -81,7 +81,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
     await page.waitForURL(/ctx=\d+/);
   });
 
-  test.skip("should disable save button when no changes", async ({ page }) => {
+  test("should disable save button when no changes", async ({ page }) => {
     await page.getByRole("button", { name: "D (TEST)" }).click();
 
     // Save button should not be visible when no changes
@@ -102,17 +102,18 @@ test.describe("Resource Edit Page - Navigation", () => {
 
 test.describe("Resource Edit Page - Releases", () => {
   test("should show releases tile", async ({ page }) => {
-    // Click on Releases tab to navigate to releases section
-    await page.getByRole("link", { name: "Releases" }).click();
-    await expect(page.getByText("Releases")).toBeVisible();
-    const newReleaseButton = page.getByRole("button", { name: "New Release" });
-    await expect(newReleaseButton).toBeVisible({ timeout: 10000 });
+    // Releases tile starts collapsed - click the header to expand it
+    const releasesHeader = page.getByRole("heading", { name: "Releases" });
+    await expect(releasesHeader).toBeVisible({ timeout: 15000 });
+    await releasesHeader.click();
+    const newReleaseButton = page.getByRole("button", { name: "New Release", exact: true });
+    await expect(newReleaseButton).toBeVisible({ timeout: 5000 });
     await expect(newReleaseButton).toBeEnabled();
     await expect(page.getByRole("cell", { name: "RL-" })).toBeVisible();
   });
 });
 
-test.describe.skip("Resource Edit Page - Validation", () => {
+test.describe("Resource Edit Page - Validation", () => {
   test("should show validation errors for invalid property values", async ({
     page,
   }) => {
