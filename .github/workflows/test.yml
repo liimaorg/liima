@@ -2,7 +2,7 @@ name: test and build
 
 on:
   push:
-    branches: [ master, fix/e2e-tests ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
