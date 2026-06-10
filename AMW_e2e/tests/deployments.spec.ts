@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 // click on tracking id
 // deployment must be visible in list of deployments
 
-test.describe.skip("create a deployment", () => {
+test.describe("create a deployment", () => {
   test("should create a deployment", async ({ page }) => {
     await expect(page.locator(".page-title")).toHaveText("Deployments");
     await page.getByTestId("create-button").click();
