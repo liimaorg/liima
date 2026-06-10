@@ -1,4 +1,4 @@
-import { Component, computed, inject, linkedSignal, Signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, signal, Signal, TemplateRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -7,10 +7,13 @@ import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { ResourceService } from '../../services/resource.service';
+import { ResourceTypesService } from '../../services/resource-types.service';
 import { PropertyUpdate } from '../../services/resource-properties.service';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../../models/resource-relation';
 import { Resource } from '../../models/resource';
+import { ResourceType } from '../../models/resource-type';
 import { Property } from '../../models/property';
 import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/relation-group.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
@@ -32,13 +35,39 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
     NgSelectComponent,
     IconComponent,
     RouterLink,
+    ModalHeaderComponent,
   ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
 })
 export class ResourceRelationsComponent extends BaseRelationsDirective {
   private resourceService = inject(ResourceService);
+  private resourceTypesService = inject(ResourceTypesService);
   resource: Signal<Resource> = this.resourceService.resource;
+
+  @ViewChild('addRelationModal') addRelationModal!: TemplateRef<void>;
+  @ViewChild('removeRelationConfirmation') removeRelationConfirmation!: TemplateRef<void>;
+
+  resourceTypes = signal<ResourceType[]>([]);
+  childResourceTypes = signal<ResourceType[]>([]);
+  availableResourceGroups = signal<Resource[]>([]);
+  selectedResourceTypeId = signal<number | null>(null);
+  selectedChildTypeId = signal<number | null>(null);
+  selectedResourceGroupId = signal<number | null>(null);
+  addAsProvided = signal<boolean>(false);
+  isAddingRelation = signal<boolean>(false);
+
+  isApplicationType = computed(
+    () => this.resource()?.type === '"APPLICATION"' || this.resource()?.type === 'APPLICATION',
+  );
+
+  hasNewerRelease = computed(() => {
+    const res = this.resource();
+    const releases = this.resourceService.releasesForResourceGroup();
+    if (!res?.release || !releases?.length) return false;
+    const last = releases[releases.length - 1];
+    return last?.release !== res.release;
+  });
 
   protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
   protected isLoadingRelations = this.relationsService.isLoadingRelations;
@@ -206,4 +235,120 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     optional: true,
     disabled: this.contextId() !== 1,
   }));
+
+  showAddRelationModal(): void {
+    this.selectedResourceTypeId.set(null);
+    this.selectedChildTypeId.set(null);
+    this.selectedResourceGroupId.set(null);
+    this.addAsProvided.set(false);
+    this.childResourceTypes.set([]);
+    this.availableResourceGroups.set([]);
+    this.resourceTypesService.getRootResourceTypes().subscribe({
+      next: (types) => this.resourceTypes.set(types),
+      error: (err) => {
+        console.error('Failed to load resource types:', err);
+        this.toastService.error('Failed to load resource types.');
+      },
+    });
+    this.modalService.open(this.addRelationModal, { size: 'lg' });
+  }
+
+  onResourceTypeChange(typeId: number | null): void {
+    this.selectedResourceTypeId.set(typeId);
+    this.selectedChildTypeId.set(null);
+    this.selectedResourceGroupId.set(null);
+    this.childResourceTypes.set([]);
+    this.availableResourceGroups.set([]);
+    if (!typeId) return;
+
+    const type = this.resourceTypes().find((t) => t.id === typeId);
+    if (type?.hasChildren && type.children?.length > 0) {
+      this.childResourceTypes.set(type.children);
+    } else {
+      this.loadResourceGroups(typeId);
+    }
+  }
+
+  onChildTypeChange(childTypeId: number | null): void {
+    this.selectedChildTypeId.set(childTypeId);
+    this.selectedResourceGroupId.set(null);
+    this.availableResourceGroups.set([]);
+    if (childTypeId) {
+      this.loadResourceGroups(childTypeId);
+    }
+  }
+
+  private loadResourceGroups(typeId: number): void {
+    this.resourceService.getGroupsForType({ id: typeId } as ResourceType).subscribe({
+      next: (groups) => this.availableResourceGroups.set(groups),
+      error: (err) => {
+        console.error('Failed to load resource groups:', err);
+        this.toastService.error('Failed to load resource groups.');
+      },
+    });
+  }
+
+  addRelation(): void {
+    const groupId = this.selectedResourceGroupId();
+    if (!groupId) {
+      this.toastService.error('Please select a resource.');
+      return;
+    }
+
+    const res = this.resource();
+    if (res?.release) {
+      const selectedGroup = this.availableResourceGroups().find((g) => g.id === groupId);
+      if (selectedGroup?.releases?.length) {
+        const firstRelease = selectedGroup.releases[0];
+        const currentReleaseName = res.release;
+        if (firstRelease?.release && firstRelease.release > currentReleaseName) {
+          if (
+            !confirm(
+              `The selected resource does not exist for the release ${currentReleaseName}. Are you sure you want to add it for this release?`,
+            )
+          ) {
+            return;
+          }
+        }
+      }
+    }
+
+    this.isAddingRelation.set(true);
+    this.relationsService.addResourceRelation(this.entityId(), groupId, this.addAsProvided()).subscribe({
+      next: () => {
+        this.toastService.success('Relation added successfully.');
+        this.modalService.dismissAll();
+        this.isAddingRelation.set(false);
+        this.reloadRelation(this.entityId());
+      },
+      error: (err) => {
+        console.error('Failed to add relation:', err);
+        this.toastService.error('Failed to add relation: ' + (err.message || 'Unknown error'));
+        this.isAddingRelation.set(false);
+      },
+    });
+  }
+
+  showRemoveRelationConfirmation(): void {
+    this.modalService.open(this.removeRelationConfirmation).result.then(
+      () => this.removeRelation(),
+      () => {},
+    );
+  }
+
+  private removeRelation(): void {
+    const rel = this.selectedRelation();
+    if (!rel) return;
+
+    this.relationsService.removeResourceRelation(this.entityId(), rel.id).subscribe({
+      next: () => {
+        this.toastService.success('Relation removed successfully.');
+        this.reloadRelation(this.entityId());
+      },
+      error: (err) => {
+        console.error('Failed to remove relation:', err);
+        this.toastService.error('Failed to remove relation: ' + (err.message || 'Unknown error'));
+      },
+    });
+  }
 }
