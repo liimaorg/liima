@@ -41,7 +41,7 @@
                   @if (!row[header.urlKey] || row[header.urlKey] === '') {
                     {{ row[header.key] }}
                   } @else {
-                    <a [href]="row[header.urlKey]">{{ row[header.key] }}</a>
+                    <a [href]="row[header.urlKey]" (click)="$event.stopPropagation()">{{ row[header.key] }}</a>
                   }
                 </td>
               }
