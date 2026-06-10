@@ -20,6 +20,9 @@ test.describe('Tags -CRUD', () => {
         await expect(page.locator('#tagName')).toBeEmpty();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Tag added.' }).first()).toBeVisible({ timeout: 5000 });
 
+        // Close first toast before adding duplicate
+        await page.getByTestId('toast-close').first().click();
+
         await page.locator('#tagName').fill('test-tag');
         await page.locator('#tagName').press('Enter');
         await expect(page.locator('#tagName')).toBeEmpty();

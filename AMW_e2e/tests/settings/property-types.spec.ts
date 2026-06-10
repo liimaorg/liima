@@ -51,6 +51,7 @@ test.describe("PropertyTypes -CRUD", () => {
     await page.getByTestId("button-add").click();
     await page.locator("#name").fill(propertyTypeName);
     await page.locator("#regex").fill("sd");
+    await page.locator("#regex").press("Tab");
     await expect(page.getByTestId("button-save")).toBeEnabled();
     await page.getByTestId("button-save").click();
     await expect(

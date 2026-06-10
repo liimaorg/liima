@@ -102,6 +102,8 @@ test.describe("Resource Edit Page - Navigation", () => {
 
 test.describe("Resource Edit Page - Releases", () => {
   test("should show releases tile", async ({ page }) => {
+    // Click on Releases tab to navigate to releases section
+    await page.getByRole("link", { name: "Releases" }).click();
     await expect(page.getByText("Releases")).toBeVisible();
     const newReleaseButton = page.getByRole("button", { name: "New Release" });
     await expect(newReleaseButton).toBeVisible({ timeout: 10000 });
