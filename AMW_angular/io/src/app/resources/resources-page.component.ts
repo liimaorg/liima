@@ -2,12 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   Signal,
   signal,
   OnDestroy,
   WritableSignal,
-  OnInit,
 } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
@@ -37,7 +37,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './resources-page.component.html',
   styleUrl: 'resources-page.component.scss',
 })
-export class ResourcesPageComponent implements OnDestroy, OnInit {
+export class ResourcesPageComponent implements OnDestroy {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);
@@ -58,23 +58,28 @@ export class ResourcesPageComponent implements OnDestroy, OnInit {
   expandedItems: ResourceType[] = [];
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
   selection: any;
+  private selectedResourceTypeIdFromUrl = signal<number | null>(null);
 
-  ngOnInit(): void {
+  constructor() {
+    effect(() => {
+      const idFromUrl = this.selectedResourceTypeIdFromUrl();
+      if (idFromUrl === null) return;
+
+      const allTypes = [...(this.predefinedResourceTypes() || []), ...(this.rootResourceTypes() || [])];
+      if (allTypes.length === 0) return;
+
+      const resourceType = allTypes.find((rt) => rt.id === idFromUrl);
+      if (resourceType) {
+        this.toggleChildrenAndOrLoadResourcesList(resourceType, false);
+      }
+    });
+
     this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const selectedResourceTypeId = params.get('selectedResourceTypeId');
       if (selectedResourceTypeId) {
-        this.selectResourceTypeById(Number(selectedResourceTypeId));
+        this.selectedResourceTypeIdFromUrl.set(Number(selectedResourceTypeId));
       }
     });
-  }
-
-  selectResourceTypeById(id: number): void {
-    const allTypes = [...(this.predefinedResourceTypes() || []), ...(this.rootResourceTypes() || [])];
-
-    const resourceType = allTypes.find((rt) => rt.id === id);
-    if (resourceType) {
-      this.toggleChildrenAndOrLoadResourcesList(resourceType, false);
-    }
   }
 
   permissions = computed(() => {
@@ -133,7 +138,7 @@ export class ResourcesPageComponent implements OnDestroy, OnInit {
 
   addResourceType() {
     const modalRef = this.modalService.open(ResourceTypeAddComponent, {
-      size: 'sm',
+      size: 'md',
     });
 
     modalRef.componentInstance.resourceType = {
