@@ -169,6 +169,15 @@ public class ResourceTemplatesRest {
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
     }
 
+    @POST
+    @Path("/addForRelation/{relationId : \\d+}")
+    public Response addRelationTemplate(@PathParam("relationId") Integer relationId, TemplateDTO request)
+            throws AMWException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForRelation(template, relationId, true);
+        return Response.status(Response.Status.OK).build();
+    }
+
     @GET
     @Path("/targetPlatforms")
     @Operation(summary = "Get all targetPlatforms ")
