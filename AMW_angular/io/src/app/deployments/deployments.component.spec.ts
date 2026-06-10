@@ -175,6 +175,62 @@ describe('DeploymentsComponent (with query params)', () => {
     expect(deploymentService.getFilteredDeployments).toHaveBeenCalled();
   });
 
+  it('should handle case-insensitive filter types from backend', () => {
+    // given - backend returns lowercase type names
+    const deploymentFilters: DeploymentFilterType[] = [
+      { name: 'Tracking Id', type: 'stringType' }, // lowercase 's'
+      { name: 'Application', type: 'StringType' }, // normal case
+      { name: 'Created on', type: 'dateType' }, // lowercase 'd'
+    ];
+    const trackingFilter = JSON.stringify([{ name: 'Tracking Id', comp: 'eq', val: '12345' }]);
+
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
+
+    // when
+    component.ngOnInit();
+    activatedRouteStub.queryParams.next({ filters: trackingFilter });
+
+    // then
+    expect(component.filters().length).toBe(1);
+    expect(component.getFilterType('Tracking Id')).toEqual(FilterType.STRING);
+    expect(component.getFilterType('Created on')).toEqual(FilterType.DATE);
+    expect(component.errorMessage).toBe('');
+  });
+
+  it('should autoload filters from URL on page load', () => {
+    // given - URL contains filters and autoload is enabled by default
+    const deploymentFilters: DeploymentFilterType[] = [
+      { name: 'Application', type: 'StringType' },
+      { name: 'State', type: 'ENUM_TYPE' },
+    ];
+    const urlFilters = JSON.stringify([
+      { name: 'Application', comp: 'eq', val: 'TestApp' },
+      { name: 'State', comp: 'eq', val: 'success' },
+    ]);
+
+    vi.spyOn(deploymentService, 'getAllDeploymentFilterTypes').mockReturnValue(of(deploymentFilters));
+    vi.spyOn(deploymentService, 'getAllComparatorFilterOptions').mockReturnValue(of([]));
+    vi.spyOn(deploymentService, 'canRequestDeployments').mockReturnValue(of(true));
+    vi.spyOn(deploymentService, 'getFilteredDeployments').mockReturnValue(of({ deployments: [], total: 0 }));
+
+    // when - simulate navigating to deployments page with filters in URL
+    component.ngOnInit();
+    activatedRouteStub.queryParams.next({ filters: urlFilters });
+
+    // then - filters should be automatically loaded and applied
+    expect(component.autoload).toBe(true);
+    expect(component.filters().length).toBe(2);
+    expect(component.filters()[0].name).toBe('Application');
+    expect(component.filters()[0].val).toBe('TestApp');
+    expect(component.filters()[1].name).toBe('State');
+    expect(component.filters()[1].val).toBe('success');
+    // Service should be called automatically without user clicking Apply
+    expect(deploymentService.getFilteredDeployments).toHaveBeenCalled();
+  });
+
   it('should call the right service method on exportCSV ', () => {
     // given
     const buffer = new ArrayBuffer(8);
