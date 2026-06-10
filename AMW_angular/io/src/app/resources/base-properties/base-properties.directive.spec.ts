@@ -39,6 +39,7 @@ class TestBasePropertiesDirective extends BasePropertiesDirective {
     resetProperties: PropertyUpdate[],
     contextId: number,
   ): Observable<void> {
+    // Mock implementation
     return of(void 0);
   }
 

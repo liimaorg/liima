@@ -38,7 +38,7 @@
   </div>
 </div>
 <div class="modal-footer">
-  <app-button [variant]="'secondary'" (click)="cancel()" [disabled]="isCreatingTag()">Cancel</app-button>
+  <app-button [variant]="'light'" (click)="cancel()" [disabled]="isCreatingTag()">Cancel</app-button>
   <app-button [variant]="'primary'" (click)="save()" [disabled]="isCreatingTag() || !tagLabel()">
     Create Tag
   </app-button>

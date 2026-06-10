@@ -183,4 +183,50 @@ export class ResourceRelationsService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  addResourceRelation(
+    resourceId: number,
+    slaveResourceGroupId: number,
+    provided: boolean,
+    relationName?: string,
+  ): Observable<void> {
+    const body: { slaveResourceGroupId: number; provided: boolean; relationName?: string } = {
+      slaveResourceGroupId,
+      provided,
+    };
+    if (relationName) {
+      body.relationName = relationName;
+    }
+    return this.http
+      .post<void>(`${this.getBaseUrl()}/resources/${resourceId}/relations`, body, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  removeResourceRelation(resourceId: number, relationId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  addResourceTypeRelation(resourceTypeId: number, slaveResourceTypeId: number): Observable<void> {
+    return this.http
+      .post<void>(
+        `${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations`,
+        { slaveResourceTypeId },
+        { headers: this.getHeaders() },
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  removeResourceTypeRelation(resourceTypeId: number, relTypeId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }

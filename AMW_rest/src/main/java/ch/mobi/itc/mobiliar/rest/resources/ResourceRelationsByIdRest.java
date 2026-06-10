@@ -20,6 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import ch.mobi.itc.mobiliar.rest.dtos.AddResourceRelationRequestDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyBulkUpdateDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
@@ -33,8 +34,13 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.UpdateRelationPropertie
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceRelationsUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GroupedRelations;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceRelationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceRelationUseCase;
+import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -45,8 +51,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -72,6 +80,12 @@ public class ResourceRelationsByIdRest {
 
     @Inject
     UpdateRelationPropertiesUseCase updateRelationPropertiesUseCase;
+
+    @Inject
+    AddResourceRelationUseCase addResourceRelationUseCase;
+
+    @Inject
+    RemoveResourceRelationUseCase removeResourceRelationUseCase;
 
     @Inject
     ContextLocator contextLocator;
@@ -187,5 +201,43 @@ public class ResourceRelationsByIdRest {
         boolean updatesEmpty = request.getUpdates() == null || request.getUpdates().isEmpty();
         boolean resetsEmpty = request.getResets() == null || request.getResets().isEmpty();
         return updatesEmpty && resetsEmpty;
+    }
+
+    @POST
+    @Path("/{id : \\d+}/relations")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Add a relation to a resource")
+    public Response addResourceRelation(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            AddResourceRelationRequestDTO request)
+            throws ResourceNotFoundException, ElementAlreadyExistsException {
+
+        AddResourceRelationCommand command = new AddResourceRelationCommand(
+                resourceId,
+                request.getSlaveResourceGroupId(),
+                request.getProvided(),
+                request.getRelationName()
+        );
+
+        addResourceRelationUseCase.addRelation(command);
+
+        return Response.status(Response.Status.CREATED).build();
+    }
+
+    @DELETE
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Remove a relation from a resource")
+    public Response removeResourceRelation(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId)
+            throws ResourceNotFoundException {
+
+        RemoveResourceRelationCommand command = new RemoveResourceRelationCommand(relationId);
+
+        removeResourceRelationUseCase.removeRelation(command);
+
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }

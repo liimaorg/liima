@@ -1,6 +1,8 @@
 .relations-layout {
   display: flex;
   gap: 0.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
 }
 
 .relations-container {
@@ -11,10 +13,12 @@
   flex-direction: column;
   gap: 0.5rem;
   border-right: 1px solid var(--bs-border-color);
+  overflow-y: auto;
 }
 
 .relation-detail-panel {
   flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .relation-detail-header {
@@ -42,4 +46,10 @@
   border: 1px solid var(--bs-border-color);
   border-radius: 4px;
   padding: 0.25rem 0.5rem;
+}
+
+.set-runtime-container {
+  align-self: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--bs-border-color);
 }

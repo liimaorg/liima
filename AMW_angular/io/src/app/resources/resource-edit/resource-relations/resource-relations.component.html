@@ -4,12 +4,20 @@
   [actionName]="'Add Relation'"
   [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
   [isCollapsed]="false"
-  [noContent]="false"
+  [noContent]="!hasRelations()"
   [notAllowed]="false"
+  (tileAction)="showAddRelationModal()"
 >
   @if (hasRelations()) {
     <div class="relations-layout">
       <div class="relations-container">
+        @if (canSetRuntime()) {
+          <div class="set-runtime-container">
+            <app-button [variant]="'secondary'" [size]="'sm'" (click)="showSetRuntimeModal()">
+              <app-icon icon="plus"></app-icon> Set Runtime
+            </app-button>
+          </div>
+        }
         <app-relation-group
           [title]="'Runtime'"
           [items]="runtimeItems()"
@@ -56,8 +64,8 @@
             } @else {
               <span class="relation-release-value">{{ rel.relatedResourceRelease }}</span>
             }
-            @if (permissions().canUpdateProperty) {
-              <app-button [variant]="'danger'" [size]="'sm'" [disabled]="true"
+            @if (permissions().canUpdateProperty && contextId() === 1) {
+              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveRelationConfirmation()"
                 ><app-icon icon="trash"></app-icon> Remove Relation</app-button
               >
             }
@@ -92,3 +100,129 @@
     </div>
   }
 </app-tile-component>
+
+<ng-template #addRelationModal let-modal>
+  <app-modal-header [title]="'Add Related Resource'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    @if (hasNewerRelease()) {
+      <div class="alert alert-warning" role="alert">
+        A newer release for this resource exists. You are adding a relation to release
+        <strong>{{ resource()?.release }}</strong
+        >.
+      </div>
+    }
+    <div class="mb-3">
+      <label for="resourceTypeSelect" class="form-label">Resource Type</label>
+      <ng-select
+        id="resourceTypeSelect"
+        [ngModel]="selectedResourceTypeId()"
+        (ngModelChange)="onResourceTypeChange($event)"
+        placeholder="Search or select a resource type..."
+        [searchable]="true"
+        [clearable]="true"
+      >
+        @for (type of resourceTypes(); track type.id) {
+          <ng-option [value]="type.id">{{ type.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+    @if (childResourceTypes().length > 0) {
+      <div class="mb-3">
+        <label for="childTypeSelect" class="form-label">Sub Type</label>
+        <ng-select
+          id="childTypeSelect"
+          [ngModel]="selectedChildTypeId()"
+          (ngModelChange)="onChildTypeChange($event)"
+          placeholder="Search or select a sub type..."
+          [searchable]="true"
+          [clearable]="true"
+        >
+          @for (child of childResourceTypes(); track child.id) {
+            <ng-option [value]="child.id">{{ child.name }}</ng-option>
+          }
+        </ng-select>
+      </div>
+    }
+    @if (availableResourceGroups().length > 0 || (selectedResourceTypeId() && childResourceTypes().length === 0)) {
+      <div class="mb-3">
+        <label for="resourceGroupSelect" class="form-label">Resource</label>
+        <ng-select
+          id="resourceGroupSelect"
+          [ngModel]="selectedResourceGroupId()"
+          (ngModelChange)="selectedResourceGroupId.set($event)"
+          placeholder="Search or select a resource..."
+          [searchable]="true"
+          [clearable]="true"
+        >
+          @for (group of availableResourceGroups(); track group.id) {
+            <ng-option [value]="group.id">{{ group.name }}</ng-option>
+          }
+        </ng-select>
+      </div>
+      @if (isApplicationType()) {
+        <div class="form-check mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="addAsProvided"
+            [ngModel]="addAsProvided()"
+            (ngModelChange)="addAsProvided.set($event)"
+          />
+          <label class="form-check-label" for="addAsProvided">Add as provided resource</label>
+        </div>
+      }
+    }
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button
+      [variant]="'primary'"
+      (click)="addRelation()"
+      [disabled]="!selectedResourceGroupId() || isAddingRelation()"
+    >
+      Add
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #setRuntimeModal let-modal>
+  <app-modal-header [title]="'Set Runtime'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    <div class="mb-3">
+      <label for="runtimeSelect" class="form-label">Runtime</label>
+      <ng-select
+        id="runtimeSelect"
+        [ngModel]="selectedRuntimeId()"
+        (ngModelChange)="selectedRuntimeId.set($event)"
+        placeholder="Search or select a runtime..."
+        [searchable]="true"
+        [clearable]="true"
+      >
+        @for (runtime of availableRuntimes(); track runtime.id) {
+          <ng-option [value]="runtime.id">{{ runtime.name }}</ng-option>
+        }
+      </ng-select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'primary'" (click)="setRuntime()" [disabled]="!selectedRuntimeId() || isSettingRuntime()">
+      Set Runtime
+    </app-button>
+  </div>
+</ng-template>
+
+<ng-template #removeRelationConfirmation let-modal>
+  <app-modal-header [title]="'Remove Resource Relation'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <div class="modal-body">
+    <p class="text">
+      Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.relatedResourceName }}</b
+      >?
+    </p>
+    <p class="text">If you continue, all defined property values for the relation will be lost.</p>
+  </div>
+  <div class="modal-footer">
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'danger'" (click)="modal.close('Confirm click')">Delete</app-button>
+  </div>
+</ng-template>

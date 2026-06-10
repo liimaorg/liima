@@ -1,9 +1,12 @@
-import { Component, computed, inject, linkedSignal, Signal } from '@angular/core';
+import { Component, computed, inject, linkedSignal, signal, Signal, TemplateRef, ViewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
+import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
 import { ResourceTypesService } from '../../services/resource-types.service';
 import { PropertyUpdate } from '../../services/resource-properties.service';
 import { GroupedResourceRelations, UnresolvedRelation } from '../../models/resource-relation';
@@ -25,6 +28,9 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
     IconComponent,
     PropertiesListComponent,
     PropertiesPanelComponent,
+    ModalHeaderComponent,
+    FormsModule,
+    NgSelectModule,
   ],
   templateUrl: './resource-type-relations.component.html',
   styleUrl: './resource-type-relations.component.scss',
@@ -32,6 +38,13 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
 export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   private resourceTypeService = inject(ResourceTypesService);
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
+
+  @ViewChild('addTypeRelationModal') addTypeRelationModal!: TemplateRef<void>;
+  @ViewChild('removeTypeRelationConfirmation') removeTypeRelationConfirmation!: TemplateRef<void>;
+
+  allResourceTypes = signal<ResourceType[]>([]);
+  selectedSlaveTypeId = signal<number | null>(null);
+  isAddingRelation = signal<boolean>(false);
 
   protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.typeRelations;
   protected isLoadingRelations = this.relationsService.isLoadingTypeRelations;
@@ -162,4 +175,65 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     optional: true,
     disabled: !this.permissions().canUpdateProperty,
   }));
+
+  showAddTypeRelationModal(): void {
+    this.selectedSlaveTypeId.set(null);
+    this.resourceTypeService.getAllResourceTypes().subscribe({
+      next: (types) => {
+        const currentId = this.entityId();
+        this.allResourceTypes.set(types.filter((t) => t.id !== currentId));
+      },
+      error: (err) => {
+        console.error('Failed to load resource types:', err);
+        this.toastService.error('Failed to load resource types.');
+      },
+    });
+    this.modalService.open(this.addTypeRelationModal, { size: 'lg' });
+  }
+
+  addTypeRelation(): void {
+    const slaveTypeId = this.selectedSlaveTypeId();
+    if (!slaveTypeId) {
+      this.toastService.error('Please select a resource type.');
+      return;
+    }
+
+    this.isAddingRelation.set(true);
+    this.relationsService.addResourceTypeRelation(this.entityId(), slaveTypeId).subscribe({
+      next: () => {
+        this.toastService.success('Relation added successfully.');
+        this.modalService.dismissAll();
+        this.isAddingRelation.set(false);
+        this.reloadRelation(this.entityId());
+      },
+      error: (err) => {
+        console.error('Failed to add type relation:', err);
+        this.toastService.error('Failed to add relation: ' + (err.message || 'Unknown error'));
+        this.isAddingRelation.set(false);
+      },
+    });
+  }
+
+  showRemoveTypeRelationConfirmation(): void {
+    this.modalService.open(this.removeTypeRelationConfirmation).result.then(
+      () => this.removeTypeRelation(),
+      () => {},
+    );
+  }
+
+  private removeTypeRelation(): void {
+    const rel = this.selectedRelation();
+    if (!rel || !rel.resRelTypeId) return;
+
+    this.relationsService.removeResourceTypeRelation(this.entityId(), rel.resRelTypeId).subscribe({
+      next: () => {
+        this.toastService.success('Relation removed successfully.');
+        this.reloadRelation(this.entityId());
+      },
+      error: (err) => {
+        console.error('Failed to remove type relation:', err);
+        this.toastService.error('Failed to remove relation: ' + (err.message || 'Unknown error'));
+      },
+    });
+  }
 }

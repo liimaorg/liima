@@ -9,6 +9,9 @@
   placement="auto"
   container="body"
   popoverClass="tooltip-container"
+  tabindex="0"
+  (keydown.enter)="handleToggle($event)"
+  aria-label="Open tooltip for {{ title() }}"
 >
   <ng-content></ng-content>
 </span>
