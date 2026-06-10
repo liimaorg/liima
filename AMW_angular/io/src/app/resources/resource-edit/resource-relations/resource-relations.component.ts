@@ -19,6 +19,10 @@ import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
+import { ResourceTemplateEditComponent } from '../resource-templates/resource-template-edit/resource-template-edit.component';
+import { takeUntil } from 'rxjs/operators';
+import { ResourceTemplate } from '../../models/resource-template';
+import { ResourceTemplatesService } from '../../services/resource-templates.service';
 
 @Component({
   selector: 'app-resource-relations',
@@ -43,6 +47,8 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
 export class ResourceRelationsComponent extends BaseRelationsDirective {
   private resourceService = inject(ResourceService);
   private resourceTypesService = inject(ResourceTypesService);
+  // TODO move to relation-template-component or to base-relations
+  private templatesService = inject(ResourceTemplatesService);
   resource: Signal<Resource> = this.resourceService.resource;
 
   @ViewChild('addRelationModal') addRelationModal!: TemplateRef<void>;
@@ -350,5 +356,46 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
         this.toastService.error('Failed to remove relation: ' + (err.message || 'Unknown error'));
       },
     });
+  }
+
+  /**
+   * TODO move to relation-template-component or base-relations
+   */
+  protected addRelationTemplate() {
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = {
+      id: null,
+      relatedResourceIdentifier: this.selectedRelation().identifier,
+      name: '',
+      targetPath: '',
+      targetPlatforms: [],
+      fileContent: '',
+      sourceType: 'RESOURCE',
+    };
+    modalRef.componentInstance.canAddOrEdit = this.authService.hasPermission(
+      'RESOURCE_TEMPLATE',
+      'UPDATE', // Not 'CREATE'!
+      this.resource().type,
+      this.resource().resourceGroupId,
+    );
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => this.createRelationTemplate(templateData));
+  }
+
+  private createRelationTemplate(templateData: ResourceTemplate) {
+    this.templatesService
+      .addRelationTemplate(templateData, this.selectedRelation().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        // error: (e) => this.error$.next(e.toString()),
+        // complete: () => {
+        //   // Reload relation templates
+        //   this.loadRelationTemplates();
+        // },
+      });
   }
 }

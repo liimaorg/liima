@@ -1,6 +1,8 @@
 import { Component, computed, inject, linkedSignal, signal, Signal, TemplateRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
@@ -16,6 +18,9 @@ import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
+import { ResourceTemplateEditComponent } from '../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
+import { ResourceTemplate } from '../../models/resource-template';
+import { ResourceTemplatesService } from '../../services/resource-templates.service';
 
 @Component({
   selector: 'app-resource-type-relations',
@@ -37,6 +42,8 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
 })
 export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   private resourceTypeService = inject(ResourceTypesService);
+  // TODO move to relation-template-component or to base-relations
+  private templatesService = inject(ResourceTemplatesService);
   resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
 
   @ViewChild('addTypeRelationModal') addTypeRelationModal!: TemplateRef<void>;
@@ -235,5 +242,41 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
         this.toastService.error('Failed to remove relation: ' + (err.message || 'Unknown error'));
       },
     });
+  }
+
+  /**
+   * TODO move to relation-template-component or base-relations
+   */
+  protected addRelationTemplate() {
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = {
+      id: null,
+      relatedResourceIdentifier: this.selectedRelation()?.identifier || '',
+      name: '',
+      targetPath: '',
+      targetPlatforms: [],
+      fileContent: '',
+      sourceType: 'RESOURCE_TYPE',
+    };
+    modalRef.componentInstance.canAddOrEdit = this.authService.hasPermission(
+      'RESOURCETYPE_TEMPLATE',
+      'UPDATE',
+      this.resourceType()?.name,
+      null,
+    );
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => this.createRelationTemplate(templateData));
+  }
+
+  private createRelationTemplate(templateData: ResourceTemplate) {
+    this.templatesService
+      .addRelationTemplate(templateData, this.selectedRelation()?.resRelTypeId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+      });
   }
 }

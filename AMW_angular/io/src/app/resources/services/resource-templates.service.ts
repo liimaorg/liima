@@ -114,4 +114,12 @@ export class ResourceTemplatesService extends BaseService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  addRelationTemplate(template: ResourceTemplate, relationId: number) {
+    return this.http
+      .post<ResourceTemplate>(`${this.getBaseUrl()}/resources/templates/addForRelation/${relationId}`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
 }

@@ -51,6 +51,13 @@
                 (resetToggled)="onPropertyReset($event.name, $event.checked)"
                 (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
               ></app-properties-list>
+              <div id="possibleContainerForTemplates">
+                @if (contextId() === 1) {
+                  <app-button [variant]="'primary'" [size]="'sm'" (click)="addRelationTemplate()">
+                    <app-icon icon="plus-circle"></app-icon> New Template
+                  </app-button>
+                }
+              </div>
             </app-properties-panel>
           </div>
         </div>
