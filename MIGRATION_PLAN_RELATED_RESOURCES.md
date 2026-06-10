@@ -253,10 +253,10 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 **Tasks**:
 - [x] Add identifier input field to detail panel
 - [x] Add signal for identifier changes
-- [ ] Add validation (if required)
-- [ ] Add visual indicator for unsaved changes
+- [x] Add validation (if required)
+- [x] Add visual indicator for unsaved changes
 - [x] Disable if user lacks permission
-- [ ] Add to save operation (Phase 9)
+- [x] Add to save operation (Phase 9)
 
 **Acceptance Criteria**:
 - Identifier editable in input field
@@ -288,16 +288,16 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Handle save operation
 
 **Tasks**:
-- [ ] Create `UpdateRelationPropertiesUseCase` in AMW_business
-- [ ] Create REST endpoint for bulk update
-- [ ] Add `updateRelationProperties()` method to service
-- [ ] Extend component to track property changes
-- [ ] Use `createPropertiesEditor()` pattern from base-properties
-- [ ] Add save button to detail panel
-- [ ] Implement save logic
-- [ ] Add success/error toast messages
-- [ ] Reload properties after save
-- [ ] Handle validation errors
+- [x] Create `UpdateRelationPropertiesUseCase` in AMW_business
+- [x] Create REST endpoint for bulk update
+- [x] Add `updateRelationProperties()` method to service
+- [x] Extend component to track property changes
+- [x] Use `createPropertiesEditor()` pattern from base-properties
+- [x] Add save button to detail panel
+- [x] Implement save logic
+- [x] Add success/error toast messages
+- [x] Reload properties after save
+- [x] Handle validation errors
 
 **Acceptance Criteria**:
 - Properties editable when permission granted
@@ -331,19 +331,19 @@ Frontend consumes the grouped structure directly — no more frontend grouping.
 - Add confirmation dialog for removal
 
 **Tasks**:
-- [ ] Create `AddResourceRelationCommand` in AMW_business
-- [ ] Create `RemoveResourceRelationCommand` in AMW_business
-- [ ] Create/enhance REST endpoints
-- [ ] Add service methods for add/remove
-- [ ] Create add relation modal component
-- [ ] Implement resource selection in modal
-- [ ] Add relation type selection (consumed/provided)
-- [ ] Implement add logic
-- [ ] Enable remove button
-- [ ] Add confirmation dialog for removal
-- [ ] Implement remove logic
-- [ ] Reload relations after add/remove
-- [ ] Add permission checks
+- [x] Create `AddResourceRelationCommand` in AMW_business
+- [x] Create `RemoveResourceRelationCommand` in AMW_business
+- [x] Create/enhance REST endpoints
+- [x] Add service methods for add/remove
+- [x] Create add relation modal component
+- [x] Implement resource selection in modal
+- [x] Add relation type selection (consumed/provided)
+- [x] Implement add logic
+- [x] Enable remove button
+- [x] Add confirmation dialog for removal
+- [x] Implement remove logic
+- [x] Reload relations after add/remove
+- [x] Add permission checks
 
 **Acceptance Criteria**:
 - "Add Relation" button opens modal

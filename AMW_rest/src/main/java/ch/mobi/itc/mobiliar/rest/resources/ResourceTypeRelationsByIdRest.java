@@ -20,6 +20,7 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
+import ch.mobi.itc.mobiliar.rest.dtos.AddResourceTypeRelationRequestDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyBulkUpdateDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
@@ -30,9 +31,14 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.UpdateRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceTypeRelationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceTypeRelationUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceTypeRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceTypeRelationsUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceTypeRelationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceTypeRelationUseCase;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,8 +47,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -72,6 +80,12 @@ public class ResourceTypeRelationsByIdRest {
 
     @Inject
     UpdateRelationPropertiesUseCase updateRelationPropertiesUseCase;
+
+    @Inject
+    AddResourceTypeRelationUseCase addResourceTypeRelationUseCase;
+
+    @Inject
+    RemoveResourceTypeRelationUseCase removeResourceTypeRelationUseCase;
 
     @Inject
     ContextLocator contextLocator;
@@ -177,5 +191,41 @@ public class ResourceTypeRelationsByIdRest {
         boolean updatesEmpty = request.getUpdates() == null || request.getUpdates().isEmpty();
         boolean resetsEmpty = request.getResets() == null || request.getResets().isEmpty();
         return updatesEmpty && resetsEmpty;
+    }
+
+    @POST
+    @Path("/{id : \\d+}/relations")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Add a relation to a resource type")
+    public Response addResourceTypeRelation(
+            @Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId,
+            AddResourceTypeRelationRequestDTO request)
+            throws ResourceTypeNotFoundException {
+
+        AddResourceTypeRelationCommand command = new AddResourceTypeRelationCommand(
+                resourceTypeId,
+                request.getSlaveResourceTypeId()
+        );
+
+        addResourceTypeRelationUseCase.addResourceTypeRelation(command);
+
+        return Response.status(Response.Status.CREATED).build();
+    }
+
+    @DELETE
+    @Path("/{id : \\d+}/relations/{relTypeId : \\d+}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Remove a relation from a resource type")
+    public Response removeResourceTypeRelation(
+            @Parameter(description = "ResourceType ID") @PathParam("id") Integer resourceTypeId,
+            @Parameter(description = "Relation Type ID") @PathParam("relTypeId") Integer relTypeId)
+            throws ResourceTypeNotFoundException {
+
+        RemoveResourceTypeRelationCommand command = new RemoveResourceTypeRelationCommand(relTypeId);
+
+        removeResourceTypeRelationUseCase.removeResourceTypeRelation(command);
+
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 }
