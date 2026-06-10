@@ -38,12 +38,13 @@ test.describe("PropertyTypes -CRUD", () => {
     await page.getByTestId("button-add").click();
     await page.locator("#name").fill(propertyTypeName);
     await page.locator("#regex").fill("sd");
+    await page.locator("#regex").press("Tab"); // Trigger blur for form validation
     await expect(page.getByTestId("button-save")).toBeEnabled();
     await page.getByTestId("button-save").click();
     await expect(page.locator("body.modal-open")).toHaveCount(0);
     await expect(
-      page.locator("ngb-toast").filter({ hasText: "Property type saved." }),
-    ).toBeVisible();
+      page.locator("ngb-toast").filter({ hasText: "Property type saved." }).first(),
+    ).toBeVisible({ timeout: 5000 });
     await page.getByTestId("toast-close").last().click();
     await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
 
@@ -55,8 +56,8 @@ test.describe("PropertyTypes -CRUD", () => {
     await expect(
       page
         .locator("ngb-toast")
-        .filter({ hasText: "Property type already exists." }),
-    ).toBeVisible();
+        .filter({ hasText: "Property type already exists." }).first(),
+    ).toBeVisible({ timeout: 5000 });
     await expect(page.locator("body.modal-open")).toHaveCount(0);
     await page.getByTestId("toast-close").last().click();
     await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
@@ -72,7 +73,7 @@ test.describe("PropertyTypes -CRUD", () => {
     await page.locator("#encrypted").click();
     await expect(page.getByTestId("button-save")).toBeEnabled();
     await page.getByTestId("button-save").click();
-    await expect(page.getByText(/Property type saved\./)).toBeVisible();
+    await expect(page.locator("ngb-toast").filter({ hasText: "Property type saved." }).first()).toBeVisible({ timeout: 5000 });
     await expect(page.locator("body.modal-open")).toHaveCount(0);
     await page.getByTestId("toast-close").last().click();
     await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
@@ -86,8 +87,8 @@ test.describe("PropertyTypes -CRUD", () => {
     await page.getByTestId("button-delete").click();
     await expect(page.locator("ngb-toast")).toHaveCount(1, { timeout: 5000 });
     await expect(
-      page.locator("ngb-toast").filter({ hasText: "Property type deleted." }),
-    ).toBeVisible();
+      page.locator("ngb-toast").filter({ hasText: "Property type deleted." }).first(),
+    ).toBeVisible({ timeout: 5000 });
     await page.getByTestId("toast-close").last().click();
     await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
   });

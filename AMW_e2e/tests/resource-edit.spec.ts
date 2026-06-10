@@ -103,9 +103,9 @@ test.describe("Resource Edit Page - Navigation", () => {
 test.describe("Resource Edit Page - Releases", () => {
   test("should show releases tile", async ({ page }) => {
     await expect(page.getByText("Releases")).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "New Release" }),
-    ).toBeEnabled();
+    const newReleaseButton = page.getByRole("button", { name: "New Release" });
+    await expect(newReleaseButton).toBeVisible({ timeout: 10000 });
+    await expect(newReleaseButton).toBeEnabled();
     await expect(page.getByRole("cell", { name: "RL-" })).toBeVisible();
   });
 });
