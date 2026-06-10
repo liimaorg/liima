@@ -2,9 +2,9 @@ name: test and build
 
 on:
   push:
-    branches: [ master, development ]
+    branches: [ master, fix/e2e-tests ]
   pull_request:
-    branches: [ master, development ]
+    branches: [ master ]
 
 jobs:
   build_and_test:
@@ -40,13 +40,13 @@ jobs:
     - name: Build Docker image
       run: AMW_docker/build.sh
 
-    #- name: Run e2e tests
-    #  run: |
-    #    cd AMW_e2e
-    #    npm ci
-    #    npm start
-    #    npx playwright install --with-deps
-    #    npx playwright test
+    - name: Run e2e tests
+      run: |
+        cd AMW_e2e
+        npm ci
+        npm start
+        npx playwright install --with-deps
+        npx playwright test
 
     - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}

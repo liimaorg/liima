@@ -18,7 +18,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
 
     const saveButton = page.getByRole("button", { name: "Save" });
     await expect(saveButton).toBeVisible();
-    expect(saveButton.isEnabled());
+    await expect(saveButton).toBeEnabled();
     await saveButton.click();
   });
 
@@ -38,14 +38,14 @@ test.describe.serial("Resource Edit Page - Properties", () => {
 
     const resetButton = page.getByTestId("button-reset");
     await expect(resetButton).toBeVisible();
-    expect(resetButton.isEnabled());
+    await expect(resetButton).toBeEnabled();
     await resetButton.click();
 
     await expect(propertyInput).toHaveValue(originalValue);
 
     const saveButton = page.getByRole("button", { name: "Save" });
     await expect(saveButton).toBeVisible();
-    expect(saveButton.isEnabled());
+    await expect(saveButton).toBeEnabled();
     await saveButton.click();
   });
 

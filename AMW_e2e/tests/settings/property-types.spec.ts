@@ -29,7 +29,7 @@ test.describe("PropertyTypes -CRUD", () => {
     ).toBeVisible();
     // close ngb-toast explicitly to not overlap edit/delete buttons
     await page.getByTestId("toast-close").last().click();
-    await expect(page.locator("ngb-toast")).toHaveCount(0);
+    await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
     await expect(
       page.getByRole("row").filter({ hasText: propertyTypeName }),
     ).toHaveCount(0);
@@ -45,7 +45,7 @@ test.describe("PropertyTypes -CRUD", () => {
       page.locator("ngb-toast").filter({ hasText: "Property type saved." }),
     ).toBeVisible();
     await page.getByTestId("toast-close").last().click();
-    await expect(page.locator("ngb-toast")).toHaveCount(0);
+    await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
 
     await page.getByTestId("button-add").click();
     await page.locator("#name").fill(propertyTypeName);
@@ -59,7 +59,7 @@ test.describe("PropertyTypes -CRUD", () => {
     ).toBeVisible();
     await expect(page.locator("body.modal-open")).toHaveCount(0);
     await page.getByTestId("toast-close").last().click();
-    await expect(page.locator("ngb-toast")).toHaveCount(0);
+    await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
 
     const editButton = page
       .getByRole("row", { name: propertyTypeName })
@@ -75,7 +75,7 @@ test.describe("PropertyTypes -CRUD", () => {
     await expect(page.getByText(/Property type saved\./)).toBeVisible();
     await expect(page.locator("body.modal-open")).toHaveCount(0);
     await page.getByTestId("toast-close").last().click();
-    await expect(page.locator("ngb-toast")).toHaveCount(0);
+    await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
 
     const deleteButton = page
       .getByRole("row", { name: propertyTypeName })
@@ -84,11 +84,11 @@ test.describe("PropertyTypes -CRUD", () => {
     await deleteButton.click();
     await expect(page.getByTestId("button-delete")).toBeVisible();
     await page.getByTestId("button-delete").click();
-    await expect(page.locator("ngb-toast")).toHaveCount(1);
+    await expect(page.locator("ngb-toast")).toHaveCount(1, { timeout: 5000 });
     await expect(
       page.locator("ngb-toast").filter({ hasText: "Property type deleted." }),
     ).toBeVisible();
     await page.getByTestId("toast-close").last().click();
-    await expect(page.locator("ngb-toast")).toHaveCount(0);
+    await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
   });
 });

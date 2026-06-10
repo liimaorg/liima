@@ -28,7 +28,7 @@ test.describe('CRUD for Functions', () => {
         await page.locator('css=.cm-activeLine').fill('testContent');
         await expect(page.getByRole('button', {name: 'Save'})).toBeEnabled();
         await page.getByRole('button', {name: 'Save'}).click()
-        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeDefined()
+        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeVisible()
 
 
         await page.getByRole('button', {name: 'Add function', exact: true}).click();
@@ -36,7 +36,7 @@ test.describe('CRUD for Functions', () => {
         await page.locator('css=.cm-activeLine').fill('testContent');
         await expect(page.getByRole('button', {name: 'Save'})).toBeEnabled();
         await page.getByRole('button', {name: 'Save'}).click();
-        await expect(page.locator('ngb-toast :has-text("Function with same name already exists.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Function with same name already exists.")')).toBeVisible();
 
         await page.getByRole('button', {name: 'Add function', exact: true}).click();
 
@@ -46,15 +46,15 @@ test.describe('CRUD for Functions', () => {
         await page.getByRole('textbox', {name: 'Function name'}).fill(functionNameB);
         await expect(page.getByRole('button', {name: 'Save'})).toBeEnabled();
         await page.getByRole('button', {name: 'Save'}).click();
-        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeVisible();
 
         await page.getByRole('row').filter({ hasText: functionNameA })?.getByRole('button').last().click();
         await page.getByRole('button', {name: 'Delete'}).click();
-        await expect(page.getByRole('table').locator(`td :has-text("${functionNameB}")`)).toBeDefined();
+        await expect(page.getByRole('table').locator(`td :has-text("${functionNameB}")`)).toBeVisible();
 
         await page.getByRole('row').filter({ hasText: functionNameB })?.getByRole('button').last().click();
         await page.getByRole('button', {name: 'Delete'}).click();
-        await expect(page.locator('ngb-toast :has-text("Function deleted.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Function deleted.")')).toBeVisible();
     })
 
 
@@ -79,12 +79,12 @@ test.describe('CRUD for Functions', () => {
         await expect(page.getByTestId('button-save')).toBeDisabled();
         await page.locator('css=.cm-activeLine').fill('testContentBla');
         await page.getByTestId('button-save').click();
-        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeVisible({ timeout: 5000 });
 
         await page.getByRole('row').filter({ hasText: functionName })?.getByRole('button').first().click();
         await page.locator('css=.cm-activeLine').fill('{enter}differentContent');
         await page.getByTestId('button-save').click();
-        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Function saved successfully.")')).toBeVisible({ timeout: 5000 });
 
         await page.getByRole('row').filter({ hasText: functionName })?.getByRole('button').first().click();
         await page.getByTestId('button-dropdown').click();
@@ -96,7 +96,7 @@ test.describe('CRUD for Functions', () => {
         const deleteButton = page.getByRole('row').filter({ hasText: functionName }).getByRole('button').last();
         await deleteButton.click();
         await page.getByTestId('button-delete').click();
-        await expect(page.locator('ngb-toast :has-text("Function deleted.")')).toBeDefined();
+        await expect(page.locator('ngb-toast :has-text("Function deleted.")')).toBeVisible({ timeout: 5000 });
     });
 
 })
