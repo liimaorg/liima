@@ -4,7 +4,7 @@
   [actionName]="'Add Relation'"
   [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
   [isCollapsed]="false"
-  [noContent]="false"
+  [noContent]="!hasRelations()"
   [notAllowed]="false"
   (tileAction)="showAddRelationModal()"
 >
