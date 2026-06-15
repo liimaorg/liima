@@ -44,7 +44,7 @@ export class ResourceActivationService extends BaseService {
     return this.http
       .get<
         ResourceActivation[]
-      >(`${this.getBaseUrl()}/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`, { headers: this.getHeaders() })
+      >(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`, { headers: this.getHeaders() })
       .pipe(catchError(this.handleError));
   }
 
@@ -56,7 +56,7 @@ export class ResourceActivationService extends BaseService {
   ): Observable<void> {
     return this.http
       .put<void>(
-        `${this.getBaseUrl()}/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`,
+        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/activations?contextId=${contextId}`,
         request,
         { headers: this.getHeaders() },
       )
