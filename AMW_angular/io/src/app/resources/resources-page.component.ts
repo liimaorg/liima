@@ -1,14 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  Signal,
-  signal,
-  OnDestroy,
-  WritableSignal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
@@ -26,9 +16,10 @@ import { Resource } from './models/resource';
 import { ReleasesService } from '../settings/releases/releases.service';
 import { Release } from '../settings/releases/release';
 import { ToastService } from '../shared/elements/toast/toast.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-resources-page',
@@ -37,13 +28,12 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './resources-page.component.html',
   styleUrl: 'resources-page.component.scss',
 })
-export class ResourcesPageComponent implements OnDestroy {
+export class ResourcesPageComponent {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);
   private releaseService = inject(ReleasesService);
   private toastService = inject(ToastService);
-  private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
   private modalService = inject(NgbModal);
   private route = inject(ActivatedRoute);
@@ -58,28 +48,87 @@ export class ResourcesPageComponent implements OnDestroy {
   expandedItems: ResourceType[] = [];
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
   selection: any;
-  private selectedResourceTypeIdFromUrl = signal<number | null>(null);
+
+  private selectedResourceTypeIdFromUrl = toSignal(
+    this.route.queryParamMap.pipe(
+      map((params) => {
+        const id = params.get('selectedResourceTypeId');
+        return id ? Number(id) : null;
+      }),
+    ),
+    { initialValue: null },
+  );
+
+  private autoSelectTrigger = computed(() => {
+    const idFromUrl = this.selectedResourceTypeIdFromUrl();
+    if (idFromUrl === null) return;
+
+    const allTypes = [...(this.predefinedResourceTypes() || []), ...(this.rootResourceTypes() || [])];
+    if (allTypes.length === 0) return;
+
+    const resourceType = this.findTypeById(allTypes, idFromUrl);
+    if (resourceType) {
+      // Expand parent chain so child is visible in tree, get the immediate parent
+      const parentType = this.expandParents(allTypes, idFromUrl);
+      // Safely execute selection out-of-stack to avoid expression-changed bugs
+      setTimeout(() => this.selectFromUrl(resourceType, parentType));
+    }
+  });
+
+  private findTypeById(types: ResourceType[], id: number): ResourceType | null {
+    for (const type of types) {
+      if (type.id === id) return type;
+      if (type.children?.length) {
+        const found = this.findTypeById(type.children, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  private expandParents(types: ResourceType[], targetId: number): ResourceType | null {
+    for (const type of types) {
+      // Check if target is a direct child
+      const isDirectChild = type.children?.some((c) => c.id === targetId);
+      if (isDirectChild) {
+        // Add this parent to expanded items
+        if (!this.expandedItems.find((e) => e.id === type.id)) {
+          this.expandedItems.push(type);
+        }
+        return type;
+      }
+      // Check if target is in deeper descendants
+      if (type.children?.length) {
+        const foundParent = this.expandParents(type.children, targetId);
+        if (foundParent) {
+          // Add this ancestor to expanded items
+          if (!this.expandedItems.find((e) => e.id === type.id)) {
+            this.expandedItems.push(type);
+          }
+          return foundParent; // Return the immediate parent (deepest level)
+        }
+      }
+    }
+    return null;
+  }
+
+  private selectFromUrl(resourceType: ResourceType, parentType: ResourceType | null): void {
+    this.selection = resourceType;
+    this.resourceService.setTypeForResourceGroupList(resourceType);
+    // For parent with children: expand it and update expandedItems
+    if (resourceType.hasChildren) {
+      this.getUpdateExpandedItems(resourceType);
+      this.expandedResourceTypeId = resourceType.id;
+    } else {
+      // For leaf: expand parent so child is visible
+      this.expandedResourceTypeId = parentType?.id ?? null;
+    }
+    this.selectedResourceType.set(resourceType);
+  }
 
   constructor() {
-    effect(() => {
-      const idFromUrl = this.selectedResourceTypeIdFromUrl();
-      if (idFromUrl === null) return;
-
-      const allTypes = [...(this.predefinedResourceTypes() || []), ...(this.rootResourceTypes() || [])];
-      if (allTypes.length === 0) return;
-
-      const resourceType = allTypes.find((rt) => rt.id === idFromUrl);
-      if (resourceType) {
-        this.toggleChildrenAndOrLoadResourcesList(resourceType, false);
-      }
-    });
-
-    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const selectedResourceTypeId = params.get('selectedResourceTypeId');
-      if (selectedResourceTypeId) {
-        this.selectedResourceTypeIdFromUrl.set(Number(selectedResourceTypeId));
-      }
-    });
+    // Simply reference the computed signal so it stays active and listens for changes
+    this.autoSelectTrigger();
   }
 
   permissions = computed(() => {
@@ -131,7 +180,7 @@ export class ResourcesPageComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Resource saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => console.error('Failed to create resource:', e),
         complete: () => this.resourceService.setTypeForResourceGroupList(this.selectedResourceTypeOrDefault()), // refresh data of the selected resource type
       });
   }
@@ -157,7 +206,7 @@ export class ResourcesPageComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Resource type saved successfully.'),
-        error: (err) => this.error$.next(err.message),
+        error: (err) => console.error('Failed to save resource type:', err),
         complete: () => this.resourceTypesService.refreshData(),
       });
   }
@@ -168,7 +217,7 @@ export class ResourcesPageComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Resource type deleted successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => console.error('Failed to create resource:', e),
         complete: () => {
           this.resourceTypesService.refreshData();
           this.selectedResourceType.set(null);
