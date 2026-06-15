@@ -29,10 +29,10 @@
     (cancel)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
-    <p class="text-warning-2">Are you sure that you want to delete this release?</p>
+    <p class="text">Are you sure that you want to delete this release?</p>
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
     <app-button [variant]="'danger'" (click)="modal.close('Confirm click')" ngbAutofocus>Delete</app-button>
   </div>
 </ng-template>
@@ -61,7 +61,7 @@
     }
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')" [disabled]="isCreatingRelease()">
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')" [disabled]="isCreatingRelease()">
       Cancel
     </app-button>
     <app-button
@@ -106,7 +106,7 @@
     }
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')" [disabled]="isChangingRelease()">
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')" [disabled]="isChangingRelease()">
       Cancel
     </app-button>
     <app-button

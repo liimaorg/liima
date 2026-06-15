@@ -13,6 +13,8 @@
                 [ngClass]="{ active: selection === resourceType }"
                 style="display: inline-block"
                 (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
+                (keydown.enter)="toggleChildrenAndOrLoadResourcesList(resourceType)"
+                tabindex="0"
                 >{{ resourceType.name }}</a
               >
             </li>
@@ -35,6 +37,8 @@
               [ngClass]="{ active: selection === resourceType }"
               style="display: inline-block"
               (click)="toggleChildrenAndOrLoadResourcesList(resourceType)"
+              (keydown.enter)="toggleChildrenAndOrLoadResourcesList(resourceType)"
+              tabindex="0"
             >
               @if (resourceType.hasChildren) {
                 <span style="margin-left: -1.3rem">
@@ -56,6 +60,8 @@
                       [ngClass]="{ active: selection === child }"
                       style="display: inline-block"
                       (click)="toggleChildrenAndOrLoadResourcesList(child)"
+                      (keydown.enter)="toggleChildrenAndOrLoadResourcesList(child)"
+                      tabindex="0"
                       >{{ child.name }}</a
                     >
                   </li>

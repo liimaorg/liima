@@ -209,9 +209,10 @@ export class ResourceService extends BaseService {
   }
 
   getReleasesForResource(resourceId: number): Observable<Release[]> {
-    return this.http
-      .get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`)
-      .pipe(catchError(this.handleError));
+    return this.http.get<Release[]>(`${this.getBaseUrl()}/resources/resourceGroups/releases/${resourceId}`).pipe(
+      map((releases) => releases.map((r) => ({ ...r, release: r.name }))),
+      catchError(this.handleError),
+    );
   }
 
   deleteResourceByResourceId(resourceId: number): Observable<void> {

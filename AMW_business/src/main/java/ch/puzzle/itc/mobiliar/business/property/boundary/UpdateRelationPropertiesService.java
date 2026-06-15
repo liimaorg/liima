@@ -52,9 +52,9 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             throws ResourceNotFoundException, ValidationException {
         ValidationHelper.validateNotNullOrEmptyChecked(propertyName, value);
 
-        ConsumedResourceRelationEntity relation = getConsumedRelation(relationId);
+        AbstractResourceRelationEntity relation = getResourceRelation(relationId);
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-        ConsumedResourceRelationEntity relationMerged = entityManager.merge(relation);
+        AbstractResourceRelationEntity relationMerged = entityManager.merge(relation);
         ContextEntity contextMerged = entityManager.merge(context);
         ResourceEntity masterResource = relationMerged.getMasterResource();
 
@@ -62,7 +62,9 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             throw new NotAuthorizedException("Not allowed to set property value on relation");
         }
 
-        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(relationMerged, contextId);
+        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationMerged);
+        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(
+                masterResource.getId(), resourceEditRelation, contextId);
         ResourceEditProperty property = findByName(propertyName, properties);
         property.setPropertyValue(value);
         propertyValueService.setPropertyValue(
@@ -75,9 +77,9 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             throws ResourceNotFoundException, ValidationException {
         ValidationHelper.validateNotNullOrEmptyChecked(propertyName);
 
-        ConsumedResourceRelationEntity relation = getConsumedRelation(relationId);
+        AbstractResourceRelationEntity relation = getResourceRelation(relationId);
         ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-        ConsumedResourceRelationEntity relationMerged = entityManager.merge(relation);
+        AbstractResourceRelationEntity relationMerged = entityManager.merge(relation);
         ContextEntity contextMerged = entityManager.merge(context);
         ResourceEntity masterResource = relationMerged.getMasterResource();
 
@@ -85,7 +87,9 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             throw new NotAuthorizedException("Not allowed to reset property value on relation");
         }
 
-        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(relationMerged, contextId);
+        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationMerged);
+        List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(
+                masterResource.getId(), resourceEditRelation, contextId);
         ResourceEditProperty property = findByName(propertyName, properties);
         propertyValueService.resetPropertyValue(relationMerged.getOrCreateContext(contextMerged), property.getDescriptorId());
         auditService.storeIdInThreadLocalForAuditLog(relationMerged.getOrCreateContext(contextMerged));
@@ -155,23 +159,21 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             slaveName = relation.getSlaveName();
             resourceRelation.setIdentifier(newIdentifier);
         }
-        if (previousIdentifier != null) {
+        if (previousIdentifier != null && resourceRelation instanceof ConsumedResourceRelationEntity) {
+            // Only consumed relations need identifier update propagation to other relations with same slave
             // if the previousIdentifier equals to the slaveName, then the identifier of the relation has been empty before
+            ConsumedResourceRelationEntity consumedResourceRelation = (ConsumedResourceRelationEntity) resourceRelation;
             if (previousIdentifier.equals(slaveName)) {
-                ConsumedResourceRelationEntity consumedResourceRelation = getConsumedRelation(relation.getResRelId());
                 if (consumedResourceRelation.getIdentifier() == null
                         && consumedResourceRelation.getSlaveResource().getName().equals(previousIdentifier)) {
                     consumedResourceRelation.setIdentifier(newIdentifier);
                     entityManager.merge(consumedResourceRelation);
                 }
-
             } else {
-                ConsumedResourceRelationEntity consumedResourceRelation = getConsumedRelation(relation.getResRelId());
                 if (consumedResourceRelation.getIdentifier() != null
                         && consumedResourceRelation.getIdentifier().equals(previousIdentifier)) {
                     consumedResourceRelation.setIdentifier(newIdentifier);
                     entityManager.merge(consumedResourceRelation);
-
                 }
             }
         }
@@ -242,15 +244,15 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
         );
     }
 
-    private ConsumedResourceRelationEntity getConsumedRelation(Integer relationId) throws ResourceNotFoundException {
+    private AbstractResourceRelationEntity getResourceRelation(Integer relationId) throws ResourceNotFoundException {
         AbstractResourceRelationEntity relation = resourceRelationService.getResourceRelation(relationId);
         if (relation == null) {
             throw new ResourceNotFoundException("Relation with id " + relationId + " not found");
         }
-        if (!(relation instanceof ConsumedResourceRelationEntity)) {
-            throw new ResourceNotFoundException("Relation with id " + relationId + " is not a consumed relation");
+        if (!(relation instanceof ConsumedResourceRelationEntity) && !(relation instanceof ProvidedResourceRelationEntity)) {
+            throw new ResourceNotFoundException("Relation with id " + relationId + " is not a consumed or provided relation");
         }
-        return (ConsumedResourceRelationEntity) relation;
+        return relation;
     }
 
     private ResourceRelationTypeEntity getRelationType(Integer relTypeId) throws NotFoundException {

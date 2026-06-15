@@ -28,7 +28,7 @@ export class TooltipComponent {
   isPinned = signal<boolean>(true);
   private closeTimer: number | null = null;
 
-  handleToggle(event: MouseEvent) {
+  handleToggle(event: Event) {
     event.stopPropagation();
     event.preventDefault();
 

@@ -59,7 +59,7 @@ import java.util.logging.Logger;
  * @author oschmid
  */
 @Stateless
-public class ResourceRelationService implements Serializable{
+public class ResourceRelationService implements Serializable {
 
 	@Inject
 	EntityManager entityManager;

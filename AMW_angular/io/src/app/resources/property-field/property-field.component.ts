@@ -162,7 +162,8 @@ export class PropertyFieldComponent {
 
     const noValueSet = this.localValue === '' && defaultValue === '';
 
-    if (!isNullable && !isOptional && noValueSet && mik === '') {
+    // Skip required validation when reset is checked
+    if (!this.resetChecked() && !isNullable && !isOptional && noValueSet && mik === '') {
       this.validationError.set('This field is required');
       this.validationChange.emit(true);
       return;

@@ -2,20 +2,28 @@
   @if (pages()) {
     <nav>
       <ul class="pagination pointer m-1">
-        <li class="page-item {{ currentPage() < 2 ? 'disabled' : '' }}" aria-label="first" (click)="toPage(1)">
+        <li
+          class="page-item {{ currentPage() < 2 ? 'disabled' : '' }}"
+          aria-label="first"
+          (click)="toPage(1)"
+          (keydown.enter)="toPage(1)"
+          tabindex="0"
+        >
           <a class="page-link" aria-hidden="true">&laquo;</a>
         </li>
         <li
           class="page-item {{ currentPage() < 2 ? 'disabled' : '' }}"
           aria-label="previous"
           (click)="toPage(currentPage() - 1)"
+          (keydown.enter)="toPage(currentPage() - 1)"
+          tabindex="0"
         >
           <a class="page-link" aria-hidden="true">&lt;</a>
         </li>
         @for (page of pages(); track page) {
           <li class="page-item {{ currentPage() === page ? 'active' : '' }}">
-            <a class="page-link" (click)="toPage(page)"
-              >{{ page }}
+            <a class="page-link" (click)="toPage(page)" (keydown.enter)="toPage(page)" tabindex="0">
+              {{ page }}
               @if (currentPage() === page) {
                 <span class="visually-hidden">(current)</span>
               }
@@ -26,6 +34,8 @@
           class="page-item {{ currentPage() === lastPage() ? 'disabled' : '' }}"
           aria-label="next"
           (click)="toPage(currentPage() + 1)"
+          (keydown.enter)="toPage(currentPage() + 1)"
+          tabindex="0"
         >
           <a class="page-link"><span aria-hidden="true">&gt;</span></a>
         </li>
@@ -33,6 +43,8 @@
           class="page-item {{ currentPage() === lastPage() ? 'disabled' : '' }}"
           aria-label="last"
           (click)="toPage(lastPage())"
+          (keydown.enter)="toPage(lastPage())"
+          tabindex="0"
         >
           <a class="page-link"><span aria-hidden="true">&raquo;</span></a>
         </li>

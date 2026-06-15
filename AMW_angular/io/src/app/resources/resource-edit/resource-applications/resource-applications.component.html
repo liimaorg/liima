@@ -29,14 +29,6 @@
               </a>
             </td>
             <td class="text-end">
-              <app-button
-                [size]="'sm'"
-                [variant]="'link'"
-                [routerLink]="['/resource/edit']"
-                [additionalClasses]="'p-0 link-secondary me-2'"
-                [queryParams]="{ id: app.slaveId, ctx: contextId() }"
-                ><app-icon icon="pencil"></app-icon>
-              </app-button>
               @if (permissions().canUpdate) {
                 <app-button
                   [size]="'sm'"
@@ -79,7 +71,7 @@
     }
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
     <app-button
       [variant]="'primary'"
       (click)="addApplication()"
@@ -96,10 +88,12 @@
     (cancel)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
-    <p class="text-warning-2">Are you sure you want to remove this application from the application server?</p>
+    <p class="text">
+      Are you sure you want to remove <b>{{ applicationToRemove()?.slaveName }}</b> from the application server?
+    </p>
   </div>
   <div class="modal-footer">
-    <app-button [variant]="'secondary'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
+    <app-button [variant]="'light'" (click)="modal.dismiss('Cancel click')">Cancel</app-button>
     <app-button [variant]="'danger'" (click)="modal.close('Confirm click')">Remove</app-button>
   </div>
 </ng-template>
