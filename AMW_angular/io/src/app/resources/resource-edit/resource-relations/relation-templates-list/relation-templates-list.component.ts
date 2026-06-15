@@ -17,8 +17,11 @@ import {
 } from '../../resource-templates/resource-template-edit/resource-template-edit.component';
 import { takeUntil } from 'rxjs/operators';
 import { ResourceTemplatesService } from '../../../services/resource-templates.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from '../../../../shared/elements/toast/toast.service';
+import {
+  ResourceTemplateDeleteComponent
+} from '../../resource-templates/resource-template-delete/resource-template-delete.component';
 
 const RESOURCE_PERM = 'RESOURCE_TEMPLATE';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
@@ -179,8 +182,24 @@ export class RelationTemplatesListComponent implements OnDestroy {
   }
 
   private deleteTemplate(id: number) {
-    console.log('todo delete template')
+    const modalRef: NgbModalRef = this.modalService.open(ResourceTemplateDeleteComponent);
+    modalRef.componentInstance.templateId = id;
+    modalRef.componentInstance.deleteTemplateId
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id: number) => this.removeTemplate(id));
+  }
 
+  private removeTemplate(id: number) {
+    this.templatesService
+      .deleteTemplate(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template deleted successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.resourceRelationsService.setIdsForRelationTemplates(this.resource().id, this.relation().id, this.contextId());
+        },
+      });
   }
 
   private editTemplate(id: number) {
