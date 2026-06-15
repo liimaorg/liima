@@ -35,7 +35,9 @@ describe('ResourceActivationService', () => {
         expect(activations).toEqual(mockActivations);
       });
 
-      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
+      const req = httpTestingController.expectOne(
+        '/AMW_rest/resources/resources/100/relations/200/activations?contextId=1',
+      );
       expect(req.request.method).toEqual('GET');
       req.flush(mockActivations);
     });
@@ -47,7 +49,9 @@ describe('ResourceActivationService', () => {
         expect(activations).toEqual(mockActivations);
       });
 
-      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
+      const req = httpTestingController.expectOne(
+        '/AMW_rest/resources/resources/100/relations/200/activations?contextId=1',
+      );
       expect(req.request.method).toEqual('GET');
       req.flush(mockActivations);
     });
@@ -61,7 +65,9 @@ describe('ResourceActivationService', () => {
         // Success
       });
 
-      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=5');
+      const req = httpTestingController.expectOne(
+        '/AMW_rest/resources/resources/100/relations/200/activations?contextId=5',
+      );
       expect(req.request.method).toEqual('PUT');
       expect(req.request.body).toEqual(request);
       req.flush(null);
@@ -74,7 +80,9 @@ describe('ResourceActivationService', () => {
 
       service.setRelationParams(100, 200, 1);
 
-      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
+      const req = httpTestingController.expectOne(
+        '/AMW_rest/resources/resources/100/relations/200/activations?contextId=1',
+      );
       req.flush(mockActivations);
 
       expect(service.activations()).toEqual(mockActivations);
@@ -91,7 +99,9 @@ describe('ResourceActivationService', () => {
 
       expect(service.isLoading()).toBe(true);
 
-      const req = httpTestingController.expectOne('/AMW_rest/resources/100/relations/200/activations?contextId=1');
+      const req = httpTestingController.expectOne(
+        '/AMW_rest/resources/resources/100/relations/200/activations?contextId=1',
+      );
       req.flush(mockActivations);
 
       expect(service.isLoading()).toBe(false);
