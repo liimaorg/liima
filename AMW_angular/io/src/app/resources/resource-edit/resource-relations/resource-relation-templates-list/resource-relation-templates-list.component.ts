@@ -30,9 +30,9 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
   selector: 'app-relation-templates-list',
   standalone: true,
   imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
-  templateUrl: './relation-templates-list.component.html',
+  templateUrl: './resource-relation-templates-list.component.html',
 })
-export class RelationTemplatesListComponent implements OnDestroy {
+export class ResourceRelationTemplatesListComponent implements OnDestroy {
   private authService = inject(AuthService);
   private resourceRelationsService = inject(ResourceRelationsService);
   private templatesService = inject(ResourceTemplatesService);
