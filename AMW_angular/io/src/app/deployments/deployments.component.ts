@@ -57,11 +57,15 @@ export class DeploymentsComponent implements OnInit {
   filterTypes = signal<DeploymentFilterType[]>([]);
   private filterTypeMap = computed(() => {
     const map = new Map<string, FilterType>();
+    const validFilterTypes = Object.values(FilterType);
     this.filterTypes().forEach((filterType) => {
-      const validFilterTypes = Object.values(FilterType);
-      if (validFilterTypes.includes(filterType.type as FilterType)) {
-        map.set(filterType.name, filterType.type as FilterType);
+      // Check if type matches enum (case-insensitive fallback to STRING)
+      let matchedType = validFilterTypes.find((t) => t.toLowerCase() === filterType.type?.toLowerCase());
+      if (!matchedType && validFilterTypes.includes(filterType.type as FilterType)) {
+        matchedType = filterType.type as FilterType;
       }
+      // Default to STRING if no match found
+      map.set(filterType.name, matchedType || FilterType.STRING);
     });
     return map;
   });
@@ -477,7 +481,6 @@ export class DeploymentsComponent implements OnInit {
 
   private enhanceParamFilter() {
     if (this.paramFilters && this.paramFilters.length > 0) {
-      this.clearFilters();
       const enhancedFilters: DeploymentFilter[] = [];
 
       this.paramFilters.forEach((filter) => {
@@ -487,12 +490,12 @@ export class DeploymentsComponent implements OnInit {
           this.parseDateTime(filter, filterType);
           enhancedFilters.push(filter);
         } else {
-          this.errorMessage = 'Error parsing filter';
+          this.errorMessage = `Unknown filter: "${filter.name}"`;
         }
       });
 
       this.filters.set(enhancedFilters);
-      if (this.autoload) {
+      if (this.autoload && enhancedFilters.length > 0) {
         this.applyFilters();
       }
     } else if (this.autoload) {
