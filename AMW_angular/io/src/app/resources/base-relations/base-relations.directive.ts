@@ -16,8 +16,6 @@ import { finalize } from 'rxjs/operators';
 
 export const NODE_FILTERED_PROPERTIES = ['hostName', 'active'];
 
-export const NODE_FILTERED_PROPERTIES = ['hostName', 'active'];
-
 @Directive()
 export abstract class BaseRelationsDirective {
   contextId = input.required<number>();
