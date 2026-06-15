@@ -7,6 +7,7 @@ import { GroupedResourceRelations } from '../models/resource-relation';
 import { Property } from '../models/property';
 import { PropertyUpdate } from './resource-properties.service';
 import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
+import { ResourceTemplate } from '../models/resource-template';
 
 const EMPTY_GROUPED_RELATIONS: GroupedResourceRelations = {
   runtime: [],
@@ -105,6 +106,13 @@ export class ResourceRelationsService extends BaseService {
     contextId: number;
   }>();
 
+  private relationTemplates$: Subject<{ resourceId: number; relationId: number; contextId: number }> = new Subject<{
+    resourceId: number;
+    relationId: number;
+    contextId: number;
+  }>();
+
+
   private relationPropertiesForResource$: Observable<Property[]> = this.relationProperties$.pipe(
     switchMap(({ resourceId, relationId, contextId }) => {
       this.loadingRelationProperties.set(true);
@@ -116,10 +124,23 @@ export class ResourceRelationsService extends BaseService {
     shareReplay(1),
   );
 
+  private relationTemplatesForResource$: Observable<ResourceTemplate[]> = this.relationTemplates$.pipe(
+    switchMap(({ resourceId, relationId, contextId }) => {
+      return this.getResourceRelationTemplates(resourceId, relationId, contextId)
+    }),
+    startWith([]),
+    shareReplay(1),
+  );
+
   relationProperties = toSignal(this.relationPropertiesForResource$, { initialValue: [] as Property[] });
+  relationTemplates = toSignal(this.relationTemplatesForResource$, { initialValue: [] as ResourceTemplate[] });
 
   setIdsForRelationProperties(resourceId: number, relationId: number, contextId: number) {
     this.relationProperties$.next({ resourceId, relationId, contextId });
+  }
+
+  setIdsForRelationTemplates(resourceId: number, relationId: number, contextId: number) {
+    this.relationTemplates$.next({ resourceId, relationId, contextId });
   }
 
   private typeRelationProperties$: Subject<{ resourceTypeId: number; relTypeId: number; contextId: number }> =
@@ -234,6 +255,17 @@ export class ResourceRelationsService extends BaseService {
       .delete<void>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}`, {
         headers: this.getHeaders(),
       })
+      .pipe(catchError(this.handleError));
+  }
+
+  getResourceRelationTemplates(resourceId: number, relationId: number, contextId: number): Observable<ResourceTemplate[]> {
+    return this.http
+      .get<ResourceTemplate[]>(
+        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/templates?contextId=${contextId}`,
+        {
+          headers: this.getHeaders(),
+        },
+      )
       .pipe(catchError(this.handleError));
   }
 }

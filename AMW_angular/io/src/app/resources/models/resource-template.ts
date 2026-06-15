@@ -5,6 +5,6 @@ export interface ResourceTemplate {
   targetPath: string | null;
   targetPlatforms: string[];
   fileContent: string;
-  sourceType?: 'RESOURCE' | 'RESOURCE_TYPE';
+  sourceType?: 'RESOURCE' | 'RESOURCE_TYPE' | 'RESOURCE_RELATION' | 'RESOURCE_RELATION_TYPE';
   version: number;
 }
