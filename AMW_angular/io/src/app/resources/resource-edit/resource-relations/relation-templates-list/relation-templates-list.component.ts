@@ -11,7 +11,14 @@ import { ResourceTemplate } from '../../../models/resource-template';
 import { AuthService } from '../../../../auth/auth.service';
 import { ResourceRelationsService } from '../../../services/resource-relations.service';
 import { Resource } from '../../../models/resource';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import {
+  ResourceTemplateEditComponent
+} from '../../resource-templates/resource-template-edit/resource-template-edit.component';
+import { takeUntil } from 'rxjs/operators';
+import { ResourceTemplatesService } from '../../../services/resource-templates.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from '../../../../shared/elements/toast/toast.service';
 
 const RESOURCE_PERM = 'RESOURCE_TEMPLATE';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
@@ -25,7 +32,11 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 export class RelationTemplatesListComponent implements OnDestroy {
   private authService = inject(AuthService);
   private resourceRelationsService = inject(ResourceRelationsService);
+  private templatesService = inject(ResourceTemplatesService);
+  private modalService = inject(NgbModal);
+  private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
+  private error$ = new BehaviorSubject<string>('');
 
   relation = input.required<ResourceRelation>();
   resource = input.required<Resource>();
@@ -125,7 +136,35 @@ export class RelationTemplatesListComponent implements OnDestroy {
   }
 
   addTemplate() {
-    console.log('todo add template')
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = {
+      id: null,
+      relatedResourceIdentifier: '',
+      name: '',
+      targetPath: '',
+      targetPlatforms: [],
+      fileContent: '',
+      sourceType: 'RESOURCE_RELATION',
+    };
+    modalRef.componentInstance.canAddOrEdit = this.permissions().canAdd;
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => this.createTemplate(templateData));
+  }
+
+  private createTemplate(templateData: ResourceTemplate) {
+    this.resourceRelationsService
+      .addRelationTemplate(templateData, this.resource().id, this.relation().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.resourceRelationsService.setIdsForRelationTemplates(this.resource().id, this.relation().id, this.contextId());
+        },
+      });
   }
 
   protected doListAction($event: TileListEntryOutput) {

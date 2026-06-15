@@ -34,13 +34,17 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRela
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ListApplicationsForAppServerUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceRelationsUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GroupedRelations;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceRelationCommand;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceRelationUseCase;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.business.template.boundary.GetRelationTemplatesUseCase;
+import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -92,6 +96,13 @@ public class ResourceRelationsByIdRest {
 
     @Inject
     ContextLocator contextLocator;
+
+    @Inject
+    TemplateEditor templateEditor;
+
+    @Inject
+    ResourceGroupLocator resourceGroupLocator;
+
 
     @GET
     @Path("/{id : \\d+}/relations")
@@ -172,6 +183,44 @@ public class ResourceRelationsByIdRest {
         return Response.ok(templates.stream()
                 .map(TemplateDTO::new)
                 .collect(Collectors.toList())).build();
+    }
+
+    @POST
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/addTemplate")
+    @Operation(summary = "Add new relation template")
+    public Response addNewRelationTypeTemplate(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            TemplateDTO request)
+            throws AMWException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForRelation(template, relationId, resourceId != null);
+        return Response.status(Response.Status.OK).build();
+    }
+
+
+    //TODO remove duplicated code
+    private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {
+        if (template == null) {
+            template = new TemplateDescriptorEntity();
+        }
+        template.setId(templateDTO.getId());
+        template.setFileContent(templateDTO.getFileContent());
+        template.setName(templateDTO.getName());
+        template.setTargetPath(templateDTO.getTargetPath());
+        HashSet<ResourceGroupEntity> targetPlatforms = new HashSet<>();
+        if (templateDTO.getTargetPlatforms() != null) {
+            for (String platform : templateDTO.getTargetPlatforms()) {
+                ResourceGroupEntity platformEntity = resourceGroupLocator.getResourceGroupByName(platform);
+                targetPlatforms.add(platformEntity);
+            }
+        }
+        template.setTargetPlatforms(targetPlatforms);
+        if (templateDTO.getVersion() != null) {
+            template.setV(templateDTO.getVersion());
+        }
+
+        return template;
     }
 
     private List<PropertyEditingService.DifferingProperty> getOverwriteInfos(Integer relationId, Integer contextId, ResourceEditProperty property) throws ResourceNotFoundException {
