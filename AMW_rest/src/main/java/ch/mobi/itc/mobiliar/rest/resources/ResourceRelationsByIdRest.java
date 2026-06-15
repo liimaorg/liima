@@ -57,6 +57,7 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -198,6 +199,17 @@ public class ResourceRelationsByIdRest {
         return Response.status(Response.Status.OK).build();
     }
 
+    @PUT
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/updateTemplate")
+    @Operation(summary = "Modify existing template for relation")
+    public Response modifyRelationTemplate(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            TemplateDTO request) throws AMWException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForRelation(template, relationId, resourceId != null);
+        return Response.status(Response.Status.OK).build();
+    }
 
     //TODO remove duplicated code
     private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {

@@ -203,7 +203,29 @@ export class RelationTemplatesListComponent implements OnDestroy {
   }
 
   private editTemplate(id: number) {
-    console.log('todo edit template')
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = this.templates()?.find((item) => item.id === id);
+    modalRef.componentInstance.canAddOrEdit = this.permissions().canEdit;
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => {
+        templateData.sourceType = 'RESOURCE_RELATION';
+        this.updateTemplate(templateData);
+      });
+  }
 
+  private updateTemplate(templateData: ResourceTemplate) {
+    this.resourceRelationsService
+      .updateRelationTemplate(templateData, this.resource().id, this.relation().id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.resourceRelationsService.setIdsForRelationTemplates(this.resource().id, this.relation().id, this.contextId());
+        },
+      });
   }
 }
