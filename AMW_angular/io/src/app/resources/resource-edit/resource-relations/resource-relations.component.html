@@ -136,7 +136,7 @@
         </ng-select>
       </div>
     }
-    @if (availableResourceGroups().length > 0 || (selectedResourceTypeId() && childResourceTypes().length === 0)) {
+    @if (isResource()) {
       <div class="mb-3">
         <label for="resourceGroupSelect" class="form-label">Resource</label>
         <ng-select

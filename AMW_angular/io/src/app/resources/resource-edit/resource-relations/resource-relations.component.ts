@@ -57,6 +57,12 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   addAsProvided = signal<boolean>(false);
   isAddingRelation = signal<boolean>(false);
 
+  isResource = computed(
+    () =>
+      this.availableResourceGroups().length > 0 ||
+      (this.selectedResourceTypeId() && this.childResourceTypes().length === 0),
+  );
+
   isApplicationType = computed(
     () => this.resource()?.type === '"APPLICATION"' || this.resource()?.type === 'APPLICATION',
   );
@@ -65,8 +71,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const res = this.resource();
     const releases = this.resourceService.releasesForResourceGroup();
     if (!res?.release || !releases?.length) return false;
-    const last = releases[releases.length - 1];
-    return last?.release !== res.release;
+    return releases.some((r) => r.release > res.release);
   });
 
   protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
