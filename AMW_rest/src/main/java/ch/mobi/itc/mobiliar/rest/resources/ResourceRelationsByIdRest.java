@@ -25,6 +25,8 @@ import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyBulkUpdateDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceActivationDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.ResourceActivationsRequestDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceRelationDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.UnresolvedRelationDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
@@ -34,7 +36,11 @@ import ch.puzzle.itc.mobiliar.business.property.boundary.UpdateRelationPropertie
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.resourceactivation.boundary.ResourceActivationService;
+import ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationCommand;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ListApplicationsForAppServerUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceRelationsUseCase;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GroupedRelations;
@@ -64,7 +70,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @RequestScoped
@@ -86,6 +94,12 @@ public class ResourceRelationsByIdRest {
 
     @Inject
     RemoveResourceRelationUseCase removeResourceRelationUseCase;
+
+    @Inject
+    ResourceActivationService resourceActivationService;
+
+    @Inject
+    ListApplicationsForAppServerUseCase listApplicationsUseCase;
 
     @Inject
     ContextLocator contextLocator;
@@ -237,6 +251,75 @@ public class ResourceRelationsByIdRest {
         RemoveResourceRelationCommand command = new RemoveResourceRelationCommand(relationId);
 
         removeResourceRelationUseCase.removeRelation(command);
+
+        return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+    @GET
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/activations")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get resource activations for a relation (active applications)")
+    public Response getResourceActivations(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws ResourceNotFoundException, ValidationException {
+
+        // Get all applications linked to this resource (the AppServer's applications)
+        List<ConsumedResourceRelationEntity> applications = listApplicationsUseCase.listApplications(resourceId);
+
+        // Get activation entities for this relation+context (contains deactivation info)
+        List<ResourceActivationEntity> activations = resourceActivationService.loadResourceActivations(relationId, contextId);
+
+        // Build a set of inactive application group IDs
+        Set<Integer> inactiveAppGroupIds = new HashSet<>();
+        for (ResourceActivationEntity activation : activations) {
+            if (!activation.isActive()) {
+                inactiveAppGroupIds.add(activation.getResourceGroup().getId());
+            }
+        }
+
+        // Build DTOs for all applications - default to active unless explicitly deactivated
+        List<ResourceActivationDTO> dtos = new ArrayList<>();
+        for (ConsumedResourceRelationEntity appRelation : applications) {
+            Integer appGroupId = appRelation.getSlaveResource().getResourceGroup().getId();
+            String appGroupName = appRelation.getSlaveResource().getResourceGroup().getName();
+            boolean isActive = !inactiveAppGroupIds.contains(appGroupId);
+            dtos.add(new ResourceActivationDTO(appGroupId, appGroupName, isActive));
+        }
+
+        return Response.ok(dtos).build();
+    }
+
+    @PUT
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/activations")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update resource activations (activate/deactivate applications)")
+    public Response updateResourceActivations(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            ResourceActivationsRequestDTO request,
+            @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
+            throws ResourceNotFoundException, ValidationException {
+
+        if (request == null || request.getActiveResourceGroupIds() == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Active resource group IDs are required").build();
+        }
+
+        // Get all applications linked to this resource
+        List<ConsumedResourceRelationEntity> applications = listApplicationsUseCase.listApplications(resourceId);
+        List<Integer> allAppGroupIds = new ArrayList<>();
+        for (ConsumedResourceRelationEntity appRelation : applications) {
+            allAppGroupIds.add(appRelation.getSlaveResource().getResourceGroup().getId());
+        }
+
+        // Calculate which ones to deactivate (not in the active list)
+        List<Integer> activeIds = request.getActiveResourceGroupIds();
+        List<Integer> deactivationIds = new ArrayList<>(allAppGroupIds);
+        deactivationIds.removeAll(activeIds);
+
+        resourceActivationService.activateDeactivateResources(relationId, contextId, deactivationIds, activeIds);
 
         return Response.status(Response.Status.NO_CONTENT).build();
     }
