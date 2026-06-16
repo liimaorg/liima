@@ -30,12 +30,11 @@ public interface GetRelationTemplatesUseCase {
     /**
      * Returns templates for a specific resource relation.
      *
-     * @param resourceId the resource ID
      * @param relationId the relation ID (resRelId)
      * @return list of templates for the relation
      * @throws ResourceNotFoundException if the resource or relation is not found
      */
-    List<TemplateDescriptorEntity> getTemplatesForRelation(Integer resourceId, Integer relationId)
+    List<TemplateDescriptorEntity> getTemplatesForResourceRelation(Integer relationId)
             throws ResourceNotFoundException;
 
 }

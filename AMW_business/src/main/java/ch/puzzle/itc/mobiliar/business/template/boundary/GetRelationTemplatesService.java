@@ -46,7 +46,7 @@ public class GetRelationTemplatesService implements GetRelationTemplatesUseCase 
     TemplatesScreenDomainService templateService;
 
     @Override
-    public List<TemplateDescriptorEntity> getTemplatesForRelation(Integer resourceId, Integer relationId)
+    public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(Integer relationId)
             throws ResourceNotFoundException {
         ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationId);
         List<TemplateDescriptorEntity> relationTemplates = templateService.getGlobalTemplatesForResourceRelation(resourceEditRelation);

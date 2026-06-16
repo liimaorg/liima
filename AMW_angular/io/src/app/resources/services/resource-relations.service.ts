@@ -106,10 +106,9 @@ export class ResourceRelationsService extends BaseService {
     contextId: number;
   }>();
 
-  private relationTemplates$: Subject<{ resourceId: number; relationId: number; contextId: number }> = new Subject<{
+  private resourceRelationTemplates$: Subject<{ resourceId: number; relationId: number }> = new Subject<{
     resourceId: number;
     relationId: number;
-    contextId: number;
   }>();
 
 
@@ -124,23 +123,23 @@ export class ResourceRelationsService extends BaseService {
     shareReplay(1),
   );
 
-  private relationTemplatesForResource$: Observable<ResourceTemplate[]> = this.relationTemplates$.pipe(
-    switchMap(({ resourceId, relationId, contextId }) => {
-      return this.getResourceRelationTemplates(resourceId, relationId, contextId)
+  private relationTemplatesForResource$: Observable<ResourceTemplate[]> = this.resourceRelationTemplates$.pipe(
+    switchMap(({ resourceId, relationId}) => {
+      return this.getResourceRelationTemplates(resourceId, relationId)
     }),
     startWith([]),
     shareReplay(1),
   );
 
   relationProperties = toSignal(this.relationPropertiesForResource$, { initialValue: [] as Property[] });
-  relationTemplates = toSignal(this.relationTemplatesForResource$, { initialValue: [] as ResourceTemplate[] });
+  resourceRelationTemplates = toSignal(this.relationTemplatesForResource$, { initialValue: [] as ResourceTemplate[] });
 
   setIdsForRelationProperties(resourceId: number, relationId: number, contextId: number) {
     this.relationProperties$.next({ resourceId, relationId, contextId });
   }
 
-  setIdsForRelationTemplates(resourceId: number, relationId: number, contextId: number) {
-    this.relationTemplates$.next({ resourceId, relationId, contextId });
+  setIdsForResourceRelationTemplates(resourceId: number, relationId: number) {
+    this.resourceRelationTemplates$.next({ resourceId, relationId });
   }
 
   private typeRelationProperties$: Subject<{ resourceTypeId: number; relTypeId: number; contextId: number }> =
@@ -258,10 +257,10 @@ export class ResourceRelationsService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  getResourceRelationTemplates(resourceId: number, relationId: number, contextId: number): Observable<ResourceTemplate[]> {
+  getResourceRelationTemplates(resourceId: number, relationId: number): Observable<ResourceTemplate[]> {
     return this.http
       .get<ResourceTemplate[]>(
-        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/templates?contextId=${contextId}`,
+        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/templates`,
         {
           headers: this.getHeaders(),
         },

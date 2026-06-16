@@ -27,7 +27,7 @@ const RESOURCE_PERM = 'RESOURCE_TEMPLATE';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 
 @Component({
-  selector: 'app-relation-templates-list',
+  selector: 'app-resource-relation-templates-list',
   standalone: true,
   imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
   templateUrl: './resource-relation-templates-list.component.html',
@@ -44,11 +44,11 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
   relation = input.required<ResourceRelation>();
   resource = input.required<Resource>();
   contextId = input.required<number>();
-  templates = this.resourceRelationsService.relationTemplates;
+  templates = this.resourceRelationsService.resourceRelationTemplates;
 
   isLoading = computed(() => {
     if (this.relation() != null && this.resource() != null && this.contextId() != null) {
-      this.resourceRelationsService.setIdsForRelationTemplates(this.resource().id, this.relation()?.id, this.contextId())
+      this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation()?.id)
       return false;
     }
   });
@@ -165,7 +165,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
         next: () => this.toastService.success('Template saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.resourceRelationsService.setIdsForRelationTemplates(this.resource().id, this.relation().id, this.contextId());
+          this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },
       });
   }
@@ -197,7 +197,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
         next: () => this.toastService.success('Template deleted successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.resourceRelationsService.setIdsForRelationTemplates(this.resource().id, this.relation().id, this.contextId());
+          this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },
       });
   }
@@ -224,7 +224,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
         next: () => this.toastService.success('Template saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.resourceRelationsService.setIdsForRelationTemplates(this.resource().id, this.relation().id, this.contextId());
+          this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },
       });
   }

@@ -167,12 +167,12 @@ public class ResourceRelationsByIdRest {
     @Path("/{id : \\d+}/relations/{relationId : \\d+}/templates")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Get templates for a specific resource relation by resource ID and relation ID")
-    public Response getRelationTemplates(
+    public Response getResourceRelationTemplates(
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId) throws NotFoundException {
 
         List<TemplateDescriptorEntity> templates =
-                getRelationTemplatesUseCase.getTemplatesForRelation(resourceId, relationId);
+                getRelationTemplatesUseCase.getTemplatesForResourceRelation(relationId);
 
         return Response.ok(templates.stream()
                 .map(TemplateDTO::new)
