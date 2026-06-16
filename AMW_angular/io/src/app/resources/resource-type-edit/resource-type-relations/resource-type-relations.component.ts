@@ -16,6 +16,9 @@ import { RelationGroupItem, RelationGroupComponent } from '../../relation-group/
 import { PropertiesListComponent } from '../../properties-list/properties-list.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
+import {
+  ResourceTypeRelationTemplatesListComponent
+} from './resource-type-relation-templates-list/resource-type-relation-templates-list.component';
 
 @Component({
   selector: 'app-resource-type-relations',
@@ -31,6 +34,7 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
     ModalHeaderComponent,
     FormsModule,
     NgSelectModule,
+    ResourceTypeRelationTemplatesListComponent,
   ],
   templateUrl: './resource-type-relations.component.html',
   styleUrl: './resource-type-relations.component.scss',

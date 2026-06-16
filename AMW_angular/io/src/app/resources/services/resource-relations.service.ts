@@ -111,6 +111,11 @@ export class ResourceRelationsService extends BaseService {
     relationId: number;
   }>();
 
+  private resourceTypeRelationTemplates$: Subject<{ resourceTypeId: number; relationId: number }> = new Subject<{
+    resourceTypeId: number;
+    relationId: number;
+  }>();
+
 
   private relationPropertiesForResource$: Observable<Property[]> = this.relationProperties$.pipe(
     switchMap(({ resourceId, relationId, contextId }) => {
@@ -131,8 +136,17 @@ export class ResourceRelationsService extends BaseService {
     shareReplay(1),
   );
 
+  private relationTemplatesForResourceType$: Observable<ResourceTemplate[]> = this.resourceTypeRelationTemplates$.pipe(
+    switchMap(({ resourceTypeId, relationId }) => {
+      return this.getResourceTypeRelationTemplates(resourceTypeId, relationId)
+    }),
+    startWith([]),
+    shareReplay(1),
+  );
+
   relationProperties = toSignal(this.relationPropertiesForResource$, { initialValue: [] as Property[] });
   resourceRelationTemplates = toSignal(this.relationTemplatesForResource$, { initialValue: [] as ResourceTemplate[] });
+  resourceTypeRelationTemplates = toSignal(this.relationTemplatesForResourceType$, { initialValue: [] as ResourceTemplate[] });
 
   setIdsForRelationProperties(resourceId: number, relationId: number, contextId: number) {
     this.relationProperties$.next({ resourceId, relationId, contextId });
@@ -164,6 +178,10 @@ export class ResourceRelationsService extends BaseService {
 
   setIdsForTypeRelationProperties(resourceTypeId: number, relTypeId: number, contextId: number) {
     this.typeRelationProperties$.next({ resourceTypeId, relTypeId, contextId });
+  }
+
+  setIdsForResourceTypeRelationTemplates(resourceTypeId: number, relationId: number) {
+    this.resourceTypeRelationTemplates$.next({ resourceTypeId, relationId });
   }
 
   getResourceRelationProperties(resourceId: number, relationId: number, contextId: number): Observable<Property[]> {
@@ -254,6 +272,17 @@ export class ResourceRelationsService extends BaseService {
       .delete<void>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}`, {
         headers: this.getHeaders(),
       })
+      .pipe(catchError(this.handleError));
+  }
+
+  getResourceTypeRelationTemplates(resourceTypeId: number, relationId: number): Observable<ResourceTemplate[]> {
+    return this.http
+      .get<ResourceTemplate[]>(
+        `${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/templates`,
+        {
+          headers: this.getHeaders(),
+        },
+      )
       .pipe(catchError(this.handleError));
   }
 

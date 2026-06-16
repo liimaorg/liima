@@ -24,7 +24,10 @@
             <h3 class="relation-detail-title">{{ rel.name }}</h3>
             @if (permissions().canUpdateProperty && contextId() === 1) {
               <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveTypeRelationConfirmation()"
-                ><app-icon icon="trash"></app-icon> Remove Relation</app-button
+              >
+                <app-icon icon="trash"></app-icon>
+                Remove Relation
+              </app-button
               >
             }
           </div>
@@ -54,6 +57,8 @@
             </app-properties-panel>
           </div>
         </div>
+        <app-resource-type-relation-templates-list [resourceType]="resourceType()" [relation]="rel"
+                                                   [contextId]="contextId()"></app-resource-type-relation-templates-list>
       }
     </div>
   }
@@ -98,7 +103,7 @@
   <div class="modal-body">
     <p class="text">
       Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.name }}</b
-      >?
+    >?
     </p>
     <p class="text">If you continue, all defined property values for the relation will be lost.</p>
   </div>

@@ -21,6 +21,7 @@
 package ch.puzzle.itc.mobiliar.business.template.boundary;
 
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import java.util.List;
@@ -36,5 +37,8 @@ public interface GetRelationTemplatesUseCase {
      */
     List<TemplateDescriptorEntity> getTemplatesForResourceRelation(Integer relationId)
             throws ResourceNotFoundException;
+
+    List<TemplateDescriptorEntity> getTemplatesForResourceTypeRelation(Integer resourceTypeId, Integer relTypeId)
+            throws NotFoundException;
 
 }

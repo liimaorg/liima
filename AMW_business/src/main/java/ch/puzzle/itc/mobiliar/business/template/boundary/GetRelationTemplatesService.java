@@ -22,16 +22,21 @@ package ch.puzzle.itc.mobiliar.business.template.boundary;
 
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +50,12 @@ public class GetRelationTemplatesService implements GetRelationTemplatesUseCase 
     @Inject
     TemplatesScreenDomainService templateService;
 
+    @Inject
+    ResourceTypeLocator resourceTypeLocator;
+
+    @Inject
+    EntityManager entityManager;
+
     @Override
     public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(Integer relationId)
             throws ResourceNotFoundException {
@@ -56,6 +67,28 @@ public class GetRelationTemplatesService implements GetRelationTemplatesUseCase 
 
         return Stream.concat(relationTemplates.stream(), relationTypeTemplates.stream())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TemplateDescriptorEntity> getTemplatesForResourceTypeRelation(Integer resourceTypeId, Integer relTypeId)
+            throws NotFoundException {
+        ResourceTypeEntity resourceType = resourceTypeLocator.getResourceType(resourceTypeId);
+        if (resourceType == null) {
+            throw new NotFoundException("ResourceType with id " + resourceTypeId + " not found");
+        }
+        ResourceRelationTypeEntity relationType = entityManager.find(ResourceRelationTypeEntity.class, relTypeId);
+        if (relationType == null) {
+            throw new NotFoundException("ResourceRelationType with id " + relTypeId + " not found");
+        }
+        ResourceEditRelation relation = new ResourceEditRelation(
+                null, null, null, null, null, null, null, null,
+                null, null, relTypeId, null,
+                ResourceEditRelation.Mode.TYPE.name(), null);
+
+        List<TemplateDescriptorEntity> relationTemplates = templateService.getGlobalTemplatesForResourceRelationType(relation);
+        relationTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE_RELATION_TYPE));
+
+        return relationTemplates;
     }
 
     //TODO remove duplicated code
