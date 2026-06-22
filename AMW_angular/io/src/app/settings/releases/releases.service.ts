@@ -58,7 +58,7 @@ export class ReleasesService extends BaseService {
       map((jsonObject) => {
         const resourceMap = new Map<string, ResourceEntity[]>();
         for (const value in jsonObject) {
-          resourceMap.set(value, jsonObject[value]);
+          resourceMap.set(value, (jsonObject as any)[value]);
         }
         return resourceMap;
       }),

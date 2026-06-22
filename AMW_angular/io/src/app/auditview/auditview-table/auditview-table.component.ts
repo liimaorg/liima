@@ -16,11 +16,11 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule, SortableHeader, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
 })
 export class AuditviewTableComponent implements OnChanges {
-  @Input() auditlogEntries;
+  @Input() auditlogEntries!: AuditLogEntry[];
 
   service = inject(AuditviewTableService);
   auditlogEntries$: Observable<AuditLogEntry[]> = this.service.result$;
-  @ViewChildren(SortableHeader) headers: QueryList<SortableHeader>;
+  @ViewChildren(SortableHeader) headers!: QueryList<SortableHeader>;
   dateFormat = DATE_TIME_FORMAT;
 
   ngOnChanges(changes: SimpleChanges): void {

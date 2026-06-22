@@ -22,11 +22,11 @@ export class AuditviewComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private activatedRoute = inject(ActivatedRoute);
 
-  name: string;
+  name!: string;
   auditLogEntries: AuditLogEntry[] = [];
-  errorMessage: string;
-  successMessage: string;
-  resourceId: number;
+  errorMessage!: string;
+  successMessage!: string;
+  resourceId!: number;
   isLoading = signal(true);
 
   ngOnInit() {

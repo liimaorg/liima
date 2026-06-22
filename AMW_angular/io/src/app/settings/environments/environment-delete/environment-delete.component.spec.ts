@@ -1,6 +1,7 @@
 import { EnvironmentDeleteComponent } from './environment-delete.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Environment } from '../../../deployment/environment';
 
 describe('EnvironmentDeleteComponent', () => {
   let component: EnvironmentDeleteComponent;
@@ -23,7 +24,7 @@ describe('EnvironmentDeleteComponent', () => {
       parentId: 1,
       selected: undefined,
       disabled: undefined,
-    };
+    } as unknown as Environment;
 
     fixture.detectChanges();
   });

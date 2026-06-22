@@ -1,5 +1,5 @@
 export interface ResourceFunction {
-  id: number;
+  id: number | null;
   name: string;
   miks: Set<string>;
   content: string;

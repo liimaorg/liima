@@ -44,7 +44,7 @@ describe('ReleasesComponent', () => {
     vi.spyOn(component, 'results').mockReturnValue([testRelease]);
 
     // Act
-    component.editRelease(testRelease.id);
+    component.editRelease(testRelease.id!);
 
     // Assert
     expect(openSpy).toHaveBeenCalledWith(ReleaseEditComponent);

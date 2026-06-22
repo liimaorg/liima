@@ -1,7 +1,7 @@
 import { PropertyTag } from './property-tag';
 
 export interface PropertyType {
-  id: number;
+  id: number | null;
   name: string;
   encrypted: boolean;
   validationRegex: string;

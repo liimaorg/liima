@@ -17,7 +17,7 @@ describe('ResourceTemplatesComponent', () => {
 
     fixture = TestBed.createComponent(ResourceTemplatesListComponent);
     component = fixture.componentInstance;
-    component.resource = signal<Resource>(null) as unknown as InputSignal<Resource>;
+    component.resource = signal<Resource | null>(null) as unknown as InputSignal<Resource>;
     fixture.detectChanges();
   });
 

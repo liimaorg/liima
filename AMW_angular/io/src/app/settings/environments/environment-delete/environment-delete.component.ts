@@ -11,8 +11,8 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 })
 export class EnvironmentDeleteComponent {
   activeModal = inject(NgbActiveModal);
-  @Input() environment: Environment;
-  @Input() globalName: string;
+  @Input() environment!: Environment;
+  @Input() globalName!: string;
   @Output() deleteEnvironment: EventEmitter<Environment> = new EventEmitter<Environment>();
 
   cancel() {

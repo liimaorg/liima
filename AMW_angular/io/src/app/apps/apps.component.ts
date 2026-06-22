@@ -54,7 +54,7 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   showLoader = signal(false);
   isLoading = computed(() => {
-    return this.appsService.apps() === undefined || this.appsService.apps() === null || this.showLoader();
+    return this.appsService.apps() === undefined || this.showLoader();
   });
 
   permissions = computed(() => {
@@ -83,7 +83,7 @@ export class AppsComponent implements OnInit, OnDestroy {
         this.appsService.releaseId.set(params.releaseId ? Number(params.releaseId) : 0);
       }
       if (params.filter) {
-        this.appsService.filter.set(params.filter ?? null);
+        this.appsService.filter.set(params.filter ?? undefined);
       }
       if (this.appsService.releaseId()) {
         this.appsService.refreshData();
@@ -92,7 +92,7 @@ export class AppsComponent implements OnInit, OnDestroy {
           .getUpcomingRelease()
           .pipe(take(1))
           .subscribe((release: Release) => {
-            this.appsService.releaseId.set(release.id);
+            this.appsService.releaseId.set(release.id ?? undefined);
             this.appsService.refreshData();
           });
       }

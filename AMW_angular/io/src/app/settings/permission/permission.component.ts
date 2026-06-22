@@ -63,7 +63,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [{ id: null, name: null, parentName: 'All', selected: false } as Environment];
+  environments: Environment[] = [{ id: null, name: null, parentName: 'All', selected: false } as unknown as Environment];
   groupedEnvironments: { [key: string]: Environment[] } = {
     All: [],
     Global: [],
@@ -78,27 +78,27 @@ export class PermissionComponent implements OnInit, OnDestroy {
       children: [],
       isApplication: false,
       isDefaultResourceType: false,
-    },
+    } as unknown as ResourceType,
   ];
 
   restrictionType: string = 'role';
   delegationMode: boolean = false;
   assignedRestrictions = signal<Restriction[]>([]);
-  selectedRoleName: string = null;
+  selectedRoleName: string | null = null;
   selectedUserNames: string[] = [];
-  actingUserName: string = null;
+  actingUserName: string | null = null;
   assignableRestrictions: Restriction[] = [];
   assignablePermissions: Permission[] = [];
 
   // edit restriction
-  restriction: Restriction = null;
+  restriction: Restriction | null = null;
   // backup for cancel
-  backupRestriction: Restriction = null;
+  backupRestriction: Restriction | null = null;
   // create new restrictions if true
   create: boolean = false;
 
-  errorMessage: string = null;
-  successMessage: string = null;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
   isLoading = signal(false);
   private routeSub?: Subscription;
 
@@ -128,7 +128,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   }
 
   onChangeRole() {
-    this.selectedRoleName = this.selectedRoleName.trim();
+    this.selectedRoleName = this.selectedRoleName!.trim();
     if (this.isExistingRole(this.selectedRoleName)) {
       this.getRoleWithRestrictions(this.selectedRoleName);
     } else {
@@ -177,20 +177,21 @@ export class PermissionComponent implements OnInit, OnDestroy {
     // reset restriction list, discard unsaved changes
     this.clearMessages();
     this.resetPermissionList();
-    const restriction = this.assignedRestrictions().find((r) => r.id === restrictionId);
+    const restriction = this.assignedRestrictions().find((r) => r.id === restrictionId)!;
     this.backupRestriction = { ...restriction };
     this.restriction = restriction;
   }
 
   persistRestriction() {
     this.clearMessages();
+    if (!this.restriction) return;
     this.isLoading.set(true);
     if (this.restriction.id != null) {
       this.permissionService.updateRestriction(this.restriction).subscribe({
         next: () => '',
         error: (e) => (this.errorMessage = e),
         complete: () => {
-          this.updatePermissions(this.restriction);
+          this.updatePermissions(this.restriction!);
           this.updateNamesLists();
           this.restriction = null;
           this.backupRestriction = null;
@@ -199,11 +200,11 @@ export class PermissionComponent implements OnInit, OnDestroy {
         },
       });
     } else {
-      this.permissionService.createRestriction(this.restriction, this.delegationMode).subscribe({
+      this.permissionService.createRestriction(this.restriction!, this.delegationMode).subscribe({
         next: (r) => (this.restriction = r),
         error: (e) => (this.errorMessage = e),
         complete: () => {
-          this.updatePermissions(this.restriction);
+          this.updatePermissions(this.restriction!);
           this.updateNamesLists();
           this.restriction = null;
           this.isLoading.set(false);
@@ -242,7 +243,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
 
   private convertToSelectedUserNames(users: any) {
     this.selectedUserNames = [];
-    users.forEach((user) => {
+    users.forEach((user: any) => {
       if (user.label) {
         this.selectedUserNames.push(user.label.trim());
       } else {
@@ -369,7 +370,7 @@ export class PermissionComponent implements OnInit, OnDestroy {
   private getAllAssignableUserNames() {
     this.isLoading.set(true);
     this.permissionService.getAllUserRestrictionNames().subscribe({
-      next: (r) => (this.userNames = _.pull(r, this.actingUserName)),
+      next: (r) => (this.userNames = _.pull(r, this.actingUserName!)),
       error: (e) => (this.errorMessage = e),
       complete: () => this.isLoading.set(false),
     });

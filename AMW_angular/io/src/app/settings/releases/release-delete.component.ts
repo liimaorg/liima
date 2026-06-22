@@ -15,8 +15,8 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class ReleaseDeleteComponent implements OnInit {
   activeModal = inject(NgbActiveModal);
 
-  @Input() release: Release;
-  @Input() resources: Map<string, ResourceEntity[]>;
+  @Input() release!: Release;
+  @Input() resources!: Map<string, ResourceEntity[]>;
   @Output() deleteRelease: EventEmitter<Release> = new EventEmitter<Release>();
 
   hasResources: boolean = false;

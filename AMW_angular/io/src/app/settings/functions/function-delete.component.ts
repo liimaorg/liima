@@ -12,7 +12,7 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class FunctionDeleteComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() function: AppFunction;
+  @Input() function!: AppFunction;
   @Output() deleteFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();
 
   cancel() {

@@ -1,6 +1,8 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppAddComponent } from './app-add.component';
+import { AppCreate } from '../app-create';
+import { Resource } from '../../resources/models/resource';
 import { signal } from '@angular/core';
 
 describe('AppAddComponent', () => {
@@ -27,7 +29,7 @@ describe('AppAddComponent', () => {
   });
 
   it('hasInvalidGroup true when no group', () => {
-    component.appServerGroup = undefined;
+    component.appServerGroup = undefined as unknown as Resource;
     expect(component.hasInvalidGroup()).toBe(true);
   });
 
@@ -37,12 +39,12 @@ describe('AppAddComponent', () => {
   });
 
   it('hasInvalidFields true when required missing', () => {
-    component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
+    component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null } as unknown as AppCreate;
     expect(component.hasInvalidFields()).toBe(true);
   });
 
   it('save emits app and closes when valid', () => {
-    component.app = { appName: 'a', appReleaseId: 1, appServerId: null, appServerReleaseId: null };
+    component.app = { appName: 'a', appReleaseId: 1, appServerId: null, appServerReleaseId: null } as unknown as AppCreate;
     vi.spyOn(component.saveApp, 'emit');
     vi.spyOn(activeModal, 'close');
     component.save();
@@ -51,7 +53,7 @@ describe('AppAddComponent', () => {
   });
 
   it('save does nothing when invalid', () => {
-    component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
+    component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null } as unknown as AppCreate;
     vi.spyOn(component.saveApp, 'emit');
     vi.spyOn(activeModal, 'close');
     component.save();

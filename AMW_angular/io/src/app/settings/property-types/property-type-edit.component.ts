@@ -16,7 +16,7 @@ import { TagInputComponent } from '../../shared/tag-input/tag-input.component';
 export class PropertyTypeEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() propertyType: PropertyType;
+  @Input() propertyType!: PropertyType;
   @Output() savePropertyType: EventEmitter<PropertyType> = new EventEmitter<PropertyType>();
 
   title = 'property type';
@@ -48,7 +48,7 @@ export class PropertyTypeEditComponent {
   save() {
     const propertyType: PropertyType = {
       name: this.propertyType.name,
-      id: this.propertyType.id ? this.propertyType.id : null,
+      id: this.propertyType.id ? this.propertyType.id : null as unknown as number,
       validationRegex: this.propertyType.validationRegex,
       encrypted: this.propertyType.encrypted,
       propertyTags: this.propertyType.propertyTags,

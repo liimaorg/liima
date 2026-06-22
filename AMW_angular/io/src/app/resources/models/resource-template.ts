@@ -1,8 +1,8 @@
 export interface ResourceTemplate {
-  id: number;
+  id: number | null;
   relatedResourceIdentifier: string;
   name: string;
-  targetPath: string;
+  targetPath: string | null;
   targetPlatforms: string[];
   fileContent: string;
   sourceType?: 'RESOURCE' | 'RESOURCE_TYPE';

@@ -11,7 +11,7 @@ import { ButtonComponent } from '../../../../shared/button/button.component';
 })
 export class ResourceTemplateDeleteComponent {
   activeModal = inject(NgbActiveModal);
-  @Input() templateId: number;
+  @Input() templateId!: number;
   @Output() deleteTemplateId: EventEmitter<number> = new EventEmitter<number>();
 
   cancel() {

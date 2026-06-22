@@ -5,14 +5,14 @@
   [canAction]="permissions().canAdd"
   (tileAction)="addTemplate()"
   [noContent]="!templatesData()"
-  [notAllowed]="!!templatesData() && templatesData().length <= 0"
+  [notAllowed]="(templatesData()?.length ?? 0) <= 0"
 >
   @for (list of templatesData(); track list) {
     <app-tile-list
       [title]="list.title"
       [data]="list.entries"
-      [canEdit]="list.canEdit"
-      [canDelete]="list.canDelete"
+      [canEdit]="list.canEdit ?? false"
+      [canDelete]="list.canDelete ?? false"
       (edit)="doListAction($event)"
       (delete)="doListAction($event)"
       (overwrite)="doListAction($event)"

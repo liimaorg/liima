@@ -80,7 +80,7 @@ describe('DatePickerComponent', () => {
         }),
       );
 
-      component.writeValue(null);
+      component.writeValue(null as unknown as DateModel);
 
       expect(component.date.year).toBeUndefined();
       expect(component.date.month).toBeUndefined();

@@ -17,7 +17,7 @@ describe('ReleaseEditComponent', () => {
     installationInProductionAt: null,
     default: false,
     v: null,
-  } as any;
+  } as unknown as Release;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -41,7 +41,7 @@ describe('ReleaseEditComponent', () => {
   });
 
   it('getTitle returns Edit when id present', () => {
-    component.release.id = 10 as any;
+    component.release.id = 10;
     expect(component.getTitle()).toBe('Edit release');
   });
 

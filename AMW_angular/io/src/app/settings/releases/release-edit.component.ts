@@ -16,15 +16,15 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class ReleaseEditComponent implements OnInit {
   activeModal = inject(NgbActiveModal);
 
-  @Input() release: Release;
+  @Input() release!: Release;
   @Output() saveRelease: EventEmitter<Release> = new EventEmitter<Release>();
 
   dateFormat = DATE_FORMAT;
-  installationDate: DateModel = null;
+  installationDate: DateModel | null = null;
 
   ngOnInit(): void {
     if (this.release) {
-      this.installationDate = DateModel.fromEpoch(this.release.installationInProductionAt);
+      this.installationDate = DateModel.fromEpoch(this.release.installationInProductionAt!);
     }
   }
 
@@ -44,15 +44,15 @@ export class ReleaseEditComponent implements OnInit {
     if (this.hasInvalidDate()) {
       return;
     }
-    if (this.installationDate.toEpoch() != null) {
+    if (this.installationDate!.toEpoch() != null) {
       const release: Release = {
         name: this.release.name,
         mainRelease: this.release.mainRelease,
         description: this.release.description,
-        installationInProductionAt: this.installationDate.toEpoch(),
-        id: this.release.id ? this.release.id : null,
+        installationInProductionAt: this.installationDate!.toEpoch(),
+        id: this.release.id ? this.release.id : null as unknown as number,
         default: false,
-        v: this.release.v ? this.release.v : null,
+        v: this.release.v ? this.release.v : null as unknown as number,
       };
       this.saveRelease.emit(release);
       this.activeModal.close();

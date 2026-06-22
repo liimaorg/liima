@@ -31,8 +31,8 @@ export class ResourceTagsComponent {
 
   protected readonly permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      const resourceTypeName = this.resource()?.type ?? null;
-      const resourceGroupId = this.resource()?.resourceGroupId ?? null;
+      const resourceTypeName = this.resource()?.type ?? undefined;
+      const resourceGroupId = this.resource()?.resourceGroupId ?? undefined;
       return {
         canTagCurrentState: this.authService.hasPermission('RESOURCE', 'UPDATE', resourceTypeName, resourceGroupId),
       };

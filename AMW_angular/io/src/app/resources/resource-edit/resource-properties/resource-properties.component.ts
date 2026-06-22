@@ -27,7 +27,7 @@ import { BasePropertiesDirective } from '../../base-properties/base-properties.d
 })
 export class ResourcePropertiesComponent extends BasePropertiesDirective {
   private resourceService = inject(ResourceService);
-  resource: Signal<Resource> = this.resourceService.resource;
+  resource: Signal<Resource | null> = this.resourceService.resource;
 
   properties = computed<Property[]>(() => {
     const props = this.propertiesService.properties;
@@ -50,14 +50,14 @@ export class ResourcePropertiesComponent extends BasePropertiesDirective {
         canUpdateProperty: this.authService.hasPermission(
           'RESOURCE',
           'UPDATE',
-          null,
+          undefined,
           this.resource()?.resourceTypeId,
           this.context()?.name,
         ),
         canDecryptProperties: this.authService.hasPermission(
           'RESOURCE_PROPERTY_DECRYPT',
           'ALL',
-          null,
+          undefined,
           this.resource()?.id,
           this.context()?.name,
         ),
@@ -68,7 +68,9 @@ export class ResourcePropertiesComponent extends BasePropertiesDirective {
   });
 
   protected getEntityId(): number {
-    return this.resource()?.id;
+    const id = this.resource()?.id;
+    if (id == null) throw new Error('Resource ID not available');
+    return id;
   }
 
   protected getUnsavedChangesKey(): string {
@@ -108,11 +110,11 @@ export class ResourcePropertiesComponent extends BasePropertiesDirective {
   }
 
   protected getDeleteParams(): [number | undefined, number | undefined] {
-    return [this.resource().id, undefined];
+    return [this.resource()?.id ?? undefined, undefined];
   }
 
   protected getSaveDescriptorParams(): [number | undefined, number | undefined] {
-    return [this.resource().id, undefined];
+    return [this.resource()?.id ?? undefined, undefined];
   }
 
   private appNameProperty = computed<Property>(() => ({
@@ -131,7 +133,7 @@ export class ResourcePropertiesComponent extends BasePropertiesDirective {
   private outOfServiceProperty = computed<Property>(() => ({
     name: 'outOfService',
     displayName: 'Out Of Service',
-    value: this.resource().outOfServiceReleaseName || '',
+    value: this.resource()?.outOfServiceReleaseName || '',
     replacedValue: '',
     generalComment: '',
     valueComment: 'staticProperty',

@@ -21,9 +21,9 @@ import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from
   ],
 })
 export class RevisionCompareComponent {
-  selectedRevision = output<{ revisionId: number; displayName: string }>();
+  selectedRevision = output<{ revisionId: number | null; displayName: string | null }>();
   revisions = input.required<RevisionInformation[]>();
-  selectedRevisionName: string;
+  selectedRevisionName: string | null = null;
 
   selectRevision(revision: RevisionInformation) {
     if (!revision) return;

@@ -21,7 +21,7 @@ describe('FunctionEditComponent', () => {
       id: null,
       name: '',
       content: '',
-    };
+    } as unknown as import('./appFunction').AppFunction;
 
     fixture.detectChanges();
   });

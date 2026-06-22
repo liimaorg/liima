@@ -12,14 +12,15 @@ export class ServersListComponent {
   servers = input.required<Server[]>();
   canReadAppServer = input.required<boolean>();
   canReadResources = input.required<boolean>();
-  linkToHostUrl = input.required<string>();
+  linkToHostUrl = input<string>();
 
   serversTableData = computed(() =>
     this.servers()?.map((server, index) => {
+      const linkToHostUrl = this.linkToHostUrl();
       return {
         id: `${server.appServerId}-${server.nodeId}-${server.environmentId}-${index}`,
         host: server.host,
-        hostLinkUrl: this.linkToHostUrl() ? this.linkToHostUrl().replace('{hostName}', server.host) : undefined,
+        hostLinkUrl: linkToHostUrl ? linkToHostUrl.replace('{hostName}', server.host) : undefined,
         environment: server.environment,
         appServer: server.appServer,
         appServerLinkUrl: this.canReadAppServer()

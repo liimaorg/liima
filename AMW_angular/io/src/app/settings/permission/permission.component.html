@@ -65,7 +65,7 @@
       }
       @if (create) {
         <app-restriction-add
-          [roleName]="selectedRoleName"
+          [roleName]="selectedRoleName ?? ''"
           [userNames]="selectedUserNames"
           [groupedEnvironments]="groupedEnvironments"
           [permissions]="getPermissions()"

@@ -33,7 +33,7 @@ describe('SettingService', () => {
       },
       value: '/tmp/amw/logs',
       defaultValue: null,
-    };
+    } as unknown as Record<string, unknown>;
 
     settingService.getAllAppSettings().subscribe((settingRes) => {
       expect(settingRes).toEqual([settingsResponse]);

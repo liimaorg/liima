@@ -17,7 +17,7 @@ export class ConfigurationService extends BaseService {
       observe: 'response',
     })
     .pipe(catchError(this.handleError))
-    .pipe(map((response: HttpResponse<Config[]>): Config[] => response.body));
+    .pipe(map((response: HttpResponse<Config[]>): Config[] => response.body!));
 
-  configuration: Signal<Config[]> = toSignal(this.configuration$);
+  configuration: Signal<Config[]> = toSignal(this.configuration$, { initialValue: [] as Config[] });
 }

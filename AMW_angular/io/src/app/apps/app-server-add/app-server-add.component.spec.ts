@@ -2,6 +2,7 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add.component';
 import { signal } from '@angular/core';
+import { Release } from '../../settings/releases/release';
 
 describe('AppServerAddComponent', () => {
   let fixture: ComponentFixture<AppServerAddComponent>;
@@ -32,7 +33,7 @@ describe('AppServerAddComponent', () => {
 
   it('hasInvalidFields true when missing release', () => {
     component.appServer.name = 'srv';
-    component.appServer.release = null;
+    component.appServer.release = null as unknown as Release;
     expect(component.hasInvalidFields()).toBe(true);
   });
 
@@ -54,7 +55,7 @@ describe('AppServerAddComponent', () => {
 
   it('save does nothing when invalid', () => {
     component.appServer.name = '';
-    component.appServer.release = null;
+    component.appServer.release = null as unknown as Release;
     vi.spyOn(component.saveAppServer, 'emit');
     vi.spyOn(activeModal, 'close');
     component.save();

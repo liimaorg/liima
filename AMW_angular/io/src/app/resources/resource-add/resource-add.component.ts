@@ -15,10 +15,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
 })
 export class ResourceAddComponent {
   activeModal = inject(NgbActiveModal);
-  @Input() resourceType: ResourceType;
-  @Input() releases: Release[];
-  @Input() selectedReleaseName: Release;
-  resourceName: string;
+  @Input() resourceType!: ResourceType;
+  @Input() releases!: Release[];
+  @Input() selectedReleaseName!: Release;
+  resourceName!: string;
   @Output() saveResource: EventEmitter<any> = new EventEmitter<any>();
 
   getTitle() {

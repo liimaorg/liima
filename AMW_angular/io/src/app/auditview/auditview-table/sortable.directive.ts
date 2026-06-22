@@ -22,7 +22,7 @@ export interface SortEvent {
   standalone: true,
 })
 export class SortableHeader {
-  @Input() sortable: string;
+  @Input() sortable!: string;
   @Input() direction: SortDirection = '';
   @Output() sort = new EventEmitter<SortEvent>();
 

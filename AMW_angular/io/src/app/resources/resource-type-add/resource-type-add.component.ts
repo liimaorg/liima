@@ -16,11 +16,11 @@ import { NgSelectModule } from '@ng-select/ng-select';
 export class ResourceTypeAddComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() resourceType: ResourceType;
+  @Input() resourceType!: ResourceType;
   @Output() saveResourceType: EventEmitter<ResourceTypeRequest> = new EventEmitter<ResourceTypeRequest>();
   private resourceTypesService = inject(ResourceTypesService);
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
-  parentId: number;
+  parentId!: number;
 
   cancel() {
     this.activeModal.close();

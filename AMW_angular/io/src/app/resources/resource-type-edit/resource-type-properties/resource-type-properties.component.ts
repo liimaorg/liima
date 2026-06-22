@@ -27,7 +27,7 @@ import { BasePropertiesDirective } from '../../base-properties/base-properties.d
 })
 export class ResourceTypePropertiesComponent extends BasePropertiesDirective {
   private resourceTypeService = inject(ResourceTypesService);
-  resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
+  resourceType: Signal<ResourceType | null> = this.resourceTypeService.resourceType;
 
   properties = computed<Property[]>(() => {
     const props = this.propertiesService.propertiesForType;
@@ -48,14 +48,14 @@ export class ResourceTypePropertiesComponent extends BasePropertiesDirective {
           'RESOURCETYPE',
           'UPDATE',
           this.resourceType()?.name,
-          null,
+          undefined,
           this.context()?.name,
         ),
         canDecryptProperties: this.authService.hasPermission(
           'RESOURCETYPE_PROPERTY_DECRYPT',
           'ALL',
           this.resourceType()?.name,
-          null,
+          undefined,
           this.context()?.name,
         ),
       };
@@ -65,7 +65,9 @@ export class ResourceTypePropertiesComponent extends BasePropertiesDirective {
   });
 
   protected getEntityId(): number {
-    return this.resourceType()?.id;
+    const id = this.resourceType()?.id;
+    if (id == null) throw new Error('ResourceType ID not available');
+    return id;
   }
 
   protected getUnsavedChangesKey(): string {
@@ -105,11 +107,11 @@ export class ResourceTypePropertiesComponent extends BasePropertiesDirective {
   }
 
   protected getDeleteParams(): [number | undefined, number | undefined] {
-    return [undefined, this.resourceType().id];
+    return [undefined, this.resourceType()?.id ?? undefined];
   }
 
   protected getSaveDescriptorParams(): [number | undefined, number | undefined] {
-    return [undefined, this.resourceType().id];
+    return [undefined, this.resourceType()?.id ?? undefined];
   }
 
   private resourceTypeNameProperty = computed<Property>(() => ({

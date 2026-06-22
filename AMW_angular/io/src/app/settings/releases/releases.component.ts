@@ -28,9 +28,9 @@ export class ReleasesComponent implements OnDestroy {
 
   releases: Signal<Release[]> = this.releasesService.releases;
   defaultRelease: Signal<Release> = toSignal(this.releasesService.getDefaultRelease(), {
-    initialValue: null as Release,
+    initialValue: null as unknown as Release,
   });
-  count: Signal<number> = toSignal(this.releasesService.getCount(), { initialValue: null as number });
+  count: Signal<number> = toSignal(this.releasesService.getCount(), { initialValue: null as unknown as number });
 
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
@@ -141,7 +141,7 @@ export class ReleasesComponent implements OnDestroy {
   delete(release: Release) {
     this.isLoading.set(true);
     this.releasesService
-      .delete(release.id)
+      .delete(release.id!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Release deleted.'),

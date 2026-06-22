@@ -156,7 +156,7 @@ describe('PropertyFieldTooltipComponent', () => {
     });
 
     it('hasReplacedValue should return false when replacedValue is null', () => {
-      const prop = { ...mockProperty, replacedValue: null };
+      const prop = { ...mockProperty, replacedValue: null } as unknown as Property;
       expect(component['hasReplacedValue'](prop)).toBe(false);
     });
 

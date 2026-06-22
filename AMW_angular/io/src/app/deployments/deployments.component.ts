@@ -76,10 +76,10 @@ export class DeploymentsComponent implements OnInit {
   csvSeparator = '';
 
   // available edit actions
-  deploymentDate: number; // for deployment date change
+  deploymentDate!: number; // for deployment date change
 
   // to be added
-  selectedFilterType: DeploymentFilterType;
+  selectedFilterType: DeploymentFilterType | null = null;
 
   // already set
   filters = signal<DeploymentFilter[]>([]);
@@ -88,7 +88,7 @@ export class DeploymentsComponent implements OnInit {
   deployments = signal<Deployment[]>([]);
 
   // csv export
-  csvDocument: ArrayBuffer;
+  csvDocument!: ArrayBuffer;
 
   // sorting with default values
   sortCol = 'd.deploymentDate';
@@ -97,21 +97,21 @@ export class DeploymentsComponent implements OnInit {
   // pagination with default values
   maxResults = 10;
   offset = 0;
-  allResults: number;
-  currentPage: number;
-  lastPage: number;
+  allResults!: number;
+  currentPage!: number;
+  lastPage!: number;
 
   // auto refresh
   refreshIntervals: number[] = [0, 5, 10, 30, 60, 120];
   refreshInterval = 0;
-  timerSubscription: Subscription;
+  timerSubscription: Subscription | null = null;
 
   errorMessage = '';
   successMessage = '';
   isLoading = signal(true);
 
   @ViewChild('selectModel', { static: true })
-  selectModel: NgModel;
+  selectModel!: NgModel;
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: Params) => {
@@ -123,8 +123,9 @@ export class DeploymentsComponent implements OnInit {
           this.autoload = false;
         }
       } else {
-        if (sessionStorage.getItem('deploymentFilters')) {
-          this.paramFilters = JSON.parse(sessionStorage.getItem('deploymentFilters'));
+        const storedFilters = sessionStorage.getItem('deploymentFilters');
+        if (storedFilters) {
+          this.paramFilters = JSON.parse(storedFilters);
         }
       }
       this.initTypeAndOptions();
@@ -163,7 +164,7 @@ export class DeploymentsComponent implements OnInit {
 
   clearFilters() {
     this.filters.set([]);
-    sessionStorage.setItem('deploymentFilters', null);
+    sessionStorage.removeItem('deploymentFilters');
     this.updateFiltersInURL(null);
   }
 
@@ -184,7 +185,11 @@ export class DeploymentsComponent implements OnInit {
     if (!this.errorMessage) {
       this.getFilteredDeployments(this.buildBackendFilters());
       const filterString = this.filters().length > 0 ? JSON.stringify(this.filters()) : null;
-      sessionStorage.setItem('deploymentFilters', filterString);
+      if (filterString) {
+        sessionStorage.setItem('deploymentFilters', filterString);
+      } else {
+        sessionStorage.removeItem('deploymentFilters');
+      }
       this.updateFiltersInURL(filterString);
     }
   }
@@ -230,7 +235,7 @@ export class DeploymentsComponent implements OnInit {
 
   confirmDeployment(deployment: Deployment) {
     if (deployment) {
-      delete deployment.selected;
+      deployment.selected = undefined;
       deployment.state = this.reMapState(deployment.state);
       this.deploymentService.confirmDeployment(deployment).subscribe({
         next: (r) => r,
@@ -321,8 +326,8 @@ export class DeploymentsComponent implements OnInit {
 
   private canFilterBeAdded(): boolean {
     return (
-      this.selectedFilterType.name !== 'Latest deployment job for App Server and Env' ||
-      _.findIndex(this.filters(), { name: this.selectedFilterType.name }) === -1
+      this.selectedFilterType?.name !== 'Latest deployment job for App Server and Env' ||
+      _.findIndex(this.filters(), { name: this.selectedFilterType?.name }) === -1
     );
   }
 
@@ -339,7 +344,7 @@ export class DeploymentsComponent implements OnInit {
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    this.errorMessage = null;
+    this.errorMessage = '';
   }
 
   private setDeploymentDate(deployment: Deployment, deploymentDate: number) {
@@ -382,7 +387,7 @@ export class DeploymentsComponent implements OnInit {
           comp: filter.comp,
           val:
             this.getFilterType(filter.name) === FilterType.DATE && filter.val instanceof DateTimeModel
-              ? filter.val.toEpoch().toString()
+              ? (filter.val.toEpoch() ?? '').toString()
               : filter.val,
         }) as DeploymentFilter,
     );
@@ -506,7 +511,7 @@ export class DeploymentsComponent implements OnInit {
   // parse string from json back to DateTimeModel
   private parseDateTime(filter: DeploymentFilter, filterType: string) {
     if (filterType === FilterType.DATE) {
-      filter.val = DateTimeModel.fromLocalString(filter.val as string);
+      filter.val = DateTimeModel.fromLocalString(filter.val as string) ?? '';
     }
   }
 
@@ -517,7 +522,7 @@ export class DeploymentsComponent implements OnInit {
     this.isLoading.set(false);
   }
 
-  private updateFiltersInURL(destination: string) {
+  private updateFiltersInURL(destination: string | null) {
     if (destination) {
       this.location.replaceState('/deployments?filters=' + destination);
     } else {

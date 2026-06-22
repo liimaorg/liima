@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy } from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -33,12 +33,14 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
   contextId = input.required<number>();
   templates = this.templatesService.resourceTypeTemplates;
 
-  isLoading = computed(() => {
-    if (this.resourceType() != null) {
-      this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id);
-      return false;
+  private loadEffect = effect(() => {
+    const rt = this.resourceType();
+    if (rt != null && rt.id != null) {
+      this.templatesService.setIdForResourceTypeTemplateList(rt.id);
     }
   });
+
+  isLoading = computed(() => this.resourceType() == null);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resourceType()) {
@@ -97,10 +99,11 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
 
   mapListEntries(templates: ResourceTemplate[]) {
     return templates
+      .filter((template): template is ResourceTemplate & { id: number } => template.id != null)
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((template) => ({
         name: template.name,
-        description: template.targetPath,
+        description: template.targetPath ?? '',
         id: template.id,
       }));
   }
@@ -126,13 +129,13 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
 
   private createTemplate(templateData: ResourceTemplate) {
     this.templatesService
-      .addResourceTypeTemplate(templateData, this.resourceType().id)
+      .addResourceTypeTemplate(templateData, this.resourceType().id!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id);
+          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
       });
   }
@@ -153,13 +156,13 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
 
   private updateTemplate(templateData: ResourceTemplate) {
     this.templatesService
-      .updateResourceTypeTemplate(templateData, this.resourceType().id)
+      .updateResourceTypeTemplate(templateData, this.resourceType().id!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id);
+          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
       });
   }
@@ -180,7 +183,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
         next: () => this.toastService.success('Template deleted successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id);
+          this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
       });
   }

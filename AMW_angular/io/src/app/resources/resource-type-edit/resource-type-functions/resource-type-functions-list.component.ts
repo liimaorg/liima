@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, effect, inject, input } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -32,12 +32,14 @@ export class ResourceTypeFunctionsListComponent {
   contextId = input.required<number>();
   functions = this.functionsService.functionsForType;
 
-  isLoading = computed(() => {
-    if (this.resourceType() != null) {
-      this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
-      return false;
+  private loadEffect = effect(() => {
+    const rt = this.resourceType();
+    if (rt != null && rt.id != null) {
+      this.functionsService.setIdForResourceTypeFunctionList(rt.id);
     }
   });
+
+  isLoading = computed(() => this.resourceType() == null);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resourceType()) {
@@ -117,21 +119,23 @@ export class ResourceTypeFunctionsListComponent {
   }
 
   mapListEntries(functions: ResourceFunction[]) {
-    return functions.map((element) => ({
-      name:
-        element.name +
-        (!element.isOverwritingFunction && element.functionOriginResourceName !== this.resourceType().name
-          ? ` (Defined on ${element.functionOriginResourceName})`
-          : element.isOverwritingFunction && element.functionOriginResourceName !== element.overwrittenParentName
-            ? ` (Overwrite function from ${element.overwrittenParentName})`
-            : ''),
-      description: [...element.miks].join(', '),
-      id: element.id,
-    }));
+    return functions
+      .filter((element): element is ResourceFunction & { id: number } => element.id != null)
+      .map((element) => ({
+        name:
+          element.name +
+          (!element.isOverwritingFunction && element.functionOriginResourceName !== this.resourceType().name
+            ? ` (Defined on ${element.functionOriginResourceName})`
+            : element.isOverwritingFunction && element.functionOriginResourceName !== element.overwrittenParentName
+              ? ` (Overwrite function from ${element.overwrittenParentName})`
+              : ''),
+        description: [...element.miks].join(', '),
+        id: element.id,
+      }));
   }
 
   splitFunctions(resourceFunctions: ResourceFunction[]) {
-    const [instance, resource] = [[], []];
+    const [instance, resource]: [ResourceFunction[], ResourceFunction[]] = [[], []];
     resourceFunctions.sort((a, b) => (a.name < b.name ? -1 : 1));
     resourceFunctions.forEach((element) =>
       (element.functionOriginResourceName !== this.resourceType().name ? resource : instance).push(element),
@@ -163,26 +167,26 @@ export class ResourceTypeFunctionsListComponent {
 
   private createFunction(functionData: ResourceFunction) {
     this.functionsService
-      .createFunctionForResourceType(this.resourceType().id, functionData)
+      .createFunctionForResourceType(this.resourceType().id!, functionData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
       });
   }
 
   private overwriteFunction(functionData: ResourceFunction) {
     this.functionsService
-      .overwriteFunctionForResourceType(this.resourceType().id, functionData)
+      .overwriteFunctionForResourceType(this.resourceType().id!, functionData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
       });
   }
@@ -195,7 +199,7 @@ export class ResourceTypeFunctionsListComponent {
         next: () => this.toastService.success('Function saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
       });
   }
@@ -208,7 +212,7 @@ export class ResourceTypeFunctionsListComponent {
         next: () => this.toastService.success('Function deleted successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id);
+          this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
       });
   }

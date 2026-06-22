@@ -13,7 +13,7 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class PropertyTypeDeleteComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() propertyType: PropertyType;
+  @Input() propertyType!: PropertyType;
   @Output() deletePropertyType: EventEmitter<PropertyType> = new EventEmitter<PropertyType>();
 
   getTitle(): string {

@@ -23,7 +23,7 @@ export class PaginationComponent {
       const end: number = start + this.paginatorItems - 1;
       return this.range(start, end < this.lastPage() ? end : this.lastPage());
     }
-    return;
+    return [];
   }
 
   toPage(page: number) {

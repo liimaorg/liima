@@ -5,15 +5,15 @@
   [canAction]="permissions().canAdd"
   (tileAction)="add()"
   [noContent]="!functionsData()"
-  [notAllowed]="!!functionsData() && functionsData().length <= 0"
+  [notAllowed]="(functionsData()?.length ?? 0) <= 0"
 >
   @for (list of functionsData(); track list) {
     <app-tile-list
       [title]="list.title"
       [data]="list.entries"
-      [canEdit]="list.canEdit"
-      [canDelete]="list.canDelete"
-      [canOverwrite]="list.canOverwrite"
+      [canEdit]="list.canEdit ?? false"
+      [canDelete]="list.canDelete ?? false"
+      [canOverwrite]="list.canOverwrite ?? false"
       (edit)="doListAction($event)"
       (delete)="doListAction($event)"
       (overwrite)="doListAction($event)"

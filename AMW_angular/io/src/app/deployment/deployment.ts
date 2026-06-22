@@ -24,7 +24,7 @@ export interface Deployment {
   confirmUser: string;
   cancelUser: string;
   deploymentDelayed: boolean;
-  selected: boolean;
+  selected?: boolean;
   actions: DeploymentAction;
   statusMessage: string;
   buildSuccess: boolean;

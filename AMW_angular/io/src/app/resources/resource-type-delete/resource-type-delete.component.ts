@@ -11,7 +11,7 @@ import { ButtonComponent } from '../../shared/button/button.component';
 })
 export class ResourceTypeDeleteComponent {
   activeModal = inject(NgbActiveModal);
-  @Input() resourceType: ResourceType;
+  @Input() resourceType!: ResourceType;
   @Output() resourceTypeToDelete: EventEmitter<ResourceType> = new EventEmitter<ResourceType>();
 
   cancel() {

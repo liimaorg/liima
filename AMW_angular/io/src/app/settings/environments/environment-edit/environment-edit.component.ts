@@ -15,8 +15,8 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 export class EnvironmentEditComponent {
   private authService = inject(AuthService);
   activeModal = inject(NgbActiveModal);
-  @Input() environment: Environment;
-  @Input() globalName: string;
+  @Input() environment!: Environment;
+  @Input() globalName!: string;
   @Output() saveEnvironment: EventEmitter<Environment> = new EventEmitter<Environment>();
 
   permissions = computed(() => {
@@ -27,7 +27,7 @@ export class EnvironmentEditComponent {
     }
   });
 
-  getTitle(): string {
+  getTitle(): string | undefined {
     if (!this.environment) return;
     return this.environment.id
       ? `Edit ${this.isDomain() ? 'domain' : 'environment'} ${this.environment.name}`
@@ -35,7 +35,7 @@ export class EnvironmentEditComponent {
   }
 
   isDomain(): boolean {
-    if (!this.environment) return;
+    if (!this.environment) return false;
     return this.environment.parentName === this.globalName;
   }
 

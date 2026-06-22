@@ -38,7 +38,7 @@
           name="datepicker"
           [ngModel]="datetime"
           (ngModelChange)="onDateChange($event)"
-          [startDate]="datetime?.year ? datetime : null"
+          [startDate]="datetime"
         ></ngb-datepicker>
         <!-- TODO: convert this button-->
         <button

@@ -58,7 +58,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   private resourceService = inject(ResourceService);
   private resourceTypesService = inject(ResourceTypesService);
   private resourceActivationService = inject(ResourceActivationService);
-  resource: Signal<Resource> = this.resourceService.resource;
+  resource: Signal<Resource | null> = this.resourceService.resource;
 
   @ViewChild('addRelationModal') addRelationModal!: TemplateRef<void>;
   @ViewChild('removeRelationConfirmation') removeRelationConfirmation!: TemplateRef<void>;
@@ -115,7 +115,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const res = this.resource();
     const releases = this.resourceService.releasesForResourceGroup();
     if (!res?.release || !releases?.length) return false;
-    return releases.some((r) => r.release > res.release);
+    return releases.some((r) => (r.release ?? '') > (res.release ?? ''));
   });
 
   protected permissions = computed(() => {
@@ -124,14 +124,14 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
         canUpdateProperty: this.authService.hasPermission(
           'RESOURCE',
           'UPDATE',
-          null,
+          undefined,
           this.resource()?.resourceTypeId,
           this.context()?.name,
         ),
         canDecryptProperties: this.authService.hasPermission(
           'RESOURCE_PROPERTY_DECRYPT',
           'ALL',
-          null,
+          undefined,
           this.resource()?.id,
           this.context()?.name,
         ),
@@ -306,12 +306,12 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     }
 
     this.isSettingRuntime.set(true);
-    this.relationsService.addResourceRelation(this.entityId(), runtimeId, false).subscribe({
+    this.relationsService.addResourceRelation(this.entityId()!, runtimeId, false).subscribe({
       next: () => {
         this.toastService.success('Runtime set successfully.');
         this.modalService.dismissAll();
         this.isSettingRuntime.set(false);
-        this.reloadRelation(this.entityId());
+        this.reloadRelation(this.entityId()!);
       },
       error: (err) => {
         console.error('Failed to set runtime:', err);
@@ -372,12 +372,12 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     }
 
     this.isAddingRelation.set(true);
-    this.relationsService.addResourceRelation(this.entityId(), groupId, this.addAsProvided()).subscribe({
+    this.relationsService.addResourceRelation(this.entityId()!, groupId, this.addAsProvided()).subscribe({
       next: () => {
         this.toastService.success('Relation added successfully.');
         this.modalService.dismissAll();
         this.isAddingRelation.set(false);
-        this.reloadRelation(this.entityId());
+        this.reloadRelation(this.entityId()!);
       },
       error: (err) => {
         console.error('Failed to add relation:', err);
@@ -418,7 +418,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
         value,
       }));
       propertyUpdate$ = this.bulkUpdateProperties(
-        this.getRelationId(),
+        this.getRelationId()!,
         updatedProperties,
         resetProperties,
         this.contextId(),
@@ -430,7 +430,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       this.isSavingActivations.set(true);
       activationUpdate$ = this.resourceActivationService.updateActivations(
         this.entityId()!,
-        this.getRelationId(),
+        this.getRelationId()!,
         this.contextId(),
         { activeResourceGroupIds: this.currentActiveAppIds() },
       );
@@ -447,12 +447,12 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
         next: () => {
           this.successMessage.set('Changes saved successfully');
           if (hasPropertyChanges) {
-            this.reloadProperties(this.entityId(), this.getRelationId(), this.contextId());
+            this.reloadProperties(this.entityId()!, this.getRelationId()!, this.contextId());
             this.afterPropertiesSaved();
             this.editor.resetChanges();
           }
           if (hasActivationChanges) {
-            this.resourceActivationService.setRelationParams(this.entityId()!, this.getRelationId(), this.contextId());
+            this.resourceActivationService.setRelationParams(this.entityId()!, this.getRelationId()!, this.contextId());
           }
           setTimeout(() => this.successMessage.set(null), 3000);
         },
@@ -482,7 +482,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     contextId: number,
   ): Observable<void> {
     return this.relationsService.bulkUpdateResourceRelationProperties(
-      this.entityId(),
+      this.entityId()!,
       relationId,
       updatedProperties,
       resetProperties,
@@ -493,7 +493,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   protected afterPropertiesSaved(): void {
     const changes = this.editor.changedProperties();
     if (changes.has('relationName')) {
-      this.reloadRelation(this.entityId());
+      this.reloadRelation(this.entityId()!);
     }
   }
 
@@ -536,10 +536,10 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const rel = this.selectedRelation();
     if (!rel) return;
 
-    this.relationsService.removeResourceRelation(this.entityId(), rel.id).subscribe({
+    this.relationsService.removeResourceRelation(this.entityId()!, rel.id).subscribe({
       next: () => {
         this.toastService.success('Relation removed successfully.');
-        this.reloadRelation(this.entityId());
+        this.reloadRelation(this.entityId()!);
       },
       error: (err) => {
         console.error('Failed to remove relation:', err);

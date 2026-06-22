@@ -17,7 +17,7 @@ describe('AppsFilterComponent', () => {
     component = fixture.componentInstance;
     component.releases = signal<Release[]>([]) as unknown as InputSignal<Release[]>;
     component.releaseId = signal<number>(0) as unknown as InputSignal<number>;
-    component.filter = signal<string>('') as unknown as InputSignal<string>;
+    component.filter = signal<string>('') as unknown as InputSignal<string | undefined>;
     fixture.detectChanges();
   });
 

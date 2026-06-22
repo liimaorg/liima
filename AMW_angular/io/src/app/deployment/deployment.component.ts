@@ -56,7 +56,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   appserverName: string = '';
   releaseName: string = '';
   // redeploy only
-  deploymentId: number;
+  deploymentId!: number;
 
   // these are valid for all (loaded ony once)
   environments = signal<Environment[]>([]);
@@ -72,7 +72,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   runtime = signal<Relation | null>(null);
   resourceTags = signal<ResourceTag[]>([this.defaultResourceTag]);
   selectedResourceTag = signal<ResourceTag>(this.defaultResourceTag);
-  deploymentDate: DateTimeModel = null;
+  deploymentDate: DateTimeModel | null = null;
   appsWithVersion = signal<AppWithVersion[]>([]);
   transDeploymentParameter: DeploymentParameter = {} as DeploymentParameter;
   transDeploymentParameters: DeploymentParameter[] = [];
@@ -152,7 +152,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.selectedRelease.set(this.releases()[0]);
     }
     this.getRelatedForRelease();
-    this.goTo(this.selectedAppserver()?.name + '/' + this.selectedRelease().release);
+    this.goTo(this.selectedAppserver()?.name + '/' + this.selectedRelease()?.release);
   }
 
   onChangeEnvironment() {
@@ -181,7 +181,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
       !this.isDeploymentBlocked() &&
       this.selectedRelease() !== null &&
       this.appsWithVersion().length > 0 &&
-      _.filter(this.environments(), 'selected').length > 0
+      this.environments().filter((env) => env.selected).length > 0
     );
   }
 
@@ -242,9 +242,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private setSelectedRelease(): Subscription {
-    return this.resourceService.getMostRelevantRelease(this.selectedAppserver().id).subscribe({
+    return this.resourceService.getMostRelevantRelease(this.selectedAppserver()!.id).subscribe({
       next: (r) => {
-        this.selectedRelease.set(this.releases().find((release) => release.release === r.release));
+        this.selectedRelease.set(this.releases().find((release) => release.release === r.release) ?? null);
       },
       error: (e) => this.errorMessage.set(e),
       complete: () => this.onChangeRelease(),
@@ -253,14 +253,14 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private setSelectedReleaseForRedeployment() {
     this.selectedRelease.set(
-      this.releases().find((release) => release.release === this.selectedDeployment().releaseName),
+      this.releases().find((release) => release.release === this.selectedDeployment().releaseName) ?? null,
     );
     // will perform verifyRedeployment()
     this.getAppVersions();
   }
 
   private loadReleases(): Subscription {
-    return this.resourceService.getDeployableReleases(this.selectedAppserver().id).subscribe({
+    return this.resourceService.getDeployableReleases(this.selectedAppserver()!.id).subscribe({
       next: (r) => {
         this.releases.set(r);
       },
@@ -270,7 +270,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getRelatedForRelease() {
-    this.resourceService.getLatestForRelease(this.selectedAppserver().id, this.selectedRelease().id).subscribe({
+    this.resourceService.getLatestForRelease(this.selectedAppserver()!.id, this.selectedRelease()!.id).subscribe({
       next: (r) => {
         this.bestForSelectedRelease.set(r);
       },
@@ -284,7 +284,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!best) {
       return;
     }
-    this.runtime.set(_.filter(best.relations, { type: 'RUNTIME' }).pop());
+    this.runtime.set(_.filter(best.relations, { type: 'RUNTIME' }).pop() ?? null);
     this.resourceTags.set([this.defaultResourceTag, ...(best.resourceTags || [])]);
     this.appsWithVersion.set([]);
     this.getAppVersions();
@@ -293,9 +293,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private getAppVersions() {
     this.resourceService
       .getAppsWithVersions(
-        this.selectedAppserver().id,
-        this.selectedRelease().id,
-        _.filter(this.environments(), 'selected').map((val: Environment) => val.id),
+        this.selectedAppserver()!.id,
+        this.selectedRelease()!.id,
+        this.environments().filter((env) => env.selected).map((val: Environment) => val.id) as number[],
       )
       .subscribe({
         next: (r) => {
@@ -343,9 +343,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private canDeploy() {
     if (this.selectedAppserver() != null) {
       this.hasPermissionToDeploy.set(false);
-      const contextIds: number[] = _.filter(this.environments(), 'selected').map((val: Environment) => val.id);
+      const contextIds: number[] = this.environments().filter((env) => env.selected).map((val: Environment) => val.id) as number[];
       if (contextIds.length > 0) {
-        this.deploymentService.canDeploy(this.selectedAppserver().id, contextIds).subscribe({
+        this.deploymentService.canDeploy(this.selectedAppserver()!.id, contextIds).subscribe({
           next: (r) => {
             this.hasPermissionToDeploy.set(r);
           },
@@ -360,7 +360,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.selectedAppserver() != null) {
       this.hasPermissionToRequestDeployment.set(false);
       if (contextIds.length > 0) {
-        this.deploymentService.canRequestDeployment(this.selectedAppserver().id, contextIds).subscribe({
+        this.deploymentService.canRequestDeployment(this.selectedAppserver()!.id, contextIds).subscribe({
           next: (r) => {
             this.hasPermissionToRequestDeployment.set(r);
           },
@@ -374,7 +374,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.errorMessage.set('');
     this.isDeploymentBlocked.set(false);
     this.appsWithVersion().forEach((originApp: AppWithVersion) => {
-      const actualApp: AppWithVersion = _.find(this.appsWithVersionForRedeployment(), [
+      const actualApp: AppWithVersion | undefined = _.find(this.appsWithVersionForRedeployment(), [
         'applicationName',
         originApp.applicationName,
       ]);
@@ -387,7 +387,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
-      const contextIds: number[] = _.filter(this.environments(), 'selected').map((val: Environment) => val.id);
+      const contextIds: number[] = this.environments().filter((env) => env.selected).map((val: Environment) => val.id) as number[];
       this.createDeploymentRequest(contextIds);
     }
   }
@@ -397,8 +397,8 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
     this.errorMessage.set('');
     this.successMessage.set('');
     const deploymentRequest: DeploymentRequest = {} as DeploymentRequest;
-    deploymentRequest.appServerName = this.selectedAppserver()?.name;
-    deploymentRequest.releaseName = this.selectedRelease().release;
+    deploymentRequest.appServerName = this.selectedAppserver()?.name ?? '';
+    deploymentRequest.releaseName = this.selectedRelease()!.release ?? '';
     deploymentRequest.contextIds = contextIds;
     deploymentRequest.simulate = this.simulate;
     deploymentRequest.sendEmail = this.doSendEmail;
@@ -410,8 +410,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
           ? this.selectedResourceTag().tagDate
           : new Date().getTime();
     }
-    if (this.deploymentDate) {
-      deploymentRequest.deploymentDate = this.deploymentDate.toEpoch();
+    const depDate = this.deploymentDate;
+    if (depDate) {
+      deploymentRequest.deploymentDate = depDate.toEpoch() ?? 0;
     }
     if (this.transDeploymentParameters.length > 0) {
       deploymentRequest.deploymentParameters = this.transDeploymentParameters;
@@ -482,10 +483,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
       this.selectedAppserver.set(
         _.find(this.appservers(), {
           name: this.appserverName,
-        }),
+        }) ?? null,
       );
       if (this.selectedAppserver()) {
-        this.resourceService.getDeployableReleases(this.selectedAppserver().id).subscribe({
+        this.resourceService.getDeployableReleases(this.selectedAppserver()!.id).subscribe({
           next: (r) => {
             this.releases.set(r);
           },
@@ -499,7 +500,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private prepareNewDeployment() {
     if (this.deploymentId) {
       this.appserverName = this.deploymentId.toString();
-      delete this.deploymentId;
+      this.deploymentId = undefined as unknown as number;
     }
     this.initAppservers();
   }
@@ -512,7 +513,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   // for url params only
   private setRelease() {
     if (this.releaseName) {
-      this.selectedRelease.set(this.releases().find((release) => release.release === this.releaseName));
+      this.selectedRelease.set(this.releases().find((release) => release.release === this.releaseName) ?? null);
       this.onChangeRelease();
     }
   }

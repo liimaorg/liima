@@ -34,7 +34,7 @@ import { RevisionCompareComponent } from 'src/app/shared/revision-compare/revisi
 export class ResourceFunctionEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  private _function: ResourceFunction;
+  private _function!: ResourceFunction;
   @Input() set function(value: ResourceFunction) {
     this._function = value;
     if (value && value.id) {
@@ -45,16 +45,16 @@ export class ResourceFunctionEditComponent {
     return this._function;
   }
 
-  @Input() canEdit: boolean;
-  @Input() isOverwrite: boolean;
+  @Input() canEdit!: boolean;
+  @Input() isOverwrite!: boolean;
 
   @Output() saveFunction: EventEmitter<ResourceFunction> = new EventEmitter<ResourceFunction>();
 
-  public wrapLinesEnabled: false;
+  public wrapLinesEnabled = false;
   private functionsService = inject(ResourceFunctionsService);
   public revisions: WritableSignal<RevisionInformation[]> = signal([]);
-  public revision: WritableSignal<ResourceFunction> = signal(null);
-  public selectedRevisionName: string;
+  public revision: WritableSignal<ResourceFunction | null> = signal(null);
+  public selectedRevisionName: string | null = null;
   public newMik: string = '';
   public diffValue = {
     original: '',
@@ -82,12 +82,12 @@ export class ResourceFunctionEditComponent {
     });
   }
 
-  selectRevision(revisionId: number, displayName: string): void {
+  selectRevision(revisionId: number | null, displayName: string | null): void {
     if (revisionId && displayName) {
-      this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
+      this.functionsService.getFunctionByIdAndRevision(this.function.id!, revisionId).subscribe((revision) => {
         this.revision.set(revision);
         this.selectedRevisionName = displayName;
-        this.diffValue = { original: this.function.content, modified: this.revision().content };
+        this.diffValue = { original: this.function.content, modified: this.revision()!.content };
       });
     } else {
       //reset selected revision

@@ -3,6 +3,7 @@ import { EnvironmentEditComponent } from './environment-edit.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Environment } from '../../../deployment/environment';
 
 describe('EnvironmentEditComponent', () => {
   let component: EnvironmentEditComponent;
@@ -25,7 +26,7 @@ describe('EnvironmentEditComponent', () => {
       parentId: 1,
       selected: undefined,
       disabled: undefined,
-    };
+    } as unknown as Environment;
 
     fixture.detectChanges();
   });

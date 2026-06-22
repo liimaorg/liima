@@ -37,7 +37,7 @@ describe('PaginationComponent', () => {
     const pages = component.pages();
 
     // then
-    expect(pages).toBeUndefined();
+    expect(pages).toEqual([]);
   });
 
   it('should return two page numbers if last page is 2', () => {

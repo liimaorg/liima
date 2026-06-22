@@ -39,9 +39,9 @@
             </div>
           }
         </div>
-        @if (revision()) {
+        @if (revision(); as rev) {
           <div class="col-sm-6">
-            <p class="form-control-plaintext">{{ revision().name }}</p>
+            <p class="form-control-plaintext">{{ rev.name }}</p>
           </div>
         }
       </div>
@@ -70,9 +70,9 @@
             </div>
           }
         </div>
-        @if (revision()) {
+        @if (revision(); as rev) {
           <div class="col-sm-6">
-            <p class="form-control-plaintext">{{ revision().targetPath }}</p>
+            <p class="form-control-plaintext">{{ rev.targetPath }}</p>
           </div>
         }
       </div>

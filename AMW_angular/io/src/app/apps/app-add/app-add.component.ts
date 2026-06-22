@@ -17,13 +17,13 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class AppAddComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() releases: Signal<Release[]>;
-  @Input() appServerGroups: Signal<Resource[]>;
+  @Input() releases!: Signal<Release[]>;
+  @Input() appServerGroups!: Signal<Resource[]>;
   @Output() saveApp: EventEmitter<AppCreate> = new EventEmitter<AppCreate>();
 
-  app: AppCreate = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
-  appServerGroup: Resource;
-  appServerRelease: Rel;
+  app: AppCreate = { appName: '', appReleaseId: null as unknown as number, appServerId: null as unknown as number, appServerReleaseId: null as unknown as number };
+  appServerGroup!: Resource;
+  appServerRelease: Rel | undefined;
 
   hasInvalidGroup(): boolean {
     const isInvalid =
@@ -54,8 +54,8 @@ export class AppAddComponent {
     const app: AppCreate = {
       appName: this.app.appName,
       appReleaseId: this.app.appReleaseId,
-      appServerId: this.appServerGroup?.id,
-      appServerReleaseId: this.appServerRelease?.id,
+      appServerId: this.appServerGroup?.id ?? 0,
+      appServerReleaseId: this.appServerRelease?.id ?? 0,
     };
     this.saveApp.emit(app);
     this.activeModal.close();

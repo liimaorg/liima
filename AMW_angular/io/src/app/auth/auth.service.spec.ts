@@ -57,7 +57,7 @@ describe('AuthService', () => {
       resourceTypeName: null,
       resourceTypePermission: null,
       contextName: null,
-    };
+    } as unknown as Record<string, null>;
 
     const req = httpTestingController.expectOne(API_URL);
     expect(req.request.method).toBe('GET');
@@ -83,7 +83,7 @@ describe('AuthService', () => {
       resourceTypeName: null,
       resourceTypePermission: null,
       contextName: null,
-    };
+    } as unknown as Record<string, null>;
 
     const req = httpTestingController.expectOne(API_URL);
     expect(req.request.method).toBe('GET');
@@ -108,7 +108,7 @@ describe('AuthService', () => {
       resourceTypeName: null,
       resourceTypePermission: 'ANY',
       contextName: null,
-    };
+    } as unknown as Record<string, null | string>;
 
     const req = httpTestingController.expectOne(API_URL);
     expect(req.request.method).toBe('GET');
@@ -199,7 +199,7 @@ describe('AuthService', () => {
       roleName: null,
       userName: null,
       contextName: null,
-    };
+    } as unknown as Record<string, null>;
 
     it('should return true for a perfect match with ANY', () => {
       const req = httpTestingController.expectOne(API_URL);
@@ -384,18 +384,18 @@ describe('AuthService', () => {
       const action: Action = 'UPDATE';
       const resourceTypeName = 'MyResourceType';
       const resourceGroupId = 123;
-      const baseRestriction: Omit<Restriction, 'contextName' | 'action' | 'permission'> = {
+      const baseRestriction = {
         id: null,
         roleName: null,
         userName: null,
         resourceTypeName: null,
         resourceGroupId: null,
         resourceTypePermission: 'ANY',
-      };
+      } as unknown as Omit<Restriction, 'contextName' | 'action' | 'permission'>;
 
       beforeEach(() => {
         // Setup mock environments
-        const mockEnvironments: Environment[] = [
+        const mockEnvironments = [
           {
             id: 1,
             name: 'DEV',
@@ -424,14 +424,14 @@ describe('AuthService', () => {
             disabled: false,
           },
           { id: 4, name: 'D', parentName: 'DEV', parentId: null, nameAlias: null, selected: false, disabled: false },
-        ];
+        ] as unknown as Environment[];
         (environmentService.contexts as any).set(mockEnvironments);
       });
 
       it('should return true if context is null', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, null)).toBe(true);
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, undefined)).toBe(true);
       });
 
       it('should return true if restriction contextName is null', () => {

@@ -27,7 +27,7 @@ describe('RestrictionEditComponent', () => {
           parentId: null,
           selected: false,
           disabled: false,
-        },
+        } as unknown as Environment,
       ];
       const devEnvironments: Environment[] = [
         {
@@ -47,7 +47,7 @@ describe('RestrictionEditComponent', () => {
           parentId: 2,
           selected: false,
           disabled: false,
-        },
+        } as unknown as Environment,
       ];
       restrictionComponent.groupedEnvironments = {
         All: emptyEnvironment,
@@ -81,7 +81,7 @@ describe('RestrictionEditComponent', () => {
       restrictionComponent.resourceGroup = {
         id: null,
         name: 'West',
-      } as Resource;
+      } as unknown as Resource;
       // when then
       expect(restrictionComponent.checkGroup()).toBeFalsy();
     },
@@ -98,7 +98,7 @@ describe('RestrictionEditComponent', () => {
       restrictionComponent.resourceGroup = {
         id: null,
         name: 'rest',
-      } as Resource;
+      } as unknown as Resource;
       restrictionComponent.restriction = {} as Restriction;
       // when then
       expect(restrictionComponent.checkGroup()).toBeTruthy();
@@ -298,7 +298,7 @@ describe('RestrictionEditComponent', () => {
     (restrictionComponent: RestrictionEditComponent) => {
       // given
       restrictionComponent.delegationMode = true;
-      const emptyEnvironment: Environment[] = [{ id: null, name: null, parentName: 'All' } as Environment];
+      const emptyEnvironment: Environment[] = [{ id: null, name: null, parentName: 'All' } as unknown as Environment];
       const devEnvironments: Environment[] = [
         { id: 1, name: 'B', parentName: 'Dev' } as Environment,
         { id: 2, name: 'C', parentName: 'Dev' } as Environment,

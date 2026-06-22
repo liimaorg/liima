@@ -15,10 +15,10 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class AppServerAddComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() releases: Signal<Release[]>;
+  @Input() releases!: Signal<Release[]>;
   @Output() saveAppServer: EventEmitter<AppServer> = new EventEmitter<AppServer>();
 
-  appServer: AppServer = { name: '', apps: [], deletable: false, id: null, runtimeName: '', release: null };
+  appServer: AppServer = { name: '', apps: [], deletable: false, id: null as unknown as number, runtimeName: '', release: null as unknown as Release };
 
   hasInvalidFields(): boolean {
     return this.appServer.name === '' || this.appServer.release?.id == null;

@@ -8,9 +8,9 @@ import { IconComponent } from '../icon/icon.component';
   imports: [IconComponent],
 })
 export class SortableIconComponent implements OnChanges {
-  @Input() sortDirection: SortDirection;
+  @Input() sortDirection!: string;
 
-  direction: string;
+  direction!: string;
 
   ngOnChanges() {
     this.direction = this.sortDirection === 'ASC' ? 'up' : 'down';

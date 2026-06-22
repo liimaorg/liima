@@ -86,7 +86,7 @@ describe('DateTimePickerComponent', () => {
         }),
       );
 
-      component.writeValue(null);
+      component.writeValue(null as unknown as DateTimeModel);
 
       expect(component.datetime.year).toBeUndefined();
       expect(component.datetime.month).toBeUndefined();

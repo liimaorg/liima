@@ -104,7 +104,7 @@ export class FunctionsComponent implements OnDestroy {
 
   delete(functionData: AppFunction) {
     this.functionsService
-      .deleteFunction(functionData.id)
+      .deleteFunction(functionData.id!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function deleted.'),

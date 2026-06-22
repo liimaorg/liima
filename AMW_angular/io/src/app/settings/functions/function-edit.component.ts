@@ -31,21 +31,21 @@ import { FullscreenToggleComponent } from '../../shared/fullscreen-toggle/fullsc
 export class FunctionEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  private _function: AppFunction;
+  private _function!: AppFunction;
   @Input() set function(value: AppFunction) {
     this._function = value;
     if (value && value.id) {
-      this.loadRevisions(value.id);
+      this.loadRevisions(value.id!);
     }
   }
   get function(): AppFunction {
     return this._function;
   }
 
-  @Input() canManage: boolean;
+  @Input() canManage = false;
   @Output() saveFunction: EventEmitter<AppFunction> = new EventEmitter<AppFunction>();
 
-  public wrapLinesEnabled: false;
+  public wrapLinesEnabled = false;
   private functionsService = inject(FunctionsService);
   public revisions: WritableSignal<RevisionInformation[]> = signal([]);
   public revision: WritableSignal<AppFunction | null> = signal(null);
@@ -91,9 +91,9 @@ export class FunctionEditComponent {
     });
   }
 
-  selectRevision(revisionId: number, displayName: string): void {
+  selectRevision(revisionId: number | null, displayName: string | null): void {
     if (revisionId && displayName) {
-      this.functionsService.getFunctionByIdAndRevision(this.function.id, revisionId).subscribe((revision) => {
+      this.functionsService.getFunctionByIdAndRevision(this.function.id!, revisionId).subscribe((revision) => {
         this.revision.set(revision);
         this.selectedRevisionName.set(displayName);
         this.diffValue = { original: this.function.content, modified: revision.content };

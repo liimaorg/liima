@@ -174,5 +174,5 @@ export const logUrlLinkExtension: Extension = [
 })
 export class DeploymentLogContentComponent {
   readonly logHighlightExtensions: Extension[] = [logHighlightExtension, logUrlLinkExtension];
-  @Input() content: DeploymentLog | Failed;
+  @Input() content!: DeploymentLog | Failed | null;
 }

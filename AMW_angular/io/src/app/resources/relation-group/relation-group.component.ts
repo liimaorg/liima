@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
 
 export interface RelationGroupItem {
-  key: string | number;
+  key: string | number | undefined;
   name: string;
   type: string;
   release?: string;

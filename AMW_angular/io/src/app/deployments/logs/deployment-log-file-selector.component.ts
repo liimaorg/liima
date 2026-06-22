@@ -29,8 +29,8 @@ type Failed = 'failed';
   imports: [NgbDropdownMenu, NgbDropdownItem, NgbDropdownToggle, NgbDropdown],
 })
 export class DeploymentLogFileSelectorComponent {
-  @Input() logFiles: DeploymentLog[] | Failed;
-  @Input() selected: DeploymentLog | Failed;
+  @Input() logFiles!: DeploymentLog[] | Failed;
+  @Input() selected!: DeploymentLog | Failed | null;
 
   @Output() fileSelected = new EventEmitter<DeploymentLog>();
 

@@ -1,5 +1,5 @@
 export interface ResourceType {
-  id: number;
+  id: number | null;
   name: string;
   hasChildren: boolean;
   hasParent: boolean;

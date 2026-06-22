@@ -24,8 +24,8 @@ export class DeploymentsEditModalComponent {
   @Output() doEditDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
 
   confirmationAttributes = {} as Deployment;
-  deploymentDate: DateTimeModel;
-  selectedEditAction: string;
+  deploymentDate!: DateTimeModel;
+  selectedEditAction!: string;
   editActions: string[] = ['Change date', 'Confirm', 'Reject', 'Cancel'];
 
   doEdit() {
@@ -57,7 +57,7 @@ export class DeploymentsEditModalComponent {
   private clear() {
     this.confirmationAttributes = {} as Deployment;
     this.selectedEditAction = '';
-    delete this.deploymentDate;
+    this.deploymentDate = undefined as unknown as DateTimeModel;
   }
 
   private confirmSelectedDeployments() {
@@ -82,11 +82,12 @@ export class DeploymentsEditModalComponent {
   }
 
   private editDeploymentDate(emit: boolean) {
-    if (!this.deploymentDate) {
+    const depDate = this.deploymentDate;
+    if (!depDate) {
       this.errorMessage.emit('Invalid date');
     } else {
       for (const deployment of this.deployments) {
-        deployment.deploymentDate = this.deploymentDate.toEpoch();
+        deployment.deploymentDate = depDate.toEpoch() ?? 0;
         if (emit) {
           this.doEditDeploymentDate.emit(deployment);
         }

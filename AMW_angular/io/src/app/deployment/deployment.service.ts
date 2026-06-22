@@ -185,7 +185,7 @@ export class DeploymentService extends BaseService {
       total: 0,
     };
     ob.deployments = res.body;
-    ob.total = res.headers.get(headerField) ? parseInt(res.headers.get(headerField), 10) : 0;
+    ob.total = res.headers.get(headerField) ? parseInt(res.headers.get(headerField)!, 10) : 0;
     return ob;
   }
 }

@@ -27,7 +27,7 @@ export class EnvironmentsPageComponent {
   private toastService = inject(ToastService);
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();
-  globalEnv: EnvironmentTree;
+  globalEnv!: EnvironmentTree;
   environmentTree: Signal<EnvironmentTree[]> = computed(() => {
     const envTree = this.environmentsService.environmentTree();
     if (!envTree || envTree.length === 0) return [];
