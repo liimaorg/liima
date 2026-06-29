@@ -105,7 +105,35 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
   }
 
   addTemplate() {
-   console.log('add template')
+    const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
+      size: 'xl',
+    });
+    modalRef.componentInstance.template = {
+      id: null,
+      relatedResourceIdentifier: '',
+      name: '',
+      targetPath: '',
+      targetPlatforms: [],
+      fileContent: '',
+      sourceType: 'RESOURCE_RELATION_TYPE',
+    };
+    modalRef.componentInstance.canAddOrEdit = this.permissions().canAdd;
+    modalRef.componentInstance.saveTemplate
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((templateData: ResourceTemplate) => this.createTemplate(templateData));
+  }
+
+  private createTemplate(templateData: ResourceTemplate) {
+    this.resourceRelationsService
+      .addResourceTypeRelationTemplate(templateData, this.resourceType().id, this.relation().resRelTypeId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(this.resourceType().id, this.relation().resRelTypeId);
+        },
+      });
   }
 
   protected doListAction($event: TileListEntryOutput) {

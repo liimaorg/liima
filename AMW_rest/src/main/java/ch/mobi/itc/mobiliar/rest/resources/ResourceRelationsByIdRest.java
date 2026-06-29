@@ -188,7 +188,7 @@ public class ResourceRelationsByIdRest {
             TemplateDTO request)
             throws AMWException {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
-        templateEditor.saveTemplateForRelation(template, relationId, resourceId != null);
+        templateEditor.saveTemplateForRelation(template, relationId, true);
         return Response.status(Response.Status.OK).build();
     }
 

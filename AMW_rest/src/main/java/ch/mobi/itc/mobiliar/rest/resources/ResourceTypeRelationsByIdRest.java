@@ -26,9 +26,13 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.UpdateRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.*;
 import ch.puzzle.itc.mobiliar.business.template.boundary.GetRelationTemplatesUseCase;
+import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
+import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -43,6 +47,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,6 +79,12 @@ public class ResourceTypeRelationsByIdRest {
 
     @Inject
     GetRelationTemplatesUseCase getRelationTemplatesUseCase;
+
+    @Inject
+    TemplateEditor templateEditor;
+
+    @Inject
+    ResourceGroupLocator resourceGroupLocator;
 
     /**
      * Returns the unresolved type-level relations for the given resource type.
@@ -227,5 +238,42 @@ public class ResourceTypeRelationsByIdRest {
         return Response.ok(templates.stream()
                 .map(TemplateDTO::new)
                 .collect(Collectors.toList())).build();
+    }
+
+    @POST
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/addTemplate")
+    @Operation(summary = "Add new relation template")
+    public Response addNewRelationTypeTemplate(
+            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            TemplateDTO request)
+            throws AMWException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForRelation(template, relationId, false);
+        return Response.status(Response.Status.OK).build();
+    }
+
+    //TODO remove duplicated code
+    private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {
+        if (template == null) {
+            template = new TemplateDescriptorEntity();
+        }
+        template.setId(templateDTO.getId());
+        template.setFileContent(templateDTO.getFileContent());
+        template.setName(templateDTO.getName());
+        template.setTargetPath(templateDTO.getTargetPath());
+        HashSet<ResourceGroupEntity> targetPlatforms = new HashSet<>();
+        if (templateDTO.getTargetPlatforms() != null) {
+            for (String platform : templateDTO.getTargetPlatforms()) {
+                ResourceGroupEntity platformEntity = resourceGroupLocator.getResourceGroupByName(platform);
+                targetPlatforms.add(platformEntity);
+            }
+        }
+        template.setTargetPlatforms(targetPlatforms);
+        if (templateDTO.getVersion() != null) {
+            template.setV(templateDTO.getVersion());
+        }
+
+        return template;
     }
 }
