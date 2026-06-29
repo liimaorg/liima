@@ -20,22 +20,9 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.persistence.OptimisticLockException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.TemplateMapper;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -51,7 +38,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.OptimisticLockException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -66,7 +63,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 public class ResourceTemplatesRest {
 
     @Inject
-    ResourceGroupLocator resourceGroupLocator;
+    TemplateMapper templateMapper;
 
     @Inject
     TemplatesScreenDomainService templateService;
@@ -136,7 +133,7 @@ public class ResourceTemplatesRest {
     @Operation(summary = "Add new resource template")
     public Response addNewResourceTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request)
             throws AMWException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResource(template, id);
         return Response.status(Response.Status.OK).build();
     }
@@ -145,7 +142,7 @@ public class ResourceTemplatesRest {
     @Path("updateForResource/{id : \\d+}")
     @Operation(summary = "Modify existing template for resource")
     public Response modifyResourceTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResource(template, id);
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
     }
@@ -155,7 +152,7 @@ public class ResourceTemplatesRest {
     @Operation(summary = "Add new resourceType template")
     public Response addNewResourceTypeTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request)
             throws AMWException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResourceType(template, id);
         return Response.status(Response.Status.OK).build();
     }
@@ -164,7 +161,7 @@ public class ResourceTemplatesRest {
     @Path("updateForResourceType/{id : \\d+}")
     @Operation(summary = "Modify existing template for resourceType")
     public Response modifyResourceTypeTemplate(@Parameter(description = "Resource ID") @PathParam("id") Integer id, TemplateDTO request) throws AMWException, OptimisticLockException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForResourceType(template, id);
         return Response.created(URI.create("resources/template/updateForResource" + template.getId())).build();
     }
@@ -220,7 +217,7 @@ public class ResourceTemplatesRest {
     @Operation(summary = "Delete a template for a resource in a specific release")
     public Response deleteResourceTemplate(@PathParam("resourceGroupName") String resourceGroupName,
                                            @PathParam("releaseName") String releaseName,
-                                           @PathParam("templateName") String templateName) throws ValidationException, AMWException {
+                                           @PathParam("templateName") String templateName) throws AMWException {
         try {
             templateEditor.removeTemplate(resourceGroupName, releaseName, templateName);
         } catch (TemplateNotDeletableException e) {
@@ -242,10 +239,10 @@ public class ResourceTemplatesRest {
     @Operation(summary = "Create a template for a resource in a specific release")
     public Response createResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
                                             @PathParam("releaseName") String releaseName,
-                                            TemplateDTO templateDTO) throws ValidationException, AMWException {
+                                            TemplateDTO templateDTO) throws AMWException {
         // make sure id isn't set or save will try to update the template
         templateDTO.setId(null);
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(templateDTO, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(templateDTO, null);
 
         templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName);
         return Response.ok(new TemplateDTO(template)).build();
@@ -257,12 +254,12 @@ public class ResourceTemplatesRest {
     public Response updateResourceTemplates(@PathParam("resourceGroupName") String resourceGroupName,
                                             @PathParam("releaseName") String releaseName,
                                             @PathParam("templateName") String templateName,
-                                            TemplateDTO templateDTO) throws ValidationException, AMWException {
+                                            TemplateDTO templateDTO) throws AMWException {
         TemplateDescriptorEntity template = getTemplate(resourceGroupName, releaseName, templateName);
         if (template == null) {
             throw new NotFoundException("Template not found");
         }
-        template = toTemplateDescriptorEntity(templateDTO, template);
+        template = templateMapper.toTemplateDescriptorEntity(templateDTO, template);
 
         templateEditor.saveTemplateForResource(template, resourceGroupName, releaseName);
         return Response.ok(new TemplateDTO(template)).build();
@@ -278,26 +275,4 @@ public class ResourceTemplatesRest {
         return null;
     }
 
-    private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {
-        if (template == null) {
-            template = new TemplateDescriptorEntity();
-        }
-        template.setId(templateDTO.getId());
-        template.setFileContent(templateDTO.getFileContent());
-        template.setName(templateDTO.getName());
-        template.setTargetPath(templateDTO.getTargetPath());
-        HashSet<ResourceGroupEntity> targetPlatforms = new HashSet<>();
-        if (templateDTO.getTargetPlatforms() != null) {
-            for (String platform : templateDTO.getTargetPlatforms()) {
-                ResourceGroupEntity platformEntity = resourceGroupLocator.getResourceGroupByName(platform);
-                targetPlatforms.add(platformEntity);
-            }
-        }
-        template.setTargetPlatforms(targetPlatforms);
-        if (templateDTO.getVersion() != null) {
-            template.setV(templateDTO.getVersion());
-        }
-
-        return template;
-    }
 }

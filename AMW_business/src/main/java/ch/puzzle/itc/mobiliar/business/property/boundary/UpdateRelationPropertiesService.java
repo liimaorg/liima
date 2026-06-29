@@ -5,6 +5,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyValueService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationMapper;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -31,6 +32,9 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
 
     @Inject
     EntityManager entityManager;
+
+    @Inject
+    ResourceRelationMapper resourceRelationMapper;
 
     @Inject
     ResourceRelationService resourceRelationService;
@@ -62,7 +66,7 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             throw new NotAuthorizedException("Not allowed to set property value on relation");
         }
 
-        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationMerged);
+        ResourceEditRelation resourceEditRelation = resourceRelationMapper.toResourceEditRelation(relationMerged);
         List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(
                 masterResource.getId(), resourceEditRelation, contextId);
         ResourceEditProperty property = findByName(propertyName, properties);
@@ -87,7 +91,7 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             throw new NotAuthorizedException("Not allowed to reset property value on relation");
         }
 
-        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationMerged);
+        ResourceEditRelation resourceEditRelation = resourceRelationMapper.toResourceEditRelation(relationMerged);
         List<ResourceEditProperty> properties = propertyEditor.getPropertiesForRelatedResource(
                 masterResource.getId(), resourceEditRelation, contextId);
         ResourceEditProperty property = findByName(propertyName, properties);
@@ -147,7 +151,7 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
             throw new ResourceNotFoundException("Relation with id " + relationId + " not found");
         }
         AbstractResourceRelationEntity resourceRelation = resourceRelationService.getResourceRelation(relationId);
-        ResourceEditRelation relation = toResourceEditRelation(resourceRelation);
+        ResourceEditRelation relation = resourceRelationMapper.toResourceEditRelation(resourceRelation);
         handleRelationIdentifierUpdate(relation, resourceRelation, newIdentifier);
     }
 
@@ -180,32 +184,6 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
     }
 
 
-    private ResourceEditRelation toResourceEditRelation(AbstractResourceRelationEntity relation) throws ResourceNotFoundException {
-        ResourceEditRelation.Mode mode;
-        if (relation instanceof ConsumedResourceRelationEntity) {
-            mode = ResourceEditRelation.Mode.CONSUMED;
-        } else if (relation instanceof ProvidedResourceRelationEntity) {
-            mode = ResourceEditRelation.Mode.PROVIDED;
-        } else {
-            throw new ResourceNotFoundException("Relation with id " + relation.getId() + " is not a consumed or provided relation");
-        }
-
-        return new ResourceEditRelation(
-                relation.getId(),
-                relation.getSlaveResource().getId(),
-                relation.buildIdentifer(),
-                relation.getSlaveResource().getName(),
-                relation.getSlaveResource().getResourceGroup().getId(),
-                relation.getSlaveResource().getRelease().getId(),
-                relation.getSlaveResource().getRelease().getName(),
-                relation.getResourceRelationType().getResourceTypeB().getId(),
-                relation.getResourceRelationType().getResourceTypeB().getName(),
-                relation.getResourceRelationType().getResourceTypeA().getName(),
-                relation.getResourceRelationType().getId(),
-                relation.getResourceRelationType().getIdentifier(),
-                mode.name(),
-                relation.getSlaveResource().getRelease().getInstallationInProductionAt());
-    }
 
     @Override
     @HasPermission(permission = Permission.RESOURCETYPE, action = Action.UPDATE)

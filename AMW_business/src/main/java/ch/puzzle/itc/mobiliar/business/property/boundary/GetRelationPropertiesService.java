@@ -22,6 +22,7 @@ package ch.puzzle.itc.mobiliar.business.property.boundary;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationMapper;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -38,6 +39,9 @@ import java.util.List;
 public class GetRelationPropertiesService implements GetRelationPropertiesUseCase {
 
     @Inject
+    ResourceRelationMapper resourceRelationMapper;
+
+    @Inject
     ResourceRelationService resourceRelationService;
 
     @Inject
@@ -46,46 +50,15 @@ public class GetRelationPropertiesService implements GetRelationPropertiesUseCas
     @Override
     public List<ResourceEditProperty> getPropertiesForRelation(Integer resourceId, Integer relationId, Integer contextId)
             throws ResourceNotFoundException {
-        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationId);
+        ResourceEditRelation resourceEditRelation = resourceRelationMapper.toResourceEditRelation(relationId);
         return propertyEditor.getPropertiesForRelatedResource(resourceId, resourceEditRelation, contextId);
     }
 
     @Override
     public List<PropertyEditingService.DifferingProperty> getPropertyOverviewForRelation(Integer relationId, ResourceEditProperty property, List<ContextEntity> relevantContexts)
             throws ResourceNotFoundException {
-        ResourceEditRelation resourceEditRelation = toResourceEditRelation(relationId);
+        ResourceEditRelation resourceEditRelation = resourceRelationMapper.toResourceEditRelation(relationId);
         return propertyEditor.getPropertyOverviewForRelation(resourceEditRelation, property, relevantContexts);
     }
 
-    private ResourceEditRelation toResourceEditRelation(Integer relationId) throws ResourceNotFoundException {
-        AbstractResourceRelationEntity relation = resourceRelationService.getResourceRelation(relationId);
-        if (relation == null) {
-            throw new ResourceNotFoundException("Relation with id " + relationId + " not found");
-        }
-
-        ResourceEditRelation.Mode mode;
-        if (relation instanceof ConsumedResourceRelationEntity) {
-            mode = ResourceEditRelation.Mode.CONSUMED;
-        } else if (relation instanceof ProvidedResourceRelationEntity) {
-            mode = ResourceEditRelation.Mode.PROVIDED;
-        } else {
-            throw new ResourceNotFoundException("Relation with id " + relationId + " is not a consumed or provided relation");
-        }
-
-        return new ResourceEditRelation(
-                relation.getId(),
-                relation.getSlaveResource().getId(),
-                relation.buildIdentifer(),
-                relation.getSlaveResource().getName(),
-                relation.getSlaveResource().getResourceGroup().getId(),
-                relation.getSlaveResource().getRelease().getId(),
-                relation.getSlaveResource().getRelease().getName(),
-                relation.getResourceRelationType().getResourceTypeB().getId(),
-                relation.getResourceRelationType().getResourceTypeB().getName(),
-                relation.getResourceRelationType().getResourceTypeA().getName(),
-                relation.getResourceRelationType().getId(),
-                relation.getResourceRelationType().getIdentifier(),
-                mode.name(),
-                relation.getSlaveResource().getRelease().getInstallationInProductionAt());
-    }
 }

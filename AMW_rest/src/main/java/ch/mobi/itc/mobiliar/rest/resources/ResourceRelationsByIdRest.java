@@ -54,7 +54,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -96,7 +95,7 @@ public class ResourceRelationsByIdRest {
     TemplateEditor templateEditor;
 
     @Inject
-    ResourceGroupLocator resourceGroupLocator;
+    TemplateMapper templateMapper;
 
 
     @GET
@@ -188,7 +187,7 @@ public class ResourceRelationsByIdRest {
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
             TemplateDTO request)
             throws AMWException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForRelation(template, relationId, true);
         return Response.status(Response.Status.OK).build();
     }
@@ -200,34 +199,11 @@ public class ResourceRelationsByIdRest {
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
             TemplateDTO request) throws AMWException, OptimisticLockException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForRelation(template, relationId, true);
         return Response.status(Response.Status.OK).build();
     }
 
-    //TODO remove duplicated code
-    private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {
-        if (template == null) {
-            template = new TemplateDescriptorEntity();
-        }
-        template.setId(templateDTO.getId());
-        template.setFileContent(templateDTO.getFileContent());
-        template.setName(templateDTO.getName());
-        template.setTargetPath(templateDTO.getTargetPath());
-        HashSet<ResourceGroupEntity> targetPlatforms = new HashSet<>();
-        if (templateDTO.getTargetPlatforms() != null) {
-            for (String platform : templateDTO.getTargetPlatforms()) {
-                ResourceGroupEntity platformEntity = resourceGroupLocator.getResourceGroupByName(platform);
-                targetPlatforms.add(platformEntity);
-            }
-        }
-        template.setTargetPlatforms(targetPlatforms);
-        if (templateDTO.getVersion() != null) {
-            template.setV(templateDTO.getVersion());
-        }
-
-        return template;
-    }
 
     private List<PropertyEditingService.DifferingProperty> getOverwriteInfos(Integer relationId, Integer contextId, ResourceEditProperty property) throws ResourceNotFoundException {
         List<ContextEntity> contexts = contextLocator.getChildren(contextId);

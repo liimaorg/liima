@@ -26,8 +26,6 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.UpdateRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.*;
 import ch.puzzle.itc.mobiliar.business.template.boundary.GetRelationTemplatesUseCase;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
@@ -48,7 +46,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,7 +82,7 @@ public class ResourceTypeRelationsByIdRest {
     TemplateEditor templateEditor;
 
     @Inject
-    ResourceGroupLocator resourceGroupLocator;
+    TemplateMapper templateMapper;
 
     /**
      * Returns the unresolved type-level relations for the given resource type.
@@ -249,7 +246,7 @@ public class ResourceTypeRelationsByIdRest {
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
             TemplateDTO request)
             throws AMWException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForRelation(template, relationId, false);
         return Response.status(Response.Status.OK).build();
     }
@@ -261,33 +258,10 @@ public class ResourceTypeRelationsByIdRest {
             @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
             TemplateDTO request) throws AMWException, OptimisticLockException {
-        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForRelation(template, relationId, false);
         return Response.status(Response.Status.OK).build();
     }
 
 
-    //TODO remove duplicated code
-    private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {
-        if (template == null) {
-            template = new TemplateDescriptorEntity();
-        }
-        template.setId(templateDTO.getId());
-        template.setFileContent(templateDTO.getFileContent());
-        template.setName(templateDTO.getName());
-        template.setTargetPath(templateDTO.getTargetPath());
-        HashSet<ResourceGroupEntity> targetPlatforms = new HashSet<>();
-        if (templateDTO.getTargetPlatforms() != null) {
-            for (String platform : templateDTO.getTargetPlatforms()) {
-                ResourceGroupEntity platformEntity = resourceGroupLocator.getResourceGroupByName(platform);
-                targetPlatforms.add(platformEntity);
-            }
-        }
-        template.setTargetPlatforms(targetPlatforms);
-        if (templateDTO.getVersion() != null) {
-            template.setV(templateDTO.getVersion());
-        }
-
-        return template;
-    }
 }
