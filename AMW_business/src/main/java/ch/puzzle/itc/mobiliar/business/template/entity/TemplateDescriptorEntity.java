@@ -218,7 +218,7 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
         // targetPlatforms
         if (this.getTargetPlatforms() != null) {
             if (target.getTargetPlatforms() == null) {
-                target.setTargetPlatforms(new HashSet<ResourceGroupEntity>());
+                target.setTargetPlatforms(new HashSet<>());
             }
             for (ResourceGroupEntity tPlatform : this.getTargetPlatforms()) {
                 if (target.getTargetPlatforms().add(tPlatform) && alreadyExists) {

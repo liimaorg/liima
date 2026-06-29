@@ -25,7 +25,6 @@ import ch.puzzle.itc.mobiliar.business.property.control.PropertyEditingService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationMapper;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 
 import javax.ejb.Stateless;
@@ -37,9 +36,6 @@ public class GetRelationPropertiesService implements GetRelationPropertiesUseCas
 
     @Inject
     ResourceRelationMapper resourceRelationMapper;
-
-    @Inject
-    ResourceRelationService resourceRelationService;
 
     @Inject
     PropertyEditor propertyEditor;

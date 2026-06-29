@@ -25,7 +25,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceTypeLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationMapper;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
@@ -44,9 +43,6 @@ public class GetRelationTemplatesService implements GetRelationTemplatesUseCase 
 
     @Inject
     ResourceRelationMapper resourceRelationMapper;
-
-    @Inject
-    ResourceRelationService resourceRelationService;
 
     @Inject
     TemplatesScreenDomainService templateService;
