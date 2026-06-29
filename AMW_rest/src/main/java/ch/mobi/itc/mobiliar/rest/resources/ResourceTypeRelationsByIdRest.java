@@ -263,5 +263,4 @@ public class ResourceTypeRelationsByIdRest {
         return Response.status(Response.Status.OK).build();
     }
 
-
 }

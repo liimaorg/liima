@@ -97,7 +97,6 @@ public class ResourceRelationsByIdRest {
     @Inject
     TemplateMapper templateMapper;
 
-
     @GET
     @Path("/{id : \\d+}/relations")
     @Produces(MediaType.APPLICATION_JSON)
