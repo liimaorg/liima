@@ -69,8 +69,8 @@ export class AppAddComponent {
     const app: AppCreate = {
       appName: this.app.appName,
       appReleaseId: this.app.appReleaseId,
-      appServerId: this.appServerGroup?.id ?? 0,
-      appServerReleaseId: this.appServerRelease?.id ?? 0,
+      appServerId: this.appServerGroup?.id ?? null,
+      appServerReleaseId: this.appServerRelease?.id ?? null,
     };
     this.saveApp.emit(app);
     this.activeModal.close();
