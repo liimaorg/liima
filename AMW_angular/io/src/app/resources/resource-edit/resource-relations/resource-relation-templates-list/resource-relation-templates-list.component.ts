@@ -100,7 +100,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
         this.templates().filter((template) => template.sourceType === 'RESOURCE_RELATION'),
       );
       const typeTemplates = this.mapListEntries(
-        this.templates().filter((template) => template.sourceType === 'RESOURCE_RELATION_TYPE'),
+        this.templates().filter((template) => template.sourceType === 'RESOURCE_TYPE_RELATION'),
       );
 
       const result = [];

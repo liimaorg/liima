@@ -64,7 +64,7 @@ public class GetRelationTemplatesService implements GetRelationTemplatesUseCase 
         List<TemplateDescriptorEntity> relationTemplates = templateService.getGlobalTemplatesForResourceRelation(resourceEditRelation);
         relationTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE_RELATION));
         List<TemplateDescriptorEntity> relationTypeTemplates = templateService.getGlobalTemplatesForResourceRelationType(resourceEditRelation);
-        relationTypeTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE_RELATION_TYPE));
+        relationTypeTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE_TYPE_RELATION));
 
         return Stream.concat(relationTemplates.stream(), relationTypeTemplates.stream())
                 .collect(Collectors.toList());
@@ -87,7 +87,7 @@ public class GetRelationTemplatesService implements GetRelationTemplatesUseCase 
                 ResourceEditRelation.Mode.TYPE.name(), null);
 
         List<TemplateDescriptorEntity> relationTemplates = templateService.getGlobalTemplatesForResourceRelationType(relation);
-        relationTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE_RELATION_TYPE));
+        relationTemplates.forEach(template -> template.setSourceType(TemplateDescriptorEntity.TemplateSourceType.RESOURCE_TYPE_RELATION));
 
         return relationTemplates;
     }

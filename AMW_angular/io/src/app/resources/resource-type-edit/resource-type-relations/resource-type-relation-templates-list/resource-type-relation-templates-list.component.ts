@@ -115,7 +115,7 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
       targetPath: '',
       targetPlatforms: [],
       fileContent: '',
-      sourceType: 'RESOURCE_RELATION_TYPE',
+      sourceType: 'RESOURCE_TYPE_RELATION',
     };
     modalRef.componentInstance.canAddOrEdit = this.permissions().canAdd;
     modalRef.componentInstance.saveTemplate
@@ -177,7 +177,7 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
     modalRef.componentInstance.saveTemplate
       .pipe(takeUntil(this.destroy$))
       .subscribe((templateData: ResourceTemplate) => {
-        templateData.sourceType = 'RESOURCE_RELATION_TYPE';
+        templateData.sourceType = 'RESOURCE_TYPE_RELATION';
         this.updateTemplate(templateData);
       });
   }
