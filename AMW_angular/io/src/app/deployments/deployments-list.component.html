@@ -7,48 +7,48 @@
             <input type="checkbox" (click)="switchAllDeployments()" />
             <span class="link" (click)="reSort('d.trackingId')"
               >&nbsp;Tracking id
-              @if (sortCol === 'd.trackingId') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.trackingId') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
             <span class="link" (click)="reSort('d.deploymentState')"
               >State
-              @if (sortCol === 'd.deploymentState') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.deploymentState') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
             <span class="link" (click)="reSort('d.resourceGroup.name')"
               >App server
-              @if (sortCol === 'd.resourceGroup.name') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.resourceGroup.name') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
             <span class="link" (click)="reSort('d.release.installationInProductionAt')"
               >Release
-              @if (sortCol === 'd.release.installationInProductionAt') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.release.installationInProductionAt') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
             <span class="link" (click)="reSort('d.context.name')"
               >Env
-              @if (sortCol === 'd.context.name') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.context.name') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
             <span class="link" (click)="reSort('d.deploymentDate')"
               >Deployment date
-              @if (sortCol === 'd.deploymentDate') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.deploymentDate') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>

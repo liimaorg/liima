@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, Signal, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { Release } from '../../settings/releases/release';
 import { AppServer } from '../app-server';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -6,6 +6,11 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
 import { ButtonComponent } from '../../shared/button/button.component';
+
+type AppServerForm = Omit<AppServer, 'id' | 'release'> & {
+  id: number | null;
+  release: Release | null;
+};
 
 @Component({
   selector: 'app-server-add',
@@ -15,10 +20,19 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class AppServerAddComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() releases!: Signal<Release[]>;
+  private readonly releasesSignal = signal<Release[]>([]);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set releases(value: Release[]) {
+    this.releasesSignal.set(value);
+  }
+
+  protected readonly releasesValue = this.releasesSignal.asReadonly();
   @Output() saveAppServer: EventEmitter<AppServer> = new EventEmitter<AppServer>();
 
-  appServer: AppServer = { name: '', apps: [], deletable: false, id: null as unknown as number, runtimeName: '', release: null as unknown as Release };
+  appServer: AppServerForm = { name: '', apps: [], deletable: false, id: null, runtimeName: '', release: null };
 
   hasInvalidFields(): boolean {
     return this.appServer.name === '' || this.appServer.release?.id == null;
@@ -33,11 +47,17 @@ export class AppServerAddComponent {
       document.querySelectorAll('.needs-validation')[0].classList.add('was-validated');
       return;
     }
+
+    const release = this.appServer.release;
+    if (!release) {
+      return;
+    }
+
     const appServer: AppServer = {
       name: this.appServer.name,
-      release: this.appServer.release,
+      release,
       deletable: this.appServer.deletable,
-      id: this.appServer.id,
+      id: this.appServer.id ?? 0,
       runtimeName: this.appServer.runtimeName,
       apps: this.appServer.apps,
     };

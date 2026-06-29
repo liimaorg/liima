@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, input } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resources/services/resource.service';
@@ -34,9 +34,9 @@ export class DeploymentsListComponent {
   private modalService = inject(NgbModal);
 
   @Input() deployments: Deployment[] = [];
-  @Input() sortCol!: string;
-  @Input() sortDirection!: string;
-  @Input() filtersForParam!: DeploymentFilter[];
+  sortCol = input.required<string>();
+  sortDirection = input.required<string>();
+  filtersForParam = input.required<DeploymentFilter[]>();
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();

@@ -58,7 +58,18 @@ export class ResourceTemplateEditComponent {
     return this._template;
   }
 
-  @Input() canAddOrEdit!: boolean;
+  private readonly canAddOrEditSignal = signal(false);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set canAddOrEdit(value: boolean) {
+    this.canAddOrEditSignal.set(value);
+  }
+
+  get canAddOrEdit(): boolean {
+    return this.canAddOrEditSignal();
+  }
 
   @Output() saveTemplate: EventEmitter<ResourceTemplate> = new EventEmitter<ResourceTemplate>();
 

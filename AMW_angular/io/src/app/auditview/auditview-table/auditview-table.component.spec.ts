@@ -19,6 +19,7 @@ describe('AuditviewTableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AuditviewTableComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('auditlogEntries', []);
     fixture.detectChanges();
   });
 

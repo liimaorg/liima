@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, QueryList, SimpleChanges, ViewChildren, inject } from '@angular/core';
+import { Component, effect, input, QueryList, ViewChildren, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewTableService } from './auditview-table.service';
@@ -15,23 +15,23 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./auditview-table.component.scss'],
   imports: [FormsModule, SortableHeader, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
 })
-export class AuditviewTableComponent implements OnChanges {
-  @Input() auditlogEntries!: AuditLogEntry[];
+export class AuditviewTableComponent {
+  auditlogEntries = input.required<AuditLogEntry[]>();
 
   service = inject(AuditviewTableService);
   auditlogEntries$: Observable<AuditLogEntry[]> = this.service.result$;
   @ViewChildren(SortableHeader) headers!: QueryList<SortableHeader>;
   dateFormat = DATE_TIME_FORMAT;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.auditlogEntries) {
-      this.service.auditLogEntries = changes.auditlogEntries.currentValue;
-    }
+  constructor() {
+    effect(() => {
+      this.service.auditLogEntries = this.auditlogEntries();
+    });
   }
 
   onSort({ column, direction }: SortEvent) {
     this.headers.forEach((header) => {
-      if (header.sortable !== column) {
+      if (header.sortableValue() !== column) {
         header.direction = '';
       }
     });

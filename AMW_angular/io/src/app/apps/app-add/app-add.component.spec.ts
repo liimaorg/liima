@@ -2,8 +2,6 @@ import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppAddComponent } from './app-add.component';
 import { AppCreate } from '../app-create';
-import { Resource } from '../../resources/models/resource';
-import { signal } from '@angular/core';
 
 describe('AppAddComponent', () => {
   let fixture: ComponentFixture<AppAddComponent>;
@@ -18,9 +16,8 @@ describe('AppAddComponent', () => {
     fixture = TestBed.createComponent(AppAddComponent);
     component = fixture.componentInstance;
     activeModal = TestBed.inject(NgbActiveModal);
-    // Provide default signals
-    component.releases = signal([] as any);
-    component.appServerGroups = signal([] as any);
+    fixture.componentRef.setInput('releases', [] as any);
+    fixture.componentRef.setInput('appServerGroups', [] as any);
     fixture.detectChanges();
   });
 
@@ -29,7 +26,7 @@ describe('AppAddComponent', () => {
   });
 
   it('hasInvalidGroup true when no group', () => {
-    component.appServerGroup = undefined as unknown as Resource;
+    component.appServerGroup = undefined;
     expect(component.hasInvalidGroup()).toBe(true);
   });
 

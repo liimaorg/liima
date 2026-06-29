@@ -9,7 +9,7 @@
     <div class="mb-3">
       <label for="selectRelease" class="form-label">Release</label>
       <ng-select id="selectRelease" [(ngModel)]="appServer.release" placeholder="Select release">
-        @for (release of releases(); track release.id) {
+        @for (release of releasesValue(); track release.id) {
           <ng-option [value]="release">{{ release.name }}</ng-option>
         }
       </ng-select>

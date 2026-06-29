@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Release } from './release';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,7 +16,18 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class ReleaseEditComponent implements OnInit {
   activeModal = inject(NgbActiveModal);
 
-  @Input() release!: Release;
+  private readonly releaseSignal = signal<Release | null>(null);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set release(value: Release) {
+    this.releaseSignal.set(value);
+  }
+
+  get release(): Release {
+    return this.releaseSignal() as Release;
+  }
   @Output() saveRelease: EventEmitter<Release> = new EventEmitter<Release>();
 
   dateFormat = DATE_FORMAT;

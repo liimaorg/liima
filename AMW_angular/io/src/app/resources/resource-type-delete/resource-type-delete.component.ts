@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResourceType } from '../models/resource-type';
 import { ModalHeaderComponent } from '../../shared/modal-header/modal-header.component';
@@ -11,7 +11,19 @@ import { ButtonComponent } from '../../shared/button/button.component';
 })
 export class ResourceTypeDeleteComponent {
   activeModal = inject(NgbActiveModal);
-  @Input() resourceType!: ResourceType;
+
+  private readonly resourceTypeSignal = signal<ResourceType | null>(null);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set resourceType(value: ResourceType) {
+    this.resourceTypeSignal.set(value);
+  }
+
+  get resourceType(): ResourceType {
+    return this.resourceTypeSignal() as ResourceType;
+  }
   @Output() resourceTypeToDelete: EventEmitter<ResourceType> = new EventEmitter<ResourceType>();
 
   cancel() {

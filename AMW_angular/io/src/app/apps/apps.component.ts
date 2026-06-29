@@ -101,14 +101,14 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   addApp() {
     const modalRef = this.modalService.open(AppAddComponent);
-    modalRef.componentInstance.releases = this.releases;
-    modalRef.componentInstance.appServerGroups = this.appServerGroups;
+    modalRef.componentInstance.releases = this.releases();
+    modalRef.componentInstance.appServerGroups = this.appServerGroups();
     modalRef.componentInstance.saveApp.pipe(takeUntil(this.destroy$)).subscribe((app: AppCreate) => this.saveApp(app));
   }
 
   addServer() {
     const modalRef = this.modalService.open(AppServerAddComponent);
-    modalRef.componentInstance.releases = this.releases;
+    modalRef.componentInstance.releases = this.releases();
     modalRef.componentInstance.saveAppServer
       .pipe(takeUntil(this.destroy$))
       .subscribe((appServer: AppServer) => this.saveAppServer(appServer));

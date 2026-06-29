@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, Output } from '@angular/core';
+import { Directive, EventEmitter, Input, Output, input } from '@angular/core';
 
 export type SortDirection = 'asc' | 'desc' | '';
 const rotate: { [key: string]: SortDirection } = {
@@ -22,12 +22,16 @@ export interface SortEvent {
   standalone: true,
 })
 export class SortableHeader {
-  @Input() sortable!: string;
+  sortable = input.required<string>();
   @Input() direction: SortDirection = '';
   @Output() sort = new EventEmitter<SortEvent>();
 
+  sortableValue(): string {
+    return this.sortable();
+  }
+
   rotate() {
     this.direction = rotate[this.direction];
-    this.sort.emit({ column: this.sortable, direction: this.direction });
+    this.sort.emit({ column: this.sortableValue(), direction: this.direction });
   }
 }

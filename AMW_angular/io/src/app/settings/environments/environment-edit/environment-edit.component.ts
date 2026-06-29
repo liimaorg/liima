@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, EventEmitter, inject, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { Environment } from '../../../deployment/environment';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
@@ -15,8 +15,29 @@ import { ButtonComponent } from '../../../shared/button/button.component';
 export class EnvironmentEditComponent {
   private authService = inject(AuthService);
   activeModal = inject(NgbActiveModal);
-  @Input() environment!: Environment;
-  @Input() globalName!: string;
+
+  private readonly environmentSignal = signal<Environment | null>(null);
+  private readonly globalNameSignal = signal<string>('');
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set environment(value: Environment) {
+    this.environmentSignal.set(value);
+  }
+
+  get environment(): Environment {
+    return this.environmentSignal() as Environment;
+  }
+
+  @Input({ required: true })
+  set globalName(value: string) {
+    this.globalNameSignal.set(value);
+  }
+
+  get globalName(): string {
+    return this.globalNameSignal();
+  }
   @Output() saveEnvironment: EventEmitter<Environment> = new EventEmitter<Environment>();
 
   permissions = computed(() => {
