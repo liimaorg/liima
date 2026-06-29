@@ -171,7 +171,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
@@ -184,7 +184,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
@@ -197,7 +197,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
@@ -210,7 +210,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function deleted successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },

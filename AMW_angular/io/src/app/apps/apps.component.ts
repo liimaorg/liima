@@ -124,7 +124,7 @@ export class AppsComponent implements OnInit, OnDestroy {
           this.toastService.success('AppServer saved successfully.');
         },
         error: (e) => {
-          this.error$.next(e.toString());
+          this.error$.next(e);
         },
         complete: () => {
           this.appsService.refreshData();
@@ -143,7 +143,7 @@ export class AppsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('App saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.appsService.refreshData();
         },

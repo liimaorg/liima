@@ -197,7 +197,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },
@@ -210,7 +210,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },
@@ -223,7 +223,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },
@@ -236,7 +236,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function deleted successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },

@@ -133,7 +133,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
@@ -160,7 +160,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
@@ -181,7 +181,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template deleted successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
