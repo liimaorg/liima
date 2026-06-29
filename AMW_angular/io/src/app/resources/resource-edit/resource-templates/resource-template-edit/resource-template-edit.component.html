@@ -79,7 +79,7 @@
     </div>
     <div class="mb-3 fileContent">
       <div class="d-flex justify-content-between align-items-center mb-1">
-        <label for="template-content" class="form-label">Template file content</label>
+        <label class="form-label">Template file content</label>
         <div class="d-flex align-items-center">
           <div class="form-check me-3">
             <input class="form-check-input" type="checkbox" id="isWrapLines" [(ngModel)]="wrapLinesEnabled" />
@@ -110,7 +110,7 @@
       </div>
     </div>
     <div class="container mb-3 p-0">
-      <label for="platform-container" class="form-label">Valid for:</label>
+      <label class="form-label">Valid for:</label>
       <div id="platform-container" class="row align-items-center">
         <div [class]="revision() ? 'col-sm-6' : 'col-sm-12'">
           @for (targetPlatform of targetPlatformModels(); track targetPlatform.name) {
@@ -118,11 +118,11 @@
               <input
                 class="form-check-input"
                 type="checkbox"
-                id="targetPlatform.name"
+                [id]="targetPlatform.name"
                 [ngModel]="targetPlatform.selected"
                 (change)="selectTargetPlatform(targetPlatform)"
               />
-              <label class="form-check-label" for="targetPlatform.name">{{ targetPlatform.name }}</label>
+              <label class="form-check-label" [for]="targetPlatform.name">{{ targetPlatform.name }}</label>
             </div>
           }
         </div>
@@ -133,11 +133,11 @@
                 <input
                   class="form-check-input"
                   type="checkbox"
-                  id="revisionTargetPlatform.name"
+                  [id]="revisionTargetPlatform.name"
                   disabled
                   [checked]="revisionTargetPlatform.selected"
                 />
-                <label class="form-check-label" for="revisionTargetPlatform.name">
+                <label class="form-check-label" [for]="revisionTargetPlatform.name">
                   {{ revisionTargetPlatform.name }}
                 </label>
               </div>
