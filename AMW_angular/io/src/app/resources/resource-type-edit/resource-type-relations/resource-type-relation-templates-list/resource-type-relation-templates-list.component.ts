@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, OnDestroy } from '@angular/core';
-import { ResourceRelation, UnresolvedRelation } from '../../../models/resource-relation';
+import { UnresolvedRelation } from '../../../models/resource-relation';
 import { LoadingIndicatorComponent } from '../../../../shared/elements/loading-indicator.component';
 import { TileComponent } from '../../../../shared/tile/tile.component';
 import {

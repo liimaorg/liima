@@ -244,7 +244,7 @@ public class ResourceRelationsByIdRest {
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
             PropertyBulkUpdateDTO bulkRequest,
             @Parameter(description = "Context ID") @DefaultValue("1") @QueryParam("contextId") Integer contextId)
-            throws ResourceNotFoundException, NotFoundException, ValidationException {
+            throws NotFoundException, ValidationException {
 
         if (bulkRequest == null || isRequestEmpty(bulkRequest)) {
             return Response.status(Response.Status.NO_CONTENT).build();
