@@ -183,6 +183,14 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
   }
 
   private updateTemplate(templateData: ResourceTemplate) {
-    console.log('update template', templateData);
-  }
+    this.resourceRelationsService
+      .updateResourceTypeRelationTemplate(templateData, this.resourceType().id, this.relation().resRelTypeId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template saved successfully.'),
+        error: (e) => this.error$.next(e.toString()),
+        complete: () => {
+          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(this.resourceType().id, this.relation().resRelTypeId);
+        },
+      });  }
 }

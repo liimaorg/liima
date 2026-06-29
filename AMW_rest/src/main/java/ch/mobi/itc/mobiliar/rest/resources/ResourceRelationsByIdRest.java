@@ -48,6 +48,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.persistence.OptimisticLockException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -198,9 +199,9 @@ public class ResourceRelationsByIdRest {
     public Response modifyRelationTemplate(
             @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
-            TemplateDTO request) throws AMWException {
+            TemplateDTO request) throws AMWException, OptimisticLockException {
         TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
-        templateEditor.saveTemplateForRelation(template, relationId, resourceId != null);
+        templateEditor.saveTemplateForRelation(template, relationId, true);
         return Response.status(Response.Status.OK).build();
     }
 

@@ -42,6 +42,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.persistence.OptimisticLockException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -244,7 +245,7 @@ public class ResourceTypeRelationsByIdRest {
     @Path("/{id : \\d+}/relations/{relationId : \\d+}/addTemplate")
     @Operation(summary = "Add new relation template")
     public Response addNewRelationTypeTemplate(
-            @Parameter(description = "Resource ID") @PathParam("id") Integer resourceId,
+            @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
             TemplateDTO request)
             throws AMWException {
@@ -252,6 +253,19 @@ public class ResourceTypeRelationsByIdRest {
         templateEditor.saveTemplateForRelation(template, relationId, false);
         return Response.status(Response.Status.OK).build();
     }
+
+    @PUT
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/updateTemplate")
+    @Operation(summary = "Modify existing template for relation")
+    public Response modifyRelationTemplate(
+            @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            TemplateDTO request) throws AMWException, OptimisticLockException {
+        TemplateDescriptorEntity template = toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForRelation(template, relationId, false);
+        return Response.status(Response.Status.OK).build();
+    }
+
 
     //TODO remove duplicated code
     private TemplateDescriptorEntity toTemplateDescriptorEntity(TemplateDTO templateDTO, TemplateDescriptorEntity template) {

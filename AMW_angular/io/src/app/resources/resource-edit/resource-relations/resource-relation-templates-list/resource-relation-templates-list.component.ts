@@ -218,7 +218,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
 
   private updateTemplate(templateData: ResourceTemplate) {
     this.resourceRelationsService
-      .updateRelationTemplate(templateData, this.resource().id, this.relation().id)
+      .updateResourceRelationTemplate(templateData, this.resource().id, this.relation().id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),

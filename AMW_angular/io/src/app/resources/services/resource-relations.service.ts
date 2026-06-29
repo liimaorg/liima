@@ -313,9 +313,17 @@ export class ResourceRelationsService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  updateRelationTemplate(template: ResourceTemplate, resourceId: number, relationId: number) {
+  updateResourceRelationTemplate(template: ResourceTemplate, resourceId: number, relationId: number) {
     return this.http
       .put<ResourceTemplate>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/updateTemplate`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateResourceTypeRelationTemplate(template: ResourceTemplate, resourceTypeId: number, relationId: number) {
+    return this.http
+      .put<ResourceTemplate>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/updateTemplate`, template, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));
