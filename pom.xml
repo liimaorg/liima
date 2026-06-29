@@ -39,6 +39,7 @@
         <version.hamcrest>3.0</version.hamcrest>
         <version.junit>5.14.1</version.junit>
         <version.mockito>5.21.0</version.mockito>
+        <version.lombok>1.18.46</version.lombok>
     </properties>
 
 
@@ -92,6 +93,13 @@
                     <version>${version.compiler.plugin}</version>
                     <configuration>
                         <release>11</release>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${version.lombok}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -411,7 +419,8 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
+            <version>${version.lombok}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
