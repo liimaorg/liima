@@ -1,4 +1,4 @@
-import { Component, effect, input, QueryList, ViewChildren, inject } from '@angular/core';
+import { Component, effect, QueryList, ViewChildren, inject, input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuditLogEntry } from '../auditview-entry';
 import { AuditviewTableService } from './auditview-table.service';
@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule, SortableHeader, NgbHighlight, AsyncPipe, DatePipe, NewlineFilterPipe],
 })
 export class AuditviewTableComponent {
-  auditlogEntries = input.required<AuditLogEntry[]>();
+  readonly auditlogEntries = input.required<AuditLogEntry[]>();
 
   service = inject(AuditviewTableService);
   auditlogEntries$: Observable<AuditLogEntry[]> = this.service.result$;
@@ -31,8 +31,8 @@ export class AuditviewTableComponent {
 
   onSort({ column, direction }: SortEvent) {
     this.headers.forEach((header) => {
-      if (header.sortableValue() !== column) {
-        header.direction = '';
+      if (header.sortable() !== column) {
+        header.direction.set('');
       }
     });
     this.service.sortColumn = column;

@@ -83,7 +83,7 @@ describe('AuthService', () => {
       resourceTypeName: null,
       resourceTypePermission: null,
       contextName: null,
-    } as unknown as Record<string, null>;
+    } as Record<string, null>;
 
     const req = httpTestingController.expectOne(API_URL);
     expect(req.request.method).toBe('GET');
@@ -108,7 +108,7 @@ describe('AuthService', () => {
       resourceTypeName: null,
       resourceTypePermission: 'ANY',
       contextName: null,
-    } as unknown as Record<string, null | string>;
+    } as Record<string, null | string>;
 
     const req = httpTestingController.expectOne(API_URL);
     expect(req.request.method).toBe('GET');
@@ -199,7 +199,7 @@ describe('AuthService', () => {
       roleName: null,
       userName: null,
       contextName: null,
-    } as unknown as Record<string, null>;
+    } as Record<string, null>;
 
     it('should return true for a perfect match with ANY', () => {
       const req = httpTestingController.expectOne(API_URL);
@@ -431,7 +431,9 @@ describe('AuthService', () => {
       it('should return true if context is null', () => {
         const req = httpTestingController.expectOne(API_URL);
         req.flush([{ ...baseRestriction, permission: { name: permissionName }, action: action, contextName: 'DEV' }]);
-        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, undefined)).toBe(true);
+        expect(authService.hasPermission(permissionName, action, resourceTypeName, resourceGroupId, undefined)).toBe(
+          true,
+        );
       });
 
       it('should return true if restriction contextName is null', () => {

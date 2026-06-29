@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, Output, input } from '@angular/core';
+import { Directive, EventEmitter, Input, Output, input, model } from '@angular/core';
 
 export type SortDirection = 'asc' | 'desc' | '';
 const rotate: { [key: string]: SortDirection } = {
@@ -15,15 +15,15 @@ export interface SortEvent {
 @Directive({
   selector: 'th[sortable]',
   host: {
-    '[class.asc]': 'direction === "asc"',
-    '[class.desc]': 'direction === "desc"',
+    '[class.asc]': 'direction() === "asc"',
+    '[class.desc]': 'direction() === "desc"',
     '(click)': 'rotate()',
   },
   standalone: true,
 })
 export class SortableHeader {
   sortable = input.required<string>();
-  @Input() direction: SortDirection = '';
+  direction = model<SortDirection>('');
   @Output() sort = new EventEmitter<SortEvent>();
 
   sortableValue(): string {
@@ -31,7 +31,8 @@ export class SortableHeader {
   }
 
   rotate() {
-    this.direction = rotate[this.direction];
-    this.sort.emit({ column: this.sortableValue(), direction: this.direction });
+    const currentDirection = this.direction();
+    const newDirection = rotate[currentDirection];
+    this.sort.emit({ column: this.sortableValue(), direction: newDirection });
   }
 }
