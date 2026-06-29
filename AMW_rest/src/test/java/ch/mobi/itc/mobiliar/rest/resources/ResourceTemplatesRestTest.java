@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ch.mobi.itc.mobiliar.rest.dtos.TemplateDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.TemplateMapper;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
@@ -35,6 +36,9 @@ public class ResourceTemplatesRestTest {
     private ResourceLocator resourceLocator;
 
     @Mock
+    private TemplateMapper templateMapper;
+
+    @Mock
     private TemplateEditor templateEditor;
 
     @Mock
@@ -46,8 +50,12 @@ public class ResourceTemplatesRestTest {
         templateDTO.setId(123);
         templateDTO.setName("test");
 
+        TemplateDescriptorEntity templateEntity = new TemplateDescriptorEntity();
+        templateEntity.setName("test");
+        when(templateMapper.toTemplateDescriptorEntity(templateDTO, null)).thenReturn(templateEntity);
+
         Response response = resourceTemplatesRest.createResourceTemplates("resourceGroupName", "releaseName", templateDTO);
-        
+
         TemplateDTO result = (TemplateDTO) response.getEntity();
         assertNull(result.getId());
         assertEquals("test", result.getName());
