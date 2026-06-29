@@ -30,13 +30,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourceactivation.boundary.ResourceActivationService;
 import ch.puzzle.itc.mobiliar.business.resourceactivation.entity.ResourceActivationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationCommand;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ListApplicationsForAppServerUseCase;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationUseCase;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.*;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.template.boundary.GetRelationTemplatesUseCase;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
@@ -52,10 +47,7 @@ import javax.persistence.OptimisticLockException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
