@@ -3,6 +3,7 @@ import { FunctionEditComponent } from './function-edit.component';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FunctionsService } from './functions.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { AppFunction } from 'src/app/settings/functions/appFunction';
 
 describe('FunctionEditComponent', () => {
   let component: FunctionEditComponent;
@@ -21,7 +22,7 @@ describe('FunctionEditComponent', () => {
       id: null,
       name: '',
       content: '',
-    } as unknown as import('./appFunction').AppFunction;
+    } as AppFunction;
 
     fixture.detectChanges();
   });

@@ -99,7 +99,7 @@
       <div class="container">
         <span>Please provide the resource id to edit a resource.</span>
       </div>
-    } @else if (resource(); as r) {
+    } @else if (resource()) {
       <div class="flex-shrink-0">
         <app-contexts-list></app-contexts-list>
       </div>
@@ -111,11 +111,11 @@
                 [id]="id()"
                 [releases]="releases()"
                 [contextId]="contextId()"
-                [resource]="r"
+                [resource]="resource()!"
               ></app-resource-releases>
             </div>
             <div class="flex-1">
-              <app-resource-tags [resource]="r"></app-resource-tags>
+              <app-resource-tags [resource]="resource()!"></app-resource-tags>
             </div>
           </div>
         } @else {
@@ -123,14 +123,14 @@
             [id]="id()"
             [releases]="releases()"
             [contextId]="contextId()"
-            [resource]="r"
+            [resource]="resource()!"
           ></app-resource-releases>
         }
         <app-resource-properties [contextId]="contextId()"></app-resource-properties>
-        <app-resource-templates-list [resource]="r" [contextId]="contextId()"></app-resource-templates-list>
-        <app-resource-functions-list [resource]="r" [contextId]="contextId()"></app-resource-functions-list>
+        <app-resource-templates-list [resource]="resource()!" [contextId]="contextId()"></app-resource-templates-list>
+        <app-resource-functions-list [resource]="resource()!" [contextId]="contextId()"></app-resource-functions-list>
         @if (isApplicationServer()) {
-          <app-resource-applications [resource]="r" [contextId]="contextId()"></app-resource-applications>
+          <app-resource-applications [resource]="resource()!" [contextId]="contextId()"></app-resource-applications>
         }
         @if (!isNodeType()) {
           <app-resource-relations

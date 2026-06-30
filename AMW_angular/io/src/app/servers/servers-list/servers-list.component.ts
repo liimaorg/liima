@@ -12,7 +12,7 @@ export class ServersListComponent {
   servers = input.required<Server[]>();
   canReadAppServer = input.required<boolean>();
   canReadResources = input.required<boolean>();
-  linkToHostUrl = input<string>();
+  linkToHostUrl = input.required<string | undefined>();
 
   serversTableData = computed(() =>
     this.servers()?.map((server, index) => {
