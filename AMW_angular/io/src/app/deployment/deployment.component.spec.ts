@@ -446,7 +446,7 @@ describe('DeploymentComponent (redeployment)', () => {
 
   it('should call deploymentService on ngOnInit', async () => {
     // given
-    const deployment = { appsWithVersion: [] } as unknown as Deployment;
+    const deployment = { appsWithVersion: [], deploymentParameters: [] } as unknown as Deployment;
     vi.spyOn(environmentService, 'getAll').mockReturnValue(of([]));
     vi.spyOn(deploymentService, 'get').mockReturnValue(of(deployment));
     expect(deploymentService.get).not.toHaveBeenCalled();
