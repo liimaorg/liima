@@ -59,7 +59,7 @@ export class PropertyTypeEditComponent {
   save() {
     const propertyType: PropertyType = {
       name: this.propertyType.name,
-      id: this.propertyType.id ? this.propertyType.id : null as unknown as number,
+      id: this.propertyType.id ? this.propertyType.id : null,
       validationRegex: this.propertyType.validationRegex,
       encrypted: this.propertyType.encrypted,
       propertyTags: this.propertyType.propertyTags,

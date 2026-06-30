@@ -27,10 +27,10 @@ export class ReleasesComponent implements OnDestroy {
   private toastService = inject(ToastService);
 
   releases: Signal<Release[]> = this.releasesService.releases;
-  defaultRelease: Signal<Release> = toSignal(this.releasesService.getDefaultRelease(), {
-    initialValue: null as unknown as Release,
+  defaultRelease: Signal<Release | null> = toSignal(this.releasesService.getDefaultRelease(), {
+    initialValue: null,
   });
-  count: Signal<number> = toSignal(this.releasesService.getCount(), { initialValue: null as unknown as number });
+  count: Signal<number> = toSignal(this.releasesService.getCount(), { initialValue: 0 });
 
   private error$ = new BehaviorSubject<string>('');
   private destroy$ = new Subject<void>();

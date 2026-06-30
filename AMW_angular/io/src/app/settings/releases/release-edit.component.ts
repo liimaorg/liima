@@ -61,9 +61,9 @@ export class ReleaseEditComponent implements OnInit {
         mainRelease: this.release.mainRelease,
         description: this.release.description,
         installationInProductionAt: this.installationDate!.toEpoch(),
-        id: this.release.id ? this.release.id : null as unknown as number,
+        id: this.release.id ? this.release.id : null,
         default: false,
-        v: this.release.v ? this.release.v : null as unknown as number,
+        v: this.release.v ? this.release.v : null,
       };
       this.saveRelease.emit(release);
       this.activeModal.close();

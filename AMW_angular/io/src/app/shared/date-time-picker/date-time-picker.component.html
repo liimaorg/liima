@@ -6,7 +6,7 @@
 }
 <div class="input-group me-2">
   <input
-    [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'"
+    [ngClass]="ngControl.valid ? 'ng-valid' : 'ng-invalid'"
     class="form-control"
     (blur)="inputBlur()"
     [ngModel]="dateString"
@@ -43,7 +43,7 @@
         <!-- TODO: convert this button-->
         <button
           class="btn btn-secondary m-0"
-          [disabled]="!datetime?.day"
+          [disabled]="!datetime.day"
           [ngbPopover]="timePickerContent"
           type="button"
           (click)="toggleDateTimeState($event)"

@@ -11,8 +11,8 @@
     <app-tile-list
       [title]="list.title"
       [data]="list.entries"
-      [canEdit]="list.canEdit ?? false"
-      [canDelete]="list.canDelete ?? false"
+      [canEdit]="list.canEdit"
+      [canDelete]="list.canDelete"
       (edit)="doListAction($event)"
       (delete)="doListAction($event)"
       (overwrite)="doListAction($event)"

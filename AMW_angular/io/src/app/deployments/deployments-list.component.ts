@@ -45,7 +45,7 @@ export class DeploymentsListComponent {
   @Output() doSort: EventEmitter<string> = new EventEmitter<string>();
 
   deployment!: Deployment;
-  deploymentDate: DateTimeModel = new DateTimeModel();
+  deploymentDate: DateTimeModel | undefined = new DateTimeModel();
   allSelected: boolean = false;
   // TODO: show this error somewhere?
   errorMessage = '';
@@ -72,12 +72,12 @@ export class DeploymentsListComponent {
     this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate) ?? new DateTimeModel();
     this.modalService.open(content).result.then(
       () => {
-        this.deployment.deploymentDate = this.deploymentDate.toEpoch() ?? 0;
+        this.deployment.deploymentDate = this.deploymentDate?.toEpoch() ?? 0;
         this.editDeploymentDate.emit(this.deployment);
-        this.deploymentDate = undefined as unknown as DateTimeModel;
+        this.deploymentDate = undefined;
       },
       () => {
-        this.deploymentDate = undefined as unknown as DateTimeModel;
+        this.deploymentDate = undefined;
       },
     );
   }

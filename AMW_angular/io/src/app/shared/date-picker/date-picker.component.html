@@ -6,7 +6,7 @@
 }
 <div class="input-group me-2">
   <input
-    [ngClass]="ngControl?.valid ? 'ng-valid' : 'ng-invalid'"
+    [ngClass]="ngControl.valid ? 'ng-valid' : 'ng-invalid'"
     class="form-control"
     (blur)="inputBlur()"
     [ngModel]="dateString"
@@ -42,7 +42,7 @@
       <app-button
         [variant]="'secondary'"
         [additionalClasses]="'m-0 w-100'"
-        [disabled]="!date?.day"
+        [disabled]="!date.day"
         (click)="toggleDateTimeState($event)"
         >OK</app-button
       >

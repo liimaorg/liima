@@ -56,7 +56,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   appserverName: string = '';
   releaseName: string = '';
   // redeploy only
-  deploymentId!: number;
+  deploymentId: number | undefined;
 
   // these are valid for all (loaded ony once)
   environments = signal<Environment[]>([]);
@@ -200,7 +200,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getDeployment(): Subscription {
-    return this.deploymentService.get(this.deploymentId).subscribe({
+    return this.deploymentService.get(this.deploymentId!).subscribe({
       next: (r) => this.selectedDeployment.set(r),
       error: (e) => this.errorMessage.set(e),
       complete: () => this.initRedeploymentValues(),
@@ -500,7 +500,7 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private prepareNewDeployment() {
     if (this.deploymentId) {
       this.appserverName = this.deploymentId.toString();
-      this.deploymentId = undefined as unknown as number;
+      this.deploymentId = undefined;
     }
     this.initAppservers();
   }

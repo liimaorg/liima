@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, Output, input, model } from '@angular/core';
+import { Directive, EventEmitter, Output, input, model } from '@angular/core';
 
 export type SortDirection = 'asc' | 'desc' | '';
 const rotate: { [key: string]: SortDirection } = {
