@@ -1,4 +1,4 @@
-<app-modal-header [title]="title()" (cancel)="cancel()"></app-modal-header>
+<app-modal-header [title]="title()" (cancelAction)="cancel()"></app-modal-header>
 <app-loading-indicator [isLoading]="isLoadingDescriptor()"></app-loading-indicator>
 <div class="modal-body">
   <form [formGroup]="form" class="form-horizontal mx-2">

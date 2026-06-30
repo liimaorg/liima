@@ -295,7 +295,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
       .getAppsWithVersions(
         this.selectedAppserver()!.id,
         this.selectedRelease()!.id,
-        this.environments().filter((env) => env.selected).map((val: Environment) => val.id) as number[],
+        this.environments()
+          .filter((env) => env.selected)
+          .map((val: Environment) => val.id) as number[],
       )
       .subscribe({
         next: (r) => {
@@ -343,7 +345,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
   private canDeploy() {
     if (this.selectedAppserver() != null) {
       this.hasPermissionToDeploy.set(false);
-      const contextIds: number[] = this.environments().filter((env) => env.selected).map((val: Environment) => val.id) as number[];
+      const contextIds: number[] = this.environments()
+        .filter((env) => env.selected)
+        .map((val: Environment) => val.id) as number[];
       if (contextIds.length > 0) {
         this.deploymentService.canDeploy(this.selectedAppserver()!.id, contextIds).subscribe({
           next: (r) => {
@@ -387,7 +391,9 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private prepareDeployment() {
     if (this.isReadyForDeployment()) {
-      const contextIds: number[] = this.environments().filter((env) => env.selected).map((val: Environment) => val.id) as number[];
+      const contextIds: number[] = this.environments()
+        .filter((env) => env.selected)
+        .map((val: Environment) => val.id) as number[];
       this.createDeploymentRequest(contextIds);
     }
   }

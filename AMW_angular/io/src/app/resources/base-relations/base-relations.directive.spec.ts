@@ -17,6 +17,7 @@ import { PropertyUpdate } from '../services/resource-properties.service';
   standalone: true,
 })
 class TestBaseRelationsDirective extends BaseRelationsDirective {
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   protected bulkUpdateProperties(
     entityId: number,
     updatedProperties: PropertyUpdate[],
@@ -25,6 +26,11 @@ class TestBaseRelationsDirective extends BaseRelationsDirective {
   ): Observable<void> {
     throw new Error('Method not implemented.');
   }
+
+  protected reloadRelation(entityId: number): void {}
+
+  protected reloadProperties(entityId: number, relationId: number, contextId: number): void {}
+  /* eslint-enable @typescript-eslint/no-unused-vars */
   protected afterPropertiesSaved(): void {
     throw new Error('Method not implemented.');
   }
@@ -53,10 +59,6 @@ class TestBaseRelationsDirective extends BaseRelationsDirective {
       unresolved: true,
     };
   }
-
-  protected reloadRelation(entityId: number): void {}
-
-  protected reloadProperties(entityId: number, relationId: number, contextId: number): void {}
 
   protected getUnsavedChangesKey(): string {
     return 'test-key';

@@ -1,6 +1,9 @@
 {
   "name": "liima",
   "version": "0.0.0",
+  "engines": {
+    "node": ">=24.15.0"
+  },
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -53,10 +56,12 @@
     "@angular/cli": "^22.0.3",
     "@angular/compiler-cli": "^22.0.2",
     "@angular/language-service": "^22.0.2",
+    "@eslint/js": "^10.0.1",
     "@types/bootstrap": "^5.2.11",
     "@types/lodash-es": "^4.17.12",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
     "@typescript-eslint/parser": "^8.61.1",
+    "angular-eslint": "^22.0.0",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
@@ -66,6 +71,7 @@
     "prettier": "^3.8.4",
     "prettier-eslint": "^17.1.1",
     "typescript": "~6.0.3",
+    "typescript-eslint": "^8.62.1",
     "vitest": "^4.1.9"
   }
 }

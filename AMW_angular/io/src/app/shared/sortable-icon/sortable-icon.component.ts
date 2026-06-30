@@ -11,5 +11,3 @@ export class SortableIconComponent {
   sortDirection = input.required<string>();
   direction = computed(() => (this.sortDirection() === 'ASC' ? 'up' : 'down'));
 }
-
-type SortDirection = 'ASC' | 'DESC';

@@ -48,7 +48,7 @@
 </app-tile-component>
 
 <ng-template #addApplicationModal let-modal>
-  <app-modal-header [title]="'Add Application'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header [title]="'Add Application'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
     @if (availableApplications().length === 0) {
       <p>No applications available to add. All applications are already configured.</p>
@@ -85,7 +85,7 @@
 <ng-template #removeApplicationConfirmation let-modal>
   <app-modal-header
     [title]="'Remove application ' + applicationToRemove()?.slaveName"
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     <p class="text">

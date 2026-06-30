@@ -9,7 +9,7 @@ type Failed = 'failed';
 
 const errorRegex = /\b(error|failure|failed|fatal|not found)\b/i;
 const warningRegex = /\bwarn\w*\b/i;
-const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/gi;
+const urlRegex = /https?:\/\/[^\s<>"{}|\\^`[\]]+/gi;
 
 class UrlWidget extends WidgetType {
   constructor(readonly url: string) {

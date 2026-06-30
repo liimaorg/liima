@@ -12,7 +12,7 @@ describe('ResourcesPageComponent', () => {
   const mockRoute = {
     snapshot: {},
     queryParamMap: of({
-      get: (name: string): string | null => null,
+      get: (): string | null => null,
     }),
   };
 

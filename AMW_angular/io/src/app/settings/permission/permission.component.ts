@@ -63,7 +63,9 @@ export class PermissionComponent implements OnInit, OnDestroy {
   roleNames: string[] = [];
   userNames: string[] = [];
   permissions: Permission[] = [];
-  environments: Environment[] = [{ id: null, name: null, parentName: 'All', selected: false } as unknown as Environment];
+  environments: Environment[] = [
+    { id: null, name: null, parentName: 'All', selected: false } as unknown as Environment,
+  ];
   groupedEnvironments: { [key: string]: Environment[] } = {
     All: [],
     Global: [],

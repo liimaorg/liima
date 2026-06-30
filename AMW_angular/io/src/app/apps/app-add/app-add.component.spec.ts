@@ -36,12 +36,22 @@ describe('AppAddComponent', () => {
   });
 
   it('hasInvalidFields true when required missing', () => {
-    component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null } as unknown as AppCreate;
+    component.app = {
+      appName: '',
+      appReleaseId: null,
+      appServerId: null,
+      appServerReleaseId: null,
+    } as unknown as AppCreate;
     expect(component.hasInvalidFields()).toBe(true);
   });
 
   it('save emits app and closes when valid', () => {
-    component.app = { appName: 'a', appReleaseId: 1, appServerId: null, appServerReleaseId: null } as unknown as AppCreate;
+    component.app = {
+      appName: 'a',
+      appReleaseId: 1,
+      appServerId: null,
+      appServerReleaseId: null,
+    } as unknown as AppCreate;
     vi.spyOn(component.saveApp, 'emit');
     vi.spyOn(activeModal, 'close');
     component.save();
@@ -50,7 +60,12 @@ describe('AppAddComponent', () => {
   });
 
   it('save does nothing when invalid', () => {
-    component.app = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null } as unknown as AppCreate;
+    component.app = {
+      appName: '',
+      appReleaseId: null,
+      appServerId: null,
+      appServerReleaseId: null,
+    } as unknown as AppCreate;
     vi.spyOn(component.saveApp, 'emit');
     vi.spyOn(activeModal, 'close');
     component.save();

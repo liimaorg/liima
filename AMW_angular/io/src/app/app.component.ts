@@ -7,6 +7,7 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { ToastContainerComponent } from './shared/elements/toast/toast-container.component';
 
 @Component({
+  // eslint-disable-next-line @angular-eslint/component-selector
   selector: 'app',
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./app.component.scss'],

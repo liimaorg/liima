@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Signal,
+  signal,
+  WritableSignal,
+  OnDestroy,
+} from '@angular/core';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
@@ -28,7 +37,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './resources-page.component.html',
   styleUrl: 'resources-page.component.scss',
 })
-export class ResourcesPageComponent {
+export class ResourcesPageComponent implements OnDestroy {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);

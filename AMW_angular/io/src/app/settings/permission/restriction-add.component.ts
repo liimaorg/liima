@@ -261,7 +261,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
         }
       });
     }
-        if (addAll) {
+    if (addAll) {
       return this.resourceGroups;
     }
     if (groups.length === 1) {
@@ -283,7 +283,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
               this.selectedContextNames.indexOf(restriction.contextName) > -1 ||
               this.isChildContextOf(restriction.contextName, this.selectedContextNames)))
         ) {
-            if (!addAll && resourceTypePermissions.indexOf(restriction.resourceTypePermission!) < 0) {
+          if (!addAll && resourceTypePermissions.indexOf(restriction.resourceTypePermission!) < 0) {
             if (restriction.resourceTypePermission === 'ANY') {
               addAll = true;
             } else {

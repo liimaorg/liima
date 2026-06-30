@@ -112,7 +112,7 @@
 </app-tile-component>
 
 <ng-template #addRelationModal let-modal>
-  <app-modal-header [title]="'Add Related Resource'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header [title]="'Add Related Resource'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
     @if (hasNewerRelease()) {
       <div class="alert alert-warning" role="alert">
@@ -196,7 +196,7 @@
 </ng-template>
 
 <ng-template #setRuntimeModal let-modal>
-  <app-modal-header [title]="'Set Runtime'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header [title]="'Set Runtime'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
     <div class="mb-3">
       <label for="runtimeSelect" class="form-label">Runtime</label>
@@ -223,7 +223,10 @@
 </ng-template>
 
 <ng-template #removeRelationConfirmation let-modal>
-  <app-modal-header [title]="'Remove Resource Relation'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header
+    [title]="'Remove Resource Relation'"
+    (cancelAction)="modal.dismiss('Cross click')"
+  ></app-modal-header>
   <div class="modal-body">
     <p class="text">
       Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.relatedResourceName }}</b

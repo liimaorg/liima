@@ -75,6 +75,7 @@ export class AppsComponent implements OnInit, OnDestroy {
     });
 
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       msg !== '' ? this.toastService.error(msg) : null;
     });
 

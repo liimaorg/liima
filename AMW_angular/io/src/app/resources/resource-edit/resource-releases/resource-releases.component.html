@@ -26,7 +26,7 @@
 <ng-template #deleteReleaseConfirmation let-modal>
   <app-modal-header
     [title]="'Delete release ' + releaseToDeleteName()"
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     <p class="text">Are you sure that you want to delete this release?</p>
@@ -38,7 +38,7 @@
 </ng-template>
 
 <ng-template #createReleaseModal let-modal>
-  <app-modal-header [title]="'Create New Release'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header [title]="'Create New Release'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
     @if (availableReleases().length === 0) {
       <p>No available releases to create.</p>
@@ -78,7 +78,7 @@
 <ng-template #changeReleaseModal let-modal>
   <app-modal-header
     [title]="'Change Release for ' + releaseToChangeName()"
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     @if (availableReleases().length === 0) {

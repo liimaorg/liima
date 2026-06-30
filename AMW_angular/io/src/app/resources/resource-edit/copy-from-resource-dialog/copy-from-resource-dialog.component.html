@@ -1,4 +1,4 @@
-<app-modal-header [title]="'Copy from resource'" (cancel)="activeModal.dismiss('cancel')"></app-modal-header>
+<app-modal-header [title]="'Copy from resource'" (cancelAction)="activeModal.dismiss('cancel')"></app-modal-header>
 <div class="modal-body">
   <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
   @if (!isLoading()) {

@@ -32,20 +32,20 @@ class TestBasePropertiesDirective extends BasePropertiesDirective {
   protected getEditorOptions() {
     return { includeResetsInHasChanges: true, unmarkResetOnChange: true };
   }
-
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   protected bulkUpdateProperties(
-    entityId: number,
-    updatedProperties: PropertyUpdate[],
+    _entityId: number,
+    _updatedProperties: PropertyUpdate[],
     resetProperties: PropertyUpdate[],
     contextId: number,
   ): Observable<void> {
     // Mock implementation
     return of(void 0);
   }
-
   protected reloadProperties(entityId: number, contextId: number): void {
     // Mock implementation
   }
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   protected getDeleteParams(): [number | undefined, number | undefined] {
     return [1, undefined];

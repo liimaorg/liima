@@ -113,7 +113,7 @@ export class FunctionsComponent implements OnDestroy {
       });
   }
 
-  functionsTableHeader(): TableColumnType<Function>[] {
+  functionsTableHeader(): TableColumnType<AppFunction>[] {
     return [
       {
         key: 'name',

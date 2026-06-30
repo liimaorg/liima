@@ -62,9 +62,11 @@ export class AuthService extends BaseService {
           (entry) =>
             entry.resourceTypePermission === 'ANY' ||
             (entry.resourceTypePermission === 'DEFAULT_ONLY' &&
-              resourceTypeName != null && Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
+              resourceTypeName != null &&
+              Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
             (entry.resourceTypePermission === 'NON_DEFAULT_ONLY' &&
-              resourceTypeName != null && !Object.keys(DefaultResourceType).includes(resourceTypeName)),
+              resourceTypeName != null &&
+              !Object.keys(DefaultResourceType).includes(resourceTypeName)),
         )
         .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
         .filter((entry) => entry.resourceGroupId === null || entry.resourceGroupId === resourceGroupId)

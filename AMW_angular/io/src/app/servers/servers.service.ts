@@ -4,7 +4,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Server } from './server';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Resource } from '../resources/models/resource';
 import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filter';
 

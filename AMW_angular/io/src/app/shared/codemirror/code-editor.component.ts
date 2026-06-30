@@ -123,13 +123,13 @@ export class CodeEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
   @Input() extensions: Extension[] = [];
 
   /** Event emitted when the editor's value changes. */
-  @Output() change = new EventEmitter<string>();
+  @Output() changeEvent = new EventEmitter<string>();
 
   /** Event emitted when focus on the editor. */
-  @Output() focus = new EventEmitter<void>();
+  @Output() focusEvent = new EventEmitter<void>();
 
   /** Event emitted when the editor has lost focus. */
-  @Output() blur = new EventEmitter<void>();
+  @Output() blurEvent = new EventEmitter<void>();
 
   private _onChange: (value: string) => void = () => {};
   private _onTouched: () => void = () => {};
@@ -143,7 +143,7 @@ export class CodeEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
     if (vu.docChanged && !vu.transactions.some((tr) => tr.annotation(External))) {
       const value = vu.state.doc.toString();
       this._onChange(value);
-      this.change.emit(value);
+      this.changeEvent.emit(value);
     }
   });
 
@@ -228,12 +228,12 @@ export class CodeEditorComponent implements OnChanges, OnInit, OnDestroy, Contro
 
     this.view?.contentDOM.addEventListener('focus', () => {
       this._onTouched();
-      this.focus.emit();
+      this.focusEvent.emit();
     });
 
     this.view?.contentDOM.addEventListener('blur', () => {
       this._onTouched();
-      this.blur.emit();
+      this.blurEvent.emit();
     });
 
     this.setEditable(!this.disabled);

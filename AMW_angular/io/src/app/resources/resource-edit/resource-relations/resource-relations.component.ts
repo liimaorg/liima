@@ -104,11 +104,12 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     () => this.resource()?.type === 'APPLICATIONSERVER' || this.resource()?.type === '"APPLICATIONSERVER"',
   );
 
-  canSetRuntime = computed(() =>
-    this.isApplicationServer() &&
-    this.contextId() === 1 &&
-    this.permissions().canUpdateProperty &&
-    this.groupedRelations().runtime.length === 0,
+  canSetRuntime = computed(
+    () =>
+      this.isApplicationServer() &&
+      this.contextId() === 1 &&
+      this.permissions().canUpdateProperty &&
+      this.groupedRelations().runtime.length === 0,
   );
 
   hasNewerRelease = computed(() => {

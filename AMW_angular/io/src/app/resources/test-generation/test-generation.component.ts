@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, signal, Signal } from '@angular/co
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { concatMap, finalize, map } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -106,7 +105,6 @@ export class TestGenerationComponent {
     effect(() => {
       const contextId = this.contextId();
       const resourceId = this.resourceId();
-      const compareReleaseId = this.compareReleaseId();
 
       // Trigger generation when any of these change
       if (contextId && resourceId) {

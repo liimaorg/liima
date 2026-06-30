@@ -262,7 +262,8 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
           restriction.action === this.restriction.action &&
           (restriction.contextName === null ||
             (this.restriction.contextName !== null && restriction.contextName === this.restriction.contextName) ||
-            (this.restriction.contextName !== null && restriction.contextName === this.getParentContextName(this.restriction.contextName)))
+            (this.restriction.contextName !== null &&
+              restriction.contextName === this.getParentContextName(this.restriction.contextName)))
         ) {
           if (restriction.resourceGroupId === null) {
             addAll = true;
@@ -291,7 +292,8 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
           restriction.resourceGroupId === null &&
           (restriction.contextName === null ||
             (this.restriction.contextName !== null && restriction.contextName === this.restriction.contextName) ||
-            (this.restriction.contextName !== null && restriction.contextName === this.getParentContextName(this.restriction.contextName)))
+            (this.restriction.contextName !== null &&
+              restriction.contextName === this.getParentContextName(this.restriction.contextName)))
         ) {
           if (!addAll && resourceTypePermissions.indexOf(restriction.resourceTypePermission!) < 0) {
             if (restriction.resourceTypePermission === 'ANY') {
@@ -319,7 +321,8 @@ export class RestrictionEditComponent implements OnChanges, AfterViewChecked {
           restriction.resourceGroupId === null &&
           (restriction.contextName === null ||
             (this.restriction.contextName !== null && restriction.contextName === this.restriction.contextName) ||
-            (this.restriction.contextName !== null && restriction.contextName === this.getParentContextName(this.restriction.contextName)))
+            (this.restriction.contextName !== null &&
+              restriction.contextName === this.getParentContextName(this.restriction.contextName)))
         ) {
           if (!addAll && restriction.resourceTypeName === null) {
             addAll = true;

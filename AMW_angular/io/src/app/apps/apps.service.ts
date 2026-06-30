@@ -1,7 +1,7 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, of, startWith, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { AppServer } from './app-server';
 import { toSignal } from '@angular/core/rxjs-interop';
