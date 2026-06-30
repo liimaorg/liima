@@ -1,6 +1,7 @@
 {
   "name": "amw_e2e",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.8.0",
   "description": "End to end tests for AMW Liima",
   "scripts": {
     "start": "npm run docker:start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",

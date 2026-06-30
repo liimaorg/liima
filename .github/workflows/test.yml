@@ -40,13 +40,18 @@ jobs:
     - name: Build Docker image
       run: AMW_docker/build.sh
 
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 11
+
     - name: Run e2e tests
       run: |
         cd AMW_e2e
-        npm ci
-        npm start
-        npx playwright install --with-deps
-        npx playwright test
+        pnpm install
+        pnpm start
+        pnpm exec playwright install --with-deps
+        pnpm exec playwright test
 
     - uses: actions/upload-artifact@v6
       if: ${{ !cancelled() }}
