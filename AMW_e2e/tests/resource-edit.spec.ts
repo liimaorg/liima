@@ -11,7 +11,6 @@ test.describe.serial("Resource Edit Page - Properties", () => {
 
     const propertyInput = page.getByRole("textbox", {
       name: "Version",
-      exact: true,
     });
     await propertyInput.fill("whatever" + Math.random());
     await page.keyboard.press("Tab");

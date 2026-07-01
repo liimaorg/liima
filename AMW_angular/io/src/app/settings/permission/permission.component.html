@@ -65,7 +65,7 @@
       }
       @if (create) {
         <app-restriction-add
-          [roleName]="selectedRoleName"
+          [roleName]="selectedRoleName ?? ''"
           [userNames]="selectedUserNames"
           [groupedEnvironments]="groupedEnvironments"
           [permissions]="getPermissions()"
@@ -81,8 +81,8 @@
   </div>
   @if (selectedRoleName || selectedUserNames.length > 0) {
     <div class="form-group">
-      <label class="col-sm-1"></label>
-      <div class="col">
+      <label class="col-sm-1" aria-hidden="true" for="restrictions"></label>
+      <div class="col" id="restrictions">
         <div class="card row offset-1">
           @if (!restriction && !create) {
             <div class="card-header">

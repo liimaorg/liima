@@ -1,7 +1,7 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { BaseService } from '../base/base.service';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Observable, of, startWith, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { AppServer } from './app-server';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -14,20 +14,19 @@ export class AppsService extends BaseService {
 
   private reload$ = new Subject<void>();
 
-  filter = signal<string>(null);
+  filter = signal<string | undefined>(undefined);
   releaseId: WritableSignal<number | undefined> = signal(undefined);
   private apps$: Observable<AppServer[]> = this.reload$.pipe(
     switchMap(() => this.getApps(this.filter(), this.releaseId())),
-    startWith(null),
     shareReplay(1),
   );
-  apps = toSignal(this.apps$, { initialValue: null as AppServer[] });
+  apps = toSignal(this.apps$, { initialValue: [] as AppServer[] });
 
   refreshData() {
     this.reload$.next();
   }
 
-  private getApps(filter: string, releaseId: number | undefined) {
+  private getApps(filter: string | undefined, releaseId: number | undefined) {
     if (!releaseId) return of([]);
 
     let urlParams = '';
@@ -42,7 +41,7 @@ export class AppsService extends BaseService {
       .pipe(catchError(this.handleError))
       .pipe(
         map((response: HttpResponse<AppServer[]>) => {
-          return response.body;
+          return response.body ?? [];
         }),
       );
   }

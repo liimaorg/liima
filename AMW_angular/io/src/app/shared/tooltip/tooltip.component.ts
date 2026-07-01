@@ -21,7 +21,7 @@ export class TooltipComponent {
   // Inputs
   title = input<string>('');
   subtitle = input<string>('');
-  headers = input<string[]>(undefined);
+  headers = input<string[]>([]);
   tableData = input<TooltipTableEntry[]>([]);
   canPin = input<boolean>(true);
 

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Extension, RangeSetBuilder } from '@codemirror/state';
 import { Decoration, DecorationSet, EditorView, ViewPlugin, ViewUpdate, WidgetType } from '@codemirror/view';
@@ -9,7 +9,7 @@ type Failed = 'failed';
 
 const errorRegex = /\b(error|failure|failed|fatal|not found)\b/i;
 const warningRegex = /\bwarn\w*\b/i;
-const urlRegex = /https?:\/\/[^\s<>"{}|\\^`\[\]]+/gi;
+const urlRegex = /https?:\/\/[^\s<>"{}|\\^`[\]]+/gi;
 
 class UrlWidget extends WidgetType {
   constructor(readonly url: string) {
@@ -155,14 +155,14 @@ export const logUrlLinkExtension: Extension = [
   selector: 'app-deployment-log-content',
   template: `
     <div class="m-2 h-100">
-      @if (content !== null && content !== 'failed') {
+      @if (currentContent(); as currentContent) {
         <div class="editor border border-primary-subtle rounded">
           <app-code-editor
             [theme]="'light'"
             [setup]="'minimal'"
             [readonly]="true"
             [extensions]="logHighlightExtensions"
-            [(ngModel)]="content.content"
+            [ngModel]="currentContent.content"
           ></app-code-editor>
         </div>
       } @else {
@@ -174,5 +174,10 @@ export const logUrlLinkExtension: Extension = [
 })
 export class DeploymentLogContentComponent {
   readonly logHighlightExtensions: Extension[] = [logHighlightExtension, logUrlLinkExtension];
-  @Input() content: DeploymentLog | Failed;
+  content = input.required<DeploymentLog | Failed | null>();
+
+  currentContent(): DeploymentLog | null {
+    const content = this.content();
+    return content !== null && content !== 'failed' ? content : null;
+  }
 }

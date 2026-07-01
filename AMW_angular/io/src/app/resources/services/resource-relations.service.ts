@@ -81,9 +81,10 @@ export class ResourceRelationsService extends BaseService {
     contextId: number,
   ): Observable<Property[]> {
     return this.http
-      .get<
-        Property[]
-      >(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}/properties?contextId=${contextId}`, { headers: this.getHeaders() })
+      .get<Property[]>(
+        `${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}/properties?contextId=${contextId}`,
+        { headers: this.getHeaders() },
+      )
       .pipe(catchError(this.handleError));
   }
 

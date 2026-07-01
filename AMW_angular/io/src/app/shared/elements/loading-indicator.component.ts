@@ -30,5 +30,5 @@ import { Component, Input } from '@angular/core';
 })
 export class LoadingIndicatorComponent {
   @Input()
-  isLoading: boolean;
+  isLoading!: boolean;
 }

@@ -1,11 +1,11 @@
 export type ServerFilter = {
-  environmentName: string;
-  runtimeName: string;
-  appServer: string;
-  host: string;
-  node: string;
+  environmentName?: string | null;
+  runtimeName?: string | null;
+  appServer?: string | null;
+  host?: string | null;
+  node?: string | null;
 };
-export function isServerFilterEmpty(filter: ServerFilter): boolean {
+export function isServerFilterEmpty(filter: ServerFilter | undefined | null): boolean {
   if (filter)
     return (
       (!filter.environmentName || filter.environmentName === 'All' || filter.environmentName.trim().length === 0) &&

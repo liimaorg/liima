@@ -73,13 +73,15 @@
       </ul>
     </div>
     <div class="col-10">
-      <app-resources-list
-        [resourceType]="selectedResourceTypeOrDefault()"
-        [resourceGroupList]="resourceGroupListForType()"
-        [releases]="releases()"
-        (resourceToAdd)="addResource($event)"
-        (resourceTypeToDelete)="deleteResourceType($event)"
-      ></app-resources-list>
+      @if (selectedResourceTypeOrDefault(); as rt) {
+        <app-resources-list
+          [resourceType]="rt"
+          [resourceGroupList]="resourceGroupListForType()"
+          [releases]="releases()"
+          (resourceToAdd)="addResource($event)"
+          (resourceTypeToDelete)="deleteResourceType($event)"
+        ></app-resources-list>
+      }
     </div>
   </div>
 </app-page>

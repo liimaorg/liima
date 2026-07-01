@@ -47,7 +47,7 @@ interface TargetPlatformModel {
 export class ResourceTemplateEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  private _template: ResourceTemplate;
+  private _template!: ResourceTemplate;
   @Input() set template(value: ResourceTemplate) {
     this._template = value;
     if (value && value.id) {
@@ -58,7 +58,18 @@ export class ResourceTemplateEditComponent {
     return this._template;
   }
 
-  @Input() canAddOrEdit: boolean;
+  private readonly canAddOrEditSignal = signal(false);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set canAddOrEdit(value: boolean) {
+    this.canAddOrEditSignal.set(value);
+  }
+
+  get canAddOrEdit(): boolean {
+    return this.canAddOrEditSignal();
+  }
 
   @Output() saveTemplate: EventEmitter<ResourceTemplate> = new EventEmitter<ResourceTemplate>();
 
@@ -67,10 +78,10 @@ export class ResourceTemplateEditComponent {
     initialValue: [],
   });
 
-  public wrapLinesEnabled: false;
+  public wrapLinesEnabled = false;
   public revisions: WritableSignal<RevisionInformation[]> = signal([]);
-  public revision: WritableSignal<ResourceTemplate> = signal(null);
-  public selectedRevisionName: string;
+  public revision: WritableSignal<ResourceTemplate | null> = signal(null);
+  public selectedRevisionName: string | null = null;
   public targetPlatformModels: Signal<TargetPlatformModel[]> = computed(() => {
     return this.loadTargetPlatformModelsForTemplate(this.allSelectableTargetPlatforms());
   });
@@ -112,11 +123,12 @@ export class ResourceTemplateEditComponent {
   }
 
   private loadRevisionTargetPlatformModelsForTemplate(allTargetPlatforms: string[]): TargetPlatformModel[] {
-    if (!this.revision()) return;
+    const rev = this.revision();
+    if (!rev) return [];
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.revision().targetPlatforms.includes(name),
+        selected: rev.targetPlatforms.includes(name),
       };
     });
   }
@@ -136,12 +148,12 @@ export class ResourceTemplateEditComponent {
     });
   }
 
-  selectRevision(revisionId: number, displayName: string): void {
+  selectRevision(revisionId: number | null, displayName: string | null): void {
     if (revisionId && displayName) {
-      this.templatesService.getTemplateByIdAndRevision(this.template.id, revisionId).subscribe((revision) => {
+      this.templatesService.getTemplateByIdAndRevision(this.template.id!, revisionId).subscribe((revision) => {
         this.revision.set(revision);
         this.selectedRevisionName = displayName;
-        this.diffValue = { original: this.template.fileContent, modified: this.revision().fileContent };
+        this.diffValue = { original: this.template.fileContent, modified: this.revision()!.fileContent };
       });
     } else {
       //reset selected revision

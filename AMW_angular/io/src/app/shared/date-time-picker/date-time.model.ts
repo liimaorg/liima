@@ -5,20 +5,20 @@ import { DATE_TIME_FORMAT } from 'src/app/core/amw-constants';
 export interface NgbDateTimeStruct extends NgbDateStruct, NgbTimeStruct {}
 
 export class DateTimeModel implements NgbDateTimeStruct {
-  year: number;
-  month: number;
-  day: number;
-  hour: number;
-  minute: number;
-  second: number;
+  year!: number;
+  month!: number;
+  day!: number;
+  hour!: number;
+  minute!: number;
+  second!: number;
 
-  timeZoneOffset: number;
+  timeZoneOffset!: number;
 
   public constructor(init?: Partial<DateTimeModel>) {
     Object.assign(this, init);
   }
 
-  private static fromDate(date: Date): DateTimeModel {
+  private static fromDate(date: Date): DateTimeModel | null {
     if (!datefns.isValid(date)) {
       return null;
     }
@@ -36,7 +36,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     });
   }
 
-  public static fromLocalString(dateString: string, format?: string): DateTimeModel {
+  public static fromLocalString(dateString: string, format?: string): DateTimeModel | null {
     let date: Date;
     if (typeof format === 'undefined') {
       date = datefns.parse(dateString, DATE_TIME_FORMAT, new Date());
@@ -46,7 +46,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     return this.fromDate(date);
   }
 
-  public static fromEpoch(epoch: number) {
+  public static fromEpoch(epoch: number): DateTimeModel | null {
     const date = new Date(epoch);
     return this.fromDate(date);
   }
@@ -55,7 +55,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     return new Date(this.year, this.month - 1, this.day, this.hour, this.minute, this.second);
   }
 
-  public toString(format?: string): string {
+  public toString(format?: string): string | null {
     const date = this.thisToDate();
     if (!datefns.isValid(date)) {
       return null;
@@ -66,7 +66,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     return datefns.format(date, format);
   }
 
-  public toEpoch(): number {
+  public toEpoch(): number | null {
     const date = this.thisToDate();
     if (!datefns.isValid(date)) {
       return null;
@@ -74,7 +74,7 @@ export class DateTimeModel implements NgbDateTimeStruct {
     return date.getTime();
   }
 
-  public toJSON(): string {
+  public toJSON(): string | null {
     return this.toString();
   }
 }

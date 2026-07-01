@@ -198,12 +198,12 @@ export class PropertyFieldComponent {
     this.validationChange.emit(false);
   }
 
-  protected propertyEdit(descriptorId: number) {
-    this.editClicked.emit(descriptorId);
+  protected propertyEdit(descriptorId: number | undefined) {
+    if (descriptorId != null) this.editClicked.emit(descriptorId);
   }
 
-  protected propertyDelete(descriptorId: number) {
-    this.deleteClicked.emit(descriptorId);
+  protected propertyDelete(descriptorId: number | undefined) {
+    if (descriptorId != null) this.deleteClicked.emit(descriptorId);
   }
 
   protected readonly HTMLInputElement = HTMLInputElement;

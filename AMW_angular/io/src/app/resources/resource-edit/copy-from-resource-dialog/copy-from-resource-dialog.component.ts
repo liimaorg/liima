@@ -36,8 +36,8 @@ export class CopyFromResourceDialogComponent implements OnInit {
   private resourceService = inject(ResourceService);
   private toastService = inject(ToastService);
 
-  resourceId: number;
-  resourceTypeName: string;
+  resourceId!: number;
+  resourceTypeName!: string;
 
   candidates = signal<CopyFromCandidate[]>([]);
   selectedReleaseResourceIds = signal<{ [groupId: number]: number }>({});

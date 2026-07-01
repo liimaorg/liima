@@ -59,6 +59,6 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 })
 export class NavigationComponent {
   @Input()
-  logoutUrl: string;
+  logoutUrl!: string;
   public isMenuCollapsed = true;
 }

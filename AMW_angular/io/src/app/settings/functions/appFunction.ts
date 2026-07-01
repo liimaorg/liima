@@ -1,5 +1,5 @@
 export interface AppFunction {
   name: string;
-  id: number;
+  id: number | null;
   content: string;
 }

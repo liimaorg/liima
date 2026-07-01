@@ -100,6 +100,7 @@ export class ResourcesListComponent {
 
   openEditResourcePage(id: number) {
     const resource = this.resourceGroupList().find((res) => res.id === id);
+    if (!resource) return;
     const dynamicUrl = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${
       resource.defaultResourceId ? resource.defaultResourceId : resource.id
     }`;
@@ -109,6 +110,7 @@ export class ResourcesListComponent {
   // TODO: Rename this to openEditResourcePage once resource edit pages are fully implemented
   openMigratedResourcePage(id: number) {
     const resource = this.resourceGroupList().find((res) => res.id === id);
+    if (!resource) return;
     this.router.navigate(['/resource/edit'], {
       queryParams: {
         ctx: 1,

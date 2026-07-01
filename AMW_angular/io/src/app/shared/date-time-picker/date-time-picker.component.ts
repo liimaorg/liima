@@ -53,12 +53,12 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
   errorMessage = '';
 
   @ViewChild(NgbPopover)
-  popover: NgbPopover;
+  popover!: NgbPopover;
 
   onTouched: () => void = noop;
   onChange: (_: any) => void = noop;
 
-  ngControl: NgControl;
+  ngControl!: NgControl;
 
   ngOnInit(): void {
     this.config.placement = 'auto';
@@ -88,9 +88,9 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
     this.onTouched = fn;
   }
 
-  toggleDateTimeState($event) {
+  toggleDateTimeState($event: unknown) {
     this.showTimePickerToggle = !this.showTimePickerToggle;
-    $event.stopPropagation();
+    ($event as Event).stopPropagation();
   }
 
   setDisabledState?(isDisabled: boolean): void {
@@ -136,7 +136,14 @@ export class DateTimePickerComponent implements ControlValueAccessor, OnInit, Af
   }
 
   setDateString() {
-    this.dateString = this.datetime.toString(this.dateStringFormat);
+    const str = this.datetime.toString(this.dateStringFormat);
+    if (str != null) {
+      this.dateString = str;
+      this.errorMessage = '';
+    } else {
+      this.dateString = '';
+      this.errorMessage = 'Invalid date';
+    }
     this.onChange(this.datetime);
   }
 

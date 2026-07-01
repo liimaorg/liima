@@ -13,9 +13,9 @@ import { Component, input, output } from '@angular/core';
 })
 export class ModalHeaderComponent {
   title = input<string>();
-  cancel = output<void>();
+  cancelAction = output<void>();
 
   onCancel(): void {
-    this.cancel.emit();
+    this.cancelAction.emit();
   }
 }

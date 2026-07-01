@@ -79,7 +79,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
         name: null,
         parentName: 'All',
         selected: false,
-      } as Environment,
+      } as unknown as Environment,
     ]);
     expect(component.resourceGroups).toEqual([]);
     expect(component.resourceTypes).toEqual([
@@ -129,7 +129,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
       name: null,
       parentName: 'All',
       selected: false,
-    } as Environment);
+    } as unknown as Environment);
     expect(component.groupedEnvironments['Dev']).toContainEqual({
       id: 1,
       name: 'U',
@@ -348,9 +348,9 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     component.modifyRestriction(123);
     // then
     expect(component.restriction).not.toBeNull();
-    expect(component.restriction.id).toBe(123);
+    expect(component.restriction!.id).toBe(123);
     expect(component.backupRestriction).not.toBeNull();
-    expect(component.backupRestriction.id).toBe(123);
+    expect(component.backupRestriction!.id).toBe(123);
   });
 
   it('should invoke PermissionService.updatePermission on persistRestriction for an existing Restriction', () => {
@@ -371,7 +371,7 @@ describe('PermissionComponent without any params (default: type Role)', () => {
     component.restriction = {
       id: null,
       contextName: 'S',
-    } as Restriction;
+    } as unknown as Restriction;
     vi.spyOn(permissionService, 'createRestriction');
     // when
     component.persistRestriction();
@@ -495,7 +495,7 @@ describe('PermissionComponent with param restrictionType (type User)', () => {
       name: null,
       parentName: 'All',
       selected: false,
-    } as Environment);
+    } as unknown as Environment);
     expect(component.groupedEnvironments['Dev']).toContainEqual({
       id: 1,
       name: 'U',

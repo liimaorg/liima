@@ -105,7 +105,7 @@
             <div id="runtime" class="col-sm-10 col-md-5">
               @if (runtime()) {
                 <h3 class="environments-title">
-                  {{ runtime().identifier }}
+                  {{ runtime()!.identifier }}
                 </h3>
               }
             </div>
@@ -157,7 +157,7 @@
           </div>
         </div>
 
-        @if (transDeploymentParameters?.length) {
+        @if (transDeploymentParameters.length) {
           @for (transDepParam of transDeploymentParameters; track transDepParam.key) {
             <div class="form-group row">
               <label for="selectApplicationserver" class="col-sm-2 fw-bold text-end"></label>

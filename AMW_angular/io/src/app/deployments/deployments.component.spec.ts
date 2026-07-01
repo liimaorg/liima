@@ -555,7 +555,7 @@ describe('DeploymentsComponent (without query params)', () => {
 
   it('should apply filters and add them to the sessionStorage on applyFilters', () => {
     // given
-    sessionStorage.setItem('deploymentFilters', null);
+    sessionStorage.removeItem('deploymentFilters');
     const expectedFilters: DeploymentFilter[] = [
       { name: 'Confirmed', comp: 'eq', val: 'true' } as DeploymentFilter,
       { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter,
@@ -603,7 +603,7 @@ describe('DeploymentsComponent (without query params)', () => {
 
   it('should sort out filters without a value on apply filters and add the remaining to the sessionStorage on applyFilters', () => {
     // given
-    sessionStorage.setItem('deploymentFilters', null);
+    sessionStorage.removeItem('deploymentFilters');
     const expectedFilters: DeploymentFilter[] = [
       { name: 'Confirmed', comp: 'eq', val: 'false' } as DeploymentFilter,
       { name: 'Application', comp: 'eq', val: 'TestApp' } as DeploymentFilter,
@@ -671,7 +671,7 @@ describe('DeploymentsComponent (without query params)', () => {
     component.clearFilters();
 
     // then
-    expect(sessionStorage.getItem('deploymentFilters')).toBe('null');
+    expect(sessionStorage.getItem('deploymentFilters')).toBeNull();
   });
 
   it('should invoke service with right params on sort', () => {

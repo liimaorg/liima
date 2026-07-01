@@ -142,7 +142,7 @@ export class PropertyTypesComponent implements OnDestroy {
   delete(propertyType: PropertyType) {
     this.isLoading.set(true);
     this.propertyTypeService
-      .delete(propertyType.id)
+      .delete(propertyType.id!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success(`${this.PROPERTY_TYPE} deleted.`),

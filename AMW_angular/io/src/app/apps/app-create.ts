@@ -1,6 +1,6 @@
 export interface AppCreate {
   appName: string;
-  appReleaseId: number;
-  appServerId: number;
-  appServerReleaseId: number;
+  appReleaseId: number | null;
+  appServerId: number | null;
+  appServerReleaseId: number | null;
 }

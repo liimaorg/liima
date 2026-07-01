@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,7 +16,18 @@ import { TagInputComponent } from '../../shared/tag-input/tag-input.component';
 export class PropertyTypeEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() propertyType: PropertyType;
+  private readonly propertyTypeSignal = signal<PropertyType | null>(null);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set propertyType(value: PropertyType) {
+    this.propertyTypeSignal.set(value);
+  }
+
+  get propertyType(): PropertyType {
+    return this.propertyTypeSignal() as PropertyType;
+  }
   @Output() savePropertyType: EventEmitter<PropertyType> = new EventEmitter<PropertyType>();
 
   title = 'property type';

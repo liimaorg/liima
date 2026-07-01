@@ -19,7 +19,7 @@ export class ServersFilterComponent implements OnChanges {
   environments = input.required<Environment[]>();
   runtimes = input.required<Resource[]>();
   appServerSuggestions = input.required<string[]>();
-  inputSearchFilter = input<ServerFilter>();
+  inputSearchFilter = input<ServerFilter | null>();
   searchFilter = output<ServerFilter>();
   filter: ServerFilter = {
     environmentName: 'All',
@@ -31,7 +31,7 @@ export class ServersFilterComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['inputSearchFilter'] && this.inputSearchFilter()) {
-      const input = this.inputSearchFilter();
+      const input = this.inputSearchFilter()!;
       this.filter = {
         environmentName: input.environmentName ?? 'All',
         runtimeName: input.runtimeName ?? 'All',

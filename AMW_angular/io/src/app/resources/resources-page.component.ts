@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  Signal,
+  signal,
+  WritableSignal,
+  OnDestroy,
+} from '@angular/core';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
 import { PageComponent } from '../layout/page/page.component';
@@ -28,7 +37,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './resources-page.component.html',
   styleUrl: 'resources-page.component.scss',
 })
-export class ResourcesPageComponent {
+export class ResourcesPageComponent implements OnDestroy {
   private authService = inject(AuthService);
   private resourceTypesService = inject(ResourceTypesService);
   private resourceService = inject(ResourceService);
@@ -142,7 +151,7 @@ export class ResourcesPageComponent {
     }
   });
 
-  selectedResourceTypeOrDefault: Signal<ResourceType> = computed(() => {
+  selectedResourceTypeOrDefault: Signal<ResourceType | null> = computed(() => {
     if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
       this.resourceService.setTypeForResourceGroupList(this.rootResourceTypes()[0]);
       return this.rootResourceTypes()[0];
@@ -181,7 +190,10 @@ export class ResourcesPageComponent {
       .subscribe({
         next: () => this.toastService.success('Resource saved successfully.'),
         error: (e) => console.error('Failed to create resource:', e),
-        complete: () => this.resourceService.setTypeForResourceGroupList(this.selectedResourceTypeOrDefault()), // refresh data of the selected resource type
+        complete: () => {
+          const rt = this.selectedResourceTypeOrDefault();
+          if (rt) this.resourceService.setTypeForResourceGroupList(rt);
+        },
       });
   }
 
@@ -213,7 +225,7 @@ export class ResourcesPageComponent {
 
   deleteResourceType(resourceType: ResourceType) {
     this.resourceTypesService
-      .delete(resourceType.id)
+      .delete(resourceType.id!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Resource type deleted successfully.'),

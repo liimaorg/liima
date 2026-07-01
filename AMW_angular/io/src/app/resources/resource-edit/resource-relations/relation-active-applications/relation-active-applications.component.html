@@ -1,9 +1,7 @@
 @if (isApplicationServerToNode() && hasApplications()) {
   <div class="active-applications-section">
     <h4>Active Applications</h4>
-    <p class="text-muted small">
-      Uncheck applications to exclude them from deployment on this node.
-    </p>
+    <p class="text-muted small">Uncheck applications to exclude them from deployment on this node.</p>
 
     <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 

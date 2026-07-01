@@ -5,50 +5,70 @@
         <tr>
           <th class="has-checkbox">
             <input type="checkbox" (click)="switchAllDeployments()" />
-            <span class="link" (click)="reSort('d.trackingId')"
+            <span class="link" (click)="reSort('d.trackingId')" (keydown.enter)="reSort('d.trackingId')" tabindex="0"
               >&nbsp;Tracking id
-              @if (sortCol === 'd.trackingId') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.trackingId') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
-            <span class="link" (click)="reSort('d.deploymentState')"
+            <span
+              class="link"
+              (click)="reSort('d.deploymentState')"
+              (keydown.enter)="reSort('d.deploymentState')"
+              tabindex="0"
               >State
-              @if (sortCol === 'd.deploymentState') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.deploymentState') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
-            <span class="link" (click)="reSort('d.resourceGroup.name')"
+            <span
+              class="link"
+              (click)="reSort('d.resourceGroup.name')"
+              (keydown.enter)="reSort('d.resourceGroup.name')"
+              tabindex="0"
               >App server
-              @if (sortCol === 'd.resourceGroup.name') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.resourceGroup.name') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
-            <span class="link" (click)="reSort('d.release.installationInProductionAt')"
+            <span
+              class="link"
+              (click)="reSort('d.release.installationInProductionAt')"
+              (keydown.enter)="reSort('d.release.installationInProductionAt')"
+              tabindex="0"
               >Release
-              @if (sortCol === 'd.release.installationInProductionAt') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.release.installationInProductionAt') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
-            <span class="link" (click)="reSort('d.context.name')"
+            <span
+              class="link"
+              (click)="reSort('d.context.name')"
+              (keydown.enter)="reSort('d.context.name')"
+              tabindex="0"
               >Env
-              @if (sortCol === 'd.context.name') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.context.name') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
           <th>
-            <span class="link" (click)="reSort('d.deploymentDate')"
+            <span
+              class="link"
+              (click)="reSort('d.deploymentDate')"
+              (keydown.enter)="reSort('d.deploymentDate')"
+              tabindex="0"
               >Deployment date
-              @if (sortCol === 'd.deploymentDate') {
-                <app-sortable-icon [sortDirection]="sortDirection"></app-sortable-icon>
+              @if (sortCol() === 'd.deploymentDate') {
+                <app-sortable-icon [sortDirection]="sortDirection()"></app-sortable-icon>
               }
             </span>
           </th>
@@ -72,10 +92,21 @@
               <span class="state">{{ deployment.reason ? failureReason[deployment.reason] : deployment.state }}</span>
             </td>
             <td>
-              <span class="link" (click)="appServerLink(deployment.resourceId)">{{ deployment.appServerName }}</span>
+              <span
+                class="link"
+                (click)="appServerLink(deployment.resourceId)"
+                (keydown.enter)="appServerLink(deployment.resourceId)"
+                tabindex="0"
+                >{{ deployment.appServerName }}</span
+              >
               <ul class="nob">
                 @for (appWithVersion of deployment.appsWithVersion; track appWithVersion.applicationId) {
-                  <li class="link" (click)="appLink(appWithVersion.applicationId)">
+                  <li
+                    class="link"
+                    (click)="appLink(appWithVersion.applicationId)"
+                    (keydown.enter)="appLink(appWithVersion.applicationId)"
+                    tabindex="0"
+                  >
                     {{ appWithVersion.applicationName }} ({{ appWithVersion.version }})
                   </li>
                 }
@@ -98,6 +129,8 @@
                 <span
                   class="pointer"
                   (click)="showDateChange(deploymentDateChange, deployment.id)"
+                  (keydown.enter)="showDateChange(deploymentDateChange, deployment.id)"
+                  tabindex="0"
                   title="change the deployment date"
                 >
                   <span
@@ -118,21 +151,36 @@
             </td>
             <td>
               @if (deployment.actions.confirmPossible) {
-                <span class="text-success cursor-pointer" (click)="showConfirm(deploymentConfirmation, deployment.id)">
+                <span
+                  class="text-success cursor-pointer"
+                  (click)="showConfirm(deploymentConfirmation, deployment.id)"
+                  (keydown.enter)="showConfirm(deploymentConfirmation, deployment.id)"
+                  tabindex="0"
+                >
                   <app-icon icon="check-circle"></app-icon>
                   <span class="ms-1">confirm</span>
                 </span>
                 <br />
               }
               @if (deployment.actions.rejectPossible) {
-                <span class="text-danger cursor-pointer" (click)="showReject(deploymentRejection, deployment.id)">
+                <span
+                  class="text-danger cursor-pointer"
+                  (click)="showReject(deploymentRejection, deployment.id)"
+                  (keydown.enter)="showReject(deploymentRejection, deployment.id)"
+                  tabindex="0"
+                >
                   <app-icon icon="x-circle"></app-icon>
                   <span class="ms-1">reject</span>
                 </span>
                 <br />
               }
               @if (deployment.actions.cancelPossible) {
-                <span (click)="showCancel(deploymentCancelation, deployment.id)" class="cursor-pointer">
+                <span
+                  (click)="showCancel(deploymentCancelation, deployment.id)"
+                  class="cursor-pointer"
+                  (keydown.enter)="showCancel(deploymentCancelation, deployment.id)"
+                  tabindex="0"
+                >
                   <app-icon icon="slash-circle"></app-icon>
                   <span class="ms-1">cancel</span>
                 </span>
@@ -170,7 +218,7 @@
       '] for app server: ' +
       deployment.appServerName
     "
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     <h6>{{ deployment.state }}</h6>
@@ -223,7 +271,7 @@
 <ng-template #deploymentDateChange let-modal>
   <app-modal-header
     [title]="'Change deployment date of deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     <div class="input-group date">
@@ -239,7 +287,7 @@
 <ng-template #deploymentConfirmation let-modal>
   <app-modal-header
     [title]="'Confirm deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     <div class="modal-body">
@@ -266,7 +314,7 @@
 <ng-template #deploymentRejection let-modal>
   <app-modal-header
     [title]="'Reject deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     <p class="text-warning-2">Are you sure that you want to reject this deployment?</p>
@@ -279,7 +327,7 @@
 <ng-template #deploymentCancelation let-modal>
   <app-modal-header
     [title]="'Cancel deployment #' + deployment.id + ' for app server ' + deployment.appServerName"
-    (cancel)="modal.dismiss('Cross click')"
+    (cancelAction)="modal.dismiss('Cross click')"
   ></app-modal-header>
   <div class="modal-body">
     <p class="text-warning-2">Are you sure that you want to cancel this deployment?</p>

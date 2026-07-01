@@ -34,7 +34,7 @@ describe('DeploymentsEditModalComponent', () => {
   });
 
   it('applies date for confirmation', () => {
-    const newDeploymentDate = DateTimeModel.fromLocalString('30.11.2017 09:19');
+    const newDeploymentDate = DateTimeModel.fromLocalString('30.11.2017 09:19')!;
     component.deploymentDate = newDeploymentDate;
     component.selectedEditAction = 'Confirm';
     component.deployments = [
@@ -53,7 +53,7 @@ describe('DeploymentsEditModalComponent', () => {
   });
 
   it('clears data after doEdit()', () => {
-    const newDeploymentDate = DateTimeModel.fromLocalString('30.11.2017 09:19');
+    const newDeploymentDate = DateTimeModel.fromLocalString('30.11.2017 09:19')!;
     component.deploymentDate = newDeploymentDate;
     component.selectedEditAction = 'Confirm';
     component.deployments = [

@@ -14,10 +14,10 @@ import { Component, Input } from '@angular/core';
 })
 export class NotificationComponent {
   @Input()
-  message: string;
+  message!: string;
 
   @Input()
-  messageType: MessageType;
+  messageType!: MessageType;
 }
 
 export type MessageType = 'success' | 'warning';

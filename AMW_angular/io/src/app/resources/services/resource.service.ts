@@ -26,7 +26,7 @@ export class ResourceService extends BaseService {
     switchMap((resourceType: ResourceType) => {
       return this.getGroupsForType(resourceType);
     }),
-    startWith(null),
+    startWith([] as Resource[]),
     shareReplay(1),
   );
 
@@ -124,7 +124,7 @@ export class ResourceService extends BaseService {
 
   get(resourceGroupName: string): Observable<Resource> {
     return this.http
-      .get(`${this.getBaseUrl()}/resources/${resourceGroupName}`, {
+      .get<Resource>(`${this.getBaseUrl()}/resources/${resourceGroupName}`, {
         headers: this.getHeaders(),
       })
       .pipe(map(toResource), catchError(this.handleError));

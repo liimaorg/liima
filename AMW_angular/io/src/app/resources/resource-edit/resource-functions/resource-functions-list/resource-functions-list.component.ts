@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy, OnInit } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -35,12 +35,14 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
   contextId = input.required<number>();
   functions = this.functionsService.functions;
 
-  isLoading = computed(() => {
-    if (this.resource() != null) {
-      this.functionsService.setIdForResourceFunctionList(this.resource().id);
-      return false;
+  private loadEffect = effect(() => {
+    const res = this.resource();
+    if (res != null) {
+      this.functionsService.setIdForResourceFunctionList(res.id);
     }
   });
+
+  isLoading = computed(() => this.resource() == null);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resource()) {
@@ -106,6 +108,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       msg !== '' ? this.toastService.error(msg) : null;
     });
   }
@@ -145,21 +148,23 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
   }
 
   mapListEntries(functions: ResourceFunction[]) {
-    return functions.map((element) => ({
-      name:
-        element.name +
-        (element.definedOnResourceType
-          ? ` (Defined on ${element.functionOriginResourceName})`
-          : element.isOverwritingFunction
-            ? ` (Overwrite function from ${element.overwrittenParentName})`
-            : ''),
-      description: [...element.miks].join(', '),
-      id: element.id,
-    }));
+    return functions
+      .filter((element): element is ResourceFunction & { id: number } => element.id != null)
+      .map((element) => ({
+        name:
+          element.name +
+          (element.definedOnResourceType
+            ? ` (Defined on ${element.functionOriginResourceName})`
+            : element.isOverwritingFunction
+              ? ` (Overwrite function from ${element.overwrittenParentName})`
+              : ''),
+        description: [...element.miks].join(', '),
+        id: element.id,
+      }));
   }
 
   splitFunctions(resourceFunctions: ResourceFunction[]) {
-    const [instance, resource] = [[], []];
+    const [instance, resource]: [ResourceFunction[], ResourceFunction[]] = [[], []];
     resourceFunctions.sort((a, b) => (a.name < b.name ? -1 : 1));
     resourceFunctions.forEach((element) => (element.definedOnResourceType ? resource : instance).push(element));
     return [this.mapListEntries(instance), this.mapListEntries(resource)];
@@ -193,7 +198,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },
@@ -206,7 +211,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },
@@ -219,7 +224,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },
@@ -232,7 +237,7 @@ export class ResourceFunctionsListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function deleted successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.functionsService.setIdForResourceFunctionList(this.resource().id);
         },

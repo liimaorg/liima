@@ -139,8 +139,8 @@
     }
     @if (restriction.permission.name) {
       <div class="form-group row">
-        <label class="col-sm-3 fw-bold text-end"></label>
-        <div class="col-sm-9">
+        <label for="saveCancel" class="col-sm-3 fw-bold text-end" aria-hidden="true"></label>
+        <div class="col-sm-9" id="saveCancel">
           @if (restriction.permission) {
             <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="persistRestriction()">
               <app-icon icon="cloud-arrow-down"></app-icon> Save</app-button

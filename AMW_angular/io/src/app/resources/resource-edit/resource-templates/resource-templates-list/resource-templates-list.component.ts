@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy } from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -35,12 +35,14 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   contextId = input.required<number>();
   templates = this.templatesService.resourceTemplates;
 
-  isLoading = computed(() => {
-    if (this.resource() != null) {
-      this.templatesService.setIdForResourceTemplateList(this.resource().id);
-      return false;
+  private loadEffect = effect(() => {
+    const res = this.resource();
+    if (res != null) {
+      this.templatesService.setIdForResourceTemplateList(res.id);
     }
   });
+
+  isLoading = computed(() => this.resource() == null);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0 && this.resource()) {
@@ -130,10 +132,11 @@ export class ResourceTemplatesListComponent implements OnDestroy {
 
   mapListEntries(templates: ResourceTemplate[]) {
     return templates
+      .filter((template): template is ResourceTemplate & { id: number } => template.id != null)
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((template) => ({
         name: template.name,
-        description: template.targetPath,
+        description: template.targetPath ?? '',
         id: template.id,
       }));
   }
@@ -163,7 +166,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.templatesService.setIdForResourceTemplateList(this.resource().id);
         },
@@ -190,7 +193,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.templatesService.setIdForResourceTemplateList(this.resource().id);
         },
@@ -211,7 +214,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template deleted successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.templatesService.setIdForResourceTemplateList(this.resource().id);
         },

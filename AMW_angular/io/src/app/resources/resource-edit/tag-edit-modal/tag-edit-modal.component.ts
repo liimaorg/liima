@@ -19,7 +19,18 @@ export interface TagData {
 export class TagEditModalComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() resource!: Resource;
+  private readonly resourceSignal = signal<Resource | null>(null);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set resource(value: Resource) {
+    this.resourceSignal.set(value);
+  }
+
+  get resource(): Resource {
+    return this.resourceSignal() as Resource;
+  }
   @Output() saveTag = new EventEmitter<TagData>();
 
   tagLabel = signal<string>('');

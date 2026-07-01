@@ -1,10 +1,11 @@
 {
   "name": "amw_e2e",
   "version": "1.0.0",
+  "packageManager": "pnpm@11.8.0",
   "description": "End to end tests for AMW Liima",
   "scripts": {
-    "start": "npm run docker:start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",
-    "stop": "npm run docker:stop",
+    "start": "pnpm run docker:start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",
+    "stop": "pnpm run docker:stop",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:ci": "playwright test --headed",
@@ -15,8 +16,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.56.1",
-    "@types/node": "^22.10.5",
-    "wait-on": "^7.2.0"
+    "@playwright/test": "^1.61.0",
+    "@types/node": "^26.0.0",
+    "wait-on": "^9.0.10"
   }
 }

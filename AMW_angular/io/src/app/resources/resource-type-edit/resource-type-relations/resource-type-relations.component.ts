@@ -37,7 +37,7 @@ import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-rel
 })
 export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   private resourceTypeService = inject(ResourceTypesService);
-  resourceType: Signal<ResourceType> = this.resourceTypeService.resourceType;
+  resourceType: Signal<ResourceType | null> = this.resourceTypeService.resourceType;
 
   @ViewChild('addTypeRelationModal') addTypeRelationModal!: TemplateRef<void>;
   @ViewChild('removeTypeRelationConfirmation') removeTypeRelationConfirmation!: TemplateRef<void>;
@@ -56,14 +56,14 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
           'RESOURCETYPE',
           'UPDATE',
           this.resourceType()?.name,
-          null,
+          undefined,
           this.context()?.name,
         ),
         canDecryptProperties: this.authService.hasPermission(
           'RESOURCETYPE_PROPERTY_DECRYPT',
           'ALL',
           this.resourceType()?.name,
-          null,
+          undefined,
           this.context()?.name,
         ),
       };
@@ -105,7 +105,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     return result;
   });
 
-  protected entityId = computed(() => this.resourceType()?.id);
+  protected entityId = computed(() => this.resourceType()?.id ?? undefined);
 
   protected reloadRelation(entityId: number): void {
     this.relationsService.setIdForResourceTypeRelations(entityId);
@@ -122,7 +122,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     contextId: number,
   ): Observable<void> {
     return this.relationsService.bulkUpdateResourceTypeRelationProperties(
-      this.entityId(),
+      this.entityId()!,
       relationId,
       updatedProperties,
       resetProperties,
@@ -133,7 +133,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
   protected afterPropertiesSaved(): void {
     const changes = this.editor.changedProperties();
     if (changes.has('relationName')) {
-      this.reloadRelation(this.entityId());
+      this.reloadRelation(this.entityId()!);
     }
   }
 
@@ -154,7 +154,7 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
 
   protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
     return {
-      key: unresolved.resRelTypeId,
+      key: unresolved.resRelTypeId ?? 0,
       name: unresolved.name,
       type: unresolved.type,
       unresolved: true,
@@ -199,12 +199,12 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     }
 
     this.isAddingRelation.set(true);
-    this.relationsService.addResourceTypeRelation(this.entityId(), slaveTypeId).subscribe({
+    this.relationsService.addResourceTypeRelation(this.entityId()!, slaveTypeId).subscribe({
       next: () => {
         this.toastService.success('Relation added successfully.');
         this.modalService.dismissAll();
         this.isAddingRelation.set(false);
-        this.reloadRelation(this.entityId());
+        this.reloadRelation(this.entityId()!);
       },
       error: (err) => {
         console.error('Failed to add type relation:', err);
@@ -225,10 +225,10 @@ export class ResourceTypeRelationsComponent extends BaseRelationsDirective {
     const rel = this.selectedRelation();
     if (!rel || !rel.resRelTypeId) return;
 
-    this.relationsService.removeResourceTypeRelation(this.entityId(), rel.resRelTypeId).subscribe({
+    this.relationsService.removeResourceTypeRelation(this.entityId()!, rel.resRelTypeId).subscribe({
       next: () => {
         this.toastService.success('Relation removed successfully.');
-        this.reloadRelation(this.entityId());
+        this.reloadRelation(this.entityId()!);
       },
       error: (err) => {
         console.error('Failed to remove type relation:', err);

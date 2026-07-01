@@ -11,15 +11,15 @@ export interface NgbDateTimeStruct extends NgbDateStruct, NgbTimeStruct {}
 //   GMT: Thursday, 31 July 2025 22:00:00
 // => Can be stored as 31 July 2025 in the database!
 export class DateModel implements NgbDateStruct {
-  year: number;
-  month: number;
-  day: number;
+  year!: number;
+  month!: number;
+  day!: number;
 
   public constructor(init?: Partial<DateModel>) {
     Object.assign(this, init);
   }
 
-  private static fromDate(date: Date): DateModel {
+  private static fromDate(date: Date): DateModel | null {
     if (!datefns.isValid(date)) {
       return null;
     }
@@ -33,7 +33,7 @@ export class DateModel implements NgbDateStruct {
     });
   }
 
-  public static fromLocalString(dateString: string, format?: string): DateModel {
+  public static fromLocalString(dateString: string, format?: string): DateModel | null {
     let date: Date;
     if (typeof format === 'undefined') {
       date = datefns.parse(dateString, DATE_FORMAT, new Date());
@@ -43,7 +43,7 @@ export class DateModel implements NgbDateStruct {
     return this.fromDate(date);
   }
 
-  public static fromEpoch(epoch: number) {
+  public static fromEpoch(epoch: number): DateModel | null {
     const date = new Date(epoch);
     return this.fromDate(date);
   }
@@ -52,7 +52,7 @@ export class DateModel implements NgbDateStruct {
     return new Date(this.year, this.month - 1, this.day);
   }
 
-  public toString(format?: string): string {
+  public toString(format?: string): string | null {
     const date = this.thisToDate();
     if (!datefns.isValid(date)) {
       return null;
@@ -67,7 +67,7 @@ export class DateModel implements NgbDateStruct {
     return Date.UTC(this.year, this.month - 1, this.day);
   }
 
-  public toJSON(): string {
+  public toJSON(): string | null {
     return this.toString();
   }
 

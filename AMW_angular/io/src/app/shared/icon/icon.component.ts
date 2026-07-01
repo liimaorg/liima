@@ -10,9 +10,9 @@ import { Component, Input, OnChanges } from '@angular/core';
 })
 export class IconComponent implements OnChanges {
   @Input()
-  icon: string;
+  icon!: string;
 
-  iconPath: string;
+  iconPath!: string;
 
   ngOnChanges(): void {
     this.iconPath = 'bootstrap-icons.svg#' + this.icon;

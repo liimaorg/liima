@@ -1,4 +1,4 @@
-<app-modal-header [title]="getTitle()" (cancel)="cancel()"></app-modal-header>
+<app-modal-header [title]="getTitle()" (cancelAction)="cancel()"></app-modal-header>
 <div class="modal-body">
   <p class="mb-3">
     You are going to tag the current configuration of the {{ resource.type }} {{ resource.name }} in release

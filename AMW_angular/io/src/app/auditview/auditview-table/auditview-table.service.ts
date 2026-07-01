@@ -11,7 +11,7 @@ function sort(entries: AuditLogEntry[], column: string, direction: string): Audi
     return entries;
   } else {
     return [...entries].sort((a, b) => {
-      const res = compare(a[column], b[column]);
+      const res = compare((a as any)[column], (b as any)[column]);
       return direction === 'asc' ? res : -res;
     });
   }
@@ -20,7 +20,7 @@ function sort(entries: AuditLogEntry[], column: string, direction: string): Audi
 function matches(entry: AuditLogEntry, term: string, pipe: DatePipe): boolean {
   const lowerCaseTerm = term.toLowerCase();
   return (
-    pipe.transform(entry.timestamp, DATE_TIME_FORMAT).includes(term) ||
+    (pipe.transform(entry.timestamp, DATE_TIME_FORMAT) ?? '').includes(term) ||
     nullSafeToLowerCase(entry.mode).includes(lowerCaseTerm) ||
     nullSafeToLowerCase(entry.editContextName).includes(lowerCaseTerm) ||
     nullSafeToLowerCase(entry.name).includes(lowerCaseTerm) ||
@@ -36,7 +36,7 @@ function nullSafeToLowerCase(s: string) {
   return s ? s.toLowerCase() : '';
 }
 
-function compare(v1, v2) {
+function compare(v1: any, v2: any): number {
   return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
 }
 

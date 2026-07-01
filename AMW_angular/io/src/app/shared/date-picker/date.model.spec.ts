@@ -12,17 +12,17 @@ describe('DateModel', () => {
     const dateTimeFromString = DateModel.fromLocalString(testDate, component.dateStringFormat);
     const dateTimeFromEpoch = DateModel.fromEpoch(m.getTime());
 
-    expect(dateTimeFromString.day).toEqual(m.getDate());
-    expect(dateTimeFromString.month).toEqual(m.getMonth() + 1);
+    expect(dateTimeFromString!.day).toEqual(m.getDate());
+    expect(dateTimeFromString!.month).toEqual(m.getMonth() + 1);
 
     expect(dateTimeFromString).toEqual(dateTimeFromEpoch);
 
-    expect(dateTimeFromString.toEpoch()).toEqual(m.getTime());
+    expect(dateTimeFromString!.toEpoch()).toEqual(m.getTime());
   });
 
   it('should return the same epoch after fromEpoch and toEpoch', () => {
     const epoch = 1754006400000; // 1 August 2025 00:00:00 GMT
-    const model = DateModel.fromEpoch(epoch);
+    const model = DateModel.fromEpoch(epoch)!;
 
     expect(model.year).toEqual(2025);
     expect(model.month).toEqual(8);

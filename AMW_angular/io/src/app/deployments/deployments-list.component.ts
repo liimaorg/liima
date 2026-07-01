@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, input } from '@angular/core';
 import { Deployment } from '../deployment/deployment';
 import { DeploymentFilter } from '../deployment/deployment-filter';
 import { ResourceService } from '../resources/services/resource.service';
@@ -34,9 +34,9 @@ export class DeploymentsListComponent {
   private modalService = inject(NgbModal);
 
   @Input() deployments: Deployment[] = [];
-  @Input() sortCol: string;
-  @Input() sortDirection: 'ASC';
-  @Input() filtersForParam: DeploymentFilter[];
+  sortCol = input.required<string>();
+  sortDirection = input.required<string>();
+  filtersForParam = input.required<DeploymentFilter[]>();
   @Output() editDeploymentDate: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() selectAllDeployments: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() doCancelDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
@@ -44,8 +44,8 @@ export class DeploymentsListComponent {
   @Output() doConfirmDeployment: EventEmitter<Deployment> = new EventEmitter<Deployment>();
   @Output() doSort: EventEmitter<string> = new EventEmitter<string>();
 
-  deployment: Deployment;
-  deploymentDate: DateTimeModel = new DateTimeModel();
+  deployment!: Deployment;
+  deploymentDate: DateTimeModel | undefined = new DateTimeModel();
   allSelected: boolean = false;
   // TODO: show this error somewhere?
   errorMessage = '';
@@ -62,28 +62,28 @@ export class DeploymentsListComponent {
     RUNTIME_ERROR: 'runtime error',
   };
 
-  showDetails(content, deploymentId: number) {
-    this.deployment = _.find(this.deployments, ['id', deploymentId]);
+  showDetails(content: unknown, deploymentId: number) {
+    this.deployment = _.find(this.deployments, ['id', deploymentId]) as Deployment;
     this.modalService.open(content);
   }
 
-  showDateChange(content, deploymentId: number) {
-    this.deployment = _.find(this.deployments, ['id', deploymentId]);
-    this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate);
+  showDateChange(content: unknown, deploymentId: number) {
+    this.deployment = _.find(this.deployments, ['id', deploymentId]) as Deployment;
+    this.deploymentDate = DateTimeModel.fromEpoch(this.deployment.deploymentDate) ?? new DateTimeModel();
     this.modalService.open(content).result.then(
       () => {
-        this.deployment.deploymentDate = this.deploymentDate.toEpoch();
+        this.deployment.deploymentDate = this.deploymentDate?.toEpoch() ?? 0;
         this.editDeploymentDate.emit(this.deployment);
-        delete this.deploymentDate;
+        this.deploymentDate = undefined;
       },
       () => {
-        delete this.deploymentDate;
+        this.deploymentDate = undefined;
       },
     );
   }
 
-  showConfirm(content, deploymentId: number) {
-    this.deployment = _.find(this.deployments, ['id', deploymentId]);
+  showConfirm(content: unknown, deploymentId: number) {
+    this.deployment = _.find(this.deployments, ['id', deploymentId]) as Deployment;
 
     this.modalService.open(content).result.then(
       () => {
@@ -93,8 +93,8 @@ export class DeploymentsListComponent {
     );
   }
 
-  showReject(content, deploymentId: number) {
-    this.deployment = _.find(this.deployments, ['id', deploymentId]);
+  showReject(content: unknown, deploymentId: number) {
+    this.deployment = _.find(this.deployments, ['id', deploymentId]) as Deployment;
     this.modalService.open(content).result.then(
       () => {
         this.doRejectDeployment.emit(this.deployment);
@@ -103,8 +103,8 @@ export class DeploymentsListComponent {
     );
   }
 
-  showCancel(content, deploymentId: number) {
-    this.deployment = _.find(this.deployments, ['id', deploymentId]);
+  showCancel(content: unknown, deploymentId: number) {
+    this.deployment = _.find(this.deployments, ['id', deploymentId]) as Deployment;
     this.modalService.open(content).result.then(
       () => {
         this.doCancelDeployment.emit(this.deployment);

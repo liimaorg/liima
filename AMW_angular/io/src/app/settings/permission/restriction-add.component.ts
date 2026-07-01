@@ -40,11 +40,11 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   selectedPermissionNames: string[] = [];
   selectedResourceTypeNames: string[] = [];
-  selectedResourceTypePermission: string = null;
+  selectedResourceTypePermission: string | null = null;
   selectedResourceGroupNames: string[] = [];
   selectedContextNames: string[] = [];
 
-  @Input() roleName: string;
+  @Input() roleName = '';
   @Input() userNames: any[] = [];
   @Input() permissions: Permission[] = [];
   @Input() groupedEnvironments: { [key: string]: Environment[] } = {};
@@ -128,7 +128,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
     if (this.selectedPermissionNames.length > 0) {
       this.onlyGlobal = true;
       this.selectedPermissionNames.forEach((permissionName) => {
-        if (this.onlyGlobal && !this.permissions.find((permission) => permission.name === permissionName).old) {
+        if (this.onlyGlobal && !this.permissions.find((permission) => permission.name === permissionName)!.old) {
           this.onlyGlobal = false;
         }
       });
@@ -198,8 +198,8 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
       this.similarRestrictions.forEach((restriction) => {
         if (restriction.action === 'ALL') {
           this.enableAllActions();
-        } else if (!_.some(this.actions, { name: restriction.action, disabled: false })) {
-          this.actions[_.findIndex(this.actions, { name: restriction.action })].disabled = false;
+        } else if (!_.some(this.actions, { name: restriction.action!, disabled: false })) {
+          this.actions[_.findIndex(this.actions, { name: restriction.action! })].disabled = false;
         }
       });
     }
@@ -216,8 +216,8 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
     this.disableAllEnvironments();
     this.selectedResourceGroupNames = [];
     this.similarRestrictions.forEach((restriction) => {
-      if (restriction.action === 'ALL' || _.some(this.actions, { name: restriction.action, selected: true })) {
-        this.availableEnvironments.push(restriction.contextName);
+      if (restriction.action === 'ALL' || _.some(this.actions, { name: restriction.action!, selected: true })) {
+        this.availableEnvironments.push(restriction.contextName!);
         if (!restriction.contextName) {
           // null = All
           this.enableAllEnvironments();
@@ -243,7 +243,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   private extractAvailableResourceGroups(): Resource[] {
     const groups: Resource[] = [];
-    let addAll: boolean;
+    let addAll = false;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
         if (
@@ -256,7 +256,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
           if (restriction.resourceGroupId === null) {
             addAll = true;
           } else if (!_.some(groups, ['id', restriction.resourceGroupId])) {
-            groups.push(_.find(this.resourceGroups, ['id', restriction.resourceGroupId]));
+            groups.push(_.find(this.resourceGroups, ['id', restriction.resourceGroupId])!);
           }
         }
       });
@@ -272,7 +272,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   private extractAvailableResourceTypePermissions(): string[] {
     const resourceTypePermissions: string[] = [];
-    let addAll: boolean;
+    let addAll = false;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
         if (
@@ -283,11 +283,11 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
               this.selectedContextNames.indexOf(restriction.contextName) > -1 ||
               this.isChildContextOf(restriction.contextName, this.selectedContextNames)))
         ) {
-          if (!addAll && resourceTypePermissions.indexOf(restriction.resourceTypePermission) < 0) {
+          if (!addAll && resourceTypePermissions.indexOf(restriction.resourceTypePermission!) < 0) {
             if (restriction.resourceTypePermission === 'ANY') {
               addAll = true;
             } else {
-              resourceTypePermissions.push(restriction.resourceTypePermission);
+              resourceTypePermissions.push(restriction.resourceTypePermission!);
             }
           }
         }
@@ -303,7 +303,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   private extractAvailableResourceTypes(): ResourceType[] {
     const resourceTypes: ResourceType[] = [];
-    let addAll: boolean;
+    let addAll = false;
     if (this.similarRestrictions.length > 0) {
       this.similarRestrictions.forEach((restriction) => {
         if (
@@ -318,7 +318,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
             addAll = true;
           }
           if (!addAll && !_.some(resourceTypes, ['name', restriction.resourceTypeName])) {
-            resourceTypes.push(_.find(this.resourceTypes, ['name', restriction.resourceTypeName]));
+            resourceTypes.push(_.find(this.resourceTypes, ['name', restriction.resourceTypeName])!);
           }
         }
       });
@@ -400,7 +400,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   private getSelectedGroupIds(): number[] {
     const groupIds: number[] = [];
     this.selectedResourceGroupNames.forEach((groupName) => {
-      groupIds.push(this.resourceGroups.find((rg) => rg.name.toLowerCase() === groupName.toLowerCase()).id);
+      groupIds.push(this.resourceGroups.find((rg) => rg.name.toLowerCase() === groupName.toLowerCase())!.id);
     });
     return groupIds;
   }
@@ -438,7 +438,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
     return isParent;
   }
 
-  private getParentContextName(contextName: string): string {
+  private getParentContextName(contextName: string): string | null {
     const keys = this.getEnvironmentGroups();
     const len: number = keys.length;
     for (let i = 0; i < len; i++) {

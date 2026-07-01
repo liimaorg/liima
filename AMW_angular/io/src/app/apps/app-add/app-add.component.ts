@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, Signal, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { Release } from '../../settings/releases/release';
@@ -17,13 +17,28 @@ import { ButtonComponent } from '../../shared/button/button.component';
 export class AppAddComponent {
   activeModal = inject(NgbActiveModal);
 
-  @Input() releases: Signal<Release[]>;
-  @Input() appServerGroups: Signal<Resource[]>;
+  private readonly releasesSignal = signal<Release[]>([]);
+  private readonly appServerGroupsSignal = signal<Resource[]>([]);
+
+  // ng-bootstrap modal inputs are assigned through componentInstance; keep setter-backed signals until
+  // https://github.com/ng-bootstrap/ng-bootstrap/issues/4664 is resolved.
+  @Input({ required: true })
+  set releases(value: Release[]) {
+    this.releasesSignal.set(value);
+  }
+
+  @Input({ required: true })
+  set appServerGroups(value: Resource[]) {
+    this.appServerGroupsSignal.set(value);
+  }
+
+  protected readonly releasesValue = this.releasesSignal.asReadonly();
+  protected readonly appServerGroupsValue = this.appServerGroupsSignal.asReadonly();
   @Output() saveApp: EventEmitter<AppCreate> = new EventEmitter<AppCreate>();
 
   app: AppCreate = { appName: '', appReleaseId: null, appServerId: null, appServerReleaseId: null };
-  appServerGroup: Resource;
-  appServerRelease: Rel;
+  appServerGroup: Resource | undefined = undefined;
+  appServerRelease: Rel | undefined = undefined;
 
   hasInvalidGroup(): boolean {
     const isInvalid =
@@ -54,8 +69,8 @@ export class AppAddComponent {
     const app: AppCreate = {
       appName: this.app.appName,
       appReleaseId: this.app.appReleaseId,
-      appServerId: this.appServerGroup?.id,
-      appServerReleaseId: this.appServerRelease?.id,
+      appServerId: this.appServerGroup?.id ?? null,
+      appServerReleaseId: this.appServerRelease?.id ?? null,
     };
     this.saveApp.emit(app);
     this.activeModal.close();

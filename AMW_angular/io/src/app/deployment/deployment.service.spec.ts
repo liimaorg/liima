@@ -2,6 +2,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Deployment } from './deployment';
+import { DeploymentAction } from './deployment-action';
 import { DeploymentService } from './deployment.service';
 
 describe('DeploymentService', () => {
@@ -77,7 +78,7 @@ describe('DeploymentService', () => {
     cancelUser: 'max',
     deploymentDelayed: false,
     selected: true,
-    actions: null,
+    actions: null as unknown as DeploymentAction,
     statusMessage: 'msg',
     buildSuccess: true,
     executed: true,

@@ -1,9 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { InputSignal, signal } from '@angular/core';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ResourceTemplatesListComponent } from './resource-templates-list.component';
-import { Resource } from '../../../models/resource';
 
 describe('ResourceTemplatesComponent', () => {
   let component: ResourceTemplatesListComponent;
@@ -17,7 +15,7 @@ describe('ResourceTemplatesComponent', () => {
 
     fixture = TestBed.createComponent(ResourceTemplatesListComponent);
     component = fixture.componentInstance;
-    component.resource = signal<Resource>(null) as unknown as InputSignal<Resource>;
+    fixture.componentRef.setInput('resource', null);
     fixture.detectChanges();
   });
 

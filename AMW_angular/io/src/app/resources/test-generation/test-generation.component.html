@@ -95,8 +95,10 @@
                     <div
                       class="template-header d-flex align-items-center gap-2 p-2 rounded"
                       [ngClass]="{ 'bg-danger-subtle': templateHasErrors(tmpl), 'bg-light': !templateHasErrors(tmpl) }"
+                      (keydown.enter)="toggleTemplate(templateId(ni, 'as', ti))"
                       (click)="toggleTemplate(templateId(ni, 'as', ti))"
                       role="button"
+                      tabindex="0"
                     >
                       <app-icon
                         [icon]="isExpanded(templateId(ni, 'as', ti)) ? 'chevron-down' : 'chevron-right'"
@@ -151,6 +153,8 @@
                               'bg-light': !templateHasErrors(tmpl),
                             }"
                             (click)="toggleTemplate(templateId(ni, app.applicationName + '-' + ati, ati))"
+                            (keydown.enter)="toggleTemplate(templateId(ni, app.applicationName + '-' + ati, ati))"
+                            tabindex="0"
                             role="button"
                           >
                             <app-icon
@@ -327,6 +331,8 @@
         'bg-danger-subtle': comparedTemplateStatus(ct) === 'removed',
       }"
       (click)="toggleTemplate(id)"
+      (keydown.enter)="toggleTemplate(id)"
+      tabindex="0"
       role="button"
     >
       <app-icon [icon]="isExpanded(id) ? 'chevron-down' : 'chevron-right'"></app-icon>

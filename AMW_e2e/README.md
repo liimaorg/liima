@@ -7,7 +7,7 @@ This module contains end-to-end tests using [playwright](https://playwright.dev/
 Install all dependencies:
 
 ```bash
-npm install
+pnpm install
 npx playwright install --with-deps
 ```
 
@@ -16,8 +16,8 @@ npx playwright install --with-deps
 The playwright tests run against a docker-build of the liima-application. Therefore you have to build it for the first time.
 
 ```bash
-npm run docker:build
-npm start
+pnpm run docker:build
+pnpm start
 ```
 
 ## Run tests
@@ -25,7 +25,7 @@ npm start
 Run all tests with: 
 
 ```bash
-npm run test
+pnpm run test
 ```
 With this command the liima-container is started and the test run against it.
 
@@ -34,7 +34,7 @@ With this command the liima-container is started and the test run against it.
 You can run the playwright ui with the following command:
 
 ```bash
-npm run test:ui
+pnpm run test:ui
 ```
 
 This will start the playwright ui that lets you run individual tests and inspect the runs. 
@@ -44,7 +44,7 @@ This will start the playwright ui that lets you run individual tests and inspect
 Start the docker container, wait for the application startup and execute all tests with:
 
 ```bash
-npm run test:ci
+pnpm run test:ci
 ```
 
 Notes: 

@@ -23,8 +23,8 @@
     }
     @if (selectedPermissionNames.length > 0 && !onlyGlobal) {
       <div class="form-group row">
-        <label class="col-sm-3 text-end fw-bold">Action</label>
-        <div class="col-sm-9">
+        <label class="col-sm-3 text-end fw-bold" for="selectActions">Action</label>
+        <div class="col-sm-9" id="selectActions">
           @for (action of getAvailableActions(); track action) {
             <label class="checkbox-inline me-3"
               ><input
@@ -40,8 +40,8 @@
 
       @if (hasSelectedActions()) {
         <div class="form-group row">
-          <label class="col-sm-3 text-end fw-bold">Environment</label>
-          <div class="col-sm-9">
+          <label class="col-sm-3 text-end fw-bold" for="selectEnvironments">Environment</label>
+          <div class="col-sm-9" id="selectEnvironments">
             @for (group of getEnvironmentGroups(); track group) {
               <h5 class="environments-title">{{ group }}:</h5>
               @for (env of groupedEnvironments[group]; track env) {
@@ -119,8 +119,8 @@
     }
 
     <div class="form-group row">
-      <label class="col-sm-3 text-end fw-bold"></label>
-      <div class="offset-3 col-sm-9">
+      <label class="col-sm-3 text-end fw-bold" for="saveCancel"></label>
+      <div class="offset-3 col-sm-9" id="saveCancel">
         <app-button [variant]="'primary'" [disabled]="!isValidForm()" (click)="persistRestriction()">
           <app-icon icon="cloud-arrow-down"></app-icon> Save</app-button
         >

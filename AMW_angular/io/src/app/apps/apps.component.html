@@ -9,7 +9,7 @@
             <div class="col-sm">
               <app-apps-filter
                 [releases]="releases()"
-                [releaseId]="appsService.releaseId()"
+                [releaseId]="appsService.releaseId() ?? 0"
                 [filter]="appsService.filter()"
                 (filterEvent)="updateFilter($event)"
               ></app-apps-filter>

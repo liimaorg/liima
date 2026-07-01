@@ -60,7 +60,7 @@
 </app-tile-component>
 
 <ng-template #addTypeRelationModal let-modal>
-  <app-modal-header [title]="'Add Related Resource'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header [title]="'Add Related Resource'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>
   <div class="modal-body">
     <div class="mb-3">
       <label for="slaveTypeSelect" class="form-label">Resource Type</label>
@@ -91,7 +91,10 @@
 </ng-template>
 
 <ng-template #removeTypeRelationConfirmation let-modal>
-  <app-modal-header [title]="'Remove Resource Relation'" (cancel)="modal.dismiss('Cross click')"></app-modal-header>
+  <app-modal-header
+    [title]="'Remove Resource Relation'"
+    (cancelAction)="modal.dismiss('Cross click')"
+  ></app-modal-header>
   <div class="modal-body">
     <p class="text">
       Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.name }}</b

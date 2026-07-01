@@ -1,6 +1,6 @@
 import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 
-export type FilterValue = string | number | boolean | DateTimeModel;
+export type FilterValue = string | number | boolean | DateTimeModel | null;
 
 export interface DeploymentFilter {
   name: string;

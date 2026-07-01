@@ -14,7 +14,7 @@ describe('PropertyTypeEditComponent', () => {
     validationRegex: '',
     encrypted: false,
     propertyTags: [],
-  } as any;
+  } as unknown as PropertyType;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -38,7 +38,7 @@ describe('PropertyTypeEditComponent', () => {
   });
 
   it('getTitle returns Edit when id present', () => {
-    component.propertyType.id = 5 as any;
+    component.propertyType.id = 5;
     expect(component.getTitle()).toContain('Edit');
   });
 
@@ -59,7 +59,7 @@ describe('PropertyTypeEditComponent', () => {
   });
 
   it('onTagsChange updates propertyTags', () => {
-    component.propertyType.propertyTags = [] as any;
+    component.propertyType.propertyTags = [];
     const newTags = [{ name: 'tag1', type: 'LOCAL' }];
     component.onTagsChange(newTags);
     expect(component.propertyType.propertyTags).toEqual(newTags);
@@ -74,7 +74,7 @@ describe('PropertyTypeEditComponent', () => {
       validationRegex: '.*',
       encrypted: false,
       propertyTags: [],
-    } as any;
+    } as unknown as PropertyType;
     component.save();
     expect(component.savePropertyType.emit).toHaveBeenCalled();
     expect(activeModal.close).toHaveBeenCalled();

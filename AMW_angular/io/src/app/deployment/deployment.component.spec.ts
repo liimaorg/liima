@@ -122,8 +122,8 @@ describe('DeploymentComponent (create deployment)', () => {
     // when
     component.initAppservers();
     // then
-    expect(component.selectedAppserver().name).toBe('testServer');
-    expect(component.selectedRelease().release).toBe('testRelease');
+    expect(component.selectedAppserver()!.name).toBe('testServer');
+    expect(component.selectedRelease()!.release).toBe('testRelease');
   });
 
   it('should set selectedAppserver but not set selectedRelease if not available for selectedAppserver', () => {
@@ -134,7 +134,7 @@ describe('DeploymentComponent (create deployment)', () => {
     // when
     component.initAppservers();
     // then
-    expect(component.selectedAppserver().name).toBe('testServer');
+    expect(component.selectedAppserver()!.name).toBe('testServer');
     expect(component.selectedRelease()).toBeNull();
   });
 
@@ -299,7 +299,7 @@ describe('DeploymentComponent (create deployment)', () => {
       requestOnly: true,
       appsWithVersion: component.appsWithVersion(),
       stateToDeploy: component.selectedResourceTag().tagDate,
-      deploymentDate: DateTimeModel.fromLocalString('02.01.2017 12:00').toEpoch(),
+      deploymentDate: DateTimeModel.fromLocalString('02.01.2017 12:00')!.toEpoch(),
       deploymentParameters: component.transDeploymentParameters,
     } as DeploymentRequest;
     vi.spyOn(deploymentService, 'createDeployment').mockReturnValue(of({ trackingId: 910 } as Deployment));
@@ -446,7 +446,7 @@ describe('DeploymentComponent (redeployment)', () => {
 
   it('should call deploymentService on ngOnInit', async () => {
     // given
-    const deployment: Deployment = { appsWithVersion: [] } as Deployment;
+    const deployment = { appsWithVersion: [], deploymentParameters: [] } as unknown as Deployment;
     vi.spyOn(environmentService, 'getAll').mockReturnValue(of([]));
     vi.spyOn(deploymentService, 'get').mockReturnValue(of(deployment));
     expect(deploymentService.get).not.toHaveBeenCalled();
@@ -522,8 +522,8 @@ describe('DeploymentComponent (redeployment)', () => {
     // then
     expect(component.isRedeployment()).toBeTruthy();
     expect(component.isDeploymentBlocked()).toBeFalsy();
-    expect(component.selectedRelease().release).toEqual('testRelease');
-    expect(component.selectedAppserver().name).toEqual('testServer');
+    expect(component.selectedRelease()!.release).toEqual('testRelease');
+    expect(component.selectedAppserver()!.name).toEqual('testServer');
     expect(component.appsWithVersion()).toEqual(appsWithVersion);
     expect(component.transDeploymentParameters).toEqual([deploymentParameter]);
     expect(component.redeploymentAppserverDisplayName()).toContain('testServer');

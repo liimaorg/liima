@@ -23,7 +23,7 @@ export class RestrictionListComponent {
         permissionGlobal: res.permission.old ? 'check' : null,
         action: res.action,
         contextName: res.contextName,
-        resourceGroupName: this.getGroupName(res.resourceGroupId),
+        resourceGroupName: this.getGroupName(res.resourceGroupId!),
         resourceTypeName: res.resourceTypeName,
         resourceTypePermission: res.resourceTypePermission,
       };
@@ -37,7 +37,7 @@ export class RestrictionListComponent {
     {
       key: 'permissionGlobal',
       columnTitle: 'Global',
-      cellType: 'icon',
+      cellType: 'icon' as const,
     },
     {
       key: 'action',
@@ -69,7 +69,7 @@ export class RestrictionListComponent {
     this.editRestriction.emit(restrictionId);
   }
 
-  getGroupName(id: number): string {
+  getGroupName(id: number): string | null {
     if (id) {
       const resource = _.find(this.resourceGroups(), { id });
       if (resource) {

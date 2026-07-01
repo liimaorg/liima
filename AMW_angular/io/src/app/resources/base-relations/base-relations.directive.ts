@@ -88,7 +88,7 @@ export abstract class BaseRelationsDirective {
     return ctx != null && (!ctx.children || ctx.children.length === 0);
   });
 
-  getRelationId(): number {
+  getRelationId(): number | null {
     return this.activeRelationId();
   }
 
@@ -121,7 +121,7 @@ export abstract class BaseRelationsDirective {
 
     const update$ =
       updatedProperties.length + resetProperties.length
-        ? this.bulkUpdateProperties(this.getRelationId(), updatedProperties, resetProperties, this.contextId())
+        ? this.bulkUpdateProperties(this.getRelationId()!, updatedProperties, resetProperties, this.contextId())
         : of(void 0);
 
     forkJoin([update$])
@@ -133,7 +133,7 @@ export abstract class BaseRelationsDirective {
       .subscribe({
         next: () => {
           this.successMessage.set('Properties saved successfully');
-          this.reloadProperties(this.entityId(), this.getRelationId(), this.contextId());
+          this.reloadProperties(this.entityId()!, this.getRelationId()!, this.contextId());
           this.afterPropertiesSaved();
           this.editor.resetChanges();
           setTimeout(() => this.successMessage.set(null), 3000);
@@ -189,7 +189,7 @@ export abstract class BaseRelationsDirective {
   }
 
   protected abstract properties: Signal<Property[]>;
-  protected permissions: Signal<{ canUpdateProperty: boolean; canDecryptProperties: boolean }>;
+  protected permissions!: Signal<{ canUpdateProperty: boolean; canDecryptProperties: boolean }>;
   protected abstract isLoadingRelations: Signal<boolean>;
   protected abstract isLoadingProperties: Signal<boolean>;
   protected abstract groupedRelations: Signal<GroupedResourceRelations>;

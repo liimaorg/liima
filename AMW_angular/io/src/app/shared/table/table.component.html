@@ -11,9 +11,10 @@
       </tr>
     </thead>
     <tbody>
+      @let styleFn = rowStyle();
       @for (row of data(); track row.id) {
         <tr
-          [style]="rowStyle() ? rowStyle()(row) : ''"
+          [style]="styleFn ? styleFn(row) : ''"
           [class.cursor-pointer]="canRowClick()"
           (click)="canRowClick() && rowClick.emit(row)"
         >

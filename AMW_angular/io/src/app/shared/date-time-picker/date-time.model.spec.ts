@@ -13,11 +13,11 @@ describe('DateTimeModel', () => {
     const dateTimeFromString = DateTimeModel.fromLocalString(testDate, component.dateStringFormat);
     const dateTimeFromEpoch = DateTimeModel.fromEpoch(m.getTime());
 
-    expect(dateTimeFromString.day).toEqual(m.getDate());
-    expect(dateTimeFromString.month).toEqual(m.getMonth() + 1);
+    expect(dateTimeFromString!.day).toEqual(m.getDate());
+    expect(dateTimeFromString!.month).toEqual(m.getMonth() + 1);
 
     expect(dateTimeFromString).toEqual(dateTimeFromEpoch);
 
-    expect(dateTimeFromString.toEpoch()).toEqual(m.getTime());
+    expect(dateTimeFromString!.toEpoch()).toEqual(m.getTime());
   });
 });

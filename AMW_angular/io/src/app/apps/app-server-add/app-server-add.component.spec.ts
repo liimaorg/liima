@@ -1,7 +1,6 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AppServerAddComponent } from './app-server-add.component';
-import { signal } from '@angular/core';
 
 describe('AppServerAddComponent', () => {
   let fixture: ComponentFixture<AppServerAddComponent>;
@@ -16,7 +15,7 @@ describe('AppServerAddComponent', () => {
     fixture = TestBed.createComponent(AppServerAddComponent);
     component = fixture.componentInstance;
     activeModal = TestBed.inject(NgbActiveModal);
-    component.releases = signal([] as any);
+    fixture.componentRef.setInput('releases', [] as any);
     fixture.detectChanges();
   });
 

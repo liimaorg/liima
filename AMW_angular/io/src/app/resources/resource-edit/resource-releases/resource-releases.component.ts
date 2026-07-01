@@ -81,8 +81,8 @@ export class ResourceReleasesComponent {
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      const resourceTypeName = this.resource()?.type ?? null;
-      const resourceGroupId = this.resource()?.resourceGroupId ?? null;
+      const resourceTypeName = this.resource()?.type ?? undefined;
+      const resourceGroupId = this.resource()?.resourceGroupId ?? undefined;
       return {
         canAddRelease: this.authService.hasPermission('RESOURCE', 'CREATE', resourceTypeName, resourceGroupId),
         canChangeRelease: this.authService.hasPermission('RELEASE', 'UPDATE', resourceTypeName, resourceGroupId),

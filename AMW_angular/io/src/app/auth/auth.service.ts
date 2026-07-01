@@ -21,10 +21,13 @@ export class AuthService extends BaseService {
   );
   restrictions = toSignal(this.restrictions$, { initialValue: [] as Restriction[] });
   environments: Signal<{ [name: string]: Environment }> = computed(() => {
-    return this.environmentsService.contexts().reduce((acc, env) => {
-      acc[env.name] = env;
-      return acc;
-    }, {});
+    const result: { [name: string]: Environment } = {};
+    this.environmentsService.contexts().forEach((env) => {
+      if (env) {
+        result[env.name as string] = env;
+      }
+    });
+    return result;
   });
 
   refreshData() {
@@ -42,15 +45,15 @@ export class AuthService extends BaseService {
   getActionsForPermission(permissionName: string): string[] {
     return this.restrictions()
       .filter((entry) => entry.permission.name === permissionName)
-      .map((entry) => entry.action);
+      .map((entry) => entry.action as string);
   }
 
   hasPermission(
     permissionName: string,
     action: Action,
-    resourceTypeName: string = null,
-    resourceGroupId: number = null,
-    context: string = null,
+    resourceTypeName?: string,
+    resourceGroupId?: number,
+    context?: string,
   ): boolean {
     return (
       this.restrictions()
@@ -59,8 +62,10 @@ export class AuthService extends BaseService {
           (entry) =>
             entry.resourceTypePermission === 'ANY' ||
             (entry.resourceTypePermission === 'DEFAULT_ONLY' &&
+              resourceTypeName != null &&
               Object.keys(DefaultResourceType).includes(resourceTypeName)) ||
             (entry.resourceTypePermission === 'NON_DEFAULT_ONLY' &&
+              resourceTypeName != null &&
               !Object.keys(DefaultResourceType).includes(resourceTypeName)),
         )
         .filter((entry) => entry.resourceTypeName === null || entry.resourceTypeName === resourceTypeName)
@@ -70,17 +75,18 @@ export class AuthService extends BaseService {
     );
   }
 
-  private hasContextPermission(entry: Restriction, context: string): boolean {
-    if (context === null || entry.contextName === null || entry.contextName === 'GLOBAL') {
+  private hasContextPermission(entry: Restriction, context?: string): boolean {
+    if (context == null || entry.contextName === null || entry.contextName === 'GLOBAL') {
       return true;
     }
     if (entry.contextName === context) {
       return true;
     }
     // only three levels possible, GLOBAL and env has already been checked
-    if (entry.contextName === this.environments()[context].parentName) {
+    if (entry.contextName === this.environments()[context!].parentName) {
       return true;
     }
+    return false;
   }
 }
 

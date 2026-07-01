@@ -1,6 +1,6 @@
 @if (revisions().length > 0) {
   <div class="d-flex">
-    <label for="selectRevisionDropdown" class="form-label align-self-center my-0 me-2">Compare with history</label>
+    <label class="form-label align-self-center my-0 me-2" for="selectRevisionDropdown">Compare with history</label>
     <div ngbDropdown id="selectRevisionDropdown">
       <app-button
         ngbDropdownToggle
@@ -15,7 +15,7 @@
         @for (revision of revisions().slice().reverse(); track revision) {
           <li ngbDropdownItem tabindex="-1">
             <a
-              class="dropdown-item"
+              class="dropdown-item cursor-pointer"
               tabindex="0"
               (click)="selectRevision(revision)"
               (keydown.enter)="selectRevision(revision)"
@@ -29,7 +29,12 @@
         </li>
         <!-- Clear Selection Option -->
         <li ngbDropdownItem tabindex="-1">
-          <a class="dropdown-item text-danger" tabindex="0" (click)="resetRevision()" (keydown.enter)="resetRevision()">
+          <a
+            class="dropdown-item text-danger cursor-pointer"
+            tabindex="0"
+            (click)="resetRevision()"
+            (keydown.enter)="resetRevision()"
+          >
             Clear Selection
           </a>
         </li>

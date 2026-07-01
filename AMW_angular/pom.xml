@@ -44,7 +44,7 @@
                 <version>1.15.1</version>
                 <configuration>
                     <nodeVersion>v24.15.0</nodeVersion>
-                    <npmVersion>11.12.1</npmVersion>
+                    <pnpmVersion>11.8.0</pnpmVersion>
                     <workingDirectory>io</workingDirectory>
                     <installDirectory>${user.home}/.node</installDirectory>
                 </configuration>
@@ -53,34 +53,34 @@
                         <id>install node and npm</id>
                         <phase>initialize</phase>
                         <goals>
-                            <goal>install-node-and-npm</goal>
+                            <goal>install-node-and-pnpm</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>npm ci</id>
+                        <id>pnpm install</id>
                         <phase>initialize</phase>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>pnpm</goal>
                         </goals>
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm run mavenbuild</id>
+                        <id>pnpm run mavenbuild</id>
                         <phase>compile</phase>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>pnpm</goal>
                         </goals>
                         <configuration>
                             <arguments>run mavenbuild</arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm run maventest</id>
+                        <id>pnpm run maventest</id>
                         <phase>test</phase>
                         <goals>
-                            <goal>npm</goal>
+                            <goal>pnpm</goal>
                         </goals>
                         <configuration>
                             <arguments>run maventest</arguments>

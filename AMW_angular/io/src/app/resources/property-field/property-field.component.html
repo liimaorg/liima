@@ -4,7 +4,7 @@
     @if (!hideTooltip()) {
       <app-property-field-tooltip [property]="property()" [isInfo]="true"></app-property-field-tooltip>
     }
-    @if (property().overwriteInfos?.length > 0) {
+    @if ((property().overwriteInfos?.length ?? 0) > 0) {
       <app-property-field-tooltip [property]="property()" [isInfo]="false"></app-property-field-tooltip>
     }
   </label>
@@ -51,7 +51,7 @@
       (focus)="onFocus()"
       (blur)="onBlur()"
       [placeholder]="placeholder"
-      [disabled]="isDisabled()"
+      [disabled]="isDisabled() ?? false"
     />
   } @else {
     <textarea
@@ -63,7 +63,7 @@
       [(ngModel)]="localValue"
       (blur)="onBlur()"
       [placeholder]="placeholder"
-      [disabled]="isDisabled()"
+      [disabled]="isDisabled() ?? false"
     ></textarea>
   }
   @if (canReset() && (!property().encrypted || canDecrypt())) {

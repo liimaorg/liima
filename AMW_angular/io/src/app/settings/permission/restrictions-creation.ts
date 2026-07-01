@@ -4,7 +4,7 @@ export interface RestrictionsCreation {
   permissionNames: string[];
   resourceGroupIds: number[];
   resourceTypeNames: string[];
-  resourceTypePermission: string;
+  resourceTypePermission: string | null;
   contextNames: string[];
   actions: string[];
 }

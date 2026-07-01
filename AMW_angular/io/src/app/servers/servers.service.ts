@@ -4,7 +4,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Server } from './server';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Resource } from '../resources/models/resource';
 import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filter';
 
@@ -12,11 +12,10 @@ import { isServerFilterEmpty, ServerFilter } from './servers-filter/server-filte
 export class ServersService extends BaseService {
   private http = inject(HttpClient);
   private serversUrl = `${this.getBaseUrl()}/servers`;
-  public serverFilter = signal<ServerFilter>(null);
-  private serverFilter$: Subject<ServerFilter> = new Subject<ServerFilter>();
+  public serverFilter = signal<ServerFilter | null>(null);
+  private serverFilter$: Subject<ServerFilter | null> = new Subject<ServerFilter | null>();
   private servers$: Observable<Server[]> = this.serverFilter$.pipe(
-    switchMap((filter: ServerFilter) => this.getServers(filter)),
-    startWith(null),
+    switchMap((filter: ServerFilter | null) => this.getServers(filter ?? undefined)),
     shareReplay(1),
   );
 
@@ -26,14 +25,14 @@ export class ServersService extends BaseService {
     .get<Resource[]>(`${this.serversUrl}/runtimes`)
     .pipe(catchError(this.handleError))
     .pipe(map((data) => data.sort((a, b) => (a.name < b.name ? -1 : 1))));
-  runtimes: Signal<Resource[]> = toSignal(this.runtimes$);
+  runtimes: Signal<Resource[]> = toSignal(this.runtimes$, { initialValue: [] as Resource[] });
 
   private appServersSuggestions$ = this.http
     .get<string[]>(`${this.serversUrl}/appServersSuggestions`)
     .pipe(catchError(this.handleError));
-  appServersSuggestions: Signal<string[]> = toSignal(this.appServersSuggestions$);
+  appServersSuggestions: Signal<string[]> = toSignal(this.appServersSuggestions$, { initialValue: [] as string[] });
 
-  getServers(filter?: ServerFilter): Observable<Server[]> {
+  getServers(filter?: ServerFilter | null): Observable<Server[]> {
     if (isServerFilterEmpty(filter)) {
       return this.http
         .get<Server[]>(`${this.serversUrl}`, {
@@ -41,9 +40,9 @@ export class ServersService extends BaseService {
           observe: 'response',
         })
         .pipe(catchError(this.handleError))
-        .pipe(map((response) => response.body));
+        .pipe(map((response) => response.body ?? []));
     } else {
-      const urlParams = this.buildUrlParam(filter);
+      const urlParams = this.buildUrlParam(filter!);
       return this.http.get<Server[]>(`${this.serversUrl}${urlParams}`).pipe(catchError(this.handleError));
     }
   }
@@ -59,7 +58,7 @@ export class ServersService extends BaseService {
     return urlParams;
   }
 
-  setServerFilter(filter: ServerFilter) {
+  setServerFilter(filter: ServerFilter | null) {
     this.serverFilter.set(filter);
     this.serverFilter$.next(filter);
   }

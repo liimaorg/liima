@@ -2,7 +2,7 @@ import { Location, AsyncPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, merge, Observable, of, Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, filter, map, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { DeploymentService } from 'src/app/deployment/deployment.service';
 import { DeploymentLog } from './deployment-log';
 import { DeploymentLogsService } from './deployment-logs.service';
@@ -40,14 +40,14 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
    * the deployment id taken from the route param
    */
   deploymentId$: Observable<number> = this.route.paramMap.pipe(
-    map((params) => +params.get('deploymentId')),
+    map((params) => +(params.get('deploymentId') ?? '')),
     distinctUntilChanged(),
   );
 
   /**
    * the file name from the path param - may be empty
    */
-  fileName$: Observable<string> = this.route.paramMap.pipe(
+  fileName$: Observable<string | null> = this.route.paramMap.pipe(
     map((params) => params.get('fileName')),
     distinctUntilChanged(),
   );
@@ -74,13 +74,16 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       }),
     ),
     this.selectedDeploymentLog$,
-  ).pipe(distinctUntilChanged());
+  ).pipe(
+    filter((x): x is DeploymentLog | Failed => x !== null && x !== undefined),
+    distinctUntilChanged(),
+  );
 
-  selectedDeploymentLogContent$: Observable<DeploymentLog> = this.currentDeploymentLog$.pipe(
+  selectedDeploymentLogContent$: Observable<DeploymentLog | Failed> = this.currentDeploymentLog$.pipe(
     switchMap(this.loadDeploymentLogContent.bind(this)),
   );
 
-  private error$ = new BehaviorSubject<string>(null);
+  private error$ = new BehaviorSubject<string | null>(null);
 
   private destroy$ = new Subject<void>();
   ngOnInit(): void {
@@ -103,7 +106,7 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
     this.selectedDeploymentLog$.next(deploymentLog);
   }
 
-  loadDeployment(deploymentId) {
+  loadDeployment(deploymentId: number) {
     return this.deploymentService.get(deploymentId).pipe(catchError(this.fail()));
   }
 
@@ -113,14 +116,14 @@ export class DeploymentLogsComponent implements OnInit, OnDestroy {
       : this.deploymentLogsService.getLogFileMetaData(deployment.id).pipe(catchError(this.fail()));
   }
 
-  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed): Observable<string | DeploymentLog> {
+  loadDeploymentLogContent(deploymentLog: DeploymentLog | Failed): Observable<DeploymentLog | Failed> {
     return deploymentLog === 'failed' || deploymentLog === undefined
-      ? of('')
+      ? failed()
       : this.deploymentLogsService.getLogFileContent(deploymentLog).pipe(catchError(this.fail()));
   }
 
   private fail() {
-    return (msg) => {
+    return (msg: string) => {
       this.error$.next(msg);
       return failed();
     };

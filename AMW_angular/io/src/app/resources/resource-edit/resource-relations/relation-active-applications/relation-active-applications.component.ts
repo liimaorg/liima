@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, input, output } from '@angular/core';
-import { ResourceActivationService, ResourceActivation } from '../../../services/resource-activation.service';
+import { ResourceActivationService } from '../../../services/resource-activation.service';
 import { FormsModule } from '@angular/forms';
 import { LoadingIndicatorComponent } from '../../../../shared/elements/loading-indicator.component';
 

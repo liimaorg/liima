@@ -58,7 +58,7 @@ export class ResourceEditComponent {
     this.route.queryParamMap.pipe(map((params) => (params.get('rel') ? Number(params.get('rel')) : null))),
     { initialValue: null },
   );
-  resource: Signal<Resource> = this.resourceService.resource;
+  resource: Signal<Resource | null> = this.resourceService.resource;
   releases: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
 
   isLoading = computed(() => {
@@ -73,13 +73,13 @@ export class ResourceEditComponent {
   );
 
   testGenerationAvailable = computed(() => {
-    return this.isApplicationServer() || this.resource()?.hasApplicationServer;
+    return !!(this.isApplicationServer() || this.resource()?.hasApplicationServer);
   });
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
-      const resourceTypeName = this.resource()?.type ?? null;
-      const resourceGroupId = this.resource()?.resourceGroupId ?? null;
+      const resourceTypeName = this.resource()?.type ?? undefined;
+      const resourceGroupId = this.resource()?.resourceGroupId ?? undefined;
       return {
         canEditResource: this.authService.hasPermission('RESOURCE', 'READ'),
         canTestGenerate: this.authService.hasPermission('RESOURCE_TEST_GENERATION', 'READ'),

@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, Input, Output } from '@angular/core';
+import { Directive, EventEmitter, Output, input, model } from '@angular/core';
 
 export type SortDirection = 'asc' | 'desc' | '';
 const rotate: { [key: string]: SortDirection } = {
@@ -13,21 +13,27 @@ export interface SortEvent {
 }
 
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'th[sortable]',
   host: {
-    '[class.asc]': 'direction === "asc"',
-    '[class.desc]': 'direction === "desc"',
+    '[class.asc]': 'direction() === "asc"',
+    '[class.desc]': 'direction() === "desc"',
     '(click)': 'rotate()',
   },
   standalone: true,
 })
 export class SortableHeader {
-  @Input() sortable: string;
-  @Input() direction: SortDirection = '';
+  sortable = input.required<string>();
+  direction = model<SortDirection>('');
   @Output() sort = new EventEmitter<SortEvent>();
 
+  sortableValue(): string {
+    return this.sortable();
+  }
+
   rotate() {
-    this.direction = rotate[this.direction];
-    this.sort.emit({ column: this.sortable, direction: this.direction });
+    const currentDirection = this.direction();
+    const newDirection = rotate[currentDirection];
+    this.sort.emit({ column: this.sortableValue(), direction: newDirection });
   }
 }

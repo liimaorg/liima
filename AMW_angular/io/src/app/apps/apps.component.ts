@@ -54,7 +54,7 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   showLoader = signal(false);
   isLoading = computed(() => {
-    return this.appsService.apps() === undefined || this.appsService.apps() === null || this.showLoader();
+    return this.appsService.apps() === undefined || this.showLoader();
   });
 
   permissions = computed(() => {
@@ -75,6 +75,7 @@ export class AppsComponent implements OnInit, OnDestroy {
     });
 
     this.error$.pipe(takeUntil(this.destroy$)).subscribe((msg) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       msg !== '' ? this.toastService.error(msg) : null;
     });
 
@@ -83,7 +84,7 @@ export class AppsComponent implements OnInit, OnDestroy {
         this.appsService.releaseId.set(params.releaseId ? Number(params.releaseId) : 0);
       }
       if (params.filter) {
-        this.appsService.filter.set(params.filter ?? null);
+        this.appsService.filter.set(params.filter ?? undefined);
       }
       if (this.appsService.releaseId()) {
         this.appsService.refreshData();
@@ -92,7 +93,7 @@ export class AppsComponent implements OnInit, OnDestroy {
           .getUpcomingRelease()
           .pipe(take(1))
           .subscribe((release: Release) => {
-            this.appsService.releaseId.set(release.id);
+            this.appsService.releaseId.set(release.id ?? undefined);
             this.appsService.refreshData();
           });
       }
@@ -101,14 +102,14 @@ export class AppsComponent implements OnInit, OnDestroy {
 
   addApp() {
     const modalRef = this.modalService.open(AppAddComponent);
-    modalRef.componentInstance.releases = this.releases;
-    modalRef.componentInstance.appServerGroups = this.appServerGroups;
+    modalRef.componentInstance.releases = this.releases();
+    modalRef.componentInstance.appServerGroups = this.appServerGroups();
     modalRef.componentInstance.saveApp.pipe(takeUntil(this.destroy$)).subscribe((app: AppCreate) => this.saveApp(app));
   }
 
   addServer() {
     const modalRef = this.modalService.open(AppServerAddComponent);
-    modalRef.componentInstance.releases = this.releases;
+    modalRef.componentInstance.releases = this.releases();
     modalRef.componentInstance.saveAppServer
       .pipe(takeUntil(this.destroy$))
       .subscribe((appServer: AppServer) => this.saveAppServer(appServer));
@@ -124,7 +125,7 @@ export class AppsComponent implements OnInit, OnDestroy {
           this.toastService.success('AppServer saved successfully.');
         },
         error: (e) => {
-          this.error$.next(e.toString());
+          this.error$.next(e);
         },
         complete: () => {
           this.appsService.refreshData();
@@ -143,7 +144,7 @@ export class AppsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('App saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.error$.next(e),
         complete: () => {
           this.appsService.refreshData();
         },

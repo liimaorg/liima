@@ -8,7 +8,7 @@ describe('EnvironmentService', () => {
   let httpTestingController: HttpTestingController;
   let service: EnvironmentService;
 
-  const environment: Environment = {
+  const environment = {
     id: 1,
     name: 'env',
     nameAlias: 'env-alias',
@@ -16,7 +16,7 @@ describe('EnvironmentService', () => {
     parentId: null,
     selected: true,
     disabled: false,
-  };
+  } as unknown as Environment;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

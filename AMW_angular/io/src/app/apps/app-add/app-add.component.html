@@ -1,4 +1,4 @@
-<app-modal-header [title]="'Create application'" (cancel)="cancel()"></app-modal-header>
+<app-modal-header [title]="'Create application'" (cancelAction)="cancel()"></app-modal-header>
 <div class="modal-body">
   <div class="form-horizontal mx-2">
     <div class="mb-3">
@@ -8,7 +8,7 @@
     <div class="mb-3">
       <label for="selectRelease" class="form-label">Release</label>
       <ng-select id="selectRelease" [(ngModel)]="app.appReleaseId" placeholder="Select release">
-        @for (release of releases(); track release.id) {
+        @for (release of releasesValue(); track release.id) {
           <ng-option [value]="release.id">{{ release.name }}</ng-option>
         }
       </ng-select>
@@ -16,7 +16,7 @@
     <div class="mb-3">
       <label for="selectAppServer" class="form-label">Applicationserver</label>
       <ng-select id="selectAppServer" [(ngModel)]="appServerGroup" placeholder="Select applicationserver">
-        @for (appServer of appServerGroups(); track appServer.id) {
+        @for (appServer of appServerGroupsValue(); track appServer.id) {
           <ng-option [value]="appServer">{{ appServer.name }}</ng-option>
         }
       </ng-select>

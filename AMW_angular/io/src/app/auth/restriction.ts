@@ -10,9 +10,9 @@ export interface Restriction {
   userName: string;
   permission: Permission;
   // only one of resourceGroupId, resourceTypeName and resourceTypePermission can be set
-  resourceGroupId: number;
-  resourceTypeName: string;
-  resourceTypePermission: ResourceTypeCategory;
-  contextName: string;
-  action: Action;
+  resourceGroupId: number | null;
+  resourceTypeName: string | null;
+  resourceTypePermission: ResourceTypeCategory | null;
+  contextName: string | null;
+  action: Action | null;
 }
