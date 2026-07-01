@@ -4,8 +4,8 @@
   "packageManager": "pnpm@11.8.0",
   "description": "End to end tests for AMW Liima",
   "scripts": {
-    "start": "npm run docker:start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",
-    "stop": "npm run docker:stop",
+    "start": "pnpm run docker:start & wait-on http://admin:admin@127.0.0.1:8080/AMW_angular",
+    "stop": "pnpm run docker:stop",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:ci": "playwright test --headed",
