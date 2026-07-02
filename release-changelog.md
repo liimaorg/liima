@@ -1,3 +1,20 @@
+# v1.18.12
+* Angular Edit Resource Page (hidden behind feature flag):
+  * feat: show dependencies of resource [#985](https://github.com/liimaorg/liima/pull/985)
+  * feat: show, add and remove applications to resources [#993](https://github.com/liimaorg/liima/pull/993)
+  * feat: add goto navigation menu to resource and resource type edit page [#995](https://github.com/liimaorg/liima/pull/995)
+  * feat: show related resources in resource edit page [#996](https://github.com/liimaorg/liima/pull/996)
+  * feat: resource/resource-type relation properties [#1002](https://github.com/liimaorg/liima/pull/1002)
+  * feat: edit related resource/resourceType properties [#1003](https://github.com/liimaorg/liima/pull/1003)
+  * fix: accessibility issues [#1004](https://github.com/liimaorg/liima/pull/1004)
+  * feat: add/remove relation [#1005](https://github.com/liimaorg/liima/pull/1005)
+  * feat: related applications [#1006](https://github.com/liimaorg/liima/pull/1006)
+  * feat: set runtime for applicationservers [#1007](https://github.com/liimaorg/liima/pull/1007)
+  * fix: event propagation for table links [#1008](https://github.com/liimaorg/liima/pull/1008)
+  * fix: back navigation to resource page [#1009](https://github.com/liimaorg/liima/pull/1009)
+* fix(deployments): autoload filters and improve filter mapping for deployments [#997](https://github.com/liimaorg/liima/issues/997), [#1010](https://github.com/liimaorg/liima/pull/1010)
+* chore: update to Angular 22 [#1017](https://github.com/liimaorg/liima/pull/1017)
+
 # v1.18.11
 * JavaScript updates [#978](https://github.com/liimaorg/liima/pull/978), [#991](https://github.com/liimaorg/liima/pull/991), [#992](https://github.com/liimaorg/liima/pull/992)
 * chore: add instructions for coding ai in agents.md [#987](https://github.com/liimaorg/liima/pull/987)
