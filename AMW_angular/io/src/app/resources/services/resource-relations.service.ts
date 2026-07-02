@@ -27,7 +27,10 @@ export class ResourceRelationsService extends BaseService {
   private relationsForResource$: Observable<GroupedResourceRelations> = this.relations$.pipe(
     switchMap((id: number) => {
       this.loadingRelations.set(true);
-      return this.getResourceRelations(id).pipe(finalize(() => this.loadingRelations.set(false)));
+      return this.getResourceRelations(id).pipe(
+        startWith(EMPTY_GROUPED_RELATIONS),
+        finalize(() => this.loadingRelations.set(false)),
+      );
     }),
     startWith(EMPTY_GROUPED_RELATIONS),
     shareReplay(1),
@@ -55,7 +58,10 @@ export class ResourceRelationsService extends BaseService {
   private relationsForResourceType$: Observable<GroupedResourceRelations> = this.typeRelations$.pipe(
     switchMap((id: number) => {
       this.loadingTypeRelations.set(true);
-      return this.getResourceTypeRelations(id).pipe(finalize(() => this.loadingTypeRelations.set(false)));
+      return this.getResourceTypeRelations(id).pipe(
+        startWith(EMPTY_GROUPED_RELATIONS),
+        finalize(() => this.loadingTypeRelations.set(false)),
+      );
     }),
     startWith(EMPTY_GROUPED_RELATIONS),
     shareReplay(1),
