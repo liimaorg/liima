@@ -7,7 +7,7 @@
   [noContent]="!templatesData()"
   [notAllowed]="(templatesData()?.length ?? 0) <= 0"
 >
-  @for (list of templatesData(); track list) {
+  @for (list of templatesData(); track list.title) {
     <app-tile-list
       [title]="list.title"
       [data]="list.entries"

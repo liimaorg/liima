@@ -29,7 +29,7 @@ export interface TileListEntryOutput {
       </div>
     }
     <ul>
-      @for (entry of data(); track entry) {
+      @for (entry of data(); track entry.id) {
         <li class="list-entry">
           <div class="list-entry-text">
             <span>{{ entry.name }}</span>
