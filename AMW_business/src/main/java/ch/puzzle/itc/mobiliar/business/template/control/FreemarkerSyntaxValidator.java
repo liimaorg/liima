@@ -29,6 +29,7 @@ import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.core.ParseException;
+import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 
 @Stateless
@@ -45,9 +46,9 @@ public class FreemarkerSyntaxValidator {
 	 */
 	public void validateFreemarkerSyntax(String freemarkerContent) throws ValidationException, AMWException {
         Objects.requireNonNull(freemarkerContent, "freemarker content must not be null");
-		Configuration c = new Configuration();
-		c.setStrictSyntaxMode(true);
+		Configuration c = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 		c.setTagSyntax(Configuration.AUTO_DETECT_TAG_SYNTAX);
+		c.setNewBuiltinClassResolver(TemplateClassResolver.ALLOWS_NOTHING_RESOLVER); // we don't need class resolving in templates
 		String templateName = "validation";
 
 		StringTemplateLoader stringLoader = new StringTemplateLoader();
