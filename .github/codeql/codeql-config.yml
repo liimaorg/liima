@@ -1,0 +1,4 @@
+name: Liima CodeQL Configuration
+
+paths-ignore:
+  - AMW_web/src/main/webapp/resources/bower/codemirror/**
