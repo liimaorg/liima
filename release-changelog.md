@@ -14,6 +14,7 @@
   * fix: back navigation to resource page [#1009](https://github.com/liimaorg/liima/pull/1009)
 * fix(deployments): autoload filters and improve filter mapping for deployments [#997](https://github.com/liimaorg/liima/issues/997), [#1010](https://github.com/liimaorg/liima/pull/1010)
 * chore: update to Angular 22 [#1017](https://github.com/liimaorg/liima/pull/1017)
+* fix: don't allow class resolving in templates [#1023](https://github.com/liimaorg/liima/pull/1023)
 
 # v1.18.11
 * JavaScript updates [#978](https://github.com/liimaorg/liima/pull/978), [#991](https://github.com/liimaorg/liima/pull/991), [#992](https://github.com/liimaorg/liima/pull/992)
