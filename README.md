@@ -1,5 +1,5 @@
 # Liima
-![test and build](https://github.com/liimaorg/liima/workflows/test%20and%20build/badge.svg)
+[![test and build](https://github.com/liimaorg/liima/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/liimaorg/liima/actions/workflows/test.yml)
 
 Liima - (AMW) Automated Middleware allows you to manage the configurations of
 your Java EE applications on an unlimited number of different environments
