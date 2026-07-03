@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, effect, inject, input } from '@angular/core';
+import { LoadingTrackerService } from 'src/app/shared/elements/loading-tracker.service';
 
 @Component({
   selector: 'app-loading-indicator',
   template: `
-    @if (isLoading) {
+    @if (loadingTracker.isOverlayOwner(token)) {
       <div class="d-flex justify-content-center align-items-center overlay">
         <div class="spinner-border text-light" role="status">
           <span class="visually-hidden">Loading...</span>
@@ -29,6 +30,17 @@ import { Component, Input } from '@angular/core';
   standalone: true,
 })
 export class LoadingIndicatorComponent {
-  @Input()
-  isLoading!: boolean;
+  protected loadingTracker = inject(LoadingTrackerService);
+  isLoading = input.required<boolean>();
+  protected readonly token = Symbol('loading-indicator');
+
+  constructor() {
+    effect(() => {
+      if (this.isLoading()) {
+        this.loadingTracker.startLoading(this.token);
+      } else {
+        this.loadingTracker.stopLoading(this.token);
+      }
+    });
+  }
 }

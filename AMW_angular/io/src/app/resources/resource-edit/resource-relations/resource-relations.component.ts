@@ -333,9 +333,8 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const type = this.resourceTypes().find((t) => t.id === typeId);
     if (type?.hasChildren && type.children?.length > 0) {
       this.childResourceTypes.set(type.children);
-    } else {
-      this.loadResourceGroups(typeId);
     }
+    this.loadResourceGroups(typeId);
   }
 
   onChildTypeChange(childTypeId: number | null): void {

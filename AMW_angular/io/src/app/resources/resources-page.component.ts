@@ -7,6 +7,7 @@ import {
   signal,
   WritableSignal,
   OnDestroy,
+  effect,
 } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
@@ -52,7 +53,8 @@ export class ResourcesPageComponent implements OnDestroy {
   rootResourceTypes: Signal<ResourceType[]> = this.resourceTypesService.rootResourceTypes;
   resourceGroupListForType: Signal<Resource[]> = this.resourceService.resourceGroupListForType;
   releases: Signal<Release[]> = this.releaseService.allReleases;
-  isLoading = signal(false);
+  isLoading = signal(true);
+  private pendingResourceListLoad = false;
   expandedResourceTypeId: number | null = null;
   expandedItems: ResourceType[] = [];
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
@@ -123,7 +125,7 @@ export class ResourcesPageComponent implements OnDestroy {
 
   private selectFromUrl(resourceType: ResourceType, parentType: ResourceType | null): void {
     this.selection = resourceType;
-    this.resourceService.setTypeForResourceGroupList(resourceType);
+    this.loadResourceGroups(resourceType);
     // For parent with children: expand it and update expandedItems
     if (resourceType.hasChildren) {
       this.getUpdateExpandedItems(resourceType);
@@ -138,6 +140,22 @@ export class ResourcesPageComponent implements OnDestroy {
   constructor() {
     // Simply reference the computed signal so it stays active and listens for changes
     this.autoSelectTrigger();
+
+    // Initial page load: hide loader once resource types are available
+    effect(() => {
+      if (this.predefinedResourceTypes().length > 0 || this.rootResourceTypes().length > 0) {
+        this.isLoading.set(false);
+      }
+    });
+
+    // Hide loader once a user-initiated resource group list has emitted (even if empty)
+    effect(() => {
+      this.resourceGroupListForType();
+      if (this.pendingResourceListLoad) {
+        this.pendingResourceListLoad = false;
+        this.isLoading.set(false);
+      }
+    });
   }
 
   permissions = computed(() => {
@@ -161,7 +179,7 @@ export class ResourcesPageComponent implements OnDestroy {
 
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType, updateUrl: boolean = true): void {
     this.selection = resourceType;
-    this.resourceService.setTypeForResourceGroupList(resourceType);
+    this.loadResourceGroups(resourceType);
     if (resourceType && resourceType.hasChildren) this.getUpdateExpandedItems(resourceType);
     this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
     this.selectedResourceType.set(resourceType);
@@ -177,6 +195,12 @@ export class ResourcesPageComponent implements OnDestroy {
           console.error('Navigation error:', error);
         });
     }
+  }
+
+  private loadResourceGroups(resourceType: ResourceType): void {
+    this.isLoading.set(true);
+    this.pendingResourceListLoad = true;
+    this.resourceService.setTypeForResourceGroupList(resourceType);
   }
 
   isExpanded(resourceType: ResourceType) {

@@ -7,7 +7,7 @@
   [noContent]="!functionsData()"
   [notAllowed]="(functionsData()?.length ?? 0) <= 0"
 >
-  @for (list of functionsData(); track list) {
+  @for (list of functionsData(); track list.title) {
     <app-tile-list
       [title]="list.title"
       [data]="list.entries"
