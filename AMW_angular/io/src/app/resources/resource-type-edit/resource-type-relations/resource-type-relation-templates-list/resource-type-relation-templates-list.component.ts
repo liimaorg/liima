@@ -1,26 +1,18 @@
 import { Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { UnresolvedRelation } from '../../../models/resource-relation';
-import { LoadingIndicatorComponent } from '../../../../shared/elements/loading-indicator.component';
-import { TileComponent } from '../../../../shared/tile/tile.component';
-import {
-  EntryAction,
-  TileListComponent,
-  TileListEntryOutput
-} from '../../../../shared/tile/tile-list/tile-list.component';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
+import { EntryAction, TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { ResourceTemplate } from '../../../models/resource-template';
-import { AuthService } from '../../../../auth/auth.service';
+import { AuthService } from 'src/app/auth/auth.service';
 import { ResourceRelationsService } from '../../../services/resource-relations.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ResourceTemplatesService } from '../../../services/resource-templates.service';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { ToastService } from '../../../../shared/elements/toast/toast.service';
-import {
-  ResourceTemplateDeleteComponent
-} from '../../../resource-edit/resource-templates/resource-template-delete/resource-template-delete.component';
-import {
-  ResourceTemplateEditComponent
-} from '../../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { ResourceTemplateDeleteComponent } from '../../../resource-edit/resource-templates/resource-template-delete/resource-template-delete.component';
+import { ResourceTemplateEditComponent } from '../../../resource-edit/resource-templates/resource-template-edit/resource-template-edit.component';
 import { ResourceType } from '../../../models/resource-type';
 
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
@@ -47,8 +39,13 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
 
   isLoading = computed(() => {
     if (this.relation() != null && this.resourceType() != null && this.contextId() != null) {
-      this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(this.resourceType().id, this.relation()?.resRelTypeId)
+      this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(
+        this.resourceType().id!,
+        this.relation().resRelTypeId!,
+      );
       return false;
+    } else {
+      return true;
     }
   });
 
@@ -85,7 +82,7 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
           entries: typeTemplates,
           canEdit: this.permissions().canEdit,
           canDelete: this.permissions().canDelete,
-        }
+        },
       ];
     } else return null;
   });
@@ -96,11 +93,12 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
 
   mapListEntries(templates: ResourceTemplate[]) {
     return templates
+      .filter((template) => template.id !== null)
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((template) => ({
         name: template.name,
-        description: template.targetPath,
-        id: template.id,
+        description: template.targetPath ?? '',
+        id: template.id!,
       }));
   }
 
@@ -125,13 +123,16 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
 
   private createTemplate(templateData: ResourceTemplate) {
     this.resourceRelationsService
-      .addResourceTypeRelationTemplate(templateData, this.resourceType().id, this.relation().resRelTypeId)
+      .addResourceTypeRelationTemplate(templateData, this.resourceType().id!, this.relation().resRelTypeId!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(this.resourceType().id, this.relation().resRelTypeId);
+          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(
+            this.resourceType().id!,
+            this.relation().resRelTypeId!,
+          );
         },
       });
   }
@@ -163,7 +164,10 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
         next: () => this.toastService.success('Template deleted successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(this.resourceType().id, this.relation().resRelTypeId);
+          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(
+            this.resourceType().id!,
+            this.relation().resRelTypeId!,
+          );
         },
       });
   }
@@ -184,13 +188,17 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
 
   private updateTemplate(templateData: ResourceTemplate) {
     this.resourceRelationsService
-      .updateResourceTypeRelationTemplate(templateData, this.resourceType().id, this.relation().resRelTypeId)
+      .updateResourceTypeRelationTemplate(templateData, this.resourceType().id!, this.relation().resRelTypeId!)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
         error: (e) => this.error$.next(e.toString()),
         complete: () => {
-          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(this.resourceType().id, this.relation().resRelTypeId);
+          this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(
+            this.resourceType().id!,
+            this.relation().resRelTypeId!,
+          );
         },
-      });  }
+      });
+  }
 }
