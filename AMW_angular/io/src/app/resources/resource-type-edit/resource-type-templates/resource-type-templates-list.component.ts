@@ -143,7 +143,11 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
     const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
       size: 'xl',
     });
-    modalRef.componentInstance.template = this.templates()?.find((item) => item.id === id);
+    const template = this.templates()?.find((item) => item.id === id);
+    if (!template) {
+      return;
+    }
+    modalRef.componentInstance.template = template;
     modalRef.componentInstance.canAddOrEdit = this.permissions().canEdit;
     modalRef.componentInstance.saveTemplate
       .pipe(takeUntil(this.destroy$))
