@@ -30,7 +30,6 @@ import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.*;
 import ch.puzzle.itc.mobiliar.business.template.boundary.GetRelationTemplatesUseCase;
 import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -244,8 +243,7 @@ public class ResourceTypeRelationsByIdRest {
     public Response addNewRelationTypeTemplate(
             @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
-            TemplateDTO request)
-            throws AMWException {
+            TemplateDTO request) throws ValidationException {
         TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForRelation(template, relationId, false);
         return Response.status(Response.Status.OK).build();
@@ -257,7 +255,7 @@ public class ResourceTypeRelationsByIdRest {
     public Response modifyRelationTemplate(
             @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
             @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
-            TemplateDTO request) throws AMWException, OptimisticLockException {
+            TemplateDTO request) throws ValidationException, OptimisticLockException {
         TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
         templateEditor.saveTemplateForRelation(template, relationId, false);
         return Response.status(Response.Status.OK).build();
