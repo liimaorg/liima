@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy } from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
 import { ResourceRelation } from '../../../models/resource-relation';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
 import { TileComponent } from 'src/app/shared/tile/tile.component';
@@ -38,13 +38,16 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
   contextId = input.required<number>();
   templates = this.resourceRelationsService.resourceRelationTemplates;
 
+  constructor() {
+    effect(() => {
+      if (this.relation() != null && this.resource() != null && this.contextId() != null) {
+        this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation()?.id);
+      }
+    });
+  }
+
   isLoading = computed(() => {
-    if (this.relation() != null && this.resource() != null && this.contextId() != null) {
-      this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation()?.id);
-      return false;
-    } else {
-      return true;
-    }
+    return !(this.relation() != null && this.resource() != null && this.contextId() != null);
   });
 
   permissions = computed(() => {
