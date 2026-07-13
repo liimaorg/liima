@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { AuthService } from 'src/app/auth/auth.service';
@@ -29,7 +29,6 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   private templatesService = inject(ResourceTemplatesService);
   private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
-  private error$ = new BehaviorSubject<string>('');
 
   resource = input.required<Resource>();
   contextId = input.required<number>();
@@ -166,7 +165,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTemplateList(this.resource().id);
         },
@@ -193,7 +192,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTemplateList(this.resource().id);
         },
@@ -214,7 +213,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template deleted successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTemplateList(this.resource().id);
         },

@@ -7,7 +7,7 @@ import { ResourceTemplate } from '../../../models/resource-template';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ResourceRelationsService } from '../../../services/resource-relations.service';
 import { Resource } from '../../../models/resource';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ResourceTemplateEditComponent } from '../../resource-templates/resource-template-edit/resource-template-edit.component';
 import { takeUntil } from 'rxjs/operators';
 import { ResourceTemplatesService } from '../../../services/resource-templates.service';
@@ -31,7 +31,6 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
   private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
-  private error$ = new BehaviorSubject<string>('');
 
   relation = input.required<ResourceRelation>();
   resource = input.required<Resource>();
@@ -162,7 +161,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.toastService.error(e.toString()),
         complete: () => {
           this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },
@@ -194,7 +193,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template deleted successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.toastService.error(e.toString()),
         complete: () => {
           this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },
@@ -221,7 +220,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e.toString()),
+        error: (e) => this.toastService.error(e.toString()),
         complete: () => {
           this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },

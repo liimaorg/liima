@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
 import { ToastService } from 'src/app/shared/elements/toast/toast.service';
@@ -27,7 +27,6 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
   private templatesService = inject(ResourceTemplatesService);
   private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
-  private error$ = new BehaviorSubject<string>('');
 
   resourceType = input.required<ResourceType>();
   contextId = input.required<number>();
@@ -133,7 +132,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
@@ -160,7 +159,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
@@ -181,7 +180,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template deleted successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
