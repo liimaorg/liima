@@ -7,25 +7,27 @@ import { ButtonComponent } from '../button/button.component';
 @Component({
   selector: 'app-tile-component',
   template: `
-    <section class="tile rounded" role="group">
+    <section class="tile" [ngClass]="{ rounded: !noBorder(), 'no-border': noBorder() }" role="group">
       <div
         tabindex="0"
         class="tile-header"
-        (keyup.enter)="toggleBody()"
-        (click)="toggleBody()"
-        [ngClass]="showBody() ? 'opened' : 'closed'"
-        role="button"
-        [attr.aria-expanded]="showBody()"
+        (keyup.enter)="noCollapse() ? null : toggleBody()"
+        (click)="noCollapse() ? null : toggleBody()"
+        [ngClass]="noCollapse() || showBody() ? 'opened' : 'closed'"
+        [attr.role]="noCollapse() ? null : 'button'"
+        [attr.aria-expanded]="noCollapse() ? null : showBody()"
       >
-        <div class="tile-title" aria-level="2" role="heading">
-          @if (showBody()) {
-            <app-icon icon="caret-down"></app-icon>
-          } @else {
-            <app-icon icon="caret-right"></app-icon>
+        <div class="tile-title" [attr.aria-level]="headerLevel()" role="heading">
+          @if (!noCollapse()) {
+            @if (showBody()) {
+              <app-icon icon="caret-down"></app-icon>
+            } @else {
+              <app-icon icon="caret-right"></app-icon>
+            }
           }
           {{ title() }}
         </div>
-        @if (canAction() && showBody()) {
+        @if (canAction() && (noCollapse() || showBody())) {
           <div class="tile-action-bar">
             <app-button [variant]="'primary'" [size]="'sm'" (click)="doTileAction($event)">
               <app-icon icon="plus-circle" />
@@ -34,7 +36,7 @@ import { ButtonComponent } from '../button/button.component';
           </div>
         }
       </div>
-      @if (showBody()) {
+      @if (noCollapse() || showBody()) {
         <div class="tile-body">
           @if (noContent()) {
             <div class="no-content">
@@ -64,6 +66,9 @@ export class TileComponent {
 
   noContent = input<boolean>(false);
   notAllowed = input<boolean>(false);
+  noBorder = input<boolean>(false);
+  noCollapse = input<boolean>(false);
+  headerLevel = input<number>(2);
 
   tileAction = output<void>();
 

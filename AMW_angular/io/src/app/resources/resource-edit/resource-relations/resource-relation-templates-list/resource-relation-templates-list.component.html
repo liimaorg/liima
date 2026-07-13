@@ -6,6 +6,9 @@
   (tileAction)="addTemplate()"
   [noContent]="!templatesData()"
   [notAllowed]="!!templatesData() && templatesData()!.length <= 0"
+  [noBorder]="true"
+  [noCollapse]="true"
+  [headerLevel]="3"
 >
   @for (list of templatesData(); track list.title) {
     <app-tile-list
