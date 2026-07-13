@@ -56,7 +56,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
         canShowInstanceTemplates: this.authService.hasPermission(RESOURCE_PERM, 'READ'),
         canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
-          (this.contextId() === 1 || this.contextId === null) &&
+          (this.contextId() === 1 || this.contextId() === null) &&
           this.relation().relationType === 'consumed' &&
           this.authService.hasPermission(
             RESOURCE_PERM,
@@ -65,7 +65,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
             this.resource().resourceGroupId,
           ),
         canEdit:
-          (this.contextId() === 1 || this.contextId === null) &&
+          (this.contextId() === 1 || this.contextId() === null) &&
           this.authService.hasPermission(
             RESOURCE_PERM,
             'UPDATE',
@@ -73,7 +73,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
             this.resource().resourceGroupId,
           ),
         canDelete:
-          (this.contextId() === 1 || this.contextId === null) &&
+          (this.contextId() === 1 || this.contextId() === null) &&
           this.authService.hasPermission(
             RESOURCE_PERM,
             'DELETE',
