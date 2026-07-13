@@ -39,7 +39,7 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
 
   constructor() {
     effect(() => {
-      if (this.relation() != null && this.resourceType() != null && this.contextId() != null) {
+      if (this.contextId() != null) {
         this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(
           this.resourceType().id!,
           this.relation().resRelTypeId!,
@@ -53,7 +53,7 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
   });
 
   permissions = computed(() => {
-    if (this.authService.restrictions().length > 0 && this.relation()) {
+    if (this.authService.restrictions().length > 0) {
       return {
         canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
