@@ -68,11 +68,7 @@ export class ResourceReleasesComponent {
   }
 
   onTableAction(event: EntryActionOutput) {
-    if (event.action === EntryAction.navigate) {
-      void this.router.navigate(['/resource/edit'], {
-        queryParams: { ctx: this.contextId(), id: event.id, selectedResourceTypeId: this.resource()?.resourceTypeId },
-      });
-    } else if (event.action === EntryAction.edit) {
+    if (event.action === EntryAction.edit) {
       this.showChangeReleaseModal(event.id);
     } else if (event.action === EntryAction.delete) {
       this.showDeleteConfirmation(this.deleteConfirmationTemplate, event.id);
