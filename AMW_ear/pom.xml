@@ -49,11 +49,6 @@
 								</webModule>
 								<webModule>
 									<groupId>ch.puzzle.itc.mobiliar</groupId>
-									<artifactId>AMW_web</artifactId>
-									<bundleFileName>AMW_web.war</bundleFileName>
-								</webModule>
-								<webModule>
-									<groupId>ch.puzzle.itc.mobiliar</groupId>
 									<artifactId>AMW_rest</artifactId>
 									<bundleFileName>AMW_rest.war</bundleFileName>
 								</webModule>
@@ -77,11 +72,6 @@
 				<dependency>
 					<groupId>ch.puzzle.itc.mobiliar</groupId>
 					<artifactId>AMW_angular</artifactId>
-					<type>war</type>
-				</dependency>
-				<dependency>
-					<groupId>ch.puzzle.itc.mobiliar</groupId>
-					<artifactId>AMW_web</artifactId>
 					<type>war</type>
 				</dependency>
 				<dependency>
