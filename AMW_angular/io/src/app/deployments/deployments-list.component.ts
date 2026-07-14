@@ -7,7 +7,7 @@ import { DateTimeModel } from '../shared/date-time-picker/date-time.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DATE_TIME_FORMAT } from '../core/amw-constants';
 import { DateTimePickerComponent } from '../shared/date-time-picker/date-time-picker.component';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IconComponent } from '../shared/icon/icon.component';
 import { FormsModule } from '@angular/forms';
 import { SortableIconComponent } from '../shared/sortable-icon/sortable-icon.component';
@@ -30,6 +30,7 @@ import { ButtonComponent } from '../shared/button/button.component';
   ],
 })
 export class DeploymentsListComponent {
+  private router = inject(Router);
   private resourceService = inject(ResourceService);
   private modalService = inject(NgbModal);
 
@@ -124,7 +125,7 @@ export class DeploymentsListComponent {
 
   appServerLink(appServerId: number) {
     if (appServerId) {
-      window.location.href = '/AMW_web/pages/editResourceView.xhtml?id=' + appServerId + '&ctx=1';
+      this.router.navigate(['/resource/edit'], { queryParams: { id: appServerId, ctx: 1 } });
     }
   }
 
@@ -132,7 +133,7 @@ export class DeploymentsListComponent {
     this.resourceService.resourceExists(appId).subscribe(
       /* happy path */ (r) => {
         if (r) {
-          window.location.href = '/AMW_web/pages/editResourceView.xhtml?id=' + appId + '&ctx=1';
+          this.router.navigate(['/resource/edit'], { queryParams: { id: appId, ctx: 1 } });
         }
       },
     );

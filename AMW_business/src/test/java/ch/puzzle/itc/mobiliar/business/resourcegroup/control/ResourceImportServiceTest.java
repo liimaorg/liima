@@ -20,18 +20,17 @@
 
 package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.*;
-
 import ch.puzzle.itc.mobiliar.builders.ReleaseEntityBuilder;
+import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import ch.puzzle.itc.mobiliar.builders.ResourceEntityBuilder;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ResourceImportServiceTest {
 
@@ -57,14 +56,14 @@ public class ResourceImportServiceTest {
     private Set<ResourceEntity> resourcesInGroupNotOrderedByRelease = new HashSet<>(Arrays.asList(RESOURCE_MINOR_RELEASE_A_1, RESOURCE_MAIN_RELEASE_C, RESOURCE_MAIN_RELEASE_A, RESOURCE_MAIN_RELEASE_B, RESOURCE_MINOR_RELEASE_B_1, RESOURCE_MINOR_RELEASE_B_2, RESOURCE_MINOR_RELEASE_B_3));
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         resourceImportService = new ResourceImportService();
         resourceImportService.resourceReleaseComparator = new ResourceReleaseComparator();
     }
 
 
     @Test
-    public void getAllFollowingMinorReleaseForResourceInReleaseShouldReturnAllMinorReleases(){
+    public void getAllFollowingMinorReleaseForResourceInReleaseShouldReturnAllMinorReleases() {
 
         // when
         List<ResourceEntity> allFollowingMinorReleaseForResourceNameInRelease = resourceImportService.getAllMinorReleasesFollowingRelease(resourcesInGroupNotOrderedByRelease, MAIN_RELEASE_B);
@@ -75,7 +74,7 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void getAllFollowingMinorReleaseForResourceInMinorReleaseShouldReturnAllMinorReleases(){
+    public void getAllFollowingMinorReleaseForResourceInMinorReleaseShouldReturnAllMinorReleases() {
         List<ResourceEntity> allFollowingMinorReleaseForResourceNameInRelease = resourceImportService.getAllMinorReleasesFollowingRelease(resourcesInGroupNotOrderedByRelease, MINOR_RELEASE_B_2);
 
         // then
@@ -84,7 +83,7 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void getAllFollowingMinorReleaseForLastResourceInMinorReleaseShouldReturnEmptyList(){
+    public void getAllFollowingMinorReleaseForLastResourceInMinorReleaseShouldReturnEmptyList() {
         List<ResourceEntity> allFollowingMinorReleaseForResourceNameInRelease = resourceImportService.getAllMinorReleasesFollowingRelease(resourcesInGroupNotOrderedByRelease, MINOR_RELEASE_B_3);
 
         // then
@@ -92,7 +91,7 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void getPreviousReleaseShouldReturnNull(){
+    public void getPreviousReleaseShouldReturnNull() {
         ResourceEntity result = resourceImportService.getPreviousRelease(resourcesInGroupNotOrderedByRelease, null);
 
         // then
@@ -100,7 +99,7 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void getPreviousReleaseShouldReturnB3(){
+    public void getPreviousReleaseShouldReturnB3() {
         ResourceEntity result = resourceImportService.getPreviousRelease(resourcesInGroupNotOrderedByRelease, RESOURCE_MAIN_RELEASE_C);
 
         // then
@@ -109,7 +108,7 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void getPreviousReleaseShouldReturnNullNoPreviousRelease(){
+    public void getPreviousReleaseShouldReturnNullNoPreviousRelease() {
         ResourceEntity result = resourceImportService.getPreviousRelease(resourcesInGroupNotOrderedByRelease, RESOURCE_MAIN_RELEASE_A);
 
         // then
@@ -117,7 +116,7 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void getPreviousReleaseShouldReturnPreviousMainReleaseIfNoMinorReleaseIsAvailable(){
+    public void getPreviousReleaseShouldReturnPreviousMainReleaseIfNoMinorReleaseIsAvailable() {
 
         resourcesInGroupNotOrderedByRelease = new HashSet<>(Arrays.asList(RESOURCE_MAIN_RELEASE_C, RESOURCE_MAIN_RELEASE_A, RESOURCE_MAIN_RELEASE_B, RESOURCE_MINOR_RELEASE_B_1, RESOURCE_MINOR_RELEASE_B_2, RESOURCE_MINOR_RELEASE_B_3));
 
@@ -129,7 +128,7 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void getPreviousReleaseShouldReturnNullIfResourceIsNotInListOfResources(){
+    public void getPreviousReleaseShouldReturnNullIfResourceIsNotInListOfResources() {
 
         resourcesInGroupNotOrderedByRelease = new HashSet<>(Arrays.asList(RESOURCE_MAIN_RELEASE_C, RESOURCE_MAIN_RELEASE_B, RESOURCE_MINOR_RELEASE_B_1, RESOURCE_MINOR_RELEASE_B_2, RESOURCE_MINOR_RELEASE_B_3));
 
@@ -140,15 +139,16 @@ public class ResourceImportServiceTest {
     }
 
     @Test
-    public void shouldReturnCorrectBackLinkURL(){
+    public void shouldReturnCorrectBackLinkURL() {
         // when
         String backlinkUrl = resourceImportService.getImportedResourceBacklink();
 
         // then
-        assertEquals("http://localhost:8080/AMW_web/pages/editResourceView.xhtml?ctx=1&id=", backlinkUrl);
+        assertEquals("http://localhost:8080/AMW_angular/#/resources/edit?ctx=1&id=", backlinkUrl);
     }
+
     @Test
-    public void shouldReturnCorrectBackLinkURL_Configured(){
+    public void shouldReturnCorrectBackLinkURL_Configured() {
         // when
 
         System.getProperties().setProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA.getValue(), "https");
@@ -157,21 +157,21 @@ public class ResourceImportServiceTest {
         String backlinkUrl = resourceImportService.getImportedResourceBacklink();
 
         // then
-        assertEquals("https://hostwithoutPort.ch/AMW_web/pages/editResourceView.xhtml?ctx=1&id=", backlinkUrl);
+        assertEquals("https://hostwithoutPort.ch/AMW_angular/#/resources/edit?ctx=1&id=", backlinkUrl);
 
         // remove System Properties to avoid Sideeffects
         System.getProperties().remove(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA.getValue());
         System.getProperties().remove(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_HOST.getValue());
     }
 
-    private void verifyReleaseResourcesInResult(List<ResourceEntity> result, ResourceEntity ... containedResourcesToVerify){
-        for ( ResourceEntity resourceToVerify : containedResourcesToVerify) {
+    private void verifyReleaseResourcesInResult(List<ResourceEntity> result, ResourceEntity... containedResourcesToVerify) {
+        for (ResourceEntity resourceToVerify : containedResourcesToVerify) {
             assertTrue(result.contains(resourceToVerify));
         }
     }
 
-    private void verifyReleaseResourcesNotInResult(List<ResourceEntity> result, ResourceEntity ... containedRsourcesToVerify){
-        for ( ResourceEntity resourceToVerify : containedRsourcesToVerify) {
+    private void verifyReleaseResourcesNotInResult(List<ResourceEntity> result, ResourceEntity... containedRsourcesToVerify) {
+        for (ResourceEntity resourceToVerify : containedRsourcesToVerify) {
             assertFalse(result.contains(resourceToVerify));
         }
     }

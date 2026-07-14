@@ -4,10 +4,10 @@
       @for (app of apps(); track app.id) {
         <tr>
           <td>
-            <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ app.id }}">{{ app.name }}</a>
+            <a (click)="navigateToResource(app.id); $event.preventDefault()" href="#">{{ app.name }}</a>
           </td>
           <td class="text-end pe-0">
-            <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ app.id }}">{{ app.release.name }}</a>
+            <a (click)="navigateToResource(app.id); $event.preventDefault()" href="#">{{ app.release.name }}</a>
           </td>
         </tr>
       }

@@ -24,13 +24,13 @@ export class ServersListComponent {
         environment: server.environment,
         appServer: server.appServer,
         appServerLinkUrl: this.canReadAppServer()
-          ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.appServerId
+          ? '/#/resource/edit?ctx=' + server.environmentId + '&id=' + server.appServerId
           : null,
         appServerRelease: server.appServerRelease,
         runtime: server.runtime,
         node: server.node,
         nodeLinkUrl: this.canReadResources()
-          ? '/AMW_web/pages/editResourceView.xhtml?ctx=' + server.environmentId + '&id=' + server.nodeId
+          ? '/#/resource/edit?ctx=' + server.environmentId + '&id=' + server.nodeId
           : null,
         nodeRelease: server.nodeRelease,
       };

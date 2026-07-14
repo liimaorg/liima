@@ -26,15 +26,10 @@ export class ResourceDependenciesComponent {
     if (this.authService.restrictions().length > 0) {
       return {
         canReadResources: this.authService.hasPermission('RESOURCE', 'READ'),
-        // TODO: remove after migration
-        canUseAngularEditResource:
-          this.authService.hasPermission('RESOURCE', 'READ') &&
-          this.authService.hasPermission('ANGULAR_EDIT_RESOURCE', 'ALL'),
       };
     } else {
       return {
         canReadResources: false,
-        canUseAngularEditResource: false,
       };
     }
   });
@@ -87,11 +82,7 @@ export class ResourceDependenciesComponent {
     ];
   }
 
-  navigateToResource(id: number): void {
-    this.router.navigate(['/resource/edit'], { queryParams: { id, ctx: 1 } });
-  }
-
   openEditResourcePage(id: number) {
-    window.location.href = `/AMW_web/pages/editResourceView.xhtml?ctx=1&id=${id}`;
+    this.router.navigate(['/resource/edit'], { queryParams: { id, ctx: 1 } });
   }
 }
