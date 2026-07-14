@@ -7,6 +7,7 @@ import { GroupedResourceRelations } from '../models/resource-relation';
 import { Property } from '../models/property';
 import { PropertyUpdate } from './resource-properties.service';
 import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
+import { ResourceTemplate } from '../models/resource-template';
 
 const EMPTY_GROUPED_RELATIONS: GroupedResourceRelations = {
   runtime: [],
@@ -105,6 +106,17 @@ export class ResourceRelationsService extends BaseService {
     contextId: number;
   }>();
 
+  private resourceRelationTemplates$: Subject<{ resourceId: number; relationId: number }> = new Subject<{
+    resourceId: number;
+    relationId: number;
+  }>();
+
+  private resourceTypeRelationTemplates$: Subject<{ resourceTypeId: number; relationId: number }> = new Subject<{
+    resourceTypeId: number;
+    relationId: number;
+  }>();
+
+
   private relationPropertiesForResource$: Observable<Property[]> = this.relationProperties$.pipe(
     switchMap(({ resourceId, relationId, contextId }) => {
       this.loadingRelationProperties.set(true);
@@ -116,10 +128,32 @@ export class ResourceRelationsService extends BaseService {
     shareReplay(1),
   );
 
+  private relationTemplatesForResource$: Observable<ResourceTemplate[]> = this.resourceRelationTemplates$.pipe(
+    switchMap(({ resourceId, relationId}) => {
+      return this.getResourceRelationTemplates(resourceId, relationId)
+    }),
+    startWith([]),
+    shareReplay(1),
+  );
+
+  private relationTemplatesForResourceType$: Observable<ResourceTemplate[]> = this.resourceTypeRelationTemplates$.pipe(
+    switchMap(({ resourceTypeId, relationId }) => {
+      return this.getResourceTypeRelationTemplates(resourceTypeId, relationId)
+    }),
+    startWith([]),
+    shareReplay(1),
+  );
+
   relationProperties = toSignal(this.relationPropertiesForResource$, { initialValue: [] as Property[] });
+  resourceRelationTemplates = toSignal(this.relationTemplatesForResource$, { initialValue: [] as ResourceTemplate[] });
+  resourceTypeRelationTemplates = toSignal(this.relationTemplatesForResourceType$, { initialValue: [] as ResourceTemplate[] });
 
   setIdsForRelationProperties(resourceId: number, relationId: number, contextId: number) {
     this.relationProperties$.next({ resourceId, relationId, contextId });
+  }
+
+  setIdsForResourceRelationTemplates(resourceId: number, relationId: number) {
+    this.resourceRelationTemplates$.next({ resourceId, relationId });
   }
 
   private typeRelationProperties$: Subject<{ resourceTypeId: number; relTypeId: number; contextId: number }> =
@@ -144,6 +178,10 @@ export class ResourceRelationsService extends BaseService {
 
   setIdsForTypeRelationProperties(resourceTypeId: number, relTypeId: number, contextId: number) {
     this.typeRelationProperties$.next({ resourceTypeId, relTypeId, contextId });
+  }
+
+  setIdsForResourceTypeRelationTemplates(resourceTypeId: number, relationId: number) {
+    this.resourceTypeRelationTemplates$.next({ resourceTypeId, relationId });
   }
 
   getResourceRelationProperties(resourceId: number, relationId: number, contextId: number): Observable<Property[]> {
@@ -232,6 +270,60 @@ export class ResourceRelationsService extends BaseService {
   removeResourceTypeRelation(resourceTypeId: number, relTypeId: number): Observable<void> {
     return this.http
       .delete<void>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relTypeId}`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  getResourceTypeRelationTemplates(resourceTypeId: number, relationId: number): Observable<ResourceTemplate[]> {
+    return this.http
+      .get<ResourceTemplate[]>(
+        `${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/templates`,
+        {
+          headers: this.getHeaders(),
+        },
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  getResourceRelationTemplates(resourceId: number, relationId: number): Observable<ResourceTemplate[]> {
+    return this.http
+      .get<ResourceTemplate[]>(
+        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/templates`,
+        {
+          headers: this.getHeaders(),
+        },
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  addResourceRelationTemplate(template: ResourceTemplate, resourceId: number, relationId: number) {
+    return this.http
+      .post<ResourceTemplate>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/addTemplate`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  addResourceTypeRelationTemplate(template: ResourceTemplate, resourceTypeId: number, relationId: number) {
+    return this.http
+      .post<ResourceTemplate>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/addTemplate`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateResourceRelationTemplate(template: ResourceTemplate, resourceId: number, relationId: number) {
+    return this.http
+      .put<ResourceTemplate>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/updateTemplate`, template, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  updateResourceTypeRelationTemplate(template: ResourceTemplate, resourceTypeId: number, relationId: number) {
+    return this.http
+      .put<ResourceTemplate>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/updateTemplate`, template, {
         headers: this.getHeaders(),
       })
       .pipe(catchError(this.handleError));

@@ -20,23 +20,16 @@
 
 package ch.mobi.itc.mobiliar.rest.resources;
 
-import ch.mobi.itc.mobiliar.rest.dtos.AddResourceTypeRelationRequestDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.GroupedResourceRelationsDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.PropertyBulkUpdateDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.PropertyDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
-import ch.mobi.itc.mobiliar.rest.dtos.UnresolvedRelationDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.*;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.UpdateRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceTypeRelationCommand;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceTypeRelationUseCase;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceTypeRelationPropertiesUseCase;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.GetResourceTypeRelationsUseCase;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceTypeRelationCommand;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.RemoveResourceTypeRelationUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.*;
+import ch.puzzle.itc.mobiliar.business.template.boundary.GetRelationTemplatesUseCase;
+import ch.puzzle.itc.mobiliar.business.template.boundary.TemplateEditor;
+import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
@@ -46,20 +39,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.persistence.OptimisticLockException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,6 +73,15 @@ public class ResourceTypeRelationsByIdRest {
 
     @Inject
     ContextLocator contextLocator;
+
+    @Inject
+    GetRelationTemplatesUseCase getRelationTemplatesUseCase;
+
+    @Inject
+    TemplateEditor templateEditor;
+
+    @Inject
+    TemplateMapper templateMapper;
 
     /**
      * Returns the unresolved type-level relations for the given resource type.
@@ -228,4 +221,44 @@ public class ResourceTypeRelationsByIdRest {
 
         return Response.status(Response.Status.NO_CONTENT).build();
     }
+
+    @GET
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/templates")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get templates for a specific resource type relation by resource type ID and relation ID")
+    public Response getResourceTypeRelationTemplates(
+            @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId) throws NotFoundException {
+        List<TemplateDescriptorEntity> templates =
+                getRelationTemplatesUseCase.getTemplatesForResourceTypeRelation(resourceTypeId, relationId);
+
+        return Response.ok(templates.stream()
+                .map(TemplateDTO::new)
+                .collect(Collectors.toList())).build();
+    }
+
+    @POST
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/addTemplate")
+    @Operation(summary = "Add new relation template")
+    public Response addNewRelationTypeTemplate(
+            @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            TemplateDTO request) throws ValidationException {
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForRelation(template, relationId, false);
+        return Response.status(Response.Status.OK).build();
+    }
+
+    @PUT
+    @Path("/{id : \\d+}/relations/{relationId : \\d+}/updateTemplate")
+    @Operation(summary = "Modify existing template for relation")
+    public Response modifyRelationTemplate(
+            @Parameter(description = "Resource type ID") @PathParam("id") Integer resourceTypeId,
+            @Parameter(description = "Relation ID") @PathParam("relationId") Integer relationId,
+            TemplateDTO request) throws ValidationException, OptimisticLockException {
+        TemplateDescriptorEntity template = templateMapper.toTemplateDescriptorEntity(request, null);
+        templateEditor.saveTemplateForRelation(template, relationId, false);
+        return Response.status(Response.Status.OK).build();
+    }
+
 }

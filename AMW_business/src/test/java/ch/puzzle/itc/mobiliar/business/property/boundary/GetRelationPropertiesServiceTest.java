@@ -22,14 +22,7 @@ package ch.puzzle.itc.mobiliar.business.property.boundary;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
-import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationMapper;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +35,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -53,46 +45,16 @@ public class GetRelationPropertiesServiceTest {
     GetRelationPropertiesService service;
 
     @Mock
-    ResourceRelationService resourceRelationService;
+    ResourceRelationMapper resourceRelationMapper;
 
     @Mock
     PropertyEditor propertyEditor;
 
-    private ResourceTypeEntity resourceTypeA() {
-        ResourceTypeEntity type = new ResourceTypeEntity();
-        type.setName("APPLICATIONSERVER");
-        return type;
-    }
-
-    private ResourceTypeEntity resourceTypeB() {
-        ResourceTypeEntity type = new ResourceTypeEntity();
-        type.setName("DATABASE");
-        return type;
-    }
-
-    private ResourceRelationTypeEntity relType(ResourceTypeEntity typeA, ResourceTypeEntity typeB) {
-        ResourceRelationTypeEntity relType = new ResourceRelationTypeEntity();
-        relType.setResourceTypes(typeA, typeB);
-        return relType;
-    }
-
-    private ResourceEntity slave(ResourceTypeEntity slaveType) {
-        ReleaseEntity release = new ReleaseEntity();
-        release.setName("1.0");
-
-        ResourceGroupEntity group = new ResourceGroupEntity();
-
-        ResourceEntity slave = new ResourceEntity();
-        slave.setResourceGroup(group);
-        slave.setResourceType(slaveType);
-        slave.setRelease(release);
-        return slave;
-    }
 
     @Test
-    public void shouldThrowWhenRelationNotFound() {
+    public void shouldThrowWhenRelationNotFound() throws ResourceNotFoundException {
         // given
-        when(resourceRelationService.getResourceRelation(99)).thenReturn(null);
+        when(resourceRelationMapper.toResourceEditRelation(99)).thenThrow(new ResourceNotFoundException("Relation with id 99 not found"));
 
         // when / then
         assertThrows(ResourceNotFoundException.class,
@@ -102,18 +64,9 @@ public class GetRelationPropertiesServiceTest {
     @Test
     public void shouldDelegateToPropertyEditorForConsumedRelation() throws ResourceNotFoundException {
         // given
-        ResourceTypeEntity typeA = resourceTypeA();
-        ResourceTypeEntity typeB = resourceTypeB();
-        ResourceRelationTypeEntity relType = relType(typeA, typeB);
-        ResourceEntity slaveResource = slave(typeB);
-
-        ConsumedResourceRelationEntity relation = mock(ConsumedResourceRelationEntity.class);
-        when(relation.getId()).thenReturn(20);
-        when(relation.getSlaveResource()).thenReturn(slaveResource);
-        when(relation.getResourceRelationType()).thenReturn(relType);
-        when(relation.buildIdentifer()).thenReturn("myIdentifier");
-
-        when(resourceRelationService.getResourceRelation(20)).thenReturn(relation);
+        ResourceEditRelation resourceEditRelation = mock(ResourceEditRelation.class);
+        when(resourceEditRelation.getMode()).thenReturn(ResourceEditRelation.Mode.CONSUMED);
+        when(resourceRelationMapper.toResourceEditRelation(20)).thenReturn(resourceEditRelation);
 
         List<ResourceEditProperty> expected = Collections.emptyList();
         when(propertyEditor.getPropertiesForRelatedResource(eq(10), any(ResourceEditRelation.class), eq(1)))
@@ -127,23 +80,15 @@ public class GetRelationPropertiesServiceTest {
         ArgumentCaptor<ResourceEditRelation> captor = ArgumentCaptor.forClass(ResourceEditRelation.class);
         verify(propertyEditor).getPropertiesForRelatedResource(eq(10), captor.capture(), eq(1));
         assertEquals(ResourceEditRelation.Mode.CONSUMED, captor.getValue().getMode());
+
     }
 
     @Test
     public void shouldDelegateToPropertyEditorForProvidedRelation() throws ResourceNotFoundException {
         // given
-        ResourceTypeEntity typeA = resourceTypeA();
-        ResourceTypeEntity typeB = resourceTypeB();
-        ResourceRelationTypeEntity relType = relType(typeA, typeB);
-        ResourceEntity slaveResource = slave(typeB);
-
-        ProvidedResourceRelationEntity relation = mock(ProvidedResourceRelationEntity.class);
-        when(relation.getId()).thenReturn(30);
-        when(relation.getSlaveResource()).thenReturn(slaveResource);
-        when(relation.getResourceRelationType()).thenReturn(relType);
-        when(relation.buildIdentifer()).thenReturn("prov");
-
-        when(resourceRelationService.getResourceRelation(30)).thenReturn(relation);
+        ResourceEditRelation resourceEditRelation = mock(ResourceEditRelation.class);
+        when(resourceEditRelation.getMode()).thenReturn(ResourceEditRelation.Mode.PROVIDED);
+        when(resourceRelationMapper.toResourceEditRelation(30)).thenReturn(resourceEditRelation);
 
         List<ResourceEditProperty> expected = Collections.singletonList(mock(ResourceEditProperty.class));
         when(propertyEditor.getPropertiesForRelatedResource(eq(5), any(ResourceEditRelation.class), eq(2)))

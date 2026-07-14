@@ -1,55 +1,58 @@
 import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-
-import { AuthService } from 'src/app/auth/auth.service';
-import { Resource } from 'src/app/resources/models/resource';
-import { ResourceTemplate } from 'src/app/resources/models/resource-template';
-import { ResourceTemplatesService } from 'src/app/resources/services/resource-templates.service';
+import { ResourceRelation } from '../../../models/resource-relation';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
-import { ToastService } from 'src/app/shared/elements/toast/toast.service';
-import { EntryAction, TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { TileComponent } from 'src/app/shared/tile/tile.component';
-import { ResourceTemplateEditComponent } from '../resource-template-edit/resource-template-edit.component';
-import { ResourceTemplateDeleteComponent } from '../resource-template-delete/resource-template-delete.component';
+import { EntryAction, TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
+import { ResourceTemplate } from '../../../models/resource-template';
+import { AuthService } from 'src/app/auth/auth.service';
+import { ResourceRelationsService } from '../../../services/resource-relations.service';
+import { Resource } from '../../../models/resource';
+import { Subject } from 'rxjs';
+import { ResourceTemplateEditComponent } from '../../resource-templates/resource-template-edit/resource-template-edit.component';
+import { takeUntil } from 'rxjs/operators';
+import { ResourceTemplatesService } from '../../../services/resource-templates.service';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { ResourceTemplateDeleteComponent } from '../../resource-templates/resource-template-delete/resource-template-delete.component';
 
 const RESOURCE_PERM = 'RESOURCE_TEMPLATE';
 const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 
 @Component({
-  selector: 'app-resource-templates-list',
+  selector: 'app-resource-relation-templates-list',
   standalone: true,
   imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
-  templateUrl: './resource-templates-list.component.html',
+  templateUrl: './resource-relation-templates-list.component.html',
 })
-export class ResourceTemplatesListComponent implements OnDestroy {
+export class ResourceRelationTemplatesListComponent implements OnDestroy {
   private authService = inject(AuthService);
-  private modalService = inject(NgbModal);
+  private resourceRelationsService = inject(ResourceRelationsService);
   private templatesService = inject(ResourceTemplatesService);
+  private modalService = inject(NgbModal);
   private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
 
+  relation = input.required<ResourceRelation>();
   resource = input.required<Resource>();
   contextId = input.required<number>();
-  templates = this.templatesService.resourceTemplates;
+  templates = this.resourceRelationsService.resourceRelationTemplates;
 
-  private loadEffect = effect(() => {
-    const res = this.resource();
-    if (res != null) {
-      this.templatesService.setIdForResourceTemplateList(res.id);
-    }
-  });
+  constructor() {
+    effect(() =>
+      this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation()?.id),
+    );
+  }
 
-  isLoading = computed(() => this.resource() == null);
+  isLoading = computed(() => this.relation() == null || this.resource() == null || this.contextId() == null);
 
   permissions = computed(() => {
-    if (this.authService.restrictions().length > 0 && this.resource()) {
+    if (this.authService.restrictions().length > 0) {
       return {
         canShowInstanceTemplates: this.authService.hasPermission(RESOURCE_PERM, 'READ'),
         canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
           (this.contextId() === 1 || this.contextId() === null) &&
+          this.relation().relationType === 'consumed' &&
           this.authService.hasPermission(
             RESOURCE_PERM,
             'CREATE',
@@ -87,24 +90,24 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   templatesData = computed(() => {
     if (this.templates()?.length > 0) {
       const instanceTemplates = this.mapListEntries(
-        this.templates().filter((template) => template.sourceType === 'RESOURCE'),
+        this.templates().filter((template) => template.sourceType === 'RESOURCE_RELATION'),
       );
       const typeTemplates = this.mapListEntries(
-        this.templates().filter((template) => template.sourceType === 'RESOURCE_TYPE'),
+        this.templates().filter((template) => template.sourceType === 'RESOURCE_TYPE_RELATION'),
       );
 
       const result = [];
-      if (this.permissions().canShowInstanceTemplates) {
+      if (instanceTemplates.length > 0 && this.permissions().canShowInstanceTemplates) {
         result.push({
-          title: 'Resource Instance Templates',
+          title: 'Instance Templates',
           entries: instanceTemplates,
           canEdit: this.permissions().canEdit,
           canDelete: this.permissions().canDelete,
         });
       }
-      if (this.permissions().canShowTypeTemplates) {
+      if (typeTemplates.length > 0 && this.permissions().canShowTypeTemplates) {
         result.push({
-          title: 'Resource Type Templates',
+          title: 'Resource Type Relationship Templates',
           entries: typeTemplates,
           canEdit: false,
           canDelete: false,
@@ -118,25 +121,14 @@ export class ResourceTemplatesListComponent implements OnDestroy {
     this.destroy$.next(undefined);
   }
 
-  doListAction($event: TileListEntryOutput) {
-    switch ($event.action) {
-      case EntryAction.edit:
-        this.editTemplate($event.id);
-        return;
-      case EntryAction.delete:
-        this.deleteTemplate($event.id);
-        return;
-    }
-  }
-
   mapListEntries(templates: ResourceTemplate[]) {
     return templates
-      .filter((template): template is ResourceTemplate & { id: number } => template.id != null)
+      .filter((template) => template.id !== null)
       .sort((a, b) => a.name.localeCompare(b.name))
       .map((template) => ({
         name: template.name,
         description: template.targetPath ?? '',
-        id: template.id,
+        id: template.id!,
       }));
   }
 
@@ -151,7 +143,7 @@ export class ResourceTemplatesListComponent implements OnDestroy {
       targetPath: '',
       targetPlatforms: [],
       fileContent: '',
-      sourceType: 'RESOURCE',
+      sourceType: 'RESOURCE_RELATION',
     };
     modalRef.componentInstance.canAddOrEdit = this.permissions().canAdd;
     modalRef.componentInstance.saveTemplate
@@ -160,14 +152,46 @@ export class ResourceTemplatesListComponent implements OnDestroy {
   }
 
   private createTemplate(templateData: ResourceTemplate) {
-    this.templatesService
-      .addResourceTemplate(templateData, this.resource().id)
+    this.resourceRelationsService
+      .addResourceRelationTemplate(templateData, this.resource().id, this.relation().id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.toastService.error(e),
+        error: (e) => this.toastService.error(e.toString()),
         complete: () => {
-          this.templatesService.setIdForResourceTemplateList(this.resource().id);
+          this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
+        },
+      });
+  }
+
+  protected doListAction($event: TileListEntryOutput) {
+    switch ($event.action) {
+      case EntryAction.edit:
+        this.editTemplate($event.id);
+        return;
+      case EntryAction.delete:
+        this.deleteTemplate($event.id);
+        return;
+    }
+  }
+
+  private deleteTemplate(id: number) {
+    const modalRef: NgbModalRef = this.modalService.open(ResourceTemplateDeleteComponent);
+    modalRef.componentInstance.templateId = id;
+    modalRef.componentInstance.deleteTemplateId
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id: number) => this.removeTemplate(id));
+  }
+
+  private removeTemplate(id: number) {
+    this.templatesService
+      .deleteTemplate(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.toastService.success('Template deleted successfully.'),
+        error: (e) => this.toastService.error(e.toString()),
+        complete: () => {
+          this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },
       });
   }
@@ -185,41 +209,20 @@ export class ResourceTemplatesListComponent implements OnDestroy {
     modalRef.componentInstance.saveTemplate
       .pipe(takeUntil(this.destroy$))
       .subscribe((templateData: ResourceTemplate) => {
-        templateData.sourceType = 'RESOURCE';
+        templateData.sourceType = 'RESOURCE_RELATION';
         this.updateTemplate(templateData);
       });
   }
 
   private updateTemplate(templateData: ResourceTemplate) {
-    this.templatesService
-      .updateResourceTemplate(templateData, this.resource().id)
+    this.resourceRelationsService
+      .updateResourceRelationTemplate(templateData, this.resource().id, this.relation().id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.toastService.error(e),
+        error: (e) => this.toastService.error(e.toString()),
         complete: () => {
-          this.templatesService.setIdForResourceTemplateList(this.resource().id);
-        },
-      });
-  }
-
-  private deleteTemplate(id: number) {
-    const modalRef: NgbModalRef = this.modalService.open(ResourceTemplateDeleteComponent);
-    modalRef.componentInstance.templateId = id;
-    modalRef.componentInstance.deleteTemplateId
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((id: number) => this.removeTemplate(id));
-  }
-
-  private removeTemplate(id: number) {
-    this.templatesService
-      .deleteTemplate(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => this.toastService.success('Template deleted successfully.'),
-        error: (e) => this.toastService.error(e),
-        complete: () => {
-          this.templatesService.setIdForResourceTemplateList(this.resource().id);
+          this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation().id);
         },
       });
   }

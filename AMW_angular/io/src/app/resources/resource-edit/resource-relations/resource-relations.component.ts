@@ -32,6 +32,9 @@ import { PropertiesListComponent } from '../../properties-list/properties-list.c
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
 import { RelationActiveApplicationsComponent } from './relation-active-applications/relation-active-applications.component';
 import { ResourceActivationService, ResourceActivation } from '../../services/resource-activation.service';
+import {
+  ResourceRelationTemplatesListComponent
+} from './resource-relation-templates-list/resource-relation-templates-list.component';
 
 @Component({
   selector: 'app-resource-relations',
@@ -50,6 +53,7 @@ import { ResourceActivationService, ResourceActivation } from '../../services/re
     RouterLink,
     ModalHeaderComponent,
     RelationActiveApplicationsComponent,
+    ResourceRelationTemplatesListComponent
   ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',

@@ -25,9 +25,11 @@ import ch.puzzle.itc.mobiliar.builders.ResourceRelationEntityBuilder;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.property.control.PropertyValueService;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationMapper;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
@@ -62,6 +64,9 @@ public class UpdateRelationPropertiesServiceTest {
 
     @Mock
     ResourceRelationService resourceRelationService;
+
+    @Mock
+    ResourceRelationMapper resourceRelationMapper;
 
     @Mock
     PropertyEditor propertyEditor;
@@ -172,6 +177,12 @@ public class UpdateRelationPropertiesServiceTest {
         // Mock is called 3 times: twice in updateResourceRelationIdentifier, once in handleRelationIdentifierUpdate via getConsumedRelation
         when(resourceRelationService.getResourceRelation(10)).thenReturn(relation, relation, relation);
 
+        ResourceEditRelation resourceEditRelation = mock(ResourceEditRelation.class);
+        when(resourceEditRelation.getQualifiedIdentifier()).thenReturn("oldIdentifier");
+        when(resourceEditRelation.getSlaveName()).thenReturn("slave");
+        when(resourceEditRelation.hasIdentifierChanged("newIdentifier")).thenReturn(true);
+        when(resourceRelationMapper.toResourceEditRelation(relation)).thenReturn(resourceEditRelation);
+
         // when
         service.updateResourceRelationIdentifier(10, "newIdentifier");
 
@@ -190,6 +201,10 @@ public class UpdateRelationPropertiesServiceTest {
         ConsumedResourceRelationEntity relation = createConsumedRelation(10, "sameIdentifier", master, slave, relType);
 
         when(resourceRelationService.getResourceRelation(10)).thenReturn(relation);
+
+        ResourceEditRelation resourceEditRelation = mock(ResourceEditRelation.class);
+        when(resourceEditRelation.hasIdentifierChanged("sameIdentifier")).thenReturn(false);
+        when(resourceRelationMapper.toResourceEditRelation(relation)).thenReturn(resourceEditRelation);
 
         // when
         service.updateResourceRelationIdentifier(10, "sameIdentifier");

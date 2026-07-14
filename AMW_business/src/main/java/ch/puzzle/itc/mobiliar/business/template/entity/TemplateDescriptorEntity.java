@@ -43,61 +43,63 @@ import java.util.Set;
 
 /**
  * Entity implementation class for Entity: TemplateDescriptor
- * 
+ *
  */
 @Entity
 @Audited
 @Table(name = "TAMW_templateDescriptor")
 public class TemplateDescriptorEntity implements Identifiable, Serializable, Copyable<TemplateDescriptorEntity>, Auditable {
 
-	@TableGenerator(name = "templateDescriptorIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "templateDescriptorId")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "templateDescriptorIdGen")
-	@Id
-	@Column(unique = true, nullable = false)
-	private Integer id;
-	@Column(length = 65536)
-	@Lob
-	private String fileContent;
-	private String name;
-	private String targetPath;
+    @TableGenerator(name = "templateDescriptorIdGen", table = Constants.GENERATORTABLE, pkColumnName = Constants.GENERATORPKCOLUMNNAME, valueColumnName = Constants.GENERATORVALUECOLUMNNAME, pkColumnValue = "templateDescriptorId")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "templateDescriptorIdGen")
+    @Id
+    @Column(unique = true, nullable = false)
+    private Integer id;
+    @Column(length = 65536)
+    @Lob
+    private String fileContent;
+    private String name;
+    private String targetPath;
 
 
-	@ManyToMany(fetch=FetchType.EAGER)
-	@Getter
-	@Setter
-	@JoinTable(name = "TAMW_tmplDesc_targetPlat", joinColumns = { @JoinColumn(name = "TEMPLATEDESCRIPTORS_ID", referencedColumnName = "ID") }, inverseJoinColumns = { @JoinColumn(name = "RESGROUP_ID", referencedColumnName = "ID") })
-	private Set<ResourceGroupEntity> targetPlatforms;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Getter
+    @Setter
+    @JoinTable(name = "TAMW_tmplDesc_targetPlat", joinColumns = {@JoinColumn(name = "TEMPLATEDESCRIPTORS_ID", referencedColumnName = "ID")}, inverseJoinColumns = {@JoinColumn(name = "RESGROUP_ID", referencedColumnName = "ID")})
+    private Set<ResourceGroupEntity> targetPlatforms;
 
-	@Transient
-	private String relatedResourceIdentifier;
+    @Transient
+    private String relatedResourceIdentifier;
 
-	@Transient
-	private AbstractContext ownerResource;
+    @Transient
+    private AbstractContext ownerResource;
 
-	@Getter
-	@Setter
-	@Transient
-	private boolean relationTemplate;
+    @Getter
+    @Setter
+    @Transient
+    private boolean relationTemplate;
 
-	public enum TemplateSourceType {
-		RESOURCE,
-		RESOURCE_TYPE
-	}
+    public enum TemplateSourceType {
+        RESOURCE,
+        RESOURCE_TYPE,
+        RESOURCE_RELATION,
+        RESOURCE_TYPE_RELATION
+    }
 
-	@Transient
-	@Getter
-	@Setter
-	private TemplateSourceType sourceType;
+    @Transient
+    @Getter
+    @Setter
+    private TemplateSourceType sourceType;
 
-	@Setter
+    @Setter
     @Version
-	private long v;
+    private long v;
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public TemplateDescriptorEntity() {
-		super();
-	}
+    public TemplateDescriptorEntity() {
+        super();
+    }
 
     @Override
     public void setId(Integer id) {
@@ -124,119 +126,119 @@ public class TemplateDescriptorEntity implements Identifiable, Serializable, Cop
         return this.name;
     }
 
-	@Override
-	public boolean isObfuscatedValue() {
-		return false;
-	}
+    @Override
+    public boolean isObfuscatedValue() {
+        return false;
+    }
 
-	public String getFileContent() {
-		// Oracle saves empty strings as null & Freemarker doesn't like null. See #7532
-		if (this.fileContent == null) {
-			return "";
-		}
+    public String getFileContent() {
+        // Oracle saves empty strings as null & Freemarker doesn't like null. See #7532
+        if (this.fileContent == null) {
+            return "";
+        }
 
-		return this.fileContent;
-	}
+        return this.fileContent;
+    }
 
-	public void setFileContent(String fileContent) {
-		this.fileContent = fileContent;
-	}
+    public void setFileContent(String fileContent) {
+        this.fileContent = fileContent;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getTargetPath() {
-		return this.targetPath;
-	}
+    public String getTargetPath() {
+        return this.targetPath;
+    }
 
-	public void setTargetPath(String targetPath) {
-		this.targetPath = targetPath;
-	}
+    public void setTargetPath(String targetPath) {
+        this.targetPath = targetPath;
+    }
 
-	public AbstractContext getOwnerResource() {
-		return ownerResource;
-	}
+    public AbstractContext getOwnerResource() {
+        return ownerResource;
+    }
 
-	public void setOwnerResource(AbstractContext ownerResource) {
-		this.ownerResource = ownerResource;
-	}
-
-
-	public long getV() {
-		return v;
-	}
-
-	public boolean isDefaultTemplate(){
-		return getName() == null;
-	}
-
-	public String getRelatedResourceIdentifier() {
-		return relatedResourceIdentifier;
-	}
-
-	//TODO: unused?
-	public void setRelatedResourceIdentifier(String relatedResourceIdentifier) {
-		this.relatedResourceIdentifier = relatedResourceIdentifier;
-	}
-
-	@Override
-	public String toString() {
-		return "TemplateDescriptorEntity [id=" + id + ", name=" + name + ", targetPath=" + targetPath + ", ownerResource=" + ownerResource + "]";
-	}
-
-	@Override
-	public TemplateDescriptorEntity getCopy(TemplateDescriptorEntity target, CopyUnit copyUnit) {
-		boolean alreadyExists = true;
-		if (target == null) {
-			target = new TemplateDescriptorEntity();
-			alreadyExists = false;
-		}
-
-		// name
-		target.setName(this.getName());
+    public void setOwnerResource(AbstractContext ownerResource) {
+        this.ownerResource = ownerResource;
+    }
 
 
-		// fileContent
-		if (alreadyExists && !StringUtils.equals(target.getFileContent(), this.getFileContent())) {
-			copyUnit.getResult().addTemplateChange(target.getId(), target.getName(), CopyResourceResult.CopyInfo.FILECONTENT_CHANGED);
-		}
-		target.setFileContent(this.getFileContent());
+    public long getV() {
+        return v;
+    }
 
-		// targetPath
-		if (alreadyExists && !StringUtils.equals(target.getTargetPath(), this.getTargetPath())) {
-			copyUnit.getResult().addTemplateChange(target.getId(), target.getName(), CopyResourceResult.CopyInfo.TARGETPATH_CHANGED);
-		}
-		target.setTargetPath(this.getTargetPath());
+    public boolean isDefaultTemplate() {
+        return getName() == null;
+    }
 
-		// targetPlatforms
-		if (this.getTargetPlatforms() != null) {
-			if (target.getTargetPlatforms() == null) {
-				target.setTargetPlatforms(new HashSet<ResourceGroupEntity>());
-			}
-			for (ResourceGroupEntity tPlatform : this.getTargetPlatforms()) {
-				if (target.getTargetPlatforms().add(tPlatform) && alreadyExists) {
-					copyUnit.getResult().addTemplateChange(target.getId(), target.getName(),
-							CopyResourceResult.CopyInfo.TARGETPLATFORM_ADDED);
-				}
-			}
-		}
+    public String getRelatedResourceIdentifier() {
+        return relatedResourceIdentifier;
+    }
 
-		target.setRelatedResourceIdentifier(this.getRelatedResourceIdentifier());
+    //TODO: unused?
+    public void setRelatedResourceIdentifier(String relatedResourceIdentifier) {
+        this.relatedResourceIdentifier = relatedResourceIdentifier;
+    }
 
-		return target;
-	}
-	
-	public Map<String, String> toHash() {
-		Map<String, String> hash = new HashMap<>();
-		hash.put(GeneratedTemplate.RESERVED_PROPERTY_PATH, this.targetPath);
-		hash.put(GeneratedTemplate.RESERVED_PROPERTY_CONTENT, this.fileContent);
-		hash.put(GeneratedTemplate.RESERVED_PROPERTY_NAME, this.name);
-		hash.put(GeneratedTemplate.RESERVED_PROPERTY_IS_RELATION_TEMPLATE, String.valueOf(this.isRelationTemplate()));
-		return hash;
-	}
+    @Override
+    public String toString() {
+        return "TemplateDescriptorEntity [id=" + id + ", name=" + name + ", targetPath=" + targetPath + ", ownerResource=" + ownerResource + "]";
+    }
+
+    @Override
+    public TemplateDescriptorEntity getCopy(TemplateDescriptorEntity target, CopyUnit copyUnit) {
+        boolean alreadyExists = true;
+        if (target == null) {
+            target = new TemplateDescriptorEntity();
+            alreadyExists = false;
+        }
+
+        // name
+        target.setName(this.getName());
+
+
+        // fileContent
+        if (alreadyExists && !StringUtils.equals(target.getFileContent(), this.getFileContent())) {
+            copyUnit.getResult().addTemplateChange(target.getId(), target.getName(), CopyResourceResult.CopyInfo.FILECONTENT_CHANGED);
+        }
+        target.setFileContent(this.getFileContent());
+
+        // targetPath
+        if (alreadyExists && !StringUtils.equals(target.getTargetPath(), this.getTargetPath())) {
+            copyUnit.getResult().addTemplateChange(target.getId(), target.getName(), CopyResourceResult.CopyInfo.TARGETPATH_CHANGED);
+        }
+        target.setTargetPath(this.getTargetPath());
+
+        // targetPlatforms
+        if (this.getTargetPlatforms() != null) {
+            if (target.getTargetPlatforms() == null) {
+                target.setTargetPlatforms(new HashSet<>());
+            }
+            for (ResourceGroupEntity tPlatform : this.getTargetPlatforms()) {
+                if (target.getTargetPlatforms().add(tPlatform) && alreadyExists) {
+                    copyUnit.getResult().addTemplateChange(target.getId(), target.getName(),
+                            CopyResourceResult.CopyInfo.TARGETPLATFORM_ADDED);
+                }
+            }
+        }
+
+        target.setRelatedResourceIdentifier(this.getRelatedResourceIdentifier());
+
+        return target;
+    }
+
+    public Map<String, String> toHash() {
+        Map<String, String> hash = new HashMap<>();
+        hash.put(GeneratedTemplate.RESERVED_PROPERTY_PATH, this.targetPath);
+        hash.put(GeneratedTemplate.RESERVED_PROPERTY_CONTENT, this.fileContent);
+        hash.put(GeneratedTemplate.RESERVED_PROPERTY_NAME, this.name);
+        hash.put(GeneratedTemplate.RESERVED_PROPERTY_IS_RELATION_TEMPLATE, String.valueOf(this.isRelationTemplate()));
+        return hash;
+    }
 }

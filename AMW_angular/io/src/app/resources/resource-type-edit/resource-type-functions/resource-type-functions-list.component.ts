@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
 import { ToastService } from 'src/app/shared/elements/toast/toast.service';
@@ -26,7 +26,6 @@ export class ResourceTypeFunctionsListComponent {
   private functionsService = inject(ResourceFunctionsService);
   private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
-  private error$ = new BehaviorSubject<string>('');
 
   resourceType = input.required<ResourceType>();
   contextId = input.required<number>();
@@ -171,7 +170,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
@@ -184,7 +183,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
@@ -197,7 +196,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },
@@ -210,7 +209,7 @@ export class ResourceTypeFunctionsListComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Function deleted successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.functionsService.setIdForResourceTypeFunctionList(this.resourceType().id!);
         },

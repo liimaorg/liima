@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
 import { ToastService } from 'src/app/shared/elements/toast/toast.service';
@@ -27,7 +27,6 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
   private templatesService = inject(ResourceTemplatesService);
   private toastService = inject(ToastService);
   private destroy$ = new Subject<void>();
-  private error$ = new BehaviorSubject<string>('');
 
   resourceType = input.required<ResourceType>();
   contextId = input.required<number>();
@@ -47,13 +46,13 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       return {
         canShowTypeTemplates: this.authService.hasPermission(RESOURCETYPE_PERM, 'READ'),
         canAdd:
-          (this.contextId() === 1 || this.contextId === null) &&
+          (this.contextId() === 1 || this.contextId() === null) &&
           this.authService.hasPermission(RESOURCETYPE_PERM, 'CREATE', this.resourceType().name),
         canEdit:
-          (this.contextId() === 1 || this.contextId === null) &&
+          (this.contextId() === 1 || this.contextId() === null) &&
           this.authService.hasPermission(RESOURCETYPE_PERM, 'UPDATE', this.resourceType().name),
         canDelete:
-          (this.contextId() === 1 || this.contextId === null) &&
+          (this.contextId() === 1 || this.contextId() === null) &&
           this.authService.hasPermission(RESOURCETYPE_PERM, 'DELETE', this.resourceType().name),
       };
     } else {
@@ -133,7 +132,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
@@ -144,7 +143,11 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
     const modalRef = this.modalService.open(ResourceTemplateEditComponent, {
       size: 'xl',
     });
-    modalRef.componentInstance.template = this.templates()?.find((item) => item.id === id);
+    const template = this.templates()?.find((item) => item.id === id);
+    if (!template) {
+      return;
+    }
+    modalRef.componentInstance.template = template;
     modalRef.componentInstance.canAddOrEdit = this.permissions().canEdit;
     modalRef.componentInstance.saveTemplate
       .pipe(takeUntil(this.destroy$))
@@ -160,7 +163,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template saved successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },
@@ -181,7 +184,7 @@ export class ResourceTypeTemplatesListComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Template deleted successfully.'),
-        error: (e) => this.error$.next(e),
+        error: (e) => this.toastService.error(e),
         complete: () => {
           this.templatesService.setIdForResourceTypeTemplateList(this.resourceType().id!);
         },

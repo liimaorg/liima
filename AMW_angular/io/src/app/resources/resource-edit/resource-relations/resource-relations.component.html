@@ -14,7 +14,8 @@
         @if (canSetRuntime()) {
           <div class="set-runtime-container">
             <app-button [variant]="'secondary'" [size]="'sm'" (click)="showSetRuntimeModal()">
-              <app-icon icon="plus"></app-icon> Set Runtime
+              <app-icon icon="plus"></app-icon>
+              Set Runtime
             </app-button>
           </div>
         }
@@ -65,9 +66,10 @@
               <span class="relation-release-value">{{ rel.relatedResourceRelease }}</span>
             }
             @if (permissions().canUpdateProperty && contextId() === 1) {
-              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveRelationConfirmation()"
-                ><app-icon icon="trash"></app-icon> Remove Relation</app-button
-              >
+              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveRelationConfirmation()">
+                <app-icon icon="trash"></app-icon>
+                Remove Relation
+              </app-button>
             }
           </div>
           <div class="relation-detail-body">
@@ -106,6 +108,11 @@
             </app-properties-panel>
           </div>
         </div>
+        <app-resource-relation-templates-list
+          [resource]="resource()!"
+          [relation]="rel"
+          [contextId]="contextId()"
+        ></app-resource-relation-templates-list>
       }
     </div>
   }

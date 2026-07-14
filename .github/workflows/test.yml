@@ -46,7 +46,7 @@ jobs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v6
       with:
-        version: 11
+        version: 11.8.0
 
     - name: Run e2e tests
       run: |

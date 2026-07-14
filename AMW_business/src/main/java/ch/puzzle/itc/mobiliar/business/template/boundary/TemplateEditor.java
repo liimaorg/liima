@@ -20,24 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.template.boundary;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.Query;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.database.entity.MyRevisionEntity;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
@@ -61,14 +43,24 @@ import ch.puzzle.itc.mobiliar.business.template.control.FreemarkerSyntaxValidato
 import ch.puzzle.itc.mobiliar.business.template.control.TemplatesScreenDomainService;
 import ch.puzzle.itc.mobiliar.business.template.entity.RevisionInformation;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
-import ch.puzzle.itc.mobiliar.common.exception.AMWException;
-import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
-import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.TemplateNotDeletableException;
-import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
 
 @Stateless
 public class TemplateEditor {
@@ -141,7 +133,7 @@ public class TemplateEditor {
 
     public <T extends HasContexts<?>> void saveTemplateForRelation(TemplateDescriptorEntity template,
                                                                    Integer relationId,
-                                                                   boolean resourceEdit) throws AMWException {
+                                                                   boolean resourceEdit) throws ValidationException {
         if (relationId == null) {
             return;
         }
@@ -175,7 +167,7 @@ public class TemplateEditor {
         return resourceRelation;
     }
 
-    public void saveTemplateForResource(TemplateDescriptorEntity template, ResourceEntity resourceEntity) throws AMWException {
+    public void saveTemplateForResource(TemplateDescriptorEntity template, ResourceEntity resourceEntity) throws ValidationException {
         Action action = getAction(template);
         permissionService.checkPermissionAndFireException(
                 Permission.RESOURCE_TEMPLATE,
@@ -202,7 +194,7 @@ public class TemplateEditor {
         this.saveTemplateForResource(template, resourceEntity);
     }
 
-    public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId) throws AMWException {
+    public void saveTemplateForResourceType(TemplateDescriptorEntity template, Integer resourceTypeId) throws ValidationException {
         ResourceTypeEntity resourceTypeEntity = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 
         Action action = getAction(template);
@@ -233,12 +225,11 @@ public class TemplateEditor {
         }
     }
 
-    void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws ValidationException, AMWException {
+    void saveTemplate(TemplateDescriptorEntity template, HasContexts<?> hasContext) throws ValidationException {
         validateTemplate(template);
         try {
             freemarkerValidator.validateFreemarkerSyntax(template.getFileContent());
-        }
-        catch (AMWException e) {
+        } catch (AMWException e) {
             throw new ValidationException(e.getMessage(), e);
         }
         hasContext = entityManager.find(hasContext.getClass(), hasContext.getId());

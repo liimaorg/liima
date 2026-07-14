@@ -3,6 +3,10 @@
   padding: 1em;
   margin: 0 0.5em 1.5em;
 
+  &.no-border {
+    border: none;
+  }
+
   .tile-header {
     display: flex;
     flex-direction: row;

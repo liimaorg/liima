@@ -1,11 +1,14 @@
 <app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-tile-component
-  [title]="'Templates'"
+  [title]="'Relationship Templates'"
   [actionName]="'New Template'"
   [canAction]="permissions().canAdd"
   (tileAction)="addTemplate()"
   [noContent]="!templatesData()"
-  [notAllowed]="(templatesData()?.length ?? 0) <= 0"
+  [notAllowed]="!!templatesData() && templatesData()!.length <= 0"
+  [noBorder]="true"
+  [noCollapse]="true"
+  [headerLevel]="3"
 >
   @for (list of templatesData(); track list.title) {
     <app-tile-list
@@ -15,7 +18,6 @@
       [canDelete]="list.canDelete"
       (edit)="doListAction($event)"
       (delete)="doListAction($event)"
-      (overwrite)="doListAction($event)"
     ></app-tile-list>
   }
 </app-tile-component>

@@ -23,9 +23,10 @@
           <div class="relation-detail-header">
             <h3 class="relation-detail-title">{{ rel.name }}</h3>
             @if (permissions().canUpdateProperty && contextId() === 1) {
-              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveTypeRelationConfirmation()"
-                ><app-icon icon="trash"></app-icon> Remove Relation</app-button
-              >
+              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveTypeRelationConfirmation()">
+                <app-icon icon="trash"></app-icon>
+                Remove Relation
+              </app-button>
             }
           </div>
           <div class="relation-detail-body">
@@ -54,6 +55,11 @@
             </app-properties-panel>
           </div>
         </div>
+        <app-resource-type-relation-templates-list
+          [resourceType]="resourceType()!"
+          [relation]="rel"
+          [contextId]="contextId()"
+        ></app-resource-type-relation-templates-list>
       }
     </div>
   }
