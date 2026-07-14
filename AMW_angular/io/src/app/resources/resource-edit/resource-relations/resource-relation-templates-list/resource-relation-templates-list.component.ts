@@ -45,9 +45,7 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
     });
   }
 
-  isLoading = computed(() => {
-    return !(this.relation() != null && this.resource() != null && this.contextId() != null);
-  });
+  isLoading = computed(() => this.relation() == null || this.resource() == null || this.contextId() == null);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
