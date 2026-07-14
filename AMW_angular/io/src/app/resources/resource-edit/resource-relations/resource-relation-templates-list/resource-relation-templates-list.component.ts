@@ -38,11 +38,9 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
   templates = this.resourceRelationsService.resourceRelationTemplates;
 
   constructor() {
-    effect(() => {
-      if (this.contextId() != null) {
-        this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation()?.id);
-      }
-    });
+    effect(() =>
+      this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation()?.id),
+    );
   }
 
   isLoading = computed(() => this.relation() == null || this.resource() == null || this.contextId() == null);

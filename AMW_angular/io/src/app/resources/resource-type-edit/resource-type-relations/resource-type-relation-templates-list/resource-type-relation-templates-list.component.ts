@@ -37,14 +37,12 @@ export class ResourceTypeRelationTemplatesListComponent implements OnDestroy {
   templates = this.resourceRelationsService.resourceTypeRelationTemplates;
 
   constructor() {
-    effect(() => {
-      if (this.contextId() != null) {
-        this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(
-          this.resourceType().id!,
-          this.relation().resRelTypeId!,
-        );
-      }
-    });
+    effect(() =>
+      this.resourceRelationsService.setIdsForResourceTypeRelationTemplates(
+        this.resourceType().id!,
+        this.relation().resRelTypeId!,
+      ),
+    );
   }
 
   isLoading = computed(() => this.relation() == null || this.resourceType() == null || this.contextId() == null);
