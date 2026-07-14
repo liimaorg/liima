@@ -1,17 +1,17 @@
 import { Component, computed, inject, input, signal, ViewChild, TemplateRef } from '@angular/core';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { AuthService } from '../../../auth/auth.service';
-import { TileComponent } from '../../../shared/tile/tile.component';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { AuthService } from 'src/app/auth/auth.service';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
 import { Release } from '../../models/release';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ButtonComponent } from '../../../shared/button/button.component';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ResourceService } from '../../services/resource.service';
 import { Resource } from '../../models/resource';
 import { FormsModule } from '@angular/forms';
-import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
-import { ToastService } from '../../../shared/elements/toast/toast.service';
-import { TableComponent, TableColumnType, EntryAction, EntryActionOutput } from '../../../shared/table/table.component';
+import { ModalHeaderComponent } from 'src/app/shared/modal-header/modal-header.component';
+import { ToastService } from 'src/app/shared/elements/toast/toast.service';
+import { TableComponent, TableColumnType, EntryAction, EntryActionOutput } from 'src/app/shared/table/table.component';
 
 @Component({
   selector: 'app-resource-releases',
