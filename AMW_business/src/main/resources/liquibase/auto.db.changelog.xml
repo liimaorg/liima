@@ -124,4 +124,7 @@
     <include file="changesets/model/maiaForeignables/removeForeignables.xml" relativeToChangelogFile="true"/>
     <include file="changesets/model/maiaPropertyChanges/removeLocalPortId.xml" relativeToChangelogFile="true"/>
 
+    <!--1.18.13-->
+    <include file="changesets/model/removeUserSettings/removeUserSettings.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
