@@ -45,31 +45,4 @@ public class Releasing {
         return q.getResultList();
     }
 
-    public List<ResourceEntity> getAllResourcesWithinResourceGroup(ResourceEntity resource) {
-        TypedQuery<ResourceEntity> q = entityManager
-                  .createQuery(
-                            "select r from ResourceEntity r left join r.resourceGroup rg where :resource MEMBER OF rg.resources",
-                            ResourceEntity.class);
-        q.setParameter("resource", resource);
-        return q.getResultList();
-    }
-
-    public List<ReleaseEntity> getReleaseEntities(ResourceEntity resource) {
-        TypedQuery<ReleaseEntity> q = entityManager
-                  .createQuery(
-                            "select distinct rel from ResourceEntity r left join r.release rel left join r.resourceGroup rg where :resource MEMBER OF rg.resources order by rel.installationInProductionAt desc",
-                            ReleaseEntity.class);
-        q.setParameter("resource", resource);
-        return q.getResultList();
-    }
-
-    public List<ResourceEntity> getAllResourcesOfGroupWithReleases(ResourceEntity resource) {
-        TypedQuery<ResourceEntity> q = entityManager
-                  .createQuery(
-                            "select r from ResourceEntity r left join fetch r.release left join r.resourceGroup rg where :resource MEMBER OF rg.resources",
-                            ResourceEntity.class);
-        q.setParameter("resource", resource);
-        return q.getResultList();
-    }
-
 }

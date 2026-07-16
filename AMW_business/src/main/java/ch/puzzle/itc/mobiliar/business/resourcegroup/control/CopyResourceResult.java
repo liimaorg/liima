@@ -116,50 +116,6 @@ public class CopyResourceResult {
         exceptionEnums.add(error);
     }
 
-    public List<String> getCopyResultInfosAsHTMLStrings() {
-        List<String> infos = new ArrayList<>();
-
-        // changed resource parameters
-        if (!changedResourceParameters.isEmpty()) {
-            List<String> changedRes = new ArrayList<>();
-            for (CopyInfo info : changedResourceParameters) {
-                changedRes.add(info.toString());
-            }
-            infos.add(getResultInfosAsHtml("Changed parameters on " + targetResourceName, changedRes));
-        }
-
-        // changed templates
-        if (!changedTemplates.isEmpty()) {
-            List<String> changedTempl = new ArrayList<>();
-            for (CopyResult result : changedTemplates.values()) {
-                changedTempl.add(result.getName() + ": " + StringUtils.join(result.getCopyInfos(), ","));
-            }
-            infos.add(getResultInfosAsHtml("Changed templates", changedTempl));
-        }
-
-        // skipped consumed relations
-        if (!skippedConsumedRelations.isEmpty()) {
-            infos.add(getResultInfosAsHtml("Skipped consumed relations", new ArrayList<>(skippedConsumedRelations.values())));
-        }
-
-        // skipped provided relations
-        if (!skippedProvidedRelations.isEmpty()) {
-            infos.add(getResultInfosAsHtml("Skipped provided relations", new ArrayList<>(skippedProvidedRelations.values())));
-        }
-        return infos;
-    }
-
-    private String getResultInfosAsHtml(String title, List<String> infos) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<b>").append(StringEscapeUtils.escapeHtml4(title)).append("</b>");
-        sb.append("<ul>");
-        for (String info : infos) {
-            sb.append("<li>").append(StringEscapeUtils.escapeHtml4(info)).append("</li>");
-        }
-        sb.append("</ul>");
-        return sb.toString();
-    }
-
     private String createErrorMessage(CopyFailure info, CopyTarget target, String targetName, String newValue, String oldValue) {
         String prefix = getPrefix(target, targetName);
         switch (info) {
@@ -193,13 +149,6 @@ public class CopyResourceResult {
 
     public Set<CopyFailure> getExceptionEnums() {
         return exceptionEnums;
-    }
-
-    public Integer getTargetResourceId() {
-        if (targetResource != null) {
-            return targetResource.getId();
-        }
-        return null;
     }
 
     public void addTemplateChange(Integer templateId, String templateName, CopyInfo info) {

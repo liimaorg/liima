@@ -47,10 +47,6 @@ public enum DefaultResourceTypeDefinition {
 		return displayName;
 	}
 
-	public boolean isExclude() {
-		return exclude;
-	}
-
 	public static boolean contains(String name) {
 		DefaultResourceTypeDefinition[] values = values();
 		for (DefaultResourceTypeDefinition value : values) {

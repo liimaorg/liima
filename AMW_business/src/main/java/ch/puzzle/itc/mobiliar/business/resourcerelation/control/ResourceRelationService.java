@@ -236,7 +236,6 @@ public class ResourceRelationService implements Serializable {
 	 * @param provided
 	 * @param relationName
 	 * @param typeIdentifier
-	 * @param changingOwner
 	 * @throws ElementAlreadyExistsException
 	 * @throws ResourceNotFoundException
 	 */
@@ -244,23 +243,6 @@ public class ResourceRelationService implements Serializable {
 			String typeIdentifier) throws ElementAlreadyExistsException, ResourceNotFoundException {
 		addResourceRelation(masterId, slaveGroupId, provided, relationName, typeIdentifier, null);
 
-	}
-
-	/**
-	 * Adds a relation for a specific release
-	 *
-	 * @param masterId
-	 * @param slaveGroupId
-	 * @param provided
-	 * @param relationName
-	 * @param typeIdentifier
-	 * @param releaseId
-	 * @param changingOwner
-	 * @throws ElementAlreadyExistsException
-	 */
-	public void doAddResourceRelationForSpecificRelease(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
-												String typeIdentifier, Integer releaseId) throws ElementAlreadyExistsException, ResourceNotFoundException {
-		addResourceRelation(masterId, slaveGroupId, provided, relationName, typeIdentifier, releaseId);
 	}
 
 	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
@@ -287,13 +269,6 @@ public class ResourceRelationService implements Serializable {
 		entityManager.persist(master);
 
 	}
-
-
-    public void deleteRelation(AbstractResourceRelationEntity relation){
-        if (relation != null){
-            entityManager.remove(relation);
-        }
-    }
 
 	/**
 	 * Removes all relations for all releases of the slave resource

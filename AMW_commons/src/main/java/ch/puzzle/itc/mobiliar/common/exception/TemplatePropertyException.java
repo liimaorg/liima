@@ -28,7 +28,7 @@ public class TemplatePropertyException extends AMWException {
 
 	public static enum CAUSE {
 		INVALID_PROPERTY, INVALID_PROPERTYVALUE, WRONG_DATASTRUCTURE, PROCESSING_EXCEPTION
-	};
+	}
 	
 	private static final long serialVersionUID = 1L;
 

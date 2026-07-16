@@ -211,15 +211,6 @@ public class GenerationUnit {
 		return null;
 	}
 
-	public static GenerationUnit getRuntimeGenerationUnit(Set<GenerationUnit> work){
-		for (GenerationUnit unit : work) {
-			if (unit.getSlaveResource().getResourceType().isRuntimeType()) {
-				return unit;
-			}
-		}
-		return null;
-	}
-
 	public static Set<GenerationUnit> forAppServer(Set<GenerationUnit> work, ResourceEntity node) {
 		List<GenerationUnit> current = new ArrayList<>();
 

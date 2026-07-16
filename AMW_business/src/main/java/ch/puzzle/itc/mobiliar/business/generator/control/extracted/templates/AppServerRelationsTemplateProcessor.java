@@ -99,10 +99,6 @@ public class AppServerRelationsTemplateProcessor {
 		templatesCache = new LinkedHashMap<>();
 	}
 
-     public void setRuntimeProperties(Set<GenerationUnit> work, ResourceEntity runtime){
-	    runtimeProperties = GenerationUnit.forResource(work, runtime).getPropertiesAsModel();
-	}
-
 	public void setNodeProperties(Set<GenerationUnit> work, ResourceEntity node){
 		nodeProperties = GenerationUnit.forResource(work, node).getPropertiesAsModel();
 	}

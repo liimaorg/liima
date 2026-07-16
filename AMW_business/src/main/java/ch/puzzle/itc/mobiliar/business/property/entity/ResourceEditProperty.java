@@ -213,15 +213,6 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
         this.exampleValue = exampleValue;
         this.defaultValue = defaultValue;
 
-        /*try {
-            this.propertyValue = QueryUtils.clobToString(propertyValue);
-            this.propertyComment = QueryUtils.clobToString(propertyComment);
-            this.exampleValue = QueryUtils.clobToString(exampleValue);
-            this.defaultValue = QueryUtils.clobToString(defaultValue);
-        }
-        catch (Exception e) {
-            // do nothing
-        }*/
         this.originalValue = this.propertyValue;
         this.originalPropertyComment = this.propertyComment;
         this.isNullable = isNullable;

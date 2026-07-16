@@ -121,18 +121,6 @@ public class EnvironmentsScreenDomainService {
     }
 
     /**
-     * Hole für eine Id (contextId) die aktuelle Context.
-     */
-    public ContextEntity getContextWithType(Integer contextId) throws ResourceNotFoundException {
-        ContextEntity c = contextDomainService.getContextEntityById(contextId);
-        if (c != null && c.getContextType() != null) {
-            return c;
-        }
-        return null;
-    }
-
-
-    /**
      * Duplicate method use {@link ContextRepository#getContextByName(String)}
      *
      */

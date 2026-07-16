@@ -90,13 +90,4 @@ public abstract class HasContexts<T extends ContextDependency<?>> {
 		getContexts().add(context);
 	}
 
-    /**
-     * Replaces getContexts call but ensures that if list not yet initialized then empty list will be returned
-     */
-    public Set<T> getNullSaveContexts(){
-        if (getContexts() == null) {
-            return Collections.unmodifiableSet(new HashSet<T>());
-        }
-        return getContexts();
-    }
 }

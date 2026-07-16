@@ -60,18 +60,6 @@ public class EnvironmentGenerationResult {
 	}
 
 	/**
-	 * @return all folders to be executed
-	 */
-	public List<String> getFoldersToExecute(){
-		List<String> foldersToExecute = new ArrayList<String>();
-		for (NodeGenerationResult result : nodeGenerationResults) {
-			if(result.isNodeEnabled()){
-				foldersToExecute.add(result.getFolderToExecute());
-			}
-		}
-		return foldersToExecute;
-	}
-	/**
 	 * checks if there were generation Errors on all Nodes
 	 * @return
 	 */
@@ -95,14 +83,6 @@ public class EnvironmentGenerationResult {
 	   }
 	   return true;
     }
-
-	public List<TemplatePropertyException> getPreprocessResults(){
-		List<TemplatePropertyException> result = new ArrayList<>();
-		for (NodeGenerationResult nodeGenerationResult : nodeGenerationResults) {
-			result.addAll(nodeGenerationResult.getPreprocessResults());
-		}
-		return result;
-	}
 
 	public String getErrorMessage() {
 		StringBuilder sb = new StringBuilder();

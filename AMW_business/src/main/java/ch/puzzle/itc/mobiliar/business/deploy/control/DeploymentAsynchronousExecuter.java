@@ -47,10 +47,6 @@ public class DeploymentAsynchronousExecuter {
 	@Inject
 	private RunSystemCallService systemCallService;
 
-	@Inject
-	protected GeneratorFileWriter generatorFileWriter;
-
-
 	/**
 	 * executes a Deployment for the given generationResult
 	 *

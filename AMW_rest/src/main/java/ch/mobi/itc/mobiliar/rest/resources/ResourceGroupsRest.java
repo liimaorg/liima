@@ -134,7 +134,7 @@ public class ResourceGroupsRest {
             @Parameter(description = "a resource type id, the list should be filtered by") @QueryParam("typeId") Integer typeId) {
         if (type != null && typeId != null) {
             throw new BadRequestException("You cannot filter by both type and typeId at the same");
-        };
+        }
         if (typeId != null) {
             return getResourceGroupsByResourceTypeId(typeId);
         }

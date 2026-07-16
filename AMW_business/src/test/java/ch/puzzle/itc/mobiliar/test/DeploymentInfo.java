@@ -92,46 +92,6 @@ public class DeploymentInfo implements Comparable<DeploymentInfo> {
 				+ context.getId() + "), firstApp: " + apps.get(0) + "]";
 	}
 
-	@SuppressWarnings("unchecked")
-	public static List<DeploymentInfo> load(EntityManager entityManager) {
-		Query query = entityManager
-				.createQuery("select distinct d.resource, d.context, d.applicationsWithVersion from DeploymentEntity d where d.buildSuccess = true");
-		List<Object[]> resultList = query.getResultList();
-		List<DeploymentInfo> list = new ArrayList<>();
-
-		for (Object[] objects : resultList) {
-			ResourceEntity resource = (ResourceEntity) objects[0];
-			ContextEntity context = (ContextEntity) objects[1];
-			String appInfo = (String) objects[2];
-
-			list.add(new DeploymentInfo(context, resource, appInfo));
-		}
-		Collections.sort(list);
-		return list;
-
-	}
-
-	public static List<DeploymentInfo> load(EntityManager entityManager, String server) {
-		List<DeploymentInfo> deployments = load(entityManager);
-		return filter(deployments, server);
-
-	}
-
-	public static List<DeploymentInfo> lastForContext(List<DeploymentInfo> allMos) {
-		Set<String> contextNames = new HashSet<>();
-		List<DeploymentInfo> result = new ArrayList<>();
-		for (DeploymentInfo info : allMos) {
-			if (contextNames.add(info.context.getName())) {
-				result.add(info);
-			}
-		}
-		return result;
-	}
-
-	public static List<DeploymentInfo> latest(List<DeploymentInfo> deployments, String server) {
-		return lastForContext(filter(deployments, server));
-	}
-
 	public static List<DeploymentInfo> filter(List<DeploymentInfo> deployments, final String serverName) {
 		List<DeploymentInfo> result = new ArrayList<>();
 		for (DeploymentInfo deployment : deployments) {
@@ -140,14 +100,5 @@ public class DeploymentInfo implements Comparable<DeploymentInfo> {
 			}
 		}
 		return result;
-	}
-
-	public static Set<String> serverNames(List<DeploymentInfo> deployments) {
-		Set<String> serverNames = new TreeSet<>();
-		for (DeploymentInfo info : deployments) {
-			serverNames.add(info.appServer.getName());
-		}
-		return serverNames;
-
 	}
 }

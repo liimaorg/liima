@@ -60,24 +60,12 @@ public class ConsumedResourceRelationEntity extends AbstractResourceRelationEnti
                 + getSlaveResource() + "]";
     }
 
-    public String getMasterResourceName() {
-        return getMasterResource().getName();
-    }
-
     public Integer getMasterResourceId() {
         return getMasterResource().getId();
     }
 
     public Integer getSlaveResourceTypeId() {
         return this.getSlaveResource().getResourceType().getId();
-    }
-
-    public String getRelationIdentifier() {
-        return getIdentifier() != null ? getIdentifier() : getResourceRelationType().getIdentifierOrTypeBName();
-    }
-
-    public String getMasterRelease() {
-        return getMasterResource().getRelease().getName();
     }
 
     @Override

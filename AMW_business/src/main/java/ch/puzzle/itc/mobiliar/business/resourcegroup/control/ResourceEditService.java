@@ -22,7 +22,6 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 
 import ch.puzzle.itc.mobiliar.business.database.control.JpaSqlResultMapper;
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditRelation;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
@@ -44,12 +43,6 @@ public class ResourceEditService {
 
 	@Inject
 	protected EntityManager entityManager;
-
-	@Inject
-	ResourceTypeProvider resourceTypeProvider;
-
-	@Inject
-	ContextDomainService contextDomainService;
 
 	@Inject
 	ResourceRepository resourceRepository;

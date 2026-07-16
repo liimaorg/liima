@@ -93,8 +93,7 @@ public class GenerationPackage {
 		Set<GenerationUnit> result = new LinkedHashSet<>();
 
 		List<GenerationSubPackage> applicationServerSubPackages = getApplicationServerSubPackages();
-		// GenerationSubPackage node = null;
-		// List<GenerationSubPackage> otherResources = new ArrayList<>();
+
 		for (GenerationSubPackage generationSubPackage : applicationServerSubPackages) {
 
 			GenerationUnit nodeUnit = null;

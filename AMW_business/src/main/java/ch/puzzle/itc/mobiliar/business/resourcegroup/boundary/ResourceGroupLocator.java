@@ -22,16 +22,10 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.boundary;
 
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
-import ch.puzzle.itc.mobiliar.business.security.entity.PermissionEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.RestrictionEntity;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 @Stateless
@@ -44,9 +38,6 @@ public class ResourceGroupLocator {
 
 	@Inject
 	ResourceGroupRepository resourceGroupControl;
-
-	@Inject
-	PermissionBoundary permissionBoundary;
 
 	public List<ResourceGroupEntity> getResourceGroups() {
 		return resourceGroupControl.getResourceGroups();
@@ -67,23 +58,6 @@ public class ResourceGroupLocator {
 	public ResourceGroupEntity getResourceGroupForCreateDeploy(Integer groupId) {
 		return resourceGroupControl.getResourceGroupForCreateDeploy(groupId);
 	}
-
-	public List<ResourceGroupEntity> getAllUserAssignableResourceGroupsByName() {
-		List<PermissionEntity> allUserAssignablePermissions = permissionBoundary.getAllUserAssignablePermissions();
-		List<String> assignablePermissions = new ArrayList<>();
-		for (PermissionEntity userAssignablePermission : allUserAssignablePermissions) {
-			assignablePermissions.add(userAssignablePermission.getValue());
-		}
-		List<RestrictionEntity> userRestrictions = permissionBoundary.getRestrictionsForLoggedInUser();
-		Set<Integer> resourceGroupIds = new HashSet<>();
-		for (RestrictionEntity userRestriction : userRestrictions) {
-			if (userRestriction.getResourceGroup() != null && assignablePermissions.contains(userRestriction.getPermission().getValue())) {
-				resourceGroupIds.add(userRestriction.getResourceGroup().getId());
-			}
-		}
-		return resourceGroupControl.getResourceGroupsOrderedByName(resourceGroupIds);
-	}
-
 		
     /**
      * @param resourceTypeName
@@ -93,16 +67,9 @@ public class ResourceGroupLocator {
 	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, boolean fetchResources, boolean sorted) {
 		return resourceGroupControl.getGroupsForType(resourceTypeName, fetchResources, sorted);
 	}
-	
-	public List<ResourceGroupEntity> getGroupsForType(String resourceTypeName, boolean fetchResources) {
-		return resourceGroupControl.getGroupsForType(resourceTypeName, fetchResources);
-	}
+
 	
 	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, boolean fetchResources, boolean sorted) {
 		return resourceGroupControl.getGroupsForType(resourceTypeId, fetchResources, sorted);
-	}
-	
-	public List<ResourceGroupEntity> getGroupsForType(int resourceTypeId, boolean fetchResources) {
-		return resourceGroupControl.getGroupsForType(resourceTypeId, fetchResources);
 	}
 }

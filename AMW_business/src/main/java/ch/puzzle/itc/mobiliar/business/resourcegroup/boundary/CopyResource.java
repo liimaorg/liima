@@ -60,10 +60,7 @@ public class CopyResource {
     @Inject
     private ResourceGroupRepository resourceGroupRepository;
 
-	@Inject
-	private ResourceGroupPersistenceService resourceGroupService;
-
-	@Inject
+    @Inject
 	private CopyResourceDomainService copyResourceDomainService;
 
 	@Inject

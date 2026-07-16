@@ -414,10 +414,6 @@ public class PermissionBoundary implements Serializable {
         return count;
     }
 
-    public boolean canDelegatePermissionsForThisResource(ResourceEntity resource, ContextEntity context) {
-        return (permissionService.hasPermission(Permission.PERMISSION_DELEGATION) && canDelegateThisPermission(Permission.RESOURCE.name(), resource.getResourceGroup().getId(), null, context.getName(), null));
-    }
-
     private boolean canDelegateThisPermission(String permissionName, Integer resourceGroupId, String resourceTypeName, String contextName, Action action) {
         Permission permission = Permission.valueOf(permissionName);
         ResourceGroupEntity resourceGroup = resourceGroupId != null ? resourceGroupRepository.find(resourceGroupId) : null;

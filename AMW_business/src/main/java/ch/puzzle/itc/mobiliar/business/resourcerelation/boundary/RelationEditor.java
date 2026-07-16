@@ -22,16 +22,12 @@ package ch.puzzle.itc.mobiliar.business.resourcerelation.boundary;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
@@ -39,9 +35,7 @@ import java.util.Arrays;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceGroupLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeDomainService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.NamedIdentifiable;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
@@ -52,7 +46,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 /**
  * A boundary for relation editing
@@ -75,35 +68,14 @@ public class RelationEditor {
 	ResourceTypeDomainService resourceTypeDomainService;
 
 	@Inject
-	ResourceRepository resourceRepository;
-
-	@Inject
 	ResourceLocator resourceLocator;
 
 	@Inject
 	ResourceGroupLocator resourceGroupLocator;
 
-	@Inject
-	private ResourceGroupPersistenceService resourceGroupService;
-
-	public enum ResourceRelationType {
+    public enum ResourceRelationType {
 		CONSUMED,
 		PROVIDED
-	}
-
-	/**
-	 * Load all resourceGroups for the given type
-	 * 
-	 * @param typeName
-	 * @param resourceId
-	 *             - the resourceGroup for this resource will be excluded
-	 * @return a list with resourceGroup entities
-	 */
-	public List<? extends NamedIdentifiable> loadResourceGroupsForType(String typeName, Integer resourceId) {
-		ResourceEntity resource = resourceRepository
-				.loadWithResourceGroupAndRelatedResourcesForId(resourceId);
-		return resourceGroupService.loadGroupsForTypeNameExcludeSelected(typeName,
-				Collections.singletonList(resource.getResourceGroup().getId()));
 	}
 
 	/**
@@ -126,7 +98,6 @@ public class RelationEditor {
 	 * @param relationName
 	 * @param typeIdentifier
 	 * @param releaseName
-	 * @param changingOwner
 	 * @throws ResourceNotFoundException
 	 * @throws ElementAlreadyExistsException
 	 * @throws ValidationException
@@ -216,40 +187,6 @@ public class RelationEditor {
 	public void removeResourceTypeRelation(Integer resourceTypeRelationId) throws
 			ResourceTypeNotFoundException {
 		resourceTypeDomainService.removeResourceTypeRelation(resourceTypeRelationId);
-	}
-
-	public Set<ResourceGroupEntity> getApplicationsFromOtherResourcesInGroup(ResourceEntity resource) {
-
-		// ... but we can also add those applications, which are already consumed by another resource of our
-		// own resoure group as long as it is not connected to our release...
-		Set<ResourceGroupEntity> applicationsFromOtherResourcesInGroup = new HashSet<>();
-		resource = entityManager.find(ResourceEntity.class, resource.getId());
-		for (ResourceEntity r : resource.getResourceGroup().getResources()) {
-			if (!resource.equals(r)) {
-				List<ResourceEntity> resourceEntities = r
-						.getConsumedRelatedResourcesByResourceType(DefaultResourceTypeDefinition.APPLICATION);
-				if (resourceEntities != null) {
-					for (ResourceEntity r2 : resourceEntities) {
-						applicationsFromOtherResourcesInGroup.add(getResourceGroupWithAllResources(r2
-								.getResourceGroup().getId()));
-					}
-				}
-			}
-		}
-		return applicationsFromOtherResourcesInGroup;
-	}
-
-	public ResourceGroupEntity getResourceGroupWithAllResources(Integer resourceGroupId) {
-		try {
-			TypedQuery<ResourceGroupEntity> resGroupQuery = entityManager
-					.createQuery(
-							"select rg from ResourceGroupEntity rg left join fetch rg.resources where rg.id=:id",
-							ResourceGroupEntity.class).setParameter("id", resourceGroupId);
-			return resGroupQuery.getSingleResult();
-		}
-		catch (NoResultException e) {
-			return null;
-		}
 	}
 
 	public boolean isValidResourceRelationType(String resourceRelationTypeString) {
