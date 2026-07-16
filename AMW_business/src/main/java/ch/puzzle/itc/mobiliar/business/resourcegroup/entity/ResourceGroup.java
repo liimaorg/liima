@@ -25,9 +25,7 @@ import java.util.*;
 import lombok.Getter;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.utils.DomainObject;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 public class ResourceGroup extends DomainObject<ResourceGroupEntity> implements Comparable<ResourceGroup> {
 
@@ -72,13 +70,6 @@ public class ResourceGroup extends DomainObject<ResourceGroupEntity> implements 
 		return resourceGroup;
 	}
 
-    public ResourceEntity getResourceForRelease(Integer releaseId){
-        if (releaseToResourceMap.containsKey(releaseId)){
-            return releaseToResourceMap.get(releaseId);
-        }
-        return null;
-    }
-
 	@Override
 	public DomainObject<ResourceGroupEntity> wrap(ResourceGroupEntity entity) {
 		setEntity(entity);
@@ -114,54 +105,11 @@ public class ResourceGroup extends DomainObject<ResourceGroupEntity> implements 
 		return relResMap;
 	}
 
-	public void setSelectedReleaseId(Integer releaseId) {
-		this.selectedReleaseId = releaseId;
-		if (releaseToResourceMap.containsKey(releaseId)) {
-			selectedResourceId = releaseToResourceMap.get(releaseId).getId();
-		}
-	}
-
 	public Integer getId() {
 		if (getEntity() == null) {
 			return null;
 		}
 		return getEntity().getId();
-	}
-
-	public Integer getSelectedResourceId() {
-		Integer defaultResourceId = defaultResource != null ? defaultResource.getId() : null;
-		return selectedResourceId != null ? selectedResourceId : defaultResourceId;
-	}
-
-	public ResourceEntity getSelectedResource() {
-		return getSelectedResourceId() != null ? resourcesMap.get(getSelectedResourceId()) : null;
-	}
-
-	public Integer getSelectedReleaseId(){
-		Integer defaultReleaseId = defaultResource != null ? defaultResource.getRelease().getId() : null;
-		return selectedReleaseId != null ? selectedReleaseId : defaultReleaseId;
-	}
-
-	public Set<ResourceEntity> collectApplicationsForAS(Integer asId,
-			ResourceTypeProvider resourceTypeProvider) {
-		if (!appServerToAppMap.containsKey(asId) && resourcesMap.containsKey(asId)) {
-			ResourceEntity as = resourcesMap.get(asId);
-			List<ResourceEntity> applications = as
-					.getConsumedRelatedResourcesByResourceType((DefaultResourceTypeDefinition.APPLICATION));
-			appServerToAppMap.put(asId, new HashSet<ResourceEntity>(applications));
-		}
-		return appServerToAppMap.containsKey(asId) ? appServerToAppMap.get(asId)
-				: new HashSet<ResourceEntity>();
-	}
-
-	public Set<ResourceEntity> collectApplicationsForAllAS(ResourceTypeProvider resourceTypeProvider) {
-		Set<ResourceEntity> appsForAs = new HashSet<ResourceEntity>();
-		for (ResourceEntity res : resourcesMap.values()) {
-			if (res.getResourceType().isApplicationServerResourceType()) {
-				appsForAs.addAll(collectApplicationsForAS(res.getId(), resourceTypeProvider));
-			}
-		}
-		return appsForAs;
 	}
 
 	@Override

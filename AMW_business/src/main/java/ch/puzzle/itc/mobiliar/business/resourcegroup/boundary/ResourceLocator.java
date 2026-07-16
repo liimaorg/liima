@@ -30,17 +30,13 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.utils.ValidationHelper;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
-import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
-import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -176,12 +172,6 @@ public class ResourceLocator {
 		return resourceRepository.getResourcesByGroupNameWithRelations(groupName);
 	}
 
-    public List<ResourceEntity> getResourcesByGroupNameWithAllRelationsOrderedByRelease(String groupName)
-            throws ValidationException {
-        ValidationHelper.validateNotNullOrEmptyChecked(groupName);
-        return resourceRepository.getResourcesByGroupNameWithAllRelationsOrderedByRelease(groupName);
-    }
-
     /**
      * @return resource for id with resourceGroup and other resources
      */
@@ -212,26 +202,6 @@ public class ResourceLocator {
             }
         }
         return null;
-    }
-
-    protected List<String> extractResourceTypeSystemProperties(ConfigKey systemProperty, String defaultValue) {
-        String commaseperatedProperties;
-
-        if (defaultValue != null){
-            commaseperatedProperties = ConfigurationService.getProperty(systemProperty, defaultValue);
-        } else {
-            commaseperatedProperties = ConfigurationService.getProperty(systemProperty);
-        }
-
-        List<String> result = new ArrayList<>();
-
-        if (commaseperatedProperties != null) {
-            String[] properties = commaseperatedProperties.split(",");
-            for (String property : properties) {
-                result.add(property.trim().toLowerCase());
-            }
-        }
-        return result;
     }
 
     /**

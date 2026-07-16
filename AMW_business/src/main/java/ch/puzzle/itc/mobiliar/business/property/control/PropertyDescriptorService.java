@@ -26,12 +26,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
-import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.AbstractContext;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextDependency;
 import ch.puzzle.itc.mobiliar.business.environment.entity.HasContexts;
@@ -61,9 +56,6 @@ public class PropertyDescriptorService {
     EntityManager entityManager;
 
     @Inject
-    ContextDomainService contextService;
-
-    @Inject
     PermissionService permissionService;
 
     @Inject
@@ -75,23 +67,6 @@ public class PropertyDescriptorService {
     @Inject
     AuditService auditService;
 
-
-    public List<PropertyDescriptorEntity> getPropertyDescriptorsForHasContextWithNullCardinality(
-            HasContexts<? extends AbstractContext> hasContexts) {
-        AbstractContext contextEntity = hasContexts.getOrCreateContext(contextService
-                .getGlobalResourceContextEntity());
-        List<PropertyDescriptorEntity> result = new ArrayList<>();
-        if (contextEntity != null && contextEntity.getPropertyDescriptors() != null) {
-            for (PropertyDescriptorEntity property : contextEntity.getPropertyDescriptors()) {
-                if (property.getCardinalityProperty() == null
-                        || property.getCardinalityProperty() == 0) {
-                    result.add(property);
-                }
-            }
-        }
-        Collections.sort(result, PropertyDescriptorEntity.NAME_SORTING_COMPARATOR);
-        return result;
-    }
 
     /**
      * Persists a given PropertyDescriptor, handles its encryption/decryption and manages its PropertyTags
@@ -324,25 +299,6 @@ public class PropertyDescriptorService {
         }
         return propertyDescriptor;
     }
-
-    /**
-     * Finds a PropertyDescriptorEntity identified by its technical key
-     *
-     * @param technicalKey
-     * @return
-     */
-    public PropertyDescriptorEntity findPropertyDescriptorByName(String technicalKey) {
-        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Object> query = cb.createQuery();
-        Root<PropertyDescriptorEntity> from = query.from(PropertyDescriptorEntity.class);
-        CriteriaQuery<Object> select = query.select(from);
-        Predicate predicate = cb.equal(from.get("propertyName"), technicalKey);
-        query.where(predicate);
-        TypedQuery<Object> tq = entityManager.createQuery(select);
-        List<Object> result = tq.getResultList();
-        return result.isEmpty() ? null : (PropertyDescriptorEntity) result.get(0);
-    }
-
 
     /**
      * if the value for encryption of a propertydescriptor has been changed, the values of the already

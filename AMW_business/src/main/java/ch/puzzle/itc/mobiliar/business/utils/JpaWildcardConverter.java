@@ -43,10 +43,4 @@ public class JpaWildcardConverter {
 		
 		return searchText;
 	}
-	
-	public static boolean containsWildcards(String searchString) {
-		
-		return searchString.contains(String.valueOf(WILDCARD_CHARACTER));
-	}
-
 }

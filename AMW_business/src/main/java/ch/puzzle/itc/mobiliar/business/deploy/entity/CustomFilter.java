@@ -362,14 +362,6 @@ public class CustomFilter {
                 && comparatorSelection != null);
     }
 
-    public boolean hasDropDownItems() {
-        return !dropDownItems.isEmpty();
-    }
-
-    public boolean hasDropDownItemsMap() {
-        return !dropDownItemsMap.isEmpty();
-    }
-
     @Override
     public boolean equals(Object obj) {
         CustomFilter filter;

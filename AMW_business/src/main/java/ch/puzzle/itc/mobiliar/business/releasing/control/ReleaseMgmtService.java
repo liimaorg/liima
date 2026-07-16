@@ -20,9 +20,6 @@
 
 package ch.puzzle.itc.mobiliar.business.releasing.control;
 
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
-import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentState;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
@@ -31,7 +28,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -62,51 +58,9 @@ public class ReleaseMgmtService {
         return persistenceService.findByName(name);
     }
 
-    /**
-     * @return a list with releaseEntities, excluding the one we want to copy from
-     */
-    public Map<Integer, ReleaseEntity> loadReleasesForCreatingNewRelease(Set<ReleaseEntity> existingReleases) {
-        Map<Integer, ReleaseEntity> releases = new HashMap<>();
-        List<ReleaseEntity> allReleases = persistenceService.loadAllReleaseEntities(false);
-        for (ReleaseEntity rel : allReleases) {
-            if (!existingReleases.contains(rel)) {
-                releases.put(rel.getId(), rel);
-            }
-        }
-        return releases;
-    }
 
     public ReleaseEntity getDefaultRelease() {
         return persistenceService.getDefaultRelease();
-    }
-
-
-    public Map<ReleaseEntity, Date> getDeployableReleasesForResourceGroupWithLatestDeploymentDate(ResourceGroupEntity resourceGroup, ContextEntity context) {
-        Map<ReleaseEntity, Date> result = new LinkedHashMap<>();
-        List<ReleaseEntity> releases = getDeployableReleasesForResourceGroup(resourceGroup);
-        for (ReleaseEntity rel : releases) {
-            DeploymentEntity deployment = getLastSuccessfulDeploymentForResourceGroup(resourceGroup, rel, context);
-            Date lastSuccessfulDeployment = null;
-            if (deployment != null) {
-                lastSuccessfulDeployment = deployment.getDeploymentDate();
-            }
-            result.put(rel, lastSuccessfulDeployment);
-        }
-        return result;
-    }
-
-    private DeploymentEntity getLastSuccessfulDeploymentForResourceGroup(ResourceGroupEntity resourceGroup, ReleaseEntity release, ContextEntity context) {
-        TypedQuery<DeploymentEntity> query = em.createNamedQuery(DeploymentEntity.LAST_SUCCESSFUL_DEPLOYMENT, DeploymentEntity.class);
-        query.setParameter("context", context).setParameter("release", release).setParameter("resourceGroup", resourceGroup).setParameter("deploymentState", DeploymentState.success);
-        List<DeploymentEntity> queryResult = query.getResultList();
-        if (queryResult.size() == 0) {
-            return null;
-        } else {
-            if (queryResult.size() > 1) {
-                log.warning("Multiple last deployments for resource group " + resourceGroup.getId() + " in release " + release.getId() + " and in context " + context.getId() + " found...");
-            }
-            return queryResult.get(0);
-        }
     }
 
     public List<ReleaseEntity> getDeployableReleasesForResourceGroup(ResourceGroupEntity rg) {

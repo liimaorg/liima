@@ -140,20 +140,12 @@ public class GenerationContext {
 		return deployment;
 	}
 
-	public ResourceDependencyResolverService getResourceDependencyResolver() {
-		return resourceDependencyResolver;
-	}
-
 	public void setGenerationDir(String generationDir) {
 		this.generationDir = generationDir;
 	}
 
 	public void setNodeJobEntity(NodeJobEntity nodeJobEntity) {
 		this.nodeJobEntity = nodeJobEntity;
-	}
-	
-	public NodeJobEntity getNodeJobEntity() {
-		return this.nodeJobEntity;
 	}
 
 	/**
@@ -181,12 +173,6 @@ public class GenerationContext {
 	public List<GlobalFunctionEntity> getGlobalFunctions() {
 		return globalFunctions;
 	}
-	
-	public GenerationContext copyGenerationContextForOtherAs(ResourceEntity as){
-		GenerationContext c = new GenerationContext(context, as, deployment, deploymentDate, generationModus, resourceDependencyResolver);
 
-		return c;
-	}
-	
 
 }

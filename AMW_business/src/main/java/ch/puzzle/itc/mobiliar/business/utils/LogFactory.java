@@ -36,14 +36,5 @@ public class LogFactory {
 	Logger createLogger(InjectionPoint injectionPoint) { 
 	      return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName()); 
 	 }
-	
 
-	/**
-	 * Logger to log the Debuginfo of the Generator in
-	 * 
-	 * @return
-	 */
-	public static Logger propertyMapGeneratorLogger() { 
-	      return Logger.getLogger("AMW_GENERATOR"); 
-	 }
 }

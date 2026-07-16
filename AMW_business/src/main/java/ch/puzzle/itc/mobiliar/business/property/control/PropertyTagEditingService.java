@@ -59,15 +59,6 @@ public class PropertyTagEditingService {
     }
 
     /**
-     * Returns a list containing all existing LOCAL PropertyTagEntities
-     * @param sortDesc
-     * @return
-     */
-    public List<PropertyTagEntity> loadAllLocalPropertyTagEntities(boolean sortDesc) {
-        return loadAllPropertyTagEntities(sortDesc, LOCAL);
-    }
-
-    /**
      * Persists a new PropertyTag.
      * If the PropertyTag to be persisted has PropertyTagType.GLOBAL,
      * it assures that its name is unique

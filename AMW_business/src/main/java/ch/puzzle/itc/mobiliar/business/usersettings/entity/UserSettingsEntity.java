@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-
+//TODO remove
 @Entity
 @Table(name="TAMW_userSettings")
 public class UserSettingsEntity {

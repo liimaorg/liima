@@ -263,10 +263,6 @@ public class ResourceBoundary {
         doRemoveResourceEntity(resourceId);
     }
 
-    public void removeResourceEntityOfDefaultResType(Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException {
-        doRemoveResourceEntity(resourceId);
-    }
-
     private void doRemoveResourceEntity(Integer resourceId) throws ResourceNotFoundException, ElementAlreadyExistsException {
         ResourceEntity resourceEntity = commonService.getResourceEntityById(resourceId);
         if (resourceEntity == null) {
