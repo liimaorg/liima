@@ -179,29 +179,6 @@ public class TemplatesScreenDomainService {
         return templateDescriptorList;
     }
 
-
-    /**
-     * Löscht die Template von eine ResourceType.
-     *
-     * @param selectedTemplateId
-     * @throws ResourceTypeNotFoundException
-     * @throws TemplateNotDeletableException
-     */
-    private void doRemoveTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-        TemplateDescriptorEntity templateDescriptor = entityManager.find(TemplateDescriptorEntity.class, selectedTemplateId);
-        if (templateDescriptor != null && templateDescriptor.getName() != null && SystemCallTemplate.getName().equals(templateDescriptor.getName())) {
-            String message = SystemCallTemplate.getName() + " Template can't be deleted!";
-            log.info(message);
-            throw new TemplateNotDeletableException(message);
-        }
-        AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
-        if (owner != null) {
-            owner.removeTemplate(templateDescriptor);
-        }
-        entityManager.remove(templateDescriptor);
-        log.info("Template Id: " + selectedTemplateId + " was deleted successfully.");
-    }
-
     public AbstractContext getOwnerOfTemplate(TemplateDescriptorEntity templateDescriptor) {
         // ContextEntity
         AbstractContext c;
