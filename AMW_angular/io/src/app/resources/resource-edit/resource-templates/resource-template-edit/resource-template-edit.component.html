@@ -63,7 +63,6 @@
               !isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0
             "
             [class.is-valid]="isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0"
-            pattern="^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s][^/\\]*[^\s]$|^$"
           />
           @if (!isValidTargetPath() && template && template.targetPath && template.targetPath.length > 0) {
             <div class="invalid-feedback">
