@@ -135,7 +135,7 @@ export class ResourcesPageComponent implements OnDestroy {
     this.loadResourceGroups(resourceType);
     // For parent with children: expand it and update expandedItems
     if (resourceType.hasChildren) {
-      this.getUpdateExpandedItems(resourceType);
+      this.toggleExpandedItems(resourceType);
       this.expandedResourceTypeId = resourceType.id;
     } else {
       // For leaf: expand parent so child is visible
@@ -184,7 +184,7 @@ export class ResourcesPageComponent implements OnDestroy {
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType, updateUrl: boolean = true): void {
     this.selection = resourceType;
     this.loadResourceGroups(resourceType);
-    if (resourceType && resourceType.hasChildren) this.getUpdateExpandedItems(resourceType);
+    if (resourceType && resourceType.hasChildren) this.toggleExpandedItems(resourceType);
     this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
     this.selectedResourceType.set(resourceType);
 
@@ -212,7 +212,7 @@ export class ResourcesPageComponent implements OnDestroy {
   }
 
   isExpanded(resourceType: ResourceType) {
-    return this.expandedItems.find((element) => element.id === resourceType.id);
+    return this.expandedItems.some((element) => element.id === resourceType.id);
   }
 
   addResource(resource: any) {
@@ -261,7 +261,7 @@ export class ResourcesPageComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Resource type deleted successfully.'),
-        error: (e) => console.error('Failed to create resource:', e),
+        error: (e) => console.error('Failed to delete resource type:', e),
         complete: () => {
           this.resourceTypesService.refreshData();
           this.selectedResourceType.set(null);
@@ -273,7 +273,7 @@ export class ResourcesPageComponent implements OnDestroy {
     this.destroy$.next(undefined);
   }
 
-  private getUpdateExpandedItems(resourceType: ResourceType) {
+  private toggleExpandedItems(resourceType: ResourceType) {
     const index = this.expandedItems?.findIndex((element: ResourceType) => element.id === resourceType.id);
     if (index > -1) {
       this.expandedItems.splice(index, 1);
