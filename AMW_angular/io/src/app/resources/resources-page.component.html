@@ -73,7 +73,7 @@
       </ul>
     </div>
     <div class="col-10">
-      @if (selectedResourceTypeOrDefault(); as rt) {
+      @if (selectedResourceType(); as rt) {
         <app-resources-list
           [resourceType]="rt"
           [resourceGroupList]="resourceGroupListForType()"
