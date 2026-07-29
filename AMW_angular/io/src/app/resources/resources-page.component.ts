@@ -70,19 +70,26 @@ export class ResourcesPageComponent implements OnDestroy {
     { initialValue: null },
   );
 
-  private autoSelectTrigger = computed(() => {
+  private autoSelectTrigger = effect(() => {
     const idFromUrl = this.selectedResourceTypeIdFromUrl();
-    if (idFromUrl === null) return;
-
     const allTypes = [...(this.predefinedResourceTypes() || []), ...(this.rootResourceTypes() || [])];
     if (allTypes.length === 0) return;
 
-    const resourceType = this.findTypeById(allTypes, idFromUrl);
-    if (resourceType) {
-      // Expand parent chain so child is visible in tree, get the immediate parent
-      const parentType = this.expandParents(allTypes, idFromUrl);
-      // Safely execute selection out-of-stack to avoid expression-changed bugs
-      setTimeout(() => this.selectFromUrl(resourceType, parentType));
+    // If URL parameter is provided, select that specific type
+    if (idFromUrl !== null) {
+      const resourceType = this.findTypeById(allTypes, idFromUrl);
+      if (resourceType) {
+        const parentType = this.expandParents(allTypes, idFromUrl);
+        setTimeout(() => this.selectFromUrl(resourceType, parentType));
+      }
+    }
+    // If no URL parameter and no selection yet, select first root type as default
+    else if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
+      const firstRootType = this.rootResourceTypes()[0];
+      this.selection = firstRootType;
+      this.loadResourceGroups(firstRootType);
+      this.selectedResourceType.set(firstRootType);
+      this.updateUrlForResourceType(firstRootType);
     }
   });
 
@@ -138,9 +145,6 @@ export class ResourcesPageComponent implements OnDestroy {
   }
 
   constructor() {
-    // Simply reference the computed signal so it stays active and listens for changes
-    this.autoSelectTrigger();
-
     // Initial page load: hide loader once resource types are available
     effect(() => {
       if (this.predefinedResourceTypes().length > 0 || this.rootResourceTypes().length > 0) {
@@ -185,15 +189,7 @@ export class ResourcesPageComponent implements OnDestroy {
     this.selectedResourceType.set(resourceType);
 
     if (updateUrl) {
-      this.router
-        .navigate([], {
-          relativeTo: this.route,
-          queryParams: { selectedResourceTypeId: resourceType.id },
-          queryParamsHandling: 'merge',
-        })
-        .catch((error) => {
-          console.error('Navigation error:', error);
-        });
+      this.updateUrlForResourceType(resourceType);
     }
   }
 
@@ -201,6 +197,18 @@ export class ResourcesPageComponent implements OnDestroy {
     this.isLoading.set(true);
     this.pendingResourceListLoad = true;
     this.resourceService.setTypeForResourceGroupList(resourceType);
+  }
+
+  private updateUrlForResourceType(resourceType: ResourceType): void {
+    this.router
+      .navigate([], {
+        relativeTo: this.route,
+        queryParams: { selectedResourceTypeId: resourceType.id },
+        queryParamsHandling: 'merge',
+      })
+      .catch((error) => {
+        console.error('Navigation error:', error);
+      });
   }
 
   isExpanded(resourceType: ResourceType) {
@@ -215,7 +223,7 @@ export class ResourcesPageComponent implements OnDestroy {
         next: () => this.toastService.success('Resource saved successfully.'),
         error: (e) => console.error('Failed to create resource:', e),
         complete: () => {
-          const rt = this.selectedResourceTypeOrDefault();
+          const rt = this.selectedResourceType();
           if (rt) this.resourceService.setTypeForResourceGroupList(rt);
         },
       });
