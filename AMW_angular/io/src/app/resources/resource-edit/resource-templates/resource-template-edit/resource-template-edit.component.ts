@@ -49,9 +49,11 @@ export class ResourceTemplateEditComponent {
 
   private _template!: ResourceTemplate;
   @Input() set template(value: ResourceTemplate) {
-    this._template = value;
     if (value && value.id) {
+      this._template = { ...value, targetPlatforms: [...value.targetPlatforms] };
       this.loadRevisions(value.id);
+    } else {
+      this._template = value;
     }
   }
   get template(): ResourceTemplate {
@@ -103,8 +105,8 @@ export class ResourceTemplateEditComponent {
 
   save() {
     if (this.isValidForm()) {
-      if (this.revision()) this.template.fileContent = this.diffValue.original;
-      this.saveTemplate.emit(this.template);
+      if (this.revision()) this._template.fileContent = this.diffValue.original;
+      this.saveTemplate.emit(this._template);
       this.activeModal.close();
     }
   }
@@ -117,7 +119,7 @@ export class ResourceTemplateEditComponent {
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this.template.targetPlatforms.includes(name),
+        selected: this._template.targetPlatforms.includes(name),
       };
     });
   }
@@ -134,11 +136,11 @@ export class ResourceTemplateEditComponent {
   }
 
   selectTargetPlatform(targetPlatform: TargetPlatformModel) {
-    if (!this.template.targetPlatforms.includes(targetPlatform.name)) {
-      this.template.targetPlatforms.push(targetPlatform.name);
+    if (!this._template.targetPlatforms.includes(targetPlatform.name)) {
+      this._template.targetPlatforms.push(targetPlatform.name);
     } else {
-      const indexOfTargetPlatformNameToRemove = this.template.targetPlatforms.indexOf(targetPlatform.name);
-      this.template.targetPlatforms.splice(indexOfTargetPlatformNameToRemove, 1);
+      const indexOfTargetPlatformNameToRemove = this._template.targetPlatforms.indexOf(targetPlatform.name);
+      this._template.targetPlatforms.splice(indexOfTargetPlatformNameToRemove, 1);
     }
   }
 
@@ -150,10 +152,10 @@ export class ResourceTemplateEditComponent {
 
   selectRevision(revisionId: number | null, displayName: string | null): void {
     if (revisionId && displayName) {
-      this.templatesService.getTemplateByIdAndRevision(this.template.id!, revisionId).subscribe((revision) => {
+      this.templatesService.getTemplateByIdAndRevision(this._template.id!, revisionId).subscribe((revision) => {
         this.revision.set(revision);
         this.selectedRevisionName = displayName;
-        this.diffValue = { original: this.template.fileContent, modified: this.revision()!.fileContent };
+        this.diffValue = { original: this._template.fileContent, modified: this.revision()!.fileContent };
       });
     } else {
       //reset selected revision
@@ -168,13 +170,13 @@ export class ResourceTemplateEditComponent {
 
   isNameValid(): boolean {
     const REGEXP_NON_EMPTY_TRIMMED = /^\S(.*\S)?$/;
-    return this.template ? REGEXP_NON_EMPTY_TRIMMED.test(this.template.name) : false;
+    return this._template ? REGEXP_NON_EMPTY_TRIMMED.test(this._template.name) : false;
   }
 
   isValidTargetPath() {
     const REGEXP_FILE_PATH_PATTERN = /^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s].*[^\s]$|^$/;
-    return this.template && this.template.targetPath && this.template.targetPath.trim() !== ''
-      ? REGEXP_FILE_PATH_PATTERN.test(this.template.targetPath)
+    return this._template && this._template.targetPath && this._template.targetPath.trim() !== ''
+      ? REGEXP_FILE_PATH_PATTERN.test(this._template.targetPath)
       : false;
   }
 }
