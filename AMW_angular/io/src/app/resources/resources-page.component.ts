@@ -58,7 +58,6 @@ export class ResourcesPageComponent implements OnDestroy {
   expandedResourceTypeId: number | null = null;
   expandedItems: ResourceType[] = [];
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
-  selection: any;
 
   private selectedResourceTypeIdFromUrl = toSignal(
     this.route.queryParamMap.pipe(
@@ -86,7 +85,6 @@ export class ResourcesPageComponent implements OnDestroy {
     // If no URL parameter and no selection yet, select first root type as default
     else if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
       const firstRootType = this.rootResourceTypes()[0];
-      this.selection = firstRootType;
       this.loadResourceGroups(firstRootType);
       this.selectedResourceType.set(firstRootType);
       this.updateUrlForResourceType(firstRootType);
@@ -131,7 +129,6 @@ export class ResourcesPageComponent implements OnDestroy {
   }
 
   private selectFromUrl(resourceType: ResourceType, parentType: ResourceType | null): void {
-    this.selection = resourceType;
     this.loadResourceGroups(resourceType);
     // For parent with children: expand it and update expandedItems
     if (resourceType.hasChildren) {
@@ -182,7 +179,6 @@ export class ResourcesPageComponent implements OnDestroy {
   });
 
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType, updateUrl: boolean = true): void {
-    this.selection = resourceType;
     this.loadResourceGroups(resourceType);
     if (resourceType && resourceType.hasChildren) this.toggleExpandedItems(resourceType);
     this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
