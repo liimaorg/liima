@@ -170,14 +170,6 @@ export class ResourcesPageComponent implements OnDestroy {
     }
   });
 
-  selectedResourceTypeOrDefault: Signal<ResourceType | null> = computed(() => {
-    if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
-      this.resourceService.setTypeForResourceGroupList(this.rootResourceTypes()[0]);
-      return this.rootResourceTypes()[0];
-    }
-    return this.selectedResourceType() || null;
-  });
-
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType, updateUrl: boolean = true): void {
     this.loadResourceGroups(resourceType);
     if (resourceType && resourceType.hasChildren) this.toggleExpandedItems(resourceType);
