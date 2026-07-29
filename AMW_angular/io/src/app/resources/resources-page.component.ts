@@ -108,7 +108,7 @@ export class ResourcesPageComponent implements OnDestroy {
       const isDirectChild = type.children?.some((c) => c.id === targetId);
       if (isDirectChild) {
         // Add this parent to expanded items
-        if (!this.expandedItems.find((e) => e.id === type.id)) {
+        if (!this.isExpanded(type)) {
           this.expandedItems.push(type);
         }
         return type;
@@ -118,7 +118,7 @@ export class ResourcesPageComponent implements OnDestroy {
         const foundParent = this.expandParents(type.children, targetId);
         if (foundParent) {
           // Add this ancestor to expanded items
-          if (!this.expandedItems.find((e) => e.id === type.id)) {
+          if (!this.isExpanded(type)) {
             this.expandedItems.push(type);
           }
           return foundParent; // Return the immediate parent (deepest level)
@@ -199,7 +199,7 @@ export class ResourcesPageComponent implements OnDestroy {
       });
   }
 
-  isExpanded(resourceType: ResourceType) {
+  isExpanded(resourceType: ResourceType): boolean {
     return this.expandedItems.some((element) => element.id === resourceType.id);
   }
 
@@ -262,7 +262,7 @@ export class ResourcesPageComponent implements OnDestroy {
   }
 
   private toggleExpandedItems(resourceType: ResourceType) {
-    const index = this.expandedItems?.findIndex((element: ResourceType) => element.id === resourceType.id);
+    const index = this.expandedItems.findIndex((element: ResourceType) => element.id === resourceType.id);
     if (index > -1) {
       this.expandedItems.splice(index, 1);
     } else {
