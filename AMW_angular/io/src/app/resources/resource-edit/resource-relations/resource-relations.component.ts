@@ -14,11 +14,11 @@ import { RouterLink } from '@angular/router';
 import { Observable, of, forkJoin } from 'rxjs';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { finalize } from 'rxjs/operators';
-import { TileComponent } from '../../../shared/tile/tile.component';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
-import { ButtonComponent } from '../../../shared/button/button.component';
-import { IconComponent } from '../../../shared/icon/icon.component';
-import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
+import { TileComponent } from 'src/app/shared/tile/tile.component';
+import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { ButtonComponent } from 'src/app/shared/button/button.component';
+import { IconComponent } from 'src/app/shared/icon/icon.component';
+import { ModalHeaderComponent } from 'src/app/shared/modal-header/modal-header.component';
 import { ResourceService } from '../../services/resource.service';
 import { ResourceTypesService } from '../../services/resource-types.service';
 import { PropertyUpdate } from '../../services/resource-properties.service';
@@ -32,9 +32,7 @@ import { PropertiesListComponent } from '../../properties-list/properties-list.c
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
 import { RelationActiveApplicationsComponent } from './relation-active-applications/relation-active-applications.component';
 import { ResourceActivationService, ResourceActivation } from '../../services/resource-activation.service';
-import {
-  ResourceRelationTemplatesListComponent
-} from './resource-relation-templates-list/resource-relation-templates-list.component';
+import { ResourceRelationTemplatesListComponent } from './resource-relation-templates-list/resource-relation-templates-list.component';
 
 @Component({
   selector: 'app-resource-relations',
@@ -53,7 +51,7 @@ import {
     RouterLink,
     ModalHeaderComponent,
     RelationActiveApplicationsComponent,
-    ResourceRelationTemplatesListComponent
+    ResourceRelationTemplatesListComponent,
   ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
@@ -272,13 +270,13 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     this.addAsProvided.set(false);
     this.childResourceTypes.set([]);
     this.availableResourceGroups.set([]);
-    this.resourceTypesService.getRootResourceTypes().subscribe({
-      next: (types) => this.resourceTypes.set(types),
-      error: (err) => {
-        console.error('Failed to load resource types:', err);
-        this.toastService.error('Failed to load resource types.');
-      },
-    });
+
+    if (this.isDefaultResourceType()) {
+      this.loadAllResourceTypes();
+    } else {
+      this.loadRelatedResourceTypes();
+    }
+
     this.modalService.open(this.addRelationModal, { size: 'lg' });
   }
 
@@ -532,6 +530,42 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       error: (err) => {
         console.error('Failed to load resource groups:', err);
         this.toastService.error('Failed to load resource groups.');
+      },
+    });
+  }
+
+  private isDefaultResourceType(): boolean {
+    const type = this.resource()?.type;
+    const defaultTypes = ['APPLICATION', 'APPLICATIONSERVER', 'NODE', 'RUNTIME'];
+    const cleanType = type!.replace(/"/g, '');
+    return defaultTypes.includes(cleanType);
+  }
+
+  private loadRelatedResourceTypes(): void {
+    const unresolvedTypes = new Set(this.groupedRelations().unresolved.map((u) => u.type));
+
+    if (unresolvedTypes.size === 0) {
+      return;
+    }
+
+    this.resourceTypesService.getAllResourceTypes().subscribe({
+      next: (types) => {
+        const filteredTypes = types.filter((t) => unresolvedTypes.has(t.name));
+        this.resourceTypes.set(filteredTypes);
+      },
+      error: (err) => {
+        console.error('Failed to load resource types:', err);
+        this.toastService.error('Failed to load resource types.');
+      },
+    });
+  }
+
+  private loadAllResourceTypes(): void {
+    this.resourceTypesService.getRootResourceTypes().subscribe({
+      next: (types) => this.resourceTypes.set(types),
+      error: (err) => {
+        console.error('Failed to load resource types:', err);
+        this.toastService.error('Failed to load resource types.');
       },
     });
   }
