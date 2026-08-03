@@ -47,17 +47,17 @@ interface TargetPlatformModel {
 export class ResourceTemplateEditComponent {
   activeModal = inject(NgbActiveModal);
 
-  private _template!: ResourceTemplate;
+  private _currentWorkingTemplate!: ResourceTemplate;
   @Input() set template(value: ResourceTemplate) {
     if (value && value.id) {
-      this._template = { ...value, targetPlatforms: [...value.targetPlatforms] };
+      this._currentWorkingTemplate = { ...value, targetPlatforms: [...value.targetPlatforms] };
       this.loadRevisions(value.id);
     } else {
-      this._template = value;
+      this._currentWorkingTemplate = value;
     }
   }
   get template(): ResourceTemplate {
-    return this._template;
+    return this._currentWorkingTemplate;
   }
 
   private readonly canAddOrEditSignal = signal(false);
@@ -105,8 +105,8 @@ export class ResourceTemplateEditComponent {
 
   save() {
     if (this.isValidForm()) {
-      if (this.revision()) this._template.fileContent = this.diffValue.original;
-      this.saveTemplate.emit(this._template);
+      if (this.revision()) this._currentWorkingTemplate.fileContent = this.diffValue.original;
+      this.saveTemplate.emit(this._currentWorkingTemplate);
       this.activeModal.close();
     }
   }
@@ -119,7 +119,7 @@ export class ResourceTemplateEditComponent {
     return allTargetPlatforms.map((name) => {
       return {
         name: name,
-        selected: this._template.targetPlatforms.includes(name),
+        selected: this._currentWorkingTemplate.targetPlatforms.includes(name),
       };
     });
   }
@@ -136,11 +136,13 @@ export class ResourceTemplateEditComponent {
   }
 
   selectTargetPlatform(targetPlatform: TargetPlatformModel) {
-    if (!this._template.targetPlatforms.includes(targetPlatform.name)) {
-      this._template.targetPlatforms.push(targetPlatform.name);
+    if (!this._currentWorkingTemplate.targetPlatforms.includes(targetPlatform.name)) {
+      this._currentWorkingTemplate.targetPlatforms.push(targetPlatform.name);
     } else {
-      const indexOfTargetPlatformNameToRemove = this._template.targetPlatforms.indexOf(targetPlatform.name);
-      this._template.targetPlatforms.splice(indexOfTargetPlatformNameToRemove, 1);
+      const indexOfTargetPlatformNameToRemove = this._currentWorkingTemplate.targetPlatforms.indexOf(
+        targetPlatform.name,
+      );
+      this._currentWorkingTemplate.targetPlatforms.splice(indexOfTargetPlatformNameToRemove, 1);
     }
   }
 
@@ -152,11 +154,16 @@ export class ResourceTemplateEditComponent {
 
   selectRevision(revisionId: number | null, displayName: string | null): void {
     if (revisionId && displayName) {
-      this.templatesService.getTemplateByIdAndRevision(this._template.id!, revisionId).subscribe((revision) => {
-        this.revision.set(revision);
-        this.selectedRevisionName = displayName;
-        this.diffValue = { original: this._template.fileContent, modified: this.revision()!.fileContent };
-      });
+      this.templatesService
+        .getTemplateByIdAndRevision(this._currentWorkingTemplate.id!, revisionId)
+        .subscribe((revision) => {
+          this.revision.set(revision);
+          this.selectedRevisionName = displayName;
+          this.diffValue = {
+            original: this._currentWorkingTemplate.fileContent,
+            modified: this.revision()!.fileContent,
+          };
+        });
     } else {
       //reset selected revision
       this.revision.set(null);
@@ -170,13 +177,15 @@ export class ResourceTemplateEditComponent {
 
   isNameValid(): boolean {
     const REGEXP_NON_EMPTY_TRIMMED = /^\S(.*\S)?$/;
-    return this._template ? REGEXP_NON_EMPTY_TRIMMED.test(this._template.name) : false;
+    return this._currentWorkingTemplate ? REGEXP_NON_EMPTY_TRIMMED.test(this._currentWorkingTemplate.name) : false;
   }
 
   isValidTargetPath() {
     const REGEXP_FILE_PATH_PATTERN = /^(?![\w]:|\/|\.\.)(?!.*\.\.)(?=.*\S)[^\s].*[^\s]$|^$/;
-    return this._template && this._template.targetPath && this._template.targetPath.trim() !== ''
-      ? REGEXP_FILE_PATH_PATTERN.test(this._template.targetPath)
+    return this._currentWorkingTemplate &&
+      this._currentWorkingTemplate.targetPath &&
+      this._currentWorkingTemplate.targetPath.trim() !== ''
+      ? REGEXP_FILE_PATH_PATTERN.test(this._currentWorkingTemplate.targetPath)
       : false;
   }
 }
