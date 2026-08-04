@@ -197,6 +197,12 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return isAppServer && isNode;
   });
 
+  protected isNode = computed(() => {
+    const type = this.resource()?.type;
+    const cleanType = type?.replace(/"/g, '');
+    return cleanType === 'NODE';
+  });
+
   protected properties = computed<Property[]>(() => {
     const props = this.relationsService.relationProperties;
     const result: Property[] = [];

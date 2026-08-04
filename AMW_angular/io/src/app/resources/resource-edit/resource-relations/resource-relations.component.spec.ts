@@ -80,7 +80,7 @@ describe('ResourceRelationsComponent', () => {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should load resource types for default resource type (NODE)', () => {
+  it('isNode should return true for NODE resource type', () => {
     component['resource'] = signal({
       id: 1,
       name: 'Test',
@@ -89,11 +89,34 @@ describe('ResourceRelationsComponent', () => {
       defaultRelease: {} as any,
       releases: [],
     });
-    const spy = vi.spyOn(component, 'loadAllResourceTypes' as any).mockImplementation(() => {});
 
-    component.showAddRelationModal();
+    expect(component['isNode']()).toBe(true);
+  });
 
-    expect(spy).toHaveBeenCalled();
+  it('isNode should return true for quoted NODE resource type', () => {
+    component['resource'] = signal({
+      id: 1,
+      name: 'Test',
+      type: '"NODE"',
+      version: '1.0',
+      defaultRelease: {} as any,
+      releases: [],
+    });
+
+    expect(component['isNode']()).toBe(true);
+  });
+
+  it('isNode should return false for non-NODE resource type', () => {
+    component['resource'] = signal({
+      id: 1,
+      name: 'Test',
+      type: 'APPLICATION',
+      version: '1.0',
+      defaultRelease: {} as any,
+      releases: [],
+    });
+
+    expect(component['isNode']()).toBe(false);
   });
 
   it('should load resource types for default resource type (RUNTIME)', () => {
