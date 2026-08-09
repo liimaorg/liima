@@ -20,9 +20,7 @@
 
 package ch.puzzle.itc.mobiliar.business.deploymentparameter.boundary;
 
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.DeploymentParameterRepository;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.control.KeyRepository;
-import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.DeploymentParameter;
 import ch.puzzle.itc.mobiliar.business.deploymentparameter.entity.Key;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
@@ -32,7 +30,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 import static ch.puzzle.itc.mobiliar.business.security.entity.Action.*;
@@ -44,18 +41,11 @@ public class DeploymentParameterBoundary {
     private KeyRepository keyRepository;
 
     @Inject
-    private DeploymentParameterRepository deploymentParameterRepository;
-
-    @Inject
     protected Logger log;
 
 
     public List<Key> findAllKeys() {
         return keyRepository.findAll();
-    }
-
-    public List<DeploymentParameter> findAllDeploymentParameterFor(Integer deploymentId) {
-        return deploymentParameterRepository.findByDeploymentId(deploymentId);
     }
 
     @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = DELETE)
@@ -68,18 +58,6 @@ public class DeploymentParameterBoundary {
     private void requireNotNull(Key key) throws NotFoundException {
         if (key == null) {
             throw new NotFoundException("Key not found.");
-        }
-    }
-
-    @HasPermission(permission = Permission.MANAGE_DEPLOYMENT_PARAMETER, action = UPDATE)
-    public void changeDeployParameterKey(Integer keyToDeleteId, String changedName) throws ValidationException {
-        if (changedName != null && !changedName.trim().isEmpty()) {
-            Key attachedKeyToChange = keyRepository.find(Objects.requireNonNull(keyToDeleteId, "Must not be null"));
-
-            attachedKeyToChange.setName(changedName);
-            keyRepository.merge(attachedKeyToChange);
-        } else {
-            throw new ValidationException("invalid empty name", changedName);
         }
     }
 

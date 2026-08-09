@@ -28,11 +28,14 @@ import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
 import ch.puzzle.itc.mobiliar.common.util.ConfigurationService;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class ResourceImportService {
 
-    public static final String BACKLINK_URL = "/AMW_web/pages/editResourceView.xhtml?ctx=1&id=";
+    public static final String BACKLINK_URL = "/AMW_angular/#/resources/edit?ctx=1&id=";
 
     @Inject
     ResourceReleaseComparator resourceReleaseComparator;
@@ -68,7 +71,7 @@ public class ResourceImportService {
 
     public ResourceEntity getPreviousRelease(Set<ResourceEntity> allReleaseResources, ResourceEntity resource) {
 
-        if(resource == null){
+        if (resource == null) {
             return null;
         }
 
@@ -78,7 +81,7 @@ public class ResourceImportService {
 
         for (ResourceEntity resourceInRelease : allReleaseResourcesOrderedByRelease) {
 
-            if(resource.getId().equals(resourceInRelease.getId())){
+            if (resource.getId().equals(resourceInRelease.getId())) {
                 return result;
             }
             // add latest Release to copy From
@@ -89,7 +92,7 @@ public class ResourceImportService {
     }
 
 
-    public String getImportedResourceBacklink(){
+    public String getImportedResourceBacklink() {
         StringBuilder sb = new StringBuilder();
         sb.append(ConfigurationService.getProperty(ConfigKey.EXTERNAL_RESOURCE_BACKLINK_SCHEMA, "http"));
         sb.append("://");

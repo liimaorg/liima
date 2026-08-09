@@ -24,7 +24,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.usersettings.entity.UserSettingsEntity;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
@@ -109,14 +108,10 @@ public class ResourceGroupRepositoryTest {
     }
 
     @Test
-    public void test_loadGroupsForType() throws ElementAlreadyExistsException,
-            ResourceNotFoundException, ResourceTypeNotFoundException {
+    public void test_loadGroupsForType() {
         // given
         init();
 
-        UserSettingsEntity userEntity = new UserSettingsEntity();
-        userEntity.setUserName("tester");
-        entityManager.persist(userEntity);
 
         // when
         List<ResourceGroupEntity> result = repository.getGroupsForType(type1.getId(), true);

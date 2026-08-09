@@ -23,8 +23,6 @@
               [entityName]="'dependencies'"
               [headers]="dependenciesHeader()"
               [data]="consumedRelationsTableData()"
-              [canNavigate]="permissions().canUseAngularEditResource"
-              (navigate)="navigateToResource($event.id)"
               [canEdit]="permissions().canReadResources"
               (edit)="openEditResourcePage($event.id)"
             ></app-table>
@@ -42,8 +40,6 @@
               [entityName]="'dependencies'"
               [headers]="dependenciesHeader()"
               [data]="providedRelationsTableData()"
-              [canNavigate]="permissions().canUseAngularEditResource"
-              (navigate)="navigateToResource($event.id)"
               [canEdit]="permissions().canReadResources"
               (edit)="openEditResourcePage($event.id)"
             ></app-table>

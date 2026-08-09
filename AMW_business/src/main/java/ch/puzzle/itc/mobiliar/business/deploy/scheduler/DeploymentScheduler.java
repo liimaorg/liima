@@ -188,7 +188,7 @@ public class DeploymentScheduler {
 		List<DeploymentEntity> deployments = deploymentBoundary.getPreDeploymentsInProgressTimeoutReached();
 		if (!deployments.isEmpty()) {
 			log.log(logLevel, deployments.size() + " preDeployments inProgress reached timeout");
-			int timeout = ConfigurationService.getPropertyAsInt(ConfigKey.PREDEPLOYMENT_IN_PROGRESS_TIMEOUT);;
+			int timeout = ConfigurationService.getPropertyAsInt(ConfigKey.PREDEPLOYMENT_IN_PROGRESS_TIMEOUT);
 			handleDeploymentsTimeout(deployments, GenerationModus.PREDEPLOY, timeout);
 		}
 		else {

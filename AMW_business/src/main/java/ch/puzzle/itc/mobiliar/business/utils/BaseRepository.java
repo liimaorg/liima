@@ -61,17 +61,6 @@ public abstract class BaseRepository<T> {
     }
 
     /**
-     * Persists an entity without performing the normal user level access check. Should only be used by subclasses
-     * in special cases where you know exactly what you are doing.
-     *
-     * @param entity The entity to update without access check
-     */
-    protected void persistWithoutAccessCheck(T entity) {
-        prePersist(entity);
-        entityManager.persist(entity);
-    }
-
-    /**
      * Updates an entity on the database. ALL new reference to the updated entity is returned, the old one should be
      * discarded.
      *
@@ -88,18 +77,6 @@ public abstract class BaseRepository<T> {
      * Can be overridden in a subclass to check/change the entity before merge.
      */
     protected void preMerge(T entity) {
-    }
-
-    /**
-     * Updates an entity on the database without performing the normal user level access check. Should only be used by
-     * subclasses in special cases where you know exactly what you are doing.
-     *
-     * @param entity The entity to update
-     * @return ALL new reference to the updated object that should be used for further actions.
-     */
-    protected T mergeWithoutAccessCheck(T entity) {
-        preMerge(entity);
-        return entityManager.merge(entity);
     }
 
     /**
@@ -132,17 +109,6 @@ public abstract class BaseRepository<T> {
      * Can be overridden in a subclass to check/change the entity before remove.
      */
     protected void preRemove(T entity) {
-    }
-
-    /**
-     * Deletes an entity on the database without performing the normal user level access check. Should only be used by
-     * sublcasses in special cases where you know exactly what you are doing.
-     *
-     * @param entity The entity to remove
-     */
-    protected void removeWithoutAccessCheck(T entity) {
-        preRemove(entity);
-        entityManager.remove(entity);
     }
 
     /**
@@ -206,20 +172,8 @@ public abstract class BaseRepository<T> {
         return resultList.get(0);
     }
 
-    protected Long countResult(TypedQuery<Long> query) {
-        return query.getSingleResult();
-    }
-
-    protected TypedQuery<T> createNamedQuery(String queryName) {
-        return entityManager.createNamedQuery(queryName, entityType);
-    }
-
     protected TypedQuery<T> createQuery(String query) {
         return entityManager.createQuery(query, entityType);
-    }
-
-    protected TypedQuery<Long> createNamedCountQuery(String query) {
-        return entityManager.createNamedQuery(query, Long.class);
     }
 
 }

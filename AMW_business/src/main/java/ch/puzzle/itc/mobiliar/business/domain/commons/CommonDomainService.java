@@ -22,13 +22,10 @@ package ch.puzzle.itc.mobiliar.business.domain.commons;
 
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
-import ch.puzzle.itc.mobiliar.business.generator.control.extracted.ResourceDependencyResolverService;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.control.ReleaseMgmtPersistenceService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceGroupPersistenceService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
@@ -70,21 +67,14 @@ public class CommonDomainService {
     private ContextDomainService contextDomainService;
 
     @Inject
-    private PermissionService permissionService;
-
-    @Inject
     private CommonQueries commonQueries;
-
-    @Inject
-    private ResourceDependencyResolverService dependencyResolverService;
 
     @Inject
     private ReleaseMgmtPersistenceService releaseMgmt;
 
 
     /**
-     * Does not lazy load resources and releases for the resourceGroups. Use
-     * {@link ResourceGroupPersistenceService#loadGroupsForTypeName(String, List)} instead.
+     * Does not lazy load resources and releases for the resourceGroups.
      *
      * @return the alphabetically sorted list of available target platforms.
      */
@@ -159,43 +149,6 @@ public class CommonDomainService {
             log.log(Level.WARNING, message);
             throw new ResourceTypeNotFoundException(message, nre);
         }
-        return result;
-    }
-
-    public ResourceType getResourceTypeById(Integer resourceTypeId) throws ResourceTypeNotFoundException {
-        ResourceTypeEntity resourceTypeEntityById = getResourceTypeEntityById(resourceTypeId);
-        return ResourceType.createByResourceType(resourceTypeEntityById, null);
-    }
-
-    /**
-     * Listet alle ResourceTypes auf.
-     * <p>
-     * alphabetic sorted
-     *
-     * @return
-     */
-    public List<ResourceType> getAllResourceTypes(boolean rootTypesOnly) {
-        List<ResourceType> result = new ArrayList<ResourceType>();
-
-        TypedQuery<ResourceTypeEntity> q;
-        if (rootTypesOnly) {
-            q = entityManager.createQuery(
-                    "select distinct r from ResourceTypeEntity r left join fetch r.childrenResourceTypes c where r.parentResourceType IS NULL order by r.name asc, c.name asc",
-                    ResourceTypeEntity.class);
-        } else {
-            q = entityManager.createQuery("select distinct r from ResourceTypeEntity r left join fetch r.childrenResourceTypes c order by r.name asc, c.name asc ", ResourceTypeEntity.class);
-        }
-
-        List<ResourceTypeEntity> queryResult = q.getResultList();
-        if (queryResult != null) {
-            for (ResourceTypeEntity t : queryResult) {
-                if (t.getName() != null) {
-                    ResourceType resCat = ResourceType.createByResourceType(t, null);
-                    result.add(resCat);
-                }
-            }
-        }
-
         return result;
     }
 

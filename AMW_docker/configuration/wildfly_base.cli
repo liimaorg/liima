@@ -1,8 +1,5 @@
 embed-server --std-out=echo
 
-# JSF
-/subsystem=jsf:write-attribute(name=default-jsf-impl-slot,value=mojarra-2.2)
-
 # Mail
 /socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=mail-smtp-amw:add(host="${env.MAIL_HOST:localhost}",port="${env.MAIL_PORT:25}")
 /subsystem=mail/mail-session=amw:add(from=amw@amw.ch,jndi-name="java:/AutomationMiddlewareMail")

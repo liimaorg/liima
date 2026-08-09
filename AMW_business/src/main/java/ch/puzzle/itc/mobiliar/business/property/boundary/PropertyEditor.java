@@ -30,7 +30,6 @@ import ch.puzzle.itc.mobiliar.business.property.command.*;
 import ch.puzzle.itc.mobiliar.business.property.control.*;
 import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceEditService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceValidationService;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
@@ -39,7 +38,6 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeContextE
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.ResourceRelationLocator;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationContextRepository;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
@@ -83,9 +81,6 @@ public class PropertyEditor {
     PropertyValidationService propertyValidationService;
 
     @Inject
-    PropertyTypeService propertyTypeService;
-
-    @Inject
     ResourceValidationService resourceValidationService;
 
     @Inject
@@ -93,9 +88,6 @@ public class PropertyEditor {
 
     @Inject
     PropertyEditingService propertyEditingService;
-
-    @Inject
-    ResourceEditService resourceEditService;
 
     @Inject
     ContextDomainService contextService;
@@ -123,48 +115,6 @@ public class PropertyEditor {
 
     @Inject
     protected Logger log;
-
-    public List<PropertyDescriptorEntity> getAllPropertyDescriptorsForResourceWithNullCardinality(
-            ResourceEntity resource) {
-        return propertyDescriptorService
-                .getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
-                        ResourceEntity.class, resource.getId()));
-    }
-
-    /**
-     * Loads all property descriptors for the given resource (but not of its resource type) except those
-     * which are marked to have a special cardinality (usually system properties)
-     *
-     * @param resource
-     * @return
-     */
-    public List<PropertyDescriptorEntity> getPropertyDescriptorsForResourceWithNullCardinality(
-            ResourceEntity resource) {
-        return propertyDescriptorService
-                .getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
-                        ResourceEntity.class, resource.getId()));
-    }
-
-    /**
-     * Loads all property descriptors for the given resource type except those which are marked to have a
-     * special cardinality (usually system properties)
-     *
-     * @param resourceType
-     * @return
-     */
-    public List<PropertyDescriptorEntity> getPropertyDescriptorsForResourceTypeWithNullCardinality(
-            ResourceTypeEntity resourceType) {
-        return propertyDescriptorService
-                .getPropertyDescriptorsForHasContextWithNullCardinality(entityManager.find(
-                        ResourceTypeEntity.class, resourceType.getId()));
-    }
-
-    /**
-     * @return all available property types with validation logic
-     */
-    public List<PropertyTypeEntity> getPropertyTypes() {
-        return propertyTypeService.loadAll();
-    }
 
     /**
      * Returns the property values (including information about their descriptors and overwritten values) for
@@ -276,75 +226,6 @@ public class PropertyEditor {
                 relationTypeEntity.getResourceTypeB(), context);
     }
 
-    public Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> getRelationsForResource(Integer resourceId) {
-        return resourceEditService.loadResourceRelationsForEdit(resourceId);
-    }
-
-    public Map<ResourceEditRelation.Mode, List<ResourceEditRelation>> getRelationsForResourceType(Integer resourceTypeId) {
-        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-        return resourceEditService.loadResourceRelationTypesForEdit(resourceType);
-    }
-
-    /**
-     * Persists changes made on a Resource if the use has the permission to do so
-     *
-     * @param changingOwner
-     * @param contextId
-     * @param resourceId
-     * @param resourceProperties
-     * @param relation
-     * @param relationProperties
-     * @param resourceName
-     * @throws AMWException
-     * @throws ValidationException
-     */
-    public void save(Integer contextId, Integer resourceId, List<ResourceEditProperty> resourceProperties,
-                     ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String resourceName, String relationIdentifier) throws AMWException, ValidationException {
-
-        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-        ResourceEntity editedResource = verifyAndSaveResource(resourceId, resourceName, context);
-
-        if (permissionBoundary.hasPermission(Permission.RESOURCE, context, Action.UPDATE, editedResource, editedResource.getResourceType())) {
-            propertyValueService.saveProperties(context, editedResource, resourceProperties);
-            auditService.setResourceIdInThreadLocal(editedResource.getId());
-            if (relation != null) {
-                handleRelations(relation, relationProperties, relationIdentifier, context, editedResource);
-            }
-        }
-    }
-
-    private void handleRelations(ResourceEditRelation relation, List<ResourceEditProperty> relationProperties, String relationIdentifier,
-                                 ContextEntity context, ResourceEntity editedResource) throws ValidationException {
-        String previousIdentifier = null;
-        String slaveName = null;
-        AbstractResourceRelationEntity resourceRelation = editedResource.getResourceRelation(relation);
-        if (relation.hasIdentifierChanged(relationIdentifier)) {
-            previousIdentifier = relation.getQualifiedIdentifier();
-            slaveName = relation.getSlaveName();
-            resourceRelation.setIdentifier(relationIdentifier);
-        }
-        propertyValueService.saveProperties(context, resourceRelation, relationProperties);
-        if (previousIdentifier != null) {
-            // if the previousIdentifier equals to the slaveName, then the identifier of the relation has been empty before
-            if (previousIdentifier.equals(slaveName)) {
-                for (ConsumedResourceRelationEntity consumedResourceRelation : editedResource.getConsumedMasterRelations()) {
-                    if (consumedResourceRelation.getIdentifier() == null
-                            && consumedResourceRelation.getSlaveResource().getName().equals(previousIdentifier)) {
-                        consumedResourceRelation.setIdentifier(relationIdentifier);
-                        entityManager.merge(consumedResourceRelation);
-                    }
-                }
-            } else {
-                for (ConsumedResourceRelationEntity consumedResourceRelation : editedResource.getConsumedMasterRelations()) {
-                    if (consumedResourceRelation.getIdentifier() != null
-                            && consumedResourceRelation.getIdentifier().equals(previousIdentifier)) {
-                        consumedResourceRelation.setIdentifier(relationIdentifier);
-                        entityManager.merge(consumedResourceRelation);
-                    }
-                }
-            }
-        }
-    }
 
     private ResourceEntity verifyAndSaveResource(Integer resourceId, String resourceName, ContextEntity context) throws AMWException {
         ResourceEntity resource = resourceRepository.find(resourceId);
@@ -359,44 +240,6 @@ public class PropertyEditor {
         if (resourceName == null || !resourceName.equals(resource.getName())) {
             resourceValidationService.validateResourceName(resourceName, resource.getId());
             resource.setName(resourceName);
-        }
-    }
-
-    /**
-     * Persists changes made on a ResourceType
-     *
-     * @param contextId
-     * @param resourceTypeId
-     * @param resourceProperties
-     * @param relation
-     * @param relationProperties
-     * @param resourceTypeName
-     * @param typeRelationIdentifier
-     * @throws AMWException
-     * @throws ValidationException
-     */
-    public void savePropertiesForResourceType(Integer contextId, Integer resourceTypeId,
-                                              List<ResourceEditProperty> resourceProperties, ResourceEditRelation relation,
-                                              List<ResourceEditProperty> relationProperties, String resourceTypeName,
-                                              String typeRelationIdentifier) throws AMWException, ValidationException {
-        ResourceTypeEntity resourceType = entityManager.find(ResourceTypeEntity.class, resourceTypeId);
-
-        ContextEntity context = entityManager.find(ContextEntity.class, contextId);
-        if (permissionBoundary.hasPermission(Permission.RESOURCETYPE, context, Action.UPDATE, null, resourceType)) {
-            if (resourceTypeName == null || !resourceTypeName.equals(resourceType.getName())) {
-                resourceValidationService.validateResourceTypeName(resourceTypeName, resourceType.getName());
-                resourceType.setName(resourceTypeName);
-            }
-            propertyValueService.saveProperties(context, resourceType, resourceProperties);
-            if (relation != null && relation.getResRelTypeId() != null) {
-                ResourceRelationTypeEntity resourceRelationTypeEntity = entityManager.find(
-                        ResourceRelationTypeEntity.class, relation.getResRelTypeId());
-                if (relation.hasIdentifierChanged(typeRelationIdentifier)) {
-                    resourceRelationTypeEntity.setIdentifier(typeRelationIdentifier);
-                }
-                propertyValueService.saveProperties(context, resourceRelationTypeEntity,
-                        relationProperties);
-            }
         }
     }
 
@@ -663,10 +506,6 @@ public class PropertyEditor {
         ResourceEditProperty property = getPropertyForRelationAndContext(propertyName, context, resourceRelation);
         property.setPropertyValue(propertyValue);
         setSingleProperty(resourceRelation, context, property.getDescriptorId(), property.getUnobfuscatedValue());
-    }
-
-    public PropertyDescriptorEntity getPropertyDescriptor(Integer propertyDescriptorId) {
-        return propertyDescriptorService.getPropertyDescriptorWithTags(propertyDescriptorId);
     }
 
     public PropertyDescriptorEntity getDescriptorEntity(GetPropertyDescriptorCommand command) throws NotFoundException {

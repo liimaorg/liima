@@ -29,7 +29,7 @@ package ch.puzzle.itc.mobiliar.common.exception;
  */
 public class ScriptExecutionException extends Exception {
 	
-public static enum REASON {EXECUTIONEXCEPTION, NOTAVAILABLE, PERMISSION, GENERIC};
+public static enum REASON {EXECUTIONEXCEPTION, NOTAVAILABLE, PERMISSION, GENERIC}
 	
 	private Integer deploymentId;
 	private REASON reason;

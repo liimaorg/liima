@@ -11,13 +11,11 @@
     entityName="Release"
     [data]="releases()"
     [headers]="tableHeaders"
-    [canNavigate]="false"
     [canDelete]="permissions().canDeleteRelease"
     [canEdit]="permissions().canChangeRelease"
     [rowStyle]="rowStyle()"
     [canRowClick]="true"
     (rowClick)="onRowClick($event)"
-    (navigate)="onTableAction($event)"
     (edit)="onTableAction($event)"
     (delete)="onTableAction($event)"
   ></app-table>

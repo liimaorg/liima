@@ -123,12 +123,6 @@ public abstract class AbstractResourceRelationEntity extends HasContexts<Resourc
 		getContexts().add(relationToContext);
 	}
 
-	public void removeContext(ResourceRelationContextEntity relationToContext) {
-		if (getContexts() != null) {
-			getContexts().remove(relationToContext);
-		}
-	}
-
 	public ResourceRelationContextEntity getResourceRelationContext(ContextEntity context) {
 		if (getContexts() != null) {
 			for (ResourceRelationContextEntity c : getContexts()) {

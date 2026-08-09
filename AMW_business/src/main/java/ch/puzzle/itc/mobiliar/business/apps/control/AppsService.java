@@ -46,12 +46,6 @@ public class AppsService implements ListAppsUseCase, AddAppServerUseCase, AddApp
         return resourceRelations.getAppServersWithApplications(filter, release);
     }
 
-    public List<ResourceWithRelations> paginateList(List<ResourceWithRelations> list, Integer maxResultsPerPage, Integer startIndex) {
-        Integer endIndex = Math.min(startIndex + maxResultsPerPage, list.size());
-        return list.subList(startIndex, endIndex);
-    }
-
-
     @Override
     @HasPermission(permission = Permission.RESOURCE, action = CREATE)
     public Integer add(AddAppCommand command) throws NotFoundException, IllegalStateException {

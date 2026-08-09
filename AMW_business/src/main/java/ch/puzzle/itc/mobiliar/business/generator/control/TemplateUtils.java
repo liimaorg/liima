@@ -58,24 +58,12 @@ public class TemplateUtils {
 	static final Logger LOG = Logger.getLogger(TemplateUtils.class.getName());
 	/*************************************** START RELATED RESOURCES **********************************************/
 
-	/**
-	 * Returns all templates as well as their property descriptors and
-	 * (prioritized) values.
-	 * 
-	 * @param relation
-	 * @param context
-	 * @return
-	 */
-	public static Map<PropertyDescriptorEntity, List<PropertyEntity>> getPropertyValues(AbstractResourceRelationEntity relation, ContextEntity context) {
-		return getPropertyValues(relation, getPropertyDescriptors(context, relation, null), context);
-	}
 
 	/**
 	 * Loads all templates for a related resource in a specific context
 	 * 
 	 * @param context
 	 * @param resourceRelation
-	 * @param resultMap
 	 *            (used for recursion, can initially be defined as null)
 	 * @return
 	 */
@@ -222,8 +210,6 @@ public class TemplateUtils {
 	 * Loads all templates for a related resource in a specific context
 	 * 
 	 * @param context
-	 * @param resourceRelation
-	 * @param resultMap
 	 *            (used for recursion, can initially be defined as null)
 	 * @return
 	 */
@@ -280,9 +266,7 @@ public class TemplateUtils {
 
 	/**
 	 * Gets the property values for a related resource
-	 * 
-	 * @param relation
-	 * @param templates
+	 *
 	 * @param context
 	 * @param templateExceptionHandler
 	 * @return
@@ -298,8 +282,7 @@ public class TemplateUtils {
 
 	/**
 	 * Gets the property value(s) of a specified property descriptor for a resource
-	 * 
-	 * @param relation
+	 *
 	 * @param propDescr
 	 * @param context
 	 * @param templateExceptionHandler
@@ -340,92 +323,13 @@ public class TemplateUtils {
 
 	/*************************************** END RESOURCE **********************************************/
 
-	/*************************************** START RELATED RESOURCE TYPES **********************************************/
-
-	/**
-	 * Returns all templates as well as their property descriptors and
-	 * (prioritized) values.
-	 * 
-	 * @param relation
-	 * @param context
-	 * @return
-	 */
-	public static Map<PropertyDescriptorEntity, List<PropertyEntity>> getPropertyValues(ResourceTypeEntity resourceType, ResourceTypeEntity relatedResource, ContextEntity context) {
-		Set<PropertyDescriptorEntity> properties = getPropertyDescriptors(context, relatedResource, null);
-		return getPropertyValues(resourceType, relatedResource, properties, context);
-	}
-
-	/**
-	 * Gets the property values of the given templates for a related resource
-	 * 
-	 * @param resourceType
-	 * @param relatedResourceType
-     * @param properties
-	 * @param context
-	 * @return
-	 */
-	private static Map<PropertyDescriptorEntity, List<PropertyEntity>> getPropertyValues(ResourceTypeEntity resourceType, ResourceTypeEntity relatedResourceType,
-			Set<PropertyDescriptorEntity> properties, ContextEntity context) {
-		Map<PropertyDescriptorEntity, List<PropertyEntity>> result = new LinkedHashMap<>();
-		for (PropertyDescriptorEntity propDescr : properties) {
-			result.put(propDescr, getValueForProperty(resourceType, relatedResourceType, propDescr, context));
-		}
-		return result;
-	}
-
-	/**
-	 * Gets the property value(s) of a specified property descriptor for a
-	 * related resource
-	 * 
-	 * @param relation
-	 * @param propDescr
-	 * @param context
-	 * @return
-	 */
-	private static List<PropertyEntity> getValueForProperty(ResourceTypeEntity resourceType, ResourceTypeEntity relatedResourceType, PropertyDescriptorEntity propDescr, ContextEntity context) {
-		// Die Liste soll nicht mehr veränderbar sein (die Reihenfolge muss
-		// gewährleistet bleiben)
-		return Collections.unmodifiableList(getValueForProperty(resourceType, relatedResourceType, propDescr, context, new ArrayList<PropertyEntity>()));
-	}
-
-	private static List<PropertyEntity> getValueForProperty(ResourceTypeEntity resourceType, ResourceTypeEntity relatedResourceType, PropertyDescriptorEntity propDescr, ContextEntity context,
-			List<PropertyEntity> result) {
-		assert (context != null);
-		assert (resourceType != null);
-		assert (relatedResourceType != null);
-
-		// 1. Ressourcenbeziehungs-Ressourcentyp (wenn vorhanden)
-		for (ResourceRelationTypeEntity relationType : getAllResourceRelationTypes(resourceType, relatedResourceType)) {
-			addResourceRelationTypeEntityPropertiesToResult(relationType, propDescr, context, result);
-		}
-
-		// 2. Abhängiger Ressourcentyp und Kontext
-		return getValueForProperty(relatedResourceType, propDescr, context, result);
-	}
-
-	/*************************************** END RELATED RESOURCE TYPES **********************************************/
-
 	/*************************************** START RESOURCE TYPE **********************************************/
 
-	/**
-	 * Returns all templates as well as their property descriptors and
-	 * (prioritized) values.
-	 * 
-	 * @param relation
-	 * @param context
-	 * @return
-	 */
-	public static Map<PropertyDescriptorEntity, List<PropertyEntity>> getPropertyValues(ResourceTypeEntity resourceType, ContextEntity context) {
-		Set<PropertyDescriptorEntity> properties = getPropertyDescriptors(context, resourceType, null);
-		return getPropertyValues(resourceType, properties, context);
-	}
 
 	/**
 	 * Loads all templates for a resource type in a specific context
 	 * 
 	 * @param context
-	 * @param resourceRelation
-	 * @param resultMap
 	 *            (used for recursion, can initially be defined as null)
 	 * @return
 	 */
@@ -537,43 +441,7 @@ public class TemplateUtils {
 
 	/*************************************** START CONTEXT **********************************************/
 
-	/**
-	 * Returns all templates as well as their property descriptors and
-	 * (prioritized) values.
-	 *
-	 * @param context
-	 * @return
-	 */
-	public static Map<PropertyDescriptorEntity, List<PropertyEntity>> getPropertyValues(ContextEntity context) {
-		Set<PropertyDescriptorEntity> templates = getPropertyDescriptors(context, null);
-		return getPropertyValues(templates, context);
-	}
 
-	private static Set<PropertyDescriptorEntity> getPropertyDescriptors(ContextEntity context, Set<PropertyDescriptorEntity> result) {
-		if (result == null) {
-			result = new HashSet<>();
-		}
-		getPropertyDescriptorsForContext(context, result);
-		if (context.getParent() != null) {
-			result = getPropertyDescriptors(context.getParent(), result);
-		}
-		return result;
-	}
-
-	private static void getPropertyDescriptorsForContext(ContextEntity context, Set<PropertyDescriptorEntity> result) {
-		Set<PropertyDescriptorEntity> properties = context.getPropertyDescriptors();
-		if (properties != null) {
-			result.addAll(properties);
-		}
-	}
-
-	private static Map<PropertyDescriptorEntity, List<PropertyEntity>> getPropertyValues(Set<PropertyDescriptorEntity> properties, ContextEntity context) {
-		Map<PropertyDescriptorEntity, List<PropertyEntity>> result = new LinkedHashMap<>();
-		for (PropertyDescriptorEntity propDescr : properties) {
-			result.put(propDescr, getValueForProperty(propDescr, context));
-		}
-		return result;
-	}
 
 	/**
 	 * Gets the property value(s) of a specified property descriptor for a

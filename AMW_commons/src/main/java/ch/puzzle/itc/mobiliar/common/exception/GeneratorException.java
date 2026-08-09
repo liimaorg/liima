@@ -24,7 +24,7 @@ public class GeneratorException extends AMWException {
 
 	public static enum MISSING {
 		NODE, CONTEXT, APPLICATION, TARGETPATH, APPSERVER, STS_TEMPLATE
-	};
+	}
 
 	private static final long serialVersionUID = 1L;
 

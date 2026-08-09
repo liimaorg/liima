@@ -134,38 +134,6 @@ public class CustomFilter {
         }
     }
 
-    public List<ComparatorFilterOption> getComparatorSelectionList() {
-        if (comparatorSelectionList == null) {
-            comparatorSelectionList = new ArrayList<>();
-            for (ComparatorFilterOption filterType : ComparatorFilterOption.values()) {
-                comparatorSelectionList.add(filterType);
-            }
-        }
-        return comparatorSelectionList;
-    }
-
-    public List<ComparatorFilterOption> getTypedComparatorSelectionList() {
-        List<ComparatorFilterOption> result = new ArrayList<>();
-        for (ComparatorFilterOption comperatorfilteroption : getComparatorSelectionList()) {
-            if (isBooleanType()) {
-                if (comperatorfilteroption.equals(ComparatorFilterOption.eq)) {
-                    result.add(comperatorfilteroption);
-                }
-            } else if (isStringType() || isEnumType()) {
-                if (comperatorfilteroption.equals(ComparatorFilterOption.eq)) {
-                    result.add(comperatorfilteroption);
-                }
-            } else {
-                result.add(comperatorfilteroption);
-            }
-        }
-        return result;
-    }
-
-    public void setAlwaysAutoComplete(boolean alwaysAutoComplete) {
-        this.alwaysAutoComplete = alwaysAutoComplete;
-    }
-
     @Deprecated
     public void setValue(String filterValue) {
         if (StringUtils.isEmpty(filterValue)) {
@@ -360,14 +328,6 @@ public class CustomFilter {
         return (!filterType.equals(FilterType.SpecialFilterType)
                 && (hasValidNullValue() || (value != null && !value.toString().trim().isEmpty()))
                 && comparatorSelection != null);
-    }
-
-    public boolean hasDropDownItems() {
-        return !dropDownItems.isEmpty();
-    }
-
-    public boolean hasDropDownItemsMap() {
-        return !dropDownItemsMap.isEmpty();
     }
 
     @Override

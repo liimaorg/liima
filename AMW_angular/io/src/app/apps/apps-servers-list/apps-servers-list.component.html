@@ -13,12 +13,14 @@
             @if (!appServer.deletable) {
               <div id="appServer.id">{{ appServer.name }}</div>
             } @else {
-              <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.id }}">{{ appServer.name }}</a> [
-              {{ appServer.runtimeName }} ]
+              <a (click)="navigateToResource(appServer.id); $event.preventDefault()" href="#">{{ appServer.name }}</a>
+              [ {{ appServer.runtimeName }} ]
             }
           </td>
           <td class="text-end border-0">
-            <a href="/AMW_web/pages/editResourceView.xhtml?ctx=1&id={{ appServer.id }}">{{ appServer.release.name }}</a>
+            <a (click)="navigateToResource(appServer.id); $event.preventDefault()" href="#">{{
+              appServer.release.name
+            }}</a>
           </td>
         </tr>
         @if (appServer.apps && appServer.apps.length > 0) {

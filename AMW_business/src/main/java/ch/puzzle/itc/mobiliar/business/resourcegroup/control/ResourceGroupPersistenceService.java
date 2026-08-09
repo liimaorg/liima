@@ -27,13 +27,9 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.criteria.*;
 
-import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
-import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Application;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer;
@@ -47,12 +43,6 @@ public class ResourceGroupPersistenceService {
 
 	@Inject
 	EntityManager entityManager;
-
-	@Inject
-	ResourceTypeProvider resourceTypeProvider;
-
-	@Inject
-	ContextDomainService context;
 
 	/**
 	 * @param id
@@ -142,30 +132,4 @@ public class ResourceGroupPersistenceService {
 		}
 		return result;
 	}
-
-	/**
-	 * Listet Applications auf alphabetic sorted
-	 *
-	 * @return
-	 */
-	public List<Application> getAllApplicationsNotBelongingToAServer() {
-		List<Application> allApplications = new ArrayList<>();
-		Query query = entityManager
-				.createQuery(
-						"select resEnt from ResourceEntity resEnt left join fetch resEnt.resourceGroup rg left join fetch rg.resources otherRes left join fetch resEnt.contexts left join fetch resEnt.consumedSlaveRelations as resConsSlaveRel left join fetch resConsSlaveRel.masterResource as master where master.name=:name order by resEnt.name")
-				.setParameter("name", ApplicationServerContainer.APPSERVERCONTAINER.getDisplayName());
-
-		List<ResourceEntity> allApplicationsResourceEntities = QueryUtils.fetch(ResourceEntity.class,
-				query, 0, -1);
-
-		ContextEntity ctx = context.getGlobalResourceContextEntity();
-		for (ResourceEntity resourceEntity : allApplicationsResourceEntities) {
-			Application application = Application.createByResource(resourceEntity, resourceTypeProvider,
-					ctx);
-			allApplications.add(application);
-		}
-
-		return allApplications;
-	}
-
 }

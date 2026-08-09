@@ -47,7 +47,6 @@
         <module>AMW_business</module>
         <module>AMW_commons</module>
         <module>AMW_ear</module>
-        <module>AMW_web</module>
         <module>AMW_angular</module>
         <module>AMW_rest</module>
         <module>AMW_db_scripts</module>
@@ -276,14 +275,6 @@
                 <groupId>ch.puzzle.itc.mobiliar</groupId>
                 <artifactId>AMW_commons</artifactId>
                 <version>1.17.23-SNAPSHOT</version>
-                <scope>compile</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>ch.puzzle.itc.mobiliar</groupId>
-                <artifactId>AMW_web</artifactId>
-                <version>1.17.23-SNAPSHOT</version>
-                <type>war</type>
                 <scope>compile</scope>
             </dependency>
 

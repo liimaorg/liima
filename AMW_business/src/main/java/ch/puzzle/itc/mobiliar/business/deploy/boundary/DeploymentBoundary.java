@@ -439,13 +439,6 @@ public class DeploymentBoundary {
         return false;
     }
 
-    public List<DeploymentEntity> getListOfLastDeploymentsForAppServerAndContext(boolean onlySuccessful) {
-
-        TypedQuery<DeploymentEntity> query = em.createQuery(getListOfLastDeploymentsForAppServerAndContextQuery(onlySuccessful), DeploymentEntity.class);
-
-        return query.getResultList();
-    }
-
     /**
      * Loads only the essential data needed for the add shakedown test order popup
      *

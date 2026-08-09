@@ -35,15 +35,6 @@ public class PermissionRepository {
 	@Inject
 	private EntityManager entityManager;
 
-	/**
-	 * Returns Roles which are allowed to deploy
-	 *
-	 * @return
-	 */
-	public List<RoleEntity> getDeployableRoles() {
-		return getRolesHavingRestrictionsWithPermission(Permission.DEPLOYMENT);
-	}
-
 	public List<RestrictionEntity> getUserWithRestrictions(String userName) {
 		TypedQuery<RestrictionEntity> query = entityManager.createQuery("select r from RestrictionEntity r where LOWER(r.user.name) =:userName", RestrictionEntity.class)
 				.setParameter("userName", userName.toLowerCase());

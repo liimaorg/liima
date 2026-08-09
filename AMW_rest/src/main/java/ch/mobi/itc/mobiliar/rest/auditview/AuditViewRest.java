@@ -19,7 +19,6 @@ import javax.ws.rs.core.Response;
 import ch.mobi.itc.mobiliar.rest.dtos.AuditViewEntryDTO;
 import ch.puzzle.itc.mobiliar.business.auditview.boundary.AuditViewBoundary;
 import ch.puzzle.itc.mobiliar.business.auditview.entity.AuditViewEntry;
-import ch.puzzle.itc.mobiliar.business.property.boundary.PropertyEditor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,9 +31,6 @@ public class AuditViewRest {
 
     @Inject
     AuditViewBoundary auditViewBoundary;
-
-    @Inject
-    PropertyEditor propertyEditor;
 
     @GET
     @Path("/resource/{id : \\d+}")

@@ -23,7 +23,6 @@ package ch.puzzle.itc.mobiliar.business.environment.boundary;
 import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextRepository;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
 import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
@@ -41,9 +40,6 @@ public class ContextLocator {
 
     @Inject
     ContextRepository contextRepository;
-
-    @Inject
-    PermissionService permissionService;
 
     @Inject
     RestrictionRepository restrictionRepository;

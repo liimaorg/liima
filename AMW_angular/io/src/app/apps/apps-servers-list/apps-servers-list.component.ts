@@ -1,6 +1,7 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { AppServer } from '../app-server';
 import { AppsListComponent } from '../apps-list/apps-list-component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-apps-servers-list',
@@ -10,4 +11,9 @@ import { AppsListComponent } from '../apps-list/apps-list-component';
 })
 export class AppsServersListComponent {
   appServers = input.required<AppServer[]>();
+  private router = inject(Router);
+
+  navigateToResource(id: number) {
+    this.router.navigate(['/resource/edit'], { queryParams: { id, ctx: 1 } });
+  }
 }

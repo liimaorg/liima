@@ -29,7 +29,6 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceContextEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
@@ -125,9 +124,6 @@ public class CopyResourceDomainService {
 
     @Inject
     CommonDomainService commonDomainService;
-
-    @Inject
-    ResourceLocator resourceLocator;
 
     @Inject
     AuditService auditService;

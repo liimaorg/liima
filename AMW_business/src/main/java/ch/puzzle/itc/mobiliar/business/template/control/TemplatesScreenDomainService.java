@@ -26,11 +26,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.*;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.*;
-import ch.puzzle.itc.mobiliar.business.security.entity.Action;
-import ch.puzzle.itc.mobiliar.business.security.interceptor.HasPermission;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.control.ResourceRelationService;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
-import ch.puzzle.itc.mobiliar.business.security.entity.Permission;
 import ch.puzzle.itc.mobiliar.business.template.entity.TemplateDescriptorEntity;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.util.SystemCallTemplate;
@@ -93,11 +90,6 @@ public class TemplatesScreenDomainService {
 
     public List<TemplateDescriptorEntity> getTemplatesForResourceRelation(AbstractResourceRelationEntity relation) throws ResourceNotFoundException {
         return getTemplateDescriptorsForResourceRelationContext(contextService.getGlobalResourceContextEntity(), resourceRelationService.getResourceRelation(relation.getId()), new ArrayList<TemplateDescriptorEntity>());
-    }
-
-    public List<TemplateDescriptorEntity> getGlobalTemplateDescriptorsForResourceRelation(Integer identifier) {
-        ResourceRelationTypeEntity resRelType = entityManager.find(ResourceRelationTypeEntity.class, identifier);
-        return getTemplateDescriptorsForResourceRelationTypeContext(contextService.getGlobalResourceContextEntity(), resRelType, new ArrayList<TemplateDescriptorEntity>());
     }
 
     private List<TemplateDescriptorEntity> getTemplateDescriptorsForResourceTypeContext(ContextEntity context, ResourceTypeEntity resourceType,
@@ -185,39 +177,6 @@ public class TemplatesScreenDomainService {
             }
         }
         return templateDescriptorList;
-    }
-
-    @HasPermission(permission = Permission.RESOURCE_TEMPLATE, action = Action.DELETE)
-    private void removeDefaultResTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-        doRemoveTemplate(selectedTemplateId);
-    }
-
-    @HasPermission(permission = Permission.RESOURCETYPE_TEMPLATE, action = Action.DELETE)
-    private void removeDefaultResTypeTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-        doRemoveTemplate(selectedTemplateId);
-    }
-
-
-    /**
-     * Löscht die Template von eine ResourceType.
-     *
-     * @param selectedTemplateId
-     * @throws ResourceTypeNotFoundException
-     * @throws TemplateNotDeletableException
-     */
-    private void doRemoveTemplate(Integer selectedTemplateId) throws TemplateNotDeletableException {
-        TemplateDescriptorEntity templateDescriptor = entityManager.find(TemplateDescriptorEntity.class, selectedTemplateId);
-        if (templateDescriptor != null && templateDescriptor.getName() != null && SystemCallTemplate.getName().equals(templateDescriptor.getName())) {
-            String message = SystemCallTemplate.getName() + " Template can't be deleted!";
-            log.info(message);
-            throw new TemplateNotDeletableException(message);
-        }
-        AbstractContext owner = getOwnerOfTemplate(templateDescriptor);
-        if (owner != null) {
-            owner.removeTemplate(templateDescriptor);
-        }
-        entityManager.remove(templateDescriptor);
-        log.info("Template Id: " + selectedTemplateId + " was deleted successfully.");
     }
 
     public AbstractContext getOwnerOfTemplate(TemplateDescriptorEntity templateDescriptor) {

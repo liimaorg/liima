@@ -233,10 +233,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		}
 	}
 
-	public ProvidedResourceRelationEntity getProvidedRelationById(final Integer relatedResourceId) {
-		return getRelationById(relatedResourceId, getProvidedMasterRelations());
-	}
-
 	public ConsumedResourceRelationEntity getConsumedRelationById(final Integer relatedResourceId) {
 		return getRelationById(relatedResourceId, getConsumedMasterRelations());
 	}
@@ -248,22 +244,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 				if (relation.getSlaveResource().getId().equals(relatedResourceId)) {
 					return relation;
 				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * This method returns the consumed resource relation for this resource dependent on the given
-	 * resourceRelationId
-	 * 
-	 * @param resourceRelationId
-	 * @return
-	 */
-	public ConsumedResourceRelationEntity getConsumedResourceRelation(Integer resourceRelationId) {
-		for (ConsumedResourceRelationEntity rel : getConsumedMasterRelations()) {
-			if (rel.getId().equals(resourceRelationId)) {
-				return rel;
 			}
 		}
 		return null;
@@ -309,15 +289,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 		return null;
 	}
 
-	public List<ResourceRelationTypeEntity> getConsumedResourceRelationTypes() {
-		List<ResourceRelationTypeEntity> resourceRelationTypes = new ArrayList<ResourceRelationTypeEntity>();
-		ResourceTypeEntity resType = getResourceType();
-		while (resType != null) {
-			resourceRelationTypes.addAll(resType.getResourceRelationTypesA());
-			resType = resType.getParentResourceType();
-		}
-		return resourceRelationTypes;
-	}
 
 	public ConsumedResourceRelationEntity getConsumedSlaveRelation(final ResourceEntity relatedResource) {
 		if (getConsumedSlaveRelations() != null) {
@@ -379,42 +350,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 			final ResourceEntity master = relation.getMasterResource();
 			if (master.getResourceType().isResourceType(resourceTypeDefinition)) {
 				result.add(master);
-			}
-		}
-		return result;
-	}
-
-	public List<ResourceEntity> getMasterResourcesOfProvidedSlaveRelationByResourceType(
-			final DefaultResourceTypeDefinition resourceTypeDefinition) {
-		final List<ResourceEntity> result = new ArrayList<ResourceEntity>();
-		for (final ProvidedResourceRelationEntity relation : getProvidedSlaveRelations()) {
-			final ResourceEntity master = relation.getMasterResource();
-			if (master.getResourceType().isResourceType(resourceTypeDefinition)) {
-				result.add(master);
-			}
-		}
-		return result;
-	}
-
-	public List<ResourceEntity> getConsumedRelatedMasterResourcesByResourceType(
-			final ResourceTypeEntity resourceType) {
-		final List<ResourceEntity> result = new ArrayList<ResourceEntity>();
-		for (final ResourceEntity r : getConsumedRelatedMasterResources()) {
-			if (r.getResourceType().getId().equals(resourceType.getId())) {
-				result.add(r);
-			}
-		}
-		return result;
-	}
-
-	private List<ResourceEntity> getConsumedRelatedMasterResources() {
-		final List<ResourceEntity> result = new ArrayList<ResourceEntity>();
-		if (getConsumedSlaveRelations() != null) {
-			for (final ConsumedResourceRelationEntity relation : getConsumedSlaveRelations()) {
-				final ResourceEntity r = relation.getMasterResource();
-				if (r != null) {
-					result.add(r);
-				}
 			}
 		}
 		return result;
@@ -500,27 +435,6 @@ public class ResourceEntity extends HasContexts<ResourceContextEntity> implement
 	@Override
 	public String toString() {
 		return "ResourceEntity [id=" + id + ", name=" + name + "]";
-	}
-
-	/**
-	 * Returns all Relations for given resourceId
-	 * 
-	 * @param resourceId
-	 * @return
-	 */
-	public List<AbstractResourceRelationEntity> getMasterRelationsForResource(Integer resourceId) {
-		List<AbstractResourceRelationEntity> list = new ArrayList<AbstractResourceRelationEntity>();
-		list.addAll(getConsumedMasterRelations());
-		list.addAll(getProvidedMasterRelations());
-
-		List<AbstractResourceRelationEntity> result = new ArrayList<AbstractResourceRelationEntity>();
-
-		for (AbstractResourceRelationEntity relation : list) {
-			if (resourceId.equals(relation.getSlaveResource().getId())) {
-				result.add(relation);
-			}
-		}
-		return result;
 	}
 
 	@Override

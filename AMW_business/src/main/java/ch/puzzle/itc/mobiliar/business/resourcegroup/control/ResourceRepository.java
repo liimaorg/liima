@@ -23,8 +23,6 @@ package ch.puzzle.itc.mobiliar.business.resourcegroup.control;
 import ch.puzzle.itc.mobiliar.business.deploy.entity.DeploymentEntity;
 import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -51,16 +49,6 @@ public class ResourceRepository {
                 .createQuery("select r from ResourceEntity r where r.resourceGroup.id=:id and r.release=:release",
                         ResourceEntity.class)
                 .setParameter("id", id).setParameter("release", release).getSingleResult();
-    }
-
-    public ResourceEntity getApplicationByNameAndRelease(String name, ReleaseEntity release) {
-        return entityManager
-                .createQuery(
-                        "select r from ResourceEntity r where LOWER(r.name)=:name and r.release=:release and r.resourceType.name=:typeName",
-                        ResourceEntity.class)
-                .setParameter("name", name.toLowerCase())
-                .setParameter("typeName", DefaultResourceTypeDefinition.APPLICATION.name())
-                .setParameter("release", release).getSingleResult();
     }
 
     public ResourceEntity getResourceByNameAndReleaseWithConsumedRelations(String name, ReleaseEntity release) {
@@ -105,14 +93,6 @@ public class ResourceRepository {
                                 + "left join fetch rel.slaveResource " + "where LOWER(rg.name)=:name",
                         ResourceEntity.class)
                 .setParameter("name", name.toLowerCase()).getResultList();
-    }
-
-    public List<ResourceEntity> getResourcesByGroupNameWithAllRelationsOrderedByRelease(String name) {
-        return entityManager.createQuery(
-                "select r from ResourceEntity r " + "left join fetch r.resourceGroup rg "
-                        + "left join fetch r.consumedMasterRelations rel " + "left join fetch rel.slaveResource "
-                        + "where LOWER(rg.name)=:name order by r.release.installationInProductionAt asc",
-                ResourceEntity.class).setParameter("name", name.toLowerCase()).getResultList();
     }
 
     public ResourceEntity loadWithResourceGroupAndRelatedResourcesForId(Integer id) {
@@ -174,7 +154,4 @@ public class ResourceRepository {
         log.info("Runtime with Id: " + resourceId + " was removed from the db");
     }
 
-    public void removeResourceGroup(ResourceGroupEntity resourceGroup) {
-        entityManager.remove(resourceGroup);
-    }
 }

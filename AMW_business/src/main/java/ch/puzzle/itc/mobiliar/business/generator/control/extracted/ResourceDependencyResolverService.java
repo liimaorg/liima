@@ -199,24 +199,6 @@ public class ResourceDependencyResolverService {
     }
 
     /**
-     * @param resources
-     * @param limit
-     * @return all Resources that are linked to a Release which is after or equal the given limit
-     */
-    public List<ResourceEntity> getAllFutureReleases(Set<ResourceEntity> resources, ReleaseEntity limit) {
-        List<ResourceEntity> allReleaseResourcesOrderedByRelease = new ArrayList<>(resources);
-        Collections.sort(allReleaseResourcesOrderedByRelease, resourceReleaseComparator);
-        List<ResourceEntity> resourcesBefore = new ArrayList<>();
-        for (ResourceEntity resourceEntity : allReleaseResourcesOrderedByRelease) {
-            if (limit != null && limit.getInstallationInProductionAt() != null
-                    && !limit.getInstallationInProductionAt().after(resourceEntity.getRelease().getInstallationInProductionAt())) {
-                resourcesBefore.add(resourceEntity);
-            }
-        }
-        return resourcesBefore;
-    }
-
-    /**
      * analyzes if the given resource is the best matching for the given release. returns true if so, false otherwise.
      */
     private boolean isBestResource(@NotNull ResourceEntity resource, @NotNull ReleaseEntity release) {

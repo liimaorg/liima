@@ -77,7 +77,7 @@ public class NodeJobEntity {
 			}
 			return status;
 		}
-	};
+	}
 	
 	/** Deployment state this job belongs to  */
 	@Getter

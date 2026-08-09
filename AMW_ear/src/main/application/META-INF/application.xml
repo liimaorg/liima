@@ -5,12 +5,6 @@
     <display-name>AMW_ear</display-name>
     <module>
         <web>
-            <web-uri>AMW_web.war</web-uri>
-            <context-root>AMW_web</context-root>
-        </web>
-    </module>
-    <module>
-        <web>
             <web-uri>AMW_angular.war</web-uri>
             <context-root>AMW_angular</context-root>
         </web>

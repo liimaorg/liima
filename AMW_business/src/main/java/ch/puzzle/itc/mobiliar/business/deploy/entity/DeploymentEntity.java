@@ -252,15 +252,6 @@ public class DeploymentEntity implements Serializable {
                 || deploymentState == DeploymentState.READY_FOR_DEPLOYMENT;
     }
 
-    public String getStateMessageAsHtml() {
-        String replacedMessage = "";
-        if (stateMessage != null) {
-            replacedMessage = stateMessage.replaceAll("\n", "<br>");
-        }
-
-        return replacedMessage;
-    }
-
     public void appendStateMessage(String stateMessage) {
         if (this.stateMessage == null) {
             this.stateMessage = stateMessage;

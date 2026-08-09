@@ -49,7 +49,6 @@ public class ApplistScreenDomainService {
                     appServerList.remove(as);
                     break;
                 }
-                ;
             }
         }
         return appServerList;

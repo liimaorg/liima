@@ -44,14 +44,4 @@ public class ValidationHelper {
         }
         return argument;
     }
-
-    public static String validateNotNullOrEmpty(String argument, RuntimeException e) {
-        if (argument == null || argument.trim().isEmpty()) throw e;
-        return argument;
-    }
-
-    public static <T> T validateNotNull(T o, RuntimeException e) {
-        if (o == null) throw e;
-        return o;
-    }
 }

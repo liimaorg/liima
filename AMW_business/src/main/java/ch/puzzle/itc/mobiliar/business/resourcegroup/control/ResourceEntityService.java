@@ -54,15 +54,6 @@ public class ResourceEntityService {
 	@Inject
 	EntityManager entityManager;
 
-	public Set<ResourceGroupEntity> getConsumedResourceGroups(ResourceEntity resource) {
-		Set<ResourceGroupEntity> groups = new HashSet<>();
-		for (ConsumedResourceRelationEntity rel : resource.getConsumedMasterRelations()) {
-			groups.add(rel.getSlaveResource().getResourceGroup());
-		}
-		return groups;
-	}
-
-
 	public void setRuntime(ResourceEntity applicationServer, ResourceGroupEntity runtime) {
 		if (applicationServer.getResourceType().isApplicationServerResourceType()) {
 			permissionService.checkPermissionAndFireException(Permission.RESOURCE, null, Action.UPDATE, applicationServer.getResourceGroup(), null, "set runtime");

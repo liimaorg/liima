@@ -41,8 +41,6 @@ import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceWithRelations;
-import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
-import ch.puzzle.itc.mobiliar.business.usersettings.control.UserSettingsService;
 import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,12 +51,6 @@ public class ResourceRelationsTest {
 
     @Mock
     ApplistScreenDomainService applistScreenDomainService;
-
-    @Mock
-    UserSettingsService userSettingsService;
-
-    @Mock
-    PermissionService permissionService;
 
     @Spy
     @InjectMocks

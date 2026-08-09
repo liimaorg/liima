@@ -373,10 +373,6 @@ public class PermissionService implements Serializable {
         return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.CREATE);
     }
 
-    public boolean hasPermissionForDeploymentReject(DeploymentEntity deployment) {
-        return hasPermissionAndActionForDeploymentOnContext(deployment.getContext(), deployment.getResource().getResourceGroup(), Action.DELETE);
-    }
-
     public boolean hasPermissionForCancelDeployment(DeploymentEntity deployment) {
         return getCurrentUserName().equals(deployment.getDeploymentRequestUser())
                 || (deployment.getDeploymentConfirmed() != null && deployment.getDeploymentConfirmed()
@@ -741,20 +737,6 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Checks if user is allowed to add a Relation to a ResourceType
-     *
-     * @param resourceTypeEntity
-     */
-    public boolean hasPermissionToAddRelatedResourceType(ResourceTypeEntity resourceTypeEntity) {
-        if (resourceTypeEntity != null) {
-            if (hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Checks if the user may delete a Resource relationship
      */
     public boolean hasPermissionToDeleteRelation(ResourceEntity resourceEntity, ContextEntity context) {
@@ -767,13 +749,6 @@ public class PermissionService implements Serializable {
     }
 
     /**
-     * Checks if the user may delete a ResourceType relationship
-     */
-    public boolean hasPermissionToDeleteRelationType(ResourceTypeEntity resourceTypeEntity) {
-        return hasPermission(Permission.RESOURCETYPE, null, Action.UPDATE, null, resourceTypeEntity);
-    }
-
-    /**
      * Checks if user may create or edit Templates of Resources
      *
      * @param resource
@@ -781,11 +756,6 @@ public class PermissionService implements Serializable {
     public boolean hasPermissionToAddResourceTemplate(ResourceEntity resource) {
         // ok if user has update permission on the Resource, context is always global, so we set it to null to omit the check
         return hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.CREATE, resource.getResourceGroup(), null);
-    }
-
-    public boolean hasPermissionToUpdateResourceTemplate(ResourceEntity resource) {
-        // ok if user has update permission on the Resource, context is always global, so we set it to null to omit the check
-        return hasPermission(Permission.RESOURCE_TEMPLATE, null, Action.UPDATE, resource.getResourceGroup(), null);
     }
 
     /**
@@ -796,11 +766,6 @@ public class PermissionService implements Serializable {
     public boolean hasPermissionToAddResourceTypeTemplate(ResourceTypeEntity resourceType) {
         // ok if user has update permission on the ResourceType, context is always global, so we set it to null to omit the check
         return hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.CREATE, null, resourceType);
-    }
-
-    public boolean hasPermissionToUpdateResourceTypeTemplate(ResourceTypeEntity resourceType) {
-        // ok if user has update permission on the ResourceType, context is always global, so we set it to null to omit the check
-        return hasPermission(Permission.RESOURCETYPE_TEMPLATE, null, Action.UPDATE, null, resourceType);
     }
 
     /**

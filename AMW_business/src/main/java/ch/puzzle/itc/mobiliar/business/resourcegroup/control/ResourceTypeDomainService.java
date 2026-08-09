@@ -24,10 +24,8 @@ import ch.puzzle.itc.mobiliar.business.auditview.control.AuditService;
 import ch.puzzle.itc.mobiliar.business.database.control.QueryUtils;
 import ch.puzzle.itc.mobiliar.business.domain.commons.CommonDomainService;
 import ch.puzzle.itc.mobiliar.business.environment.control.ContextDomainService;
-import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceType;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
-import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.AbstractResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.business.security.control.RestrictionRepository;
@@ -38,7 +36,6 @@ import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceTypeNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
-import ch.puzzle.itc.mobiliar.common.util.DefaultResourceTypeDefinition;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.Stateless;
@@ -46,10 +43,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -92,18 +86,6 @@ public class ResourceTypeDomainService {
 		return entityManager.find(ResourceTypeEntity.class, resourceTypeId);
 	}
 
-	public List<ResourceRelationTypeEntity> loadRelatedResourceTypeRelations(Integer resourceTypeId) {
-		String sql = "select r from ResourceRelationTypeEntity r, ResourceTypeEntity t";
-		sql += " where r.resourceTypeA.id = :resourceTypeId";
-		sql += " and r.resourceTypeB.id = t.id";
-		sql += " order by t.id";
-		TypedQuery<ResourceRelationTypeEntity> query = entityManager.createQuery(sql, ResourceRelationTypeEntity.class);
-
-		query.setParameter("resourceTypeId", resourceTypeId);
-		return query.getResultList();
-
-	}
-
 	protected Query fetchAllResourceTypes() {
 		return entityManager
 				.createQuery("select n from ResourceTypeEntity n left join fetch n.childrenResourceTypes as c order by n.name asc, c.name asc");
@@ -139,17 +121,6 @@ public class ResourceTypeDomainService {
 			throw new ElementAlreadyExistsException(message, ResourceType.class, newResourceTypeName);
 		}
 		return result;
-	}
-
-	/**
-	 * Returns the Id of a given ResourceTypeEntity identified by its name
-	 *
-	 * @param resourceTypeName
-	 * @return
-	 */
-	public Integer getResourceTypeIdByResourceTypeName(String resourceTypeName) throws ValidationException {
-		ResourceTypeEntity resourceType = getUniqueResourceTypeByName(resourceTypeName);
-		return resourceType != null ? resourceType.getId() : null;
 	}
 
 	public ResourceTypeEntity getUniqueResourceTypeByName(String resourceTypeName) throws ValidationException {
@@ -196,38 +167,6 @@ public class ResourceTypeDomainService {
 		log.info("ResourceType mit der Id: " + resourceTypeEntity.getId() + " wurde aus der DB gelöscht");
 	}
 
-	/**
-	 * Listet ApplicationServers auf, die sind schon in der DB. Diese Methode
-	 * braucht um auto-complete-mode zu zeigen.
-	 * 
-	 * alphabetic sorted
-	 * 
-	 * @param input
-	 * @return Die Liste von ApplicationsServer
-	 */
-	public List<String> getApplicationServerNamesForSuggestBox(String input) {
-		if (input == null || input.isEmpty()) {
-			return Collections.emptyList();
-		}
-		return QueryUtils.fetch(String.class, applicationServersForSuggestBox(input), 0, 10);
-	}
-
-	private Query applicationServersForSuggestBox(String input) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<String> q = cb.createQuery(String.class);
-		Root<ResourceEntity> r = q.from(ResourceEntity.class);
-		Join<ResourceEntity, ResourceTypeEntity> resType = r.join("resourceType");
-		Predicate appServerNamePred = cb.like(resType.<String> get("name"), DefaultResourceTypeDefinition.APPLICATIONSERVER.name());
-		input = input + "%";
-		q.where(cb.and(appServerNamePred, cb.like(r.<String> get("name"), input)));
-		q.select(r.<String> get("name"));
-		q.distinct(true);
-
-		q.orderBy(cb.asc(r.get("name")));
-
-		return entityManager.createQuery(q);
-	}
-
 	public void createResourceTypeRelation(Integer resTypeId, Integer relResTypeId, String identifier) throws ResourceTypeNotFoundException {
 		ResourceTypeEntity resType = commonService.getResourceTypeEntityById(resTypeId);
 		permissionService.checkPermissionAndFireException(Permission.RESOURCETYPE, null, Action.UPDATE, null, resType, null);
@@ -252,24 +191,6 @@ public class ResourceTypeDomainService {
 	public ResourceRelationTypeEntity getResourceRelationTypeById(Integer relResTypeId) {
 		ResourceRelationTypeEntity resRelType = entityManager.find(ResourceRelationTypeEntity.class, relResTypeId);
 		return resRelType;
-	}
-
-	public int updateResourceTypeRelationName(Integer relationId, String identifier) {
-		Query q = entityManager.createQuery("update ResourceRelationTypeEntity r set identifier = :identifier where id = :id");
-		q.setParameter("id", relationId);
-		q.setParameter("identifier", identifier);
-		return q.executeUpdate();
-	}
-
-	public List<AbstractResourceRelationEntity> getAbstractResourceRelationsForResourceTypeRelation(Integer resourceTypeRelationId) {
-		ResourceRelationTypeEntity resourceRelationType = getResourceRelationTypeById(resourceTypeRelationId);
-		List<AbstractResourceRelationEntity> result = new ArrayList<AbstractResourceRelationEntity>();
-		if(resourceRelationType != null){
-			result.addAll(resourceRelationType.getConsumedResourceRelations());
-			result.addAll(resourceRelationType.getProvidedResourceRelations());
-		}
-		
-		return result;
 	}
 
     /**
