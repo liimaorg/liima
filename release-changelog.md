@@ -1,3 +1,16 @@
+# v1.18.13
+* Angular:
+  * Fix/findings Angular UI [#1024](https://github.com/liimaorg/liima/pull/1024)
+  * Feature/976 resource relation templates [#1019](https://github.com/liimaorg/liima/pull/1019)
+  * fix: edit template target path console error [#1027](https://github.com/liimaorg/liima/pull/1027)
+  * fix: reset form when canceling edit template [#1031](https://github.com/liimaorg/liima/pull/1031)
+  * style: change property input color [#1032](https://github.com/liimaorg/liima/pull/1032)
+* Lifecycle:
+  * chore: update js deps [#1035](https://github.com/liimaorg/liima/pull/1035)
+  * chore: maven dep updates [#1036](https://github.com/liimaorg/liima/pull/1036)
+  * chore(deps): bump org.postgresql:postgresql from 42.7.11 to 42.7.12 in /AMW_db_scripts [#1028](https://github.com/liimaorg/liima/pull/1028)
+  * chore(deps): bump com.fasterxml.jackson.core:jackson-core from 2.15.0 to 2.18.8 [#1029](https://github.com/liimaorg/liima/pull/1029)
+
 # v1.18.12
 * Angular Edit Resource Page (hidden behind feature flag):
   * feat: show dependencies of resource [#985](https://github.com/liimaorg/liima/pull/985)
