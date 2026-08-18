@@ -58,6 +58,18 @@ describe('PropertyTypeEditComponent', () => {
     expect(component.isValidRegex()).toBe(false);
   });
 
+  it('isValidForm returns false for an invalid regex', () => {
+    component.propertyType.name = 'NAME';
+    component.propertyType.validationRegex = '*';
+    expect(component.isValidForm()).toBe(false);
+  });
+
+  it('isValidForm returns true when name and regex are valid', () => {
+    component.propertyType.name = 'NAME';
+    component.propertyType.validationRegex = '.*';
+    expect(component.isValidForm()).toBe(true);
+  });
+
   it('onTagsChange updates propertyTags', () => {
     component.propertyType.propertyTags = [];
     const newTags = [{ name: 'tag1', type: 'LOCAL' }];
