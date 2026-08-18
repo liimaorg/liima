@@ -136,26 +136,26 @@ describe('PropertyFieldComponent', () => {
     expect(input?.getAttribute('placeholder')).toBe('DEFAULT');
   });
 
-  it('should not render reset checkbox when property is not defined in current context', () => {
+  it('should not render reset button when property is not defined in current context', () => {
     componentRef.setInput('property', baseProperty({ definedInContext: false, value: 'X', replacedValue: '' }));
     fixture.detectChanges();
 
-    const reset = fixture.nativeElement.querySelector(`input[type="checkbox"]`);
+    const reset = fixture.nativeElement.querySelector('.reset-btn');
     expect(reset).toBeNull();
   });
 
-  it('should render reset checkbox when property is defined in current context even if value is null', () => {
+  it('should render reset button when property is defined in current context even if value is null', () => {
     componentRef.setInput(
       'property',
       baseProperty({ name: 'pNull', definedInContext: true, value: null, replacedValue: '' }),
     );
     fixture.detectChanges();
 
-    const reset: HTMLInputElement | null = fixture.nativeElement.querySelector(`#reset-pNull`);
+    const reset: HTMLButtonElement | null = fixture.nativeElement.querySelector(`#reset-pNull`);
     expect(reset).not.toBeNull();
   });
 
-  it('should render reset checkbox when replacedValue exists and toggle value + emit resetChange', () => {
+  it('should render reset button when replacedValue exists and toggle value + emit resetChange', () => {
     componentRef.setInput(
       'property',
       baseProperty({
@@ -172,29 +172,27 @@ describe('PropertyFieldComponent', () => {
     const resetSpy = vi.fn();
     component.resetChange.subscribe(resetSpy);
 
-    const reset: HTMLInputElement | null = fixture.nativeElement.querySelector(`#reset-p1`);
+    const reset: HTMLButtonElement | null = fixture.nativeElement.querySelector(`#reset-p1`);
     expect(reset).not.toBeNull();
 
     // check reset => value becomes replacedValue and input is disabled
-    reset!.checked = true;
-    const resetOnEvent = new Event('change');
-    Object.defineProperty(resetOnEvent, 'target', { value: reset });
-    (component as PropertyFieldComponent).toggleReset(resetOnEvent);
+    reset!.click();
     fixture.detectChanges();
 
     expect(component.localValue).toBe('PARENT');
     expect(component.resetChecked()).toBe(true);
+    expect(reset!.getAttribute('aria-pressed')).toBe('true');
+    expect(reset!.classList.contains('active')).toBe(true);
     expect(resetSpy).toHaveBeenCalledWith(true);
 
     // uncheck reset => value becomes original and input enabled again (if not otherwise disabled)
-    reset!.checked = false;
-    const resetOffEvent = new Event('change');
-    Object.defineProperty(resetOffEvent, 'target', { value: reset });
-    (component as PropertyFieldComponent).toggleReset(resetOffEvent);
+    reset!.click();
     fixture.detectChanges();
 
     expect(component.localValue).toBe('CURRENT');
     expect(component.resetChecked()).toBe(false);
+    expect(reset!.getAttribute('aria-pressed')).toBe('false');
+    expect(reset!.classList.contains('active')).toBe(false);
     expect(resetSpy).toHaveBeenCalledWith(false);
   });
 });
