@@ -67,22 +67,21 @@
     ></textarea>
   }
   @if (canReset() && (!property().encrypted || canDecrypt())) {
-    <input
-      type="checkbox"
-      class="btn-check"
+    <button
+      type="button"
       [id]="resetId()"
-      autocomplete="off"
-      [checked]="resetChecked()"
-      (change)="toggleReset($event)"
-    />
-    <label
+      class="btn btn-outline-secondary reset-btn"
+      [class.active]="resetChecked()"
       aria-label="Reset property"
-      class="btn btn-outline-primary reset-btn"
+      [attr.aria-pressed]="resetChecked()"
       [ngbTooltip]="'Reset property'"
-      [for]="resetId()"
+      #resetTooltip="ngbTooltip"
+      triggers="mouseenter:mouseleave"
+      container="body"
+      (click)="toggleReset(resetTooltip)"
     >
       <app-icon icon="arrow-counterclockwise" data-testid="button-reset"></app-icon
-    ></label>
+    ></button>
   }
 </div>
 
