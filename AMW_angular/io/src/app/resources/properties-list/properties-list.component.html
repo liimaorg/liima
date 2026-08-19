@@ -1,4 +1,4 @@
-<div class="properties-list">
+<div class="properties-list" [attr.inert]="isLoading() ? '' : null">
   <div class="properties-column">
     @for (property of listProperties().left; track property.descriptorId) {
       <ng-container
@@ -27,6 +27,7 @@
     [canEdit]="canEdit()"
     [canDecrypt]="canDecrypt()"
     [canDelete]="canDelete()"
+    [isLoading]="isLoading()"
     (valueChange)="valueChange.emit({ name: property.name, value: $event })"
     (resetChange)="resetToggled.emit({ name: property.name, checked: $event })"
     (validationChange)="validationChanged.emit({ name: property.name, invalid: $event })"
