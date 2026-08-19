@@ -172,4 +172,22 @@ describe('ResourceRelationsComponent', () => {
 
     expect(spy).toHaveBeenCalled();
   });
+
+  describe('getCleanType', () => {
+    it('should return the same string when no quotes are present', () => {
+      expect(component['getCleanType']('NODE')).toBe('NODE');
+    });
+
+    it('should remove quotes from quoted string', () => {
+      expect(component['getCleanType']('"NODE"')).toBe('NODE');
+    });
+
+    it('should return undefined when input is undefined', () => {
+      expect(component['getCleanType'](undefined)).toBeUndefined();
+    });
+
+    it('should handle empty string', () => {
+      expect(component['getCleanType']('')).toBe('');
+    });
+  });
 });

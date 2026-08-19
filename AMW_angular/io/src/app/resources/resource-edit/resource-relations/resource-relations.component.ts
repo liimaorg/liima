@@ -199,9 +199,17 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   protected isNode = computed(() => {
     const type = this.resource()?.type;
-    const cleanType = type?.replace(/"/g, '');
-    return cleanType === 'NODE';
+    return this.getCleanType(type) === 'NODE';
   });
+
+  /**
+   * Cleans a resource type string by removing surrounding quotes and converting to uppercase.
+   * @param type - The resource type string, possibly undefined
+   * @returns The cleaned type string in uppercase, or undefined if input is undefined
+   */
+  protected getCleanType(type: string | undefined): string | undefined {
+    return type?.replace(/"/g, '').toUpperCase();
+  }
 
   protected properties = computed<Property[]>(() => {
     const props = this.relationsService.relationProperties;
@@ -543,7 +551,8 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   private isDefaultResourceType(): boolean {
     const type = this.resource()?.type;
     const defaultTypes = ['APPLICATION', 'APPLICATIONSERVER', 'NODE', 'RUNTIME'];
-    const cleanType = type!.replace(/"/g, '');
+    const cleanType = this.getCleanType(type);
+    if (!cleanType) return false;
     return defaultTypes.includes(cleanType);
   }
 
