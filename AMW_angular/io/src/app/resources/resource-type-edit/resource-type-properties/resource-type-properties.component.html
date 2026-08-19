@@ -23,6 +23,7 @@
       [canEdit]="permissions().canUpdateProperty"
       [canDecrypt]="permissions().canDecryptProperties"
       [canDelete]="permissions().canUpdateProperty"
+      [isLoading]="isLoading()"
       [mode]="'resourceType'"
       [resetToken]="resetToken()"
       (valueChange)="onPropertyChange($event.name, $event.value)"

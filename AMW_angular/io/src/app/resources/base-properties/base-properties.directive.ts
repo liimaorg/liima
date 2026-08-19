@@ -58,7 +58,7 @@ export abstract class BasePropertiesDirective {
       const ctxId = this.contextId();
       if (!entityId || !ctxId) return;
 
-      this.reloadProperties(entityId, ctxId);
+      this.reloadAfterDiscardingEdits(entityId, ctxId);
     });
   }
 
@@ -98,8 +98,9 @@ export abstract class BasePropertiesDirective {
   }
 
   saveChanges() {
-    const changes = this.editor.changedProperties();
-    const resets = this.editor.resetProperties();
+    const loadedPropertyNames = new Set(this.properties().map((property) => property.name));
+    const changes = new Map([...this.editor.changedProperties()].filter(([name]) => loadedPropertyNames.has(name)));
+    const resets = new Set([...this.editor.resetProperties()].filter((name) => loadedPropertyNames.has(name)));
     if ((changes.size === 0 && resets.size === 0) || this.hasValidationErrors()) return;
 
     this.isSaving.set(true);
@@ -130,7 +131,7 @@ export abstract class BasePropertiesDirective {
       .subscribe({
         next: () => {
           this.successMessage.set('Properties saved successfully');
-          this.reloadProperties(this.getEntityId(), this.contextId());
+          this.reloadAfterDiscardingEdits(this.getEntityId(), this.contextId());
           this.afterPropertiesSaved();
           this.editor.resetChanges();
           setTimeout(() => this.successMessage.set(null), 3000);
@@ -164,7 +165,7 @@ export abstract class BasePropertiesDirective {
       modal,
       resourceId,
       resourceTypeId,
-      () => this.reloadProperties(this.getEntityId(), this.contextId()),
+      () => this.reloadAfterDiscardingEdits(this.getEntityId(), this.contextId()),
       this.destroy$,
     );
   }
@@ -193,7 +194,7 @@ export abstract class BasePropertiesDirective {
         next: () => {
           this.toastService.success('Property descriptor saved successfully.');
           modalRef.close();
-          this.reloadProperties(this.getEntityId(), this.contextId());
+          this.reloadAfterDiscardingEdits(this.getEntityId(), this.contextId());
         },
         error: (err) => {
           this.toastService.error('Failed to save property descriptor: ' + err.message);
@@ -216,6 +217,12 @@ export abstract class BasePropertiesDirective {
   ): Observable<void>;
   protected abstract afterPropertiesSaved(): void;
   protected abstract reloadProperties(entityId: number, contextId: number): void;
+
+  private reloadAfterDiscardingEdits(entityId: number, contextId: number): void {
+    this.editor.resetChanges();
+    this.invalidProperties.set(new Set());
+    this.reloadProperties(entityId, contextId);
+  }
   protected abstract getDeleteParams(): [number | undefined, number | undefined];
   protected abstract getSaveDescriptorParams(): [number | undefined, number | undefined];
 }
