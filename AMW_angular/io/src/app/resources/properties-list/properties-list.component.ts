@@ -22,6 +22,7 @@ export class PropertiesListComponent {
   canEdit = input<boolean>(false);
   canDecrypt = input<boolean>(false);
   canDelete = input<boolean>(false);
+  isLoading = input<boolean>(false);
   mode = input<'resource' | 'resourceType'>('resource');
   resetToken = input<number>(0);
 

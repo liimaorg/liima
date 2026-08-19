@@ -23,6 +23,7 @@ export class PropertyFieldComponent {
   canEdit = input<boolean>(false);
   canDecrypt = input<boolean>(false);
   canDelete = input<boolean>(false);
+  isLoading = input<boolean>(false);
   hideTooltip = input<boolean>(false);
   valueChange = output<string>();
   validationChange = output<boolean>();
@@ -41,7 +42,7 @@ export class PropertyFieldComponent {
   displayLabel = computed(() => this.property().displayName || this.property().name);
   hasError = computed(() => this.touched() && !!this.validationError());
   canReset = computed(() => !!this.property().definedInContext);
-  isDisabled = computed(() => this.property().disabled);
+  isDisabled = computed(() => this.property().disabled || this.isLoading());
   isEncrypted = computed(() => !!this.property().encrypted);
 
   showProperty = computed(() => {
@@ -95,7 +96,7 @@ export class PropertyFieldComponent {
       this.showDecrypted.set(false);
       this.touched.set(false);
       this.validationError.set(null);
-      this.validationChange.emit(false);
+      this.validate();
     });
   }
 
