@@ -4,6 +4,8 @@ async function switchContext(page: Page, contextName: string) {
   const previousUrl = page.url();
   await page.getByRole("button", { name: contextName }).click();
   await page.waitForURL((url) => url.href !== previousUrl);
+  // properties reload asynchronously and discard pending edits, so wait for it to settle
+  await page.waitForLoadState("networkidle");
 }
 
 test.beforeEach(async ({ page }) => {

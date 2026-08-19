@@ -30,9 +30,17 @@ test.describe("create a deployment", () => {
     await page
       .locator('[data-cy="date-picker"]')
       .fill(tomorrow.toLocaleDateString("de-CH") + " 00:00");
-    await page.getByRole("button", { name: "Deploy", exact: true }).click();
+    const deployButton = page.getByRole("button", {
+      name: "Deploy",
+      exact: true,
+    });
+    await expect(deployButton).toBeEnabled();
+    await deployButton.click();
+    await expect(page.locator(".alert-success")).toBeVisible({
+      timeout: 30_000,
+    });
     const trackingIdLink = page.getByRole("link", { name: /Tracking Id \d+/ });
-    await expect(trackingIdLink).toBeVisible({ timeout: 30_000 });
+    await expect(trackingIdLink).toBeVisible();
     await trackingIdLink.click();
     await expect(page).toHaveURL(/#\/deployments\?filters=/);
   });
