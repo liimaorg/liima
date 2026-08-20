@@ -1,6 +1,6 @@
-import { Component, computed, effect, inject, input, OnDestroy } from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { ResourceRelation } from '../../../models/resource-relation';
-import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { PlaceholderRowsComponent } from 'src/app/shared/elements/placeholder-rows.component';
 import { TileComponent } from 'src/app/shared/tile/tile.component';
 import { EntryAction, TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { ResourceTemplate } from '../../../models/resource-template';
@@ -21,7 +21,7 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_TEMPLATE';
 @Component({
   selector: 'app-resource-relation-templates-list',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
+  imports: [PlaceholderRowsComponent, TileComponent, TileListComponent],
   templateUrl: './resource-relation-templates-list.component.html',
 })
 export class ResourceRelationTemplatesListComponent implements OnDestroy {
@@ -41,9 +41,18 @@ export class ResourceRelationTemplatesListComponent implements OnDestroy {
     effect(() =>
       this.resourceRelationsService.setIdsForResourceRelationTemplates(this.resource().id, this.relation()?.id),
     );
+    effect(() => {
+      if (!this.isLoading()) {
+        this.hasLoadedOnce.set(true);
+      }
+    });
   }
 
-  isLoading = computed(() => this.relation() == null || this.resource() == null || this.contextId() == null);
+  isLoading = this.resourceRelationsService.isLoadingRelationTemplates;
+
+  // placeholder skeleton only for the initial fetch; later reloads (e.g. switching relation) keep content visible
+  private hasLoadedOnce = signal(false);
+  showPlaceholder = computed(() => this.isLoading() && !this.hasLoadedOnce());
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {

@@ -104,6 +104,10 @@ export class ResourceRelationsService extends BaseService {
   isLoadingRelationProperties = this.loadingRelationProperties.asReadonly();
   isLoadingTypeRelationProperties = this.loadingTypeRelationProperties.asReadonly();
 
+  private loadingRelationTemplates = signal(false);
+  private relationTemplatesRequestId = 0;
+  isLoadingRelationTemplates = this.loadingRelationTemplates.asReadonly();
+
   private relationProperties$: Subject<{ resourceId: number; relationId: number; contextId: number }> = new Subject<{
     resourceId: number;
     relationId: number;
@@ -139,7 +143,14 @@ export class ResourceRelationsService extends BaseService {
 
   private relationTemplatesForResource$: Observable<ResourceTemplate[]> = this.resourceRelationTemplates$.pipe(
     switchMap(({ resourceId, relationId }) => {
+      const requestId = ++this.relationTemplatesRequestId;
+      this.loadingRelationTemplates.set(true);
       return this.getResourceRelationTemplates(resourceId, relationId).pipe(
+        finalize(() => {
+          if (requestId === this.relationTemplatesRequestId) {
+            this.loadingRelationTemplates.set(false);
+          }
+        }),
         catchError(() => of([] as ResourceTemplate[])),
       );
     }),
