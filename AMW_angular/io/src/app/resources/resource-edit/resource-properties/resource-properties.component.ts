@@ -2,7 +2,7 @@ import { Component, computed, inject, Signal } from '@angular/core';
 import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
 import { ResourceService } from '../../services/resource.service';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
+import { PlaceholderRowsComponent } from '../../../shared/elements/placeholder-rows.component';
 import { PropertyUpdate } from '../../services/resource-properties.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
@@ -15,7 +15,7 @@ import { BasePropertiesDirective } from '../../base-properties/base-properties.d
   selector: 'app-resource-properties',
   standalone: true,
   imports: [
-    LoadingIndicatorComponent,
+    PlaceholderRowsComponent,
     TileComponent,
     PropertiesPanelComponent,
     PropertiesListComponent,

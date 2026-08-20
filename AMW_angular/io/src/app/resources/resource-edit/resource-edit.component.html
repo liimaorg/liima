@@ -1,4 +1,3 @@
-<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
 <app-page>
   <div class="page-title d-flex">
     <div class="resource-name">Edit {{ this.resource()?.name }}</div>
@@ -138,6 +137,13 @@
             [selectedRelationId]="relationId()"
           ></app-resource-relations>
         }
+      </div>
+    } @else {
+      <div class="flex-shrink-0">
+        <app-placeholder-rows [rows]="6"></app-placeholder-rows>
+      </div>
+      <div class="flex-grow-1">
+        <app-placeholder-rows [rows]="10"></app-placeholder-rows>
       </div>
     }
   </div>

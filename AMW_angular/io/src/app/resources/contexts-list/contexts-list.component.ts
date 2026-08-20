@@ -8,11 +8,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { UnsavedPropertyChangesService } from '../services/unsaved-property-changes.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
+import { PlaceholderRowsComponent } from '../../shared/elements/placeholder-rows.component';
 
 @Component({
   selector: 'app-contexts-list',
   standalone: true,
-  imports: [NgClass, UpperCasePipe],
+  imports: [NgClass, UpperCasePipe, PlaceholderRowsComponent],
   templateUrl: './contexts-list.component.html',
   styleUrl: './contexts-list.component.scss',
 })
@@ -26,6 +27,9 @@ export class ContextsListComponent {
 
   environmentTree: Signal<EnvironmentTree[]> = this.environmentsService.environmentTree;
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
+
+  // POC: no dedicated loading flag on the service yet, so an empty tree is treated as "still loading"
+  isLoading = computed(() => this.environmentTree().length === 0);
 
   selection = computed(() => {
     const ctxId = this.contextId();

@@ -1,13 +1,15 @@
-<app-loading-indicator [isLoading]="isLoadingRelations()"></app-loading-indicator>
-<app-tile-component
-  [title]="'Related Resources'"
-  [actionName]="'Add Relation'"
-  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
-  [isCollapsed]="false"
-  [noContent]="!hasRelations()"
-  [notAllowed]="false"
-  (tileAction)="showAddRelationModal()"
->
+@if (isLoadingRelations()) {
+  <app-placeholder-rows [rows]="6"></app-placeholder-rows>
+} @else {
+  <app-tile-component
+    [title]="'Related Resources'"
+    [actionName]="'Add Relation'"
+    [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
+    [isCollapsed]="false"
+    [noContent]="!hasRelations()"
+    [notAllowed]="false"
+    (tileAction)="showAddRelationModal()"
+  >
   @if (hasRelations()) {
     <div class="relations-layout">
       <div class="relations-container">
@@ -73,38 +75,41 @@
             }
           </div>
           <div class="relation-detail-body">
-            <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
-            <app-properties-panel
-              [canEdit]="permissions().canUpdateProperty"
-              [isSaving]="isSaving()"
-              [hasChanges]="hasChanges()"
-              [errorMessage]="errorMessage()"
-              [successMessage]="successMessage()"
-              (cancelAction)="resetChanges()"
-              (saveAction)="saveChanges()"
-            >
-              <app-properties-list
-                [properties]="properties()"
-                [canEdit]="false"
-                [canDecrypt]="permissions().canDecryptProperties"
-                [canDelete]="false"
-                [isLoading]="isLoadingProperties()"
-                [mode]="'resource'"
-                [resetToken]="resetToken()"
-                (valueChange)="onPropertyChange($event.name, $event.value)"
-                (resetToggled)="onPropertyReset($event.name, $event.checked)"
-              ></app-properties-list>
-
-              <app-relation-active-applications
-                [resourceId]="resource()?.id!"
-                [relationId]="selectedRelation()?.id!"
-                [contextId]="contextId()"
-                [isApplicationServerToNode]="isApplicationServerToNodeRelation()"
+            @if (isLoadingProperties()) {
+              <app-placeholder-rows [rows]="4"></app-placeholder-rows>
+            } @else {
+              <app-properties-panel
                 [canEdit]="permissions().canUpdateProperty"
-                [activeApplicationIds]="currentActiveAppIds()"
-                (activationChange)="onActivationChange($event)"
-              ></app-relation-active-applications>
-            </app-properties-panel>
+                [isSaving]="isSaving()"
+                [hasChanges]="hasChanges()"
+                [errorMessage]="errorMessage()"
+                [successMessage]="successMessage()"
+                (cancelAction)="resetChanges()"
+                (saveAction)="saveChanges()"
+              >
+                <app-properties-list
+                  [properties]="properties()"
+                  [canEdit]="false"
+                  [canDecrypt]="permissions().canDecryptProperties"
+                  [canDelete]="false"
+                  [isLoading]="isLoadingProperties()"
+                  [mode]="'resource'"
+                  [resetToken]="resetToken()"
+                  (valueChange)="onPropertyChange($event.name, $event.value)"
+                  (resetToggled)="onPropertyReset($event.name, $event.checked)"
+                ></app-properties-list>
+
+                <app-relation-active-applications
+                  [resourceId]="resource()?.id!"
+                  [relationId]="selectedRelation()?.id!"
+                  [contextId]="contextId()"
+                  [isApplicationServerToNode]="isApplicationServerToNodeRelation()"
+                  [canEdit]="permissions().canUpdateProperty"
+                  [activeApplicationIds]="currentActiveAppIds()"
+                  (activationChange)="onActivationChange($event)"
+                ></app-relation-active-applications>
+              </app-properties-panel>
+            }
           </div>
         </div>
         <app-resource-relation-templates-list
@@ -116,6 +121,7 @@
     </div>
   }
 </app-tile-component>
+}
 
 <ng-template #addRelationModal let-modal>
   <app-modal-header [title]="'Add Related Resource'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>

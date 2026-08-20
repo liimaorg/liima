@@ -1,4 +1,6 @@
-@if (permissions().canView) {
+@if (isLoading()) {
+  <app-placeholder-rows [rows]="6"></app-placeholder-rows>
+} @else if (permissions().canView) {
   <ul class="nav flex-column">
     @for (global of environmentTree(); track global.id) {
       <li class="nav-item">

@@ -1,5 +1,5 @@
 import { Component, computed, effect, inject, Signal } from '@angular/core';
-import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
+import { PlaceholderRowsComponent } from '../../shared/elements/placeholder-rows.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -20,13 +20,12 @@ import { RESOURCE_TYPE } from '../../core/amw-constants';
 import { CopyFromResourceDialogComponent } from './copy-from-resource-dialog/copy-from-resource-dialog.component';
 import { ResourceApplicationsComponent } from './resource-applications/resource-applications.component';
 import { ResourceRelationsComponent } from './resource-relations/resource-relations.component';
-import { ResourcePropertiesService } from '../services/resource-properties.service';
 
 @Component({
   selector: 'app-resource-edit',
   standalone: true,
   imports: [
-    LoadingIndicatorComponent,
+    PlaceholderRowsComponent,
     PageComponent,
     ResourceFunctionsListComponent,
     ResourceTemplatesListComponent,
@@ -49,7 +48,6 @@ import { ResourcePropertiesService } from '../services/resource-properties.servi
 export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
-  private resourcePropertiesService = inject(ResourcePropertiesService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private modalService = inject(NgbModal);
@@ -63,9 +61,7 @@ export class ResourceEditComponent {
   resource: Signal<Resource | null> = this.resourceService.resource;
   releases: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
 
-  isLoading = computed(
-    () => this.resourceService.isLoadingResource() || this.resourcePropertiesService.isLoadingResourceProperties(),
-  );
+  isLoading = this.resourceService.isLoadingResource;
 
   constructor() {
     effect(() => {

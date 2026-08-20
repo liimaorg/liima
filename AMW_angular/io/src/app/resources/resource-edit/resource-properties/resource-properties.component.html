@@ -1,37 +1,40 @@
-<app-loading-indicator [isLoading]="isLoading()"></app-loading-indicator>
-<app-tile-component
-  [title]="'Properties'"
-  [actionName]="'New Property'"
-  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
-  [isCollapsed]="false"
-  (tileAction)="addProperty()"
-  [noContent]="false"
-  [notAllowed]="false"
->
-  <app-properties-panel
-    [canEdit]="permissions().canUpdateProperty"
-    [isSaving]="isSaving()"
-    [hasChanges]="hasChanges()"
-    [errorMessage]="errorMessage()"
-    [successMessage]="successMessage()"
-    (cancelAction)="resetChanges()"
-    (saveAction)="saveChanges()"
+@if (isLoading()) {
+  <app-placeholder-rows [rows]="5"></app-placeholder-rows>
+} @else {
+  <app-tile-component
+    [title]="'Properties'"
+    [actionName]="'New Property'"
+    [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
+    [isCollapsed]="false"
+    (tileAction)="addProperty()"
+    [noContent]="false"
+    [notAllowed]="false"
   >
-    <app-properties-list
-      [properties]="properties()"
+    <app-properties-panel
       [canEdit]="permissions().canUpdateProperty"
-      [canDecrypt]="permissions().canDecryptProperties"
-      [canDelete]="permissions().canUpdateProperty"
-      [isLoading]="isLoading()"
-      [mode]="'resource'"
-      [resetToken]="resetToken()"
-      (valueChange)="onPropertyChange($event.name, $event.value)"
-      (resetToggled)="onPropertyReset($event.name, $event.checked)"
-      (editClicked)="onPropertyEdit($event.id)"
-      (deleteClicked)="onPropertyDelete($event.id, deleteModal)"
-    ></app-properties-list>
-  </app-properties-panel>
-</app-tile-component>
+      [isSaving]="isSaving()"
+      [hasChanges]="hasChanges()"
+      [errorMessage]="errorMessage()"
+      [successMessage]="successMessage()"
+      (cancelAction)="resetChanges()"
+      (saveAction)="saveChanges()"
+    >
+      <app-properties-list
+        [properties]="properties()"
+        [canEdit]="permissions().canUpdateProperty"
+        [canDecrypt]="permissions().canDecryptProperties"
+        [canDelete]="permissions().canUpdateProperty"
+        [isLoading]="isLoading()"
+        [mode]="'resource'"
+        [resetToken]="resetToken()"
+        (valueChange)="onPropertyChange($event.name, $event.value)"
+        (resetToggled)="onPropertyReset($event.name, $event.checked)"
+        (editClicked)="onPropertyEdit($event.id)"
+        (deleteClicked)="onPropertyDelete($event.id, deleteModal)"
+      ></app-properties-list>
+    </app-properties-panel>
+  </app-tile-component>
+}
 
 <ng-template #deleteModal let-modal>
   <app-property-delete-modal

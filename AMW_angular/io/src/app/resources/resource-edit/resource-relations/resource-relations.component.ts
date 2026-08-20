@@ -15,7 +15,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { finalize } from 'rxjs/operators';
 import { TileComponent } from '../../../shared/tile/tile.component';
-import { LoadingIndicatorComponent } from '../../../shared/elements/loading-indicator.component';
+import { PlaceholderRowsComponent } from '../../../shared/elements/placeholder-rows.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
@@ -39,7 +39,7 @@ import { ResourceRelationTemplatesListComponent } from './resource-relation-temp
   standalone: true,
   imports: [
     TileComponent,
-    LoadingIndicatorComponent,
+    PlaceholderRowsComponent,
     RelationGroupComponent,
     ButtonComponent,
     FormsModule,
