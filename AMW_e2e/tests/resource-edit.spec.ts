@@ -120,6 +120,7 @@ test.describe("Resource Edit Page - Validation", () => {
 
     const saveButton = page.getByRole("button", { name: "Save" });
     await expect(saveButton).toBeVisible(); // Wait for button to appear
-    await expect(saveButton).toBeDisabled();
+    await expect(saveButton).toBeEnabled();
+    await expect(page.getByText("This field is required")).toBeVisible();
   });
 });
