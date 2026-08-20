@@ -1,7 +1,7 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, startWith, Subject } from 'rxjs';
-import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
+import { Observable, of, startWith, Subject } from 'rxjs';
+import { catchError, finalize, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Resource } from '../models/resource';
 import { Release } from '../models/release';
 import { Relation } from '../models/relation';
@@ -18,6 +18,8 @@ interface Named {
 @Injectable({ providedIn: 'root' })
 export class ResourceService extends BaseService {
   private http = inject(HttpClient);
+  private loadingResource = signal(false);
+  private resourceRequestId = 0;
 
   private resourceType$: Subject<ResourceType> = new Subject<ResourceType>();
   private resourceId$: Subject<number> = new Subject<number>();
@@ -30,8 +32,19 @@ export class ResourceService extends BaseService {
     shareReplay(1),
   );
 
-  private resourceById$: Observable<Resource> = this.resourceId$.pipe(
-    switchMap((id: number) => this.getResource(id)),
+  private resourceById$: Observable<Resource | null> = this.resourceId$.pipe(
+    switchMap((id: number) => {
+      const requestId = ++this.resourceRequestId;
+      this.loadingResource.set(true);
+      return this.getResource(id).pipe(
+        finalize(() => {
+          if (requestId === this.resourceRequestId) {
+            this.loadingResource.set(false);
+          }
+        }),
+        catchError(() => of(null)),
+      );
+    }),
     shareReplay(1),
   );
 
@@ -47,6 +60,7 @@ export class ResourceService extends BaseService {
     initialValue: [] as Release[],
   });
   resource = toSignal(this.resourceById$, { initialValue: null });
+  isLoadingResource = this.loadingResource.asReadonly();
 
   setTypeForResourceGroupList(resourcesType: ResourceType) {
     this.resourceType$.next(resourcesType);

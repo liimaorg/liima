@@ -32,9 +32,7 @@ import { PropertiesListComponent } from '../../properties-list/properties-list.c
 import { BaseRelationsDirective, NODE_FILTERED_PROPERTIES } from '../../base-relations/base-relations.directive';
 import { RelationActiveApplicationsComponent } from './relation-active-applications/relation-active-applications.component';
 import { ResourceActivationService, ResourceActivation } from '../../services/resource-activation.service';
-import {
-  ResourceRelationTemplatesListComponent
-} from './resource-relation-templates-list/resource-relation-templates-list.component';
+import { ResourceRelationTemplatesListComponent } from './resource-relation-templates-list/resource-relation-templates-list.component';
 
 @Component({
   selector: 'app-resource-relations',
@@ -53,7 +51,7 @@ import {
     RouterLink,
     ModalHeaderComponent,
     RelationActiveApplicationsComponent,
-    ResourceRelationTemplatesListComponent
+    ResourceRelationTemplatesListComponent,
   ],
   templateUrl: './resource-relations.component.html',
   styleUrl: './resource-relations.component.scss',
@@ -261,8 +259,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   }
 
   onReleaseChange(relationId: number) {
-    this.activeRelationId.set(relationId);
-    this.setQueryParamForRelationId(relationId);
+    this.switchRelation(relationId);
   }
 
   showAddRelationModal(): void {
@@ -360,21 +357,25 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const res = this.resource();
     if (res?.release) {
       const selectedGroup = this.availableResourceGroups().find((g) => g.id === groupId);
-      if (selectedGroup?.releases?.length) {
-        const firstRelease = selectedGroup.releases[0];
-        const currentReleaseName = res.release;
-        if (firstRelease?.release && firstRelease.release > currentReleaseName) {
-          if (
-            !confirm(
-              `The selected resource does not exist for the release ${currentReleaseName}. Are you sure you want to add it for this release?`,
-            )
-          ) {
-            return;
-          }
-        }
+      const firstRelease = selectedGroup?.releases?.[0];
+      const currentReleaseName = res.release;
+      if (firstRelease?.release && firstRelease.release > currentReleaseName) {
+        void this.confirmDialogService
+          .confirm(
+            `The selected resource does not exist for the release ${currentReleaseName}. Are you sure you want to add it for this release?`,
+            { confirmLabel: 'Add' },
+          )
+          .then((proceed) => {
+            if (proceed) this.doAddRelation(groupId);
+          });
+        return;
       }
     }
 
+    this.doAddRelation(groupId);
+  }
+
+  private doAddRelation(groupId: number): void {
     this.isAddingRelation.set(true);
     this.relationsService.addResourceRelation(this.entityId()!, groupId, this.addAsProvided()).subscribe({
       next: () => {
@@ -405,7 +406,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const hasPropertyChanges = propertyChanges.size > 0 || propertyResets.size > 0;
     const hasActivationChanges = this.hasActivationChanges();
 
-    if ((!hasPropertyChanges && !hasActivationChanges) || this.hasValidationErrors()) return;
+    if (!hasPropertyChanges && !hasActivationChanges) return;
 
     this.isSaving.set(true);
     this.errorMessage.set(null);

@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { UnsavedPropertyChangesService } from '../services/unsaved-property-changes.service';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 
 @Component({
   selector: 'app-contexts-list',
@@ -21,6 +22,7 @@ export class ContextsListComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private unsavedChangesService = inject(UnsavedPropertyChangesService);
+  private confirmDialogService = inject(ConfirmDialogService);
 
   environmentTree: Signal<EnvironmentTree[]> = this.environmentsService.environmentTree;
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
@@ -43,13 +45,20 @@ export class ContextsListComponent {
 
   protected setContext(domain: EnvironmentTree) {
     if (this.unsavedChangesService.hasUnsavedChanges()) {
-      const proceed = window.confirm('You have unsaved changes. Discard them and switch context?');
-      if (!proceed) {
-        return;
-      }
-      this.unsavedChangesService.discardAll();
+      void this.confirmDialogService
+        .confirm('You have unsaved changes. Discard them and switch context?', { confirmLabel: 'Discard' })
+        .then((proceed) => {
+          if (!proceed) return;
+          this.unsavedChangesService.discardAll();
+          this.navigateToContext(domain);
+        });
+      return;
     }
 
+    this.navigateToContext(domain);
+  }
+
+  private navigateToContext(domain: EnvironmentTree) {
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { ctx: domain.id },

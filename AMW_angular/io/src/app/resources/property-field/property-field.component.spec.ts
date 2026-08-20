@@ -59,6 +59,19 @@ describe('PropertyFieldComponent', () => {
     expect(component.validationError()).toBe('This field is required');
   });
 
+  it('should show an initial required error without reporting a touched validation error', () => {
+    componentRef.setInput(
+      'property',
+      baseProperty({ nullable: false, optional: false, defaultValue: '', mik: '', validationRegex: '.*' }),
+    );
+    const validationSpy = vi.fn();
+    component.validationChange.subscribe(validationSpy);
+    fixture.detectChanges();
+
+    expect(component.validationError()).toBe('This field is required');
+    expect(validationSpy).toHaveBeenLastCalledWith(false);
+  });
+
   it('should not show required error when required but mik is present (no explicit value/default)', () => {
     componentRef.setInput(
       'property',
