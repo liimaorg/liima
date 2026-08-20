@@ -42,7 +42,7 @@ export function createPropertiesEditor(
     const props = getProperties() || [];
     const originalProperty = props.find((p) => p.name === propertyName);
 
-    if (originalProperty && originalProperty.value !== newValue) {
+    if (originalProperty && (originalProperty.value ?? '') !== newValue) {
       changedProperties.update((map) => {
         const newMap = new Map(map);
         newMap.set(propertyName, newValue);

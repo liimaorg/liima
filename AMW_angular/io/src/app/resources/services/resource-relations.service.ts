@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, of, startWith, Subject } from 'rxjs';
 import { GroupedResourceRelations } from '../models/resource-relation';
 import { Property } from '../models/property';
 import { PropertyUpdate } from './resource-properties.service';
@@ -31,6 +31,7 @@ export class ResourceRelationsService extends BaseService {
       return this.getResourceRelations(id).pipe(
         startWith(EMPTY_GROUPED_RELATIONS),
         finalize(() => this.loadingRelations.set(false)),
+        catchError(() => of(EMPTY_GROUPED_RELATIONS)),
       );
     }),
     startWith(EMPTY_GROUPED_RELATIONS),
@@ -62,6 +63,7 @@ export class ResourceRelationsService extends BaseService {
       return this.getResourceTypeRelations(id).pipe(
         startWith(EMPTY_GROUPED_RELATIONS),
         finalize(() => this.loadingTypeRelations.set(false)),
+        catchError(() => of(EMPTY_GROUPED_RELATIONS)),
       );
     }),
     startWith(EMPTY_GROUPED_RELATIONS),
@@ -97,6 +99,8 @@ export class ResourceRelationsService extends BaseService {
 
   private loadingRelationProperties = signal(false);
   private loadingTypeRelationProperties = signal(false);
+  private relationPropertiesRequestId = 0;
+  private typeRelationPropertiesRequestId = 0;
   isLoadingRelationProperties = this.loadingRelationProperties.asReadonly();
   isLoadingTypeRelationProperties = this.loadingTypeRelationProperties.asReadonly();
 
@@ -116,12 +120,17 @@ export class ResourceRelationsService extends BaseService {
     relationId: number;
   }>();
 
-
   private relationPropertiesForResource$: Observable<Property[]> = this.relationProperties$.pipe(
     switchMap(({ resourceId, relationId, contextId }) => {
+      const requestId = ++this.relationPropertiesRequestId;
       this.loadingRelationProperties.set(true);
       return this.getResourceRelationProperties(resourceId, relationId, contextId).pipe(
-        finalize(() => this.loadingRelationProperties.set(false)),
+        finalize(() => {
+          if (requestId === this.relationPropertiesRequestId) {
+            this.loadingRelationProperties.set(false);
+          }
+        }),
+        catchError(() => of([] as Property[])),
       );
     }),
     startWith([]),
@@ -129,8 +138,10 @@ export class ResourceRelationsService extends BaseService {
   );
 
   private relationTemplatesForResource$: Observable<ResourceTemplate[]> = this.resourceRelationTemplates$.pipe(
-    switchMap(({ resourceId, relationId}) => {
-      return this.getResourceRelationTemplates(resourceId, relationId)
+    switchMap(({ resourceId, relationId }) => {
+      return this.getResourceRelationTemplates(resourceId, relationId).pipe(
+        catchError(() => of([] as ResourceTemplate[])),
+      );
     }),
     startWith([]),
     shareReplay(1),
@@ -138,7 +149,9 @@ export class ResourceRelationsService extends BaseService {
 
   private relationTemplatesForResourceType$: Observable<ResourceTemplate[]> = this.resourceTypeRelationTemplates$.pipe(
     switchMap(({ resourceTypeId, relationId }) => {
-      return this.getResourceTypeRelationTemplates(resourceTypeId, relationId)
+      return this.getResourceTypeRelationTemplates(resourceTypeId, relationId).pipe(
+        catchError(() => of([] as ResourceTemplate[])),
+      );
     }),
     startWith([]),
     shareReplay(1),
@@ -146,7 +159,9 @@ export class ResourceRelationsService extends BaseService {
 
   relationProperties = toSignal(this.relationPropertiesForResource$, { initialValue: [] as Property[] });
   resourceRelationTemplates = toSignal(this.relationTemplatesForResource$, { initialValue: [] as ResourceTemplate[] });
-  resourceTypeRelationTemplates = toSignal(this.relationTemplatesForResourceType$, { initialValue: [] as ResourceTemplate[] });
+  resourceTypeRelationTemplates = toSignal(this.relationTemplatesForResourceType$, {
+    initialValue: [] as ResourceTemplate[],
+  });
 
   setIdsForRelationProperties(resourceId: number, relationId: number, contextId: number) {
     this.relationProperties$.next({ resourceId, relationId, contextId });
@@ -165,9 +180,15 @@ export class ResourceRelationsService extends BaseService {
 
   private typeRelationPropertiesForType$: Observable<Property[]> = this.typeRelationProperties$.pipe(
     switchMap(({ resourceTypeId, relTypeId, contextId }) => {
+      const requestId = ++this.typeRelationPropertiesRequestId;
       this.loadingTypeRelationProperties.set(true);
       return this.getResourceTypeRelationProperties(resourceTypeId, relTypeId, contextId).pipe(
-        finalize(() => this.loadingTypeRelationProperties.set(false)),
+        finalize(() => {
+          if (requestId === this.typeRelationPropertiesRequestId) {
+            this.loadingTypeRelationProperties.set(false);
+          }
+        }),
+        catchError(() => of([] as Property[])),
       );
     }),
     startWith([]),
@@ -288,8 +309,17 @@ export class ResourceRelationsService extends BaseService {
 
   getResourceRelationTemplates(resourceId: number, relationId: number): Observable<ResourceTemplate[]> {
     return this.http
-      .get<ResourceTemplate[]>(
-        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/templates`,
+      .get<ResourceTemplate[]>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/templates`, {
+        headers: this.getHeaders(),
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  addResourceRelationTemplate(template: ResourceTemplate, resourceId: number, relationId: number) {
+    return this.http
+      .post<ResourceTemplate>(
+        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/addTemplate`,
+        template,
         {
           headers: this.getHeaders(),
         },
@@ -297,35 +327,39 @@ export class ResourceRelationsService extends BaseService {
       .pipe(catchError(this.handleError));
   }
 
-  addResourceRelationTemplate(template: ResourceTemplate, resourceId: number, relationId: number) {
-    return this.http
-      .post<ResourceTemplate>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/addTemplate`, template, {
-        headers: this.getHeaders(),
-      })
-      .pipe(catchError(this.handleError));
-  }
-
   addResourceTypeRelationTemplate(template: ResourceTemplate, resourceTypeId: number, relationId: number) {
     return this.http
-      .post<ResourceTemplate>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/addTemplate`, template, {
-        headers: this.getHeaders(),
-      })
+      .post<ResourceTemplate>(
+        `${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/addTemplate`,
+        template,
+        {
+          headers: this.getHeaders(),
+        },
+      )
       .pipe(catchError(this.handleError));
   }
 
   updateResourceRelationTemplate(template: ResourceTemplate, resourceId: number, relationId: number) {
     return this.http
-      .put<ResourceTemplate>(`${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/updateTemplate`, template, {
-        headers: this.getHeaders(),
-      })
+      .put<ResourceTemplate>(
+        `${this.getBaseUrl()}/resources/${resourceId}/relations/${relationId}/updateTemplate`,
+        template,
+        {
+          headers: this.getHeaders(),
+        },
+      )
       .pipe(catchError(this.handleError));
   }
 
   updateResourceTypeRelationTemplate(template: ResourceTemplate, resourceTypeId: number, relationId: number) {
     return this.http
-      .put<ResourceTemplate>(`${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/updateTemplate`, template, {
-        headers: this.getHeaders(),
-      })
+      .put<ResourceTemplate>(
+        `${this.getBaseUrl()}/resourceTypes/${resourceTypeId}/relations/${relationId}/updateTemplate`,
+        template,
+        {
+          headers: this.getHeaders(),
+        },
+      )
       .pipe(catchError(this.handleError));
   }
 }

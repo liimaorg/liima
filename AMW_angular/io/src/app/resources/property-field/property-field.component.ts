@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, effect } from '@angular/core';
+import { Component, input, output, signal, computed, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Property } from '../models/property';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -96,7 +96,7 @@ export class PropertyFieldComponent {
       this.showDecrypted.set(false);
       this.touched.set(false);
       this.validationError.set(null);
-      this.validate();
+      untracked(() => this.validate());
     });
   }
 
@@ -166,7 +166,7 @@ export class PropertyFieldComponent {
     // Skip required validation when reset is checked
     if (!this.resetChecked() && !isNullable && !isOptional && noValueSet && mik === '') {
       this.validationError.set('This field is required');
-      this.validationChange.emit(true);
+      this.validationChange.emit(this.touched());
       return;
     }
 
@@ -184,13 +184,13 @@ export class PropertyFieldComponent {
         const fullMatchRegex = new RegExp(`^(?:${regexString})$`);
         if (!fullMatchRegex.test(regexMatchValue)) {
           this.validationError.set('Value does not match the required pattern');
-          this.validationChange.emit(true);
+          this.validationChange.emit(this.touched());
           return;
         }
       } catch (e) {
         console.error('Invalid regex pattern:', regexString, e);
         this.validationError.set('Value does not match the required pattern');
-        this.validationChange.emit(true);
+        this.validationChange.emit(this.touched());
         return;
       }
     }

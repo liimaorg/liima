@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, effect, inject, Signal } from '@angular/core';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -20,6 +20,7 @@ import { RESOURCE_TYPE } from '../../core/amw-constants';
 import { CopyFromResourceDialogComponent } from './copy-from-resource-dialog/copy-from-resource-dialog.component';
 import { ResourceApplicationsComponent } from './resource-applications/resource-applications.component';
 import { ResourceRelationsComponent } from './resource-relations/resource-relations.component';
+import { ResourcePropertiesService } from '../services/resource-properties.service';
 
 @Component({
   selector: 'app-resource-edit',
@@ -48,6 +49,7 @@ import { ResourceRelationsComponent } from './resource-relations/resource-relati
 export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
+  private resourcePropertiesService = inject(ResourcePropertiesService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private modalService = inject(NgbModal);
@@ -61,12 +63,18 @@ export class ResourceEditComponent {
   resource: Signal<Resource | null> = this.resourceService.resource;
   releases: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
 
-  isLoading = computed(() => {
-    if (this.id()) {
-      this.resourceService.setIdForResource(this.id());
-      return false;
-    } else return false;
-  });
+  isLoading = computed(
+    () => this.resourceService.isLoadingResource() || this.resourcePropertiesService.isLoadingResourceProperties(),
+  );
+
+  constructor() {
+    effect(() => {
+      const resourceId = this.id();
+      if (resourceId) {
+        this.resourceService.setIdForResource(resourceId);
+      }
+    });
+  }
 
   protected readonly isApplicationServer = computed<boolean>(
     () => this.resource()?.type === RESOURCE_TYPE.APPLICATION_SERVER,

@@ -5,7 +5,6 @@ import {
   PropertiesDeleteAction,
   PropertiesEditAction,
   PropertiesResetToggleAction,
-  PropertiesValidationChangeAction,
   PropertiesValueChangeAction,
 } from '../models/properties-action';
 import { NgTemplateOutlet } from '@angular/common';
@@ -28,7 +27,6 @@ export class PropertiesListComponent {
 
   valueChange = output<PropertiesValueChangeAction>();
   resetToggled = output<PropertiesResetToggleAction>();
-  validationChanged = output<PropertiesValidationChangeAction>();
   editClicked = output<PropertiesEditAction>();
   deleteClicked = output<PropertiesDeleteAction>();
 

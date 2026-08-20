@@ -30,7 +30,6 @@
     [isLoading]="isLoading()"
     (valueChange)="valueChange.emit({ name: property.name, value: $event })"
     (resetChange)="resetToggled.emit({ name: property.name, checked: $event })"
-    (validationChange)="validationChanged.emit({ name: property.name, invalid: $event })"
     (editClicked)="editClicked.emit({ id: property.descriptorId })"
     (deleteClicked)="deleteClicked.emit({ id: property.descriptorId })"
   ></app-property-field>
