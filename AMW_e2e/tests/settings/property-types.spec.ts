@@ -29,6 +29,10 @@ test.describe("PropertyTypes -CRUD", () => {
     ).toHaveCount(0);
 
     await page.locator("#regex").fill("sd");
+    await page.locator("#regex").press("Tab"); // Trigger blur for form validation
+    await expect(
+      page.getByText("Invalid regular expression pattern."),
+    ).toHaveCount(0);
     await expect(page.getByTestId("button-save")).toBeEnabled();
     await page.getByTestId("button-save").click();
     await expect(page.locator("body.modal-open")).toHaveCount(0);

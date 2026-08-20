@@ -13,6 +13,7 @@ jobs:
   build_and_test:
     name: build and test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
     - name: Check out code
       uses: actions/checkout@v7
