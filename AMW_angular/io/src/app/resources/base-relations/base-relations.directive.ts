@@ -13,6 +13,7 @@ import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '
 import { RelationGroupItem } from '../relation-group/relation-group.component';
 import { PropertyUpdate } from '../services/resource-properties.service';
 import { finalize } from 'rxjs/operators';
+import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 
 export const NODE_FILTERED_PROPERTIES = ['hostName', 'active'];
 
@@ -29,15 +30,13 @@ export abstract class BaseRelationsDirective {
   protected toastService = inject(ToastService);
   protected route = inject(ActivatedRoute);
   protected router = inject(Router);
+  protected confirmDialogService = inject(ConfirmDialogService);
 
   protected destroy$ = new Subject<void>();
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
-  protected invalidProperties = signal<Set<string>>(new Set());
-
-  hasValidationErrors = computed(() => this.invalidProperties().size > 0);
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
@@ -103,7 +102,7 @@ export abstract class BaseRelationsDirective {
   saveChanges() {
     const changes = this.editor.changedProperties();
     const resets = this.editor.resetProperties();
-    if ((changes.size === 0 && resets.size === 0) || this.hasValidationErrors()) return;
+    if (changes.size === 0 && resets.size === 0) return;
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
@@ -152,23 +151,29 @@ export abstract class BaseRelationsDirective {
     this.editor.onPropertyReset(propertyName, checked);
   }
 
-  onPropertyValidationChange(propertyName: string, invalid: boolean) {
-    this.invalidProperties.update((set) => {
-      const next = new Set(set);
-      if (invalid) {
-        next.add(propertyName);
-      } else {
-        next.delete(propertyName);
-      }
-      return next;
-    });
-  }
-
   onItemSelected(item: RelationGroupItem) {
     const id = typeof item.key === 'number' ? item.key : null;
     if (id == null) return;
-    this.activeRelationId.set(id);
-    this.setQueryParamForRelationId(id);
+    this.switchRelation(id);
+  }
+
+  protected switchRelation(relationId: number): void {
+    if (relationId === this.getRelationId()) return;
+
+    if (this.hasChanges()) {
+      void this.confirmDialogService
+        .confirm('You have unsaved changes. Discard them and switch relation?', { confirmLabel: 'Discard' })
+        .then((proceed) => {
+          if (!proceed) return;
+          this.resetChanges();
+          this.activeRelationId.set(relationId);
+          this.setQueryParamForRelationId(relationId);
+        });
+      return;
+    }
+
+    this.activeRelationId.set(relationId);
+    this.setQueryParamForRelationId(relationId);
   }
 
   toItem(relation: ResourceRelation): RelationGroupItem {
@@ -185,7 +190,6 @@ export abstract class BaseRelationsDirective {
     this.editor.resetChanges();
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.invalidProperties.set(new Set());
   }
 
   protected abstract properties: Signal<Property[]>;

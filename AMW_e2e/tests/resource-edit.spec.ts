@@ -21,9 +21,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
     await saveButton.click();
   });
 
-  test("should reset property to parent context value", async ({
-    page,
-  }) => {
+  test("should reset property to parent context value", async ({ page }) => {
     await page.getByRole("button", { name: "DEV" }).click();
     await page.waitForURL(/ctx=\d+/); // Wait for context switch
 
@@ -105,7 +103,10 @@ test.describe("Resource Edit Page - Releases", () => {
     const releasesHeader = page.getByRole("heading", { name: "Releases" });
     await expect(releasesHeader).toBeVisible({ timeout: 15000 });
     await releasesHeader.click();
-    const newReleaseButton = page.getByRole("button", { name: "New Release", exact: true });
+    const newReleaseButton = page.getByRole("button", {
+      name: "New Release",
+      exact: true,
+    });
     await expect(newReleaseButton).toBeVisible({ timeout: 5000 });
     await expect(newReleaseButton).toBeEnabled();
     await expect(page.getByRole("cell", { name: "RL-" })).toBeVisible();
@@ -124,6 +125,7 @@ test.describe("Resource Edit Page - Validation", () => {
 
     const saveButton = page.getByRole("button", { name: "Save" });
     await expect(saveButton).toBeVisible(); // Wait for button to appear
-    await expect(saveButton).toBeDisabled();
+    await expect(saveButton).toBeEnabled();
+    await expect(page.getByText("This field is required")).toBeVisible();
   });
 });

@@ -35,7 +35,6 @@
               [canEdit]="permissions().canUpdateProperty"
               [isSaving]="isSaving()"
               [hasChanges]="hasChanges()"
-              [hasValidationErrors]="hasValidationErrors()"
               [errorMessage]="errorMessage()"
               [successMessage]="successMessage()"
               (cancelAction)="resetChanges()"
@@ -46,11 +45,11 @@
                 [canEdit]="false"
                 [canDecrypt]="permissions().canDecryptProperties"
                 [canDelete]="false"
+                [isLoading]="isLoadingProperties()"
                 [mode]="'resourceType'"
                 [resetToken]="resetToken()"
                 (valueChange)="onPropertyChange($event.name, $event.value)"
                 (resetToggled)="onPropertyReset($event.name, $event.checked)"
-                (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
               ></app-properties-list>
             </app-properties-panel>
           </div>
