@@ -100,14 +100,6 @@ describe('BaseRelationsDirective', () => {
     expect(component.hasChanges()).toBe(true);
   });
 
-  it('should track property validation changes', () => {
-    component.onPropertyValidationChange('testProp', true);
-    expect(component.hasValidationErrors()).toBe(true);
-
-    component.onPropertyValidationChange('testProp', false);
-    expect(component.hasValidationErrors()).toBe(false);
-  });
-
   it('should reset changes', () => {
     const testProperty: Property = {
       name: 'testProp',
@@ -123,14 +115,6 @@ describe('BaseRelationsDirective', () => {
     expect(component.hasChanges()).toBe(false);
   });
 
-  it('should not save when there are validation errors', () => {
-    component.onPropertyChange('testProp', 'newValue');
-    component.onPropertyValidationChange('testProp', true);
-
-    // component.saveChanges();
-    expect(component.isSaving()).toBe(false);
-  });
-
   it('should clear error and success messages on reset', () => {
     component.errorMessage.set('Error');
     component.successMessage.set('Success');
@@ -139,15 +123,6 @@ describe('BaseRelationsDirective', () => {
 
     expect(component.errorMessage()).toBeNull();
     expect(component.successMessage()).toBeNull();
-  });
-
-  it('should clear invalid properties on reset', () => {
-    component.onPropertyValidationChange('testProp', true);
-    expect(component.hasValidationErrors()).toBe(true);
-
-    component.resetChanges();
-
-    expect(component.hasValidationErrors()).toBe(false);
   });
 
   it('should track property resets as changes', () => {
@@ -193,6 +168,41 @@ describe('BaseRelationsDirective', () => {
     component.onItemSelected({ key: 7, name: 'rel', type: 'consumed' });
     expect(component['activeRelationId']()).toBe(7);
     expect(spy).toHaveBeenCalledWith(7);
+  });
+
+  it('should discard changes after confirming a relation switch', async () => {
+    const confirmSpy = vi.spyOn(component['confirmDialogService'], 'confirm').mockResolvedValue(true);
+    const navigationSpy = vi.spyOn(component, 'setQueryParamForRelationId').mockImplementation(() => {});
+    component['activeRelationId'].set(1);
+    component.properties.set([{ name: 'testProp', value: 'oldValue', disabled: false } as Property]);
+    component.onPropertyChange('testProp', 'newValue');
+
+    component.onItemSelected({ key: 7, name: 'rel', type: 'consumed' });
+    await Promise.resolve();
+
+    expect(confirmSpy).toHaveBeenCalledWith('You have unsaved changes. Discard them and switch relation?', {
+      confirmLabel: 'Discard',
+    });
+    expect(component.hasChanges()).toBe(false);
+    expect(component['activeRelationId']()).toBe(7);
+    expect(navigationSpy).toHaveBeenCalledWith(7);
+    confirmSpy.mockRestore();
+  });
+
+  it('should keep the current relation when discarding a switch', async () => {
+    const confirmSpy = vi.spyOn(component['confirmDialogService'], 'confirm').mockResolvedValue(false);
+    const navigationSpy = vi.spyOn(component, 'setQueryParamForRelationId').mockImplementation(() => {});
+    component['activeRelationId'].set(1);
+    component.properties.set([{ name: 'testProp', value: 'oldValue', disabled: false } as Property]);
+    component.onPropertyChange('testProp', 'newValue');
+
+    component.onItemSelected({ key: 7, name: 'rel', type: 'consumed' });
+    await Promise.resolve();
+
+    expect(component.hasChanges()).toBe(true);
+    expect(component['activeRelationId']()).toBe(1);
+    expect(navigationSpy).not.toHaveBeenCalled();
+    confirmSpy.mockRestore();
   });
 
   it('should ignore onItemSelected when key is not a number', () => {

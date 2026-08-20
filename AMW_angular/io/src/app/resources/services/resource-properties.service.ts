@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { BaseService } from '../../base/base.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Observable, startWith, Subject } from 'rxjs';
+import { Observable, of, startWith, Subject } from 'rxjs';
 import { Property } from '../models/property';
 import { catchError, finalize, shareReplay, switchMap } from 'rxjs/operators';
 
@@ -17,6 +17,8 @@ export class ResourcePropertiesService extends BaseService {
 
   private loadingResourceProperties = signal(false);
   private loadingResourceTypeProperties = signal(false);
+  private resourcePropertiesRequestId = 0;
+  private resourceTypePropertiesRequestId = 0;
 
   isLoadingResourceProperties = this.loadingResourceProperties.asReadonly();
   isLoadingResourceTypeProperties = this.loadingResourceTypeProperties.asReadonly();
@@ -32,8 +34,17 @@ export class ResourcePropertiesService extends BaseService {
 
   private propertiesForResource$: Observable<Property[]> = this.properties$.pipe(
     switchMap(({ id, contextId }) => {
+      const requestId = ++this.resourcePropertiesRequestId;
       this.loadingResourceProperties.set(true);
-      return this.getResourceProperties(id, contextId).pipe(finalize(() => this.loadingResourceProperties.set(false)));
+      return this.getResourceProperties(id, contextId).pipe(
+        finalize(() => {
+          if (requestId === this.resourcePropertiesRequestId) {
+            this.loadingResourceProperties.set(false);
+          }
+        }),
+        // a failed/aborted request must not terminate this shared, replayed stream
+        catchError(() => of([] as Property[])),
+      );
     }),
     startWith([]),
     shareReplay(1),
@@ -41,9 +52,15 @@ export class ResourcePropertiesService extends BaseService {
 
   private propertiesForTypeResource$: Observable<Property[]> = this.propertiesForType$.pipe(
     switchMap(({ id, contextId }) => {
+      const requestId = ++this.resourceTypePropertiesRequestId;
       this.loadingResourceTypeProperties.set(true);
       return this.getResourceTypeProperties(id, contextId).pipe(
-        finalize(() => this.loadingResourceTypeProperties.set(false)),
+        finalize(() => {
+          if (requestId === this.resourceTypePropertiesRequestId) {
+            this.loadingResourceTypeProperties.set(false);
+          }
+        }),
+        catchError(() => of([] as Property[])),
       );
     }),
     startWith([]),

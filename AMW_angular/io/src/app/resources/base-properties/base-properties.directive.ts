@@ -31,9 +31,6 @@ export abstract class BasePropertiesDirective {
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
-  protected invalidProperties = signal<Set<string>>(new Set());
-
-  hasValidationErrors = computed(() => this.invalidProperties().size > 0);
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
@@ -74,23 +71,10 @@ export abstract class BasePropertiesDirective {
     this.editor.onPropertyReset(propertyName, checked);
   }
 
-  onPropertyValidationChange(propertyName: string, invalid: boolean) {
-    this.invalidProperties.update((set) => {
-      const next = new Set(set);
-      if (invalid) {
-        next.add(propertyName);
-      } else {
-        next.delete(propertyName);
-      }
-      return next;
-    });
-  }
-
   resetChanges() {
     this.editor.resetChanges();
     this.errorMessage.set(null);
     this.successMessage.set(null);
-    this.invalidProperties.set(new Set());
   }
 
   addProperty() {
@@ -101,7 +85,7 @@ export abstract class BasePropertiesDirective {
     const loadedPropertyNames = new Set(this.properties().map((property) => property.name));
     const changes = new Map([...this.editor.changedProperties()].filter(([name]) => loadedPropertyNames.has(name)));
     const resets = new Set([...this.editor.resetProperties()].filter((name) => loadedPropertyNames.has(name)));
-    if ((changes.size === 0 && resets.size === 0) || this.hasValidationErrors()) return;
+    if (changes.size === 0 && resets.size === 0) return;
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
@@ -220,7 +204,6 @@ export abstract class BasePropertiesDirective {
 
   private reloadAfterDiscardingEdits(entityId: number, contextId: number): void {
     this.editor.resetChanges();
-    this.invalidProperties.set(new Set());
     this.reloadProperties(entityId, contextId);
   }
   protected abstract getDeleteParams(): [number | undefined, number | undefined];

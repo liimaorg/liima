@@ -87,12 +87,17 @@ describe('BasePropertiesDirective', () => {
     expect(component.hasChanges()).toBe(true);
   });
 
-  it('should track property validation changes', () => {
-    component.onPropertyValidationChange('testProp', true);
-    expect(component.hasValidationErrors()).toBe(true);
+  it('should not treat an empty value as a change from null', () => {
+    const testProperty: Property = {
+      name: 'testProp',
+      value: null,
+      disabled: false,
+    } as Property;
+    component.properties.set([testProperty]);
 
-    component.onPropertyValidationChange('testProp', false);
-    expect(component.hasValidationErrors()).toBe(false);
+    component.onPropertyChange('testProp', '');
+
+    expect(component.hasChanges()).toBe(false);
   });
 
   it('should reset changes', () => {
@@ -108,14 +113,6 @@ describe('BasePropertiesDirective', () => {
 
     component.resetChanges();
     expect(component.hasChanges()).toBe(false);
-  });
-
-  it('should not save when there are validation errors', () => {
-    component.onPropertyChange('testProp', 'newValue');
-    component.onPropertyValidationChange('testProp', true);
-
-    component.saveChanges();
-    expect(component.isSaving()).toBe(false);
   });
 
   it('should clear error and success messages on reset', () => {
