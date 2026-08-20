@@ -13,7 +13,6 @@ export class PropertiesPanelComponent {
   isSaving = input<boolean>(false);
   hasChanges = input<boolean>(false);
   errorMessage = input<string | null>(null);
-  successMessage = input<string | null>(null);
 
   cancelAction = output<void>();
   saveAction = output<void>();

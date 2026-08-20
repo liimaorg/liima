@@ -8,12 +8,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { UnsavedPropertyChangesService } from '../services/unsaved-property-changes.service';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
-import { PlaceholderRowsComponent } from '../../shared/elements/placeholder-rows.component';
 
 @Component({
   selector: 'app-contexts-list',
   standalone: true,
-  imports: [NgClass, UpperCasePipe, PlaceholderRowsComponent],
+  imports: [NgClass, UpperCasePipe],
   templateUrl: './contexts-list.component.html',
   styleUrl: './contexts-list.component.scss',
 })

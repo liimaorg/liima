@@ -5,6 +5,7 @@ import { AppConfiguration } from './setting/app-configuration';
 import { AMW_LOGOUT_URL } from './core/amw-constants';
 import { NavigationComponent } from './navigation/navigation.component';
 import { ToastContainerComponent } from './shared/elements/toast/toast-container.component';
+import { IconSpriteComponent } from './shared/icon/icon-sprite.component';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -12,7 +13,7 @@ import { ToastContainerComponent } from './shared/elements/toast/toast-container
   encapsulation: ViewEncapsulation.None,
   styleUrls: ['./app.component.scss'],
   templateUrl: './app.component.html',
-  imports: [RouterOutlet, NavigationComponent, ToastContainerComponent],
+  imports: [RouterOutlet, NavigationComponent, ToastContainerComponent, IconSpriteComponent],
 })
 export class AppComponent implements OnInit {
   private settingService = inject(SettingService);

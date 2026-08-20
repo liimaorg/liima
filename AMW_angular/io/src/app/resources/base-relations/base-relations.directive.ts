@@ -12,7 +12,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GroupedResourceRelations, ResourceRelation, UnresolvedRelation } from '../models/resource-relation';
 import { RelationGroupItem } from '../relation-group/relation-group.component';
 import { PropertyUpdate } from '../services/resource-properties.service';
-import { finalize } from 'rxjs/operators';
 import { ConfirmDialogService } from '../../shared/confirm-dialog/confirm-dialog.service';
 
 export const NODE_FILTERED_PROPERTIES = ['hostName', 'active'];
@@ -36,7 +35,9 @@ export abstract class BaseRelationsDirective {
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
-  successMessage = signal<string | null>(null);
+
+  // keeps the save spinner on until the post-save reload of properties has finished
+  protected awaitingReloadAfterSave = signal(false);
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
@@ -76,6 +77,14 @@ export abstract class BaseRelationsDirective {
 
       this.reloadProperties(entityId, relationId, ctxId);
     });
+
+    effect(() => {
+      if (this.awaitingReloadAfterSave() && !this.isLoadingProperties()) {
+        this.awaitingReloadAfterSave.set(false);
+        this.isSaving.set(false);
+        this.editor.resetChanges();
+      }
+    });
   }
 
   context = computed(() => {
@@ -106,7 +115,6 @@ export abstract class BaseRelationsDirective {
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
       name,
@@ -123,24 +131,18 @@ export abstract class BaseRelationsDirective {
         ? this.bulkUpdateProperties(this.getRelationId()!, updatedProperties, resetProperties, this.contextId())
         : of(void 0);
 
-    forkJoin([update$])
-      .pipe(
-        finalize(() => {
-          this.isSaving.set(false);
-        }),
-      )
-      .subscribe({
-        next: () => {
-          this.successMessage.set('Properties saved successfully');
-          this.reloadProperties(this.entityId()!, this.getRelationId()!, this.contextId());
-          this.afterPropertiesSaved();
-          this.editor.resetChanges();
-          setTimeout(() => this.successMessage.set(null), 3000);
-        },
-        error: (error) => {
-          this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
-        },
-      });
+    forkJoin([update$]).subscribe({
+      next: () => {
+        this.toastService.success('Properties saved successfully');
+        this.awaitingReloadAfterSave.set(true);
+        this.reloadProperties(this.entityId()!, this.getRelationId()!, this.contextId());
+        this.afterPropertiesSaved();
+      },
+      error: (error) => {
+        this.isSaving.set(false);
+        this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
+      },
+    });
   }
 
   onPropertyChange(propertyName: string, newValue: string) {
@@ -189,7 +191,6 @@ export abstract class BaseRelationsDirective {
   resetChanges() {
     this.editor.resetChanges();
     this.errorMessage.set(null);
-    this.successMessage.set(null);
   }
 
   protected abstract properties: Signal<Property[]>;

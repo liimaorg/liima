@@ -1,21 +1,21 @@
-@if (isLoading()) {
-  <app-placeholder-rows [rows]="5"></app-placeholder-rows>
-} @else {
-  <app-tile-component
-    [title]="'Properties'"
-    [actionName]="'New Property'"
-    [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
-    [isCollapsed]="false"
-    (tileAction)="addProperty()"
-    [noContent]="false"
-    [notAllowed]="false"
-  >
+<app-tile-component
+  [title]="'Properties'"
+  [actionName]="'New Property'"
+  [canAction]="!isLoading() && permissions().canUpdateProperty && this.contextId() === 1"
+  [isCollapsed]="false"
+  [loading]="isLoading() && !showPlaceholder()"
+  (tileAction)="addProperty()"
+  [noContent]="false"
+  [notAllowed]="false"
+>
+  @if (showPlaceholder()) {
+    <app-property-fields-placeholder [fields]="5"></app-property-fields-placeholder>
+  } @else {
     <app-properties-panel
       [canEdit]="permissions().canUpdateProperty"
       [isSaving]="isSaving()"
       [hasChanges]="hasChanges()"
       [errorMessage]="errorMessage()"
-      [successMessage]="successMessage()"
       (cancelAction)="resetChanges()"
       (saveAction)="saveChanges()"
     >
@@ -33,8 +33,8 @@
         (deleteClicked)="onPropertyDelete($event.id, deleteModal)"
       ></app-properties-list>
     </app-properties-panel>
-  </app-tile-component>
-}
+  }
+</app-tile-component>
 
 <ng-template #deleteModal let-modal>
   <app-property-delete-modal

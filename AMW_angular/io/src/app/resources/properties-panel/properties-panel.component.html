@@ -2,10 +2,6 @@
   @if (errorMessage()) {
     <div class="error-banner">{{ errorMessage() }}</div>
   }
-
-  @if (successMessage()) {
-    <div class="success-banner">{{ successMessage() }}</div>
-  }
 </div>
 <div class="properties-section">
   <ng-content></ng-content>
@@ -23,7 +19,12 @@
         [dataTestId]="'button-save'"
         [disabled]="isSaving()"
       >
-        {{ isSaving() ? 'Saving...' : 'Save' }}
+        @if (isSaving()) {
+          <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          <span role="status">Saving...</span>
+        } @else {
+          Save
+        }
       </app-button>
     </div>
   }

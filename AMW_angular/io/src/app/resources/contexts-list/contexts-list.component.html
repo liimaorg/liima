@@ -1,5 +1,26 @@
 @if (isLoading()) {
-  <app-placeholder-rows [rows]="6"></app-placeholder-rows>
+  <ul class="nav flex-column placeholder-glow" aria-hidden="true">
+    <li class="nav-item"><span class="placeholder d-block mb-2 col-4"></span></li>
+    <li class="nav-item">
+      <span class="placeholder d-block mb-2 ms-3 col-3"></span>
+      <ul class="nav flex-column">
+        <li class="nav-item"><span class="placeholder d-block mb-2 ms-4 col-3"></span></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <span class="placeholder d-block mb-2 ms-3 col-3"></span>
+      <ul class="nav flex-column">
+        <li class="nav-item"><span class="placeholder d-block mb-2 ms-4 col-3"></span></li>
+        <li class="nav-item"><span class="placeholder d-block mb-2 ms-4 col-3"></span></li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <span class="placeholder d-block mb-2 ms-3 col-3"></span>
+      <ul class="nav flex-column">
+        <li class="nav-item"><span class="placeholder d-block mb-2 ms-4 col-3"></span></li>
+      </ul>
+    </li>
+  </ul>
 } @else if (permissions().canView) {
   <ul class="nav flex-column">
     @for (global of environmentTree(); track global.id) {

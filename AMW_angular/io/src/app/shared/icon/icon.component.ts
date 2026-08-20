@@ -15,6 +15,7 @@ export class IconComponent implements OnChanges {
   iconPath!: string;
 
   ngOnChanges(): void {
-    this.iconPath = 'bootstrap-icons.svg#' + this.icon;
+    // local fragment reference into the inlined <app-icon-sprite>, avoids one HTTP request per icon instance
+    this.iconPath = '#' + this.icon;
   }
 }

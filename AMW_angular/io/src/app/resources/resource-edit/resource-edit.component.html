@@ -140,10 +140,24 @@
       </div>
     } @else {
       <div class="flex-shrink-0">
-        <app-placeholder-rows [rows]="6"></app-placeholder-rows>
+        <app-contexts-list></app-contexts-list>
       </div>
       <div class="flex-grow-1">
-        <app-placeholder-rows [rows]="10"></app-placeholder-rows>
+        <app-tile-component [title]="'Releases'" [actionName]="''" [noCollapse]="true">
+          <app-placeholder-rows [rows]="2"></app-placeholder-rows>
+        </app-tile-component>
+        <app-tile-component [title]="'Properties'" [actionName]="''" [noCollapse]="true">
+          <app-placeholder-rows [rows]="5"></app-placeholder-rows>
+        </app-tile-component>
+        <app-tile-component [title]="'Templates'" [actionName]="''" [noCollapse]="true">
+          <app-placeholder-rows [rows]="3"></app-placeholder-rows>
+        </app-tile-component>
+        <app-tile-component [title]="'Functions'" [actionName]="''" [noCollapse]="true">
+          <app-placeholder-rows [rows]="3"></app-placeholder-rows>
+        </app-tile-component>
+        <app-tile-component [title]="'Related Resources'" [actionName]="''" [noCollapse]="true">
+          <app-placeholder-rows [rows]="6"></app-placeholder-rows>
+        </app-tile-component>
       </div>
     }
   </div>

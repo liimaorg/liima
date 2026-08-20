@@ -115,13 +115,11 @@ describe('BasePropertiesDirective', () => {
     expect(component.hasChanges()).toBe(false);
   });
 
-  it('should clear error and success messages on reset', () => {
+  it('should clear error message on reset', () => {
     component.errorMessage.set('Error');
-    component.successMessage.set('Success');
 
     component.resetChanges();
 
     expect(component.errorMessage()).toBeNull();
-    expect(component.successMessage()).toBeNull();
   });
 });

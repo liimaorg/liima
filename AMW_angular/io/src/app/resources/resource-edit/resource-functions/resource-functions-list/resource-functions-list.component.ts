@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { Resource } from 'src/app/resources/models/resource';
 import { ResourceFunction } from 'src/app/resources/models/resource-function';
 import { ResourceFunctionsService } from 'src/app/resources/services/resource-functions.service';
-import { LoadingIndicatorComponent } from 'src/app/shared/elements/loading-indicator.component';
+import { PlaceholderRowsComponent } from 'src/app/shared/elements/placeholder-rows.component';
 import { ToastService } from 'src/app/shared/elements/toast/toast.service';
 import { EntryAction, TileListComponent, TileListEntryOutput } from 'src/app/shared/tile/tile-list/tile-list.component';
 import { TileComponent } from 'src/app/shared/tile/tile.component';
@@ -20,7 +20,7 @@ const RESOURCETYPE_PERM = 'RESOURCETYPE_AMWFUNCTION';
 @Component({
   selector: 'app-resource-functions-list',
   standalone: true,
-  imports: [LoadingIndicatorComponent, TileComponent, TileListComponent],
+  imports: [PlaceholderRowsComponent, TileComponent, TileListComponent],
   templateUrl: './resource-functions-list.component.html',
 })
 export class ResourceFunctionsListComponent implements OnInit, OnDestroy {

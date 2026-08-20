@@ -1,8 +1,8 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, Signal } from '@angular/core';
 import { Resource } from '../../models/resource';
 import { Property } from '../../models/property';
 import { ResourceService } from '../../services/resource.service';
-import { PlaceholderRowsComponent } from '../../../shared/elements/placeholder-rows.component';
+import { PropertyFieldsPlaceholderComponent } from '../../../shared/elements/property-fields-placeholder.component';
 import { PropertyUpdate } from '../../services/resource-properties.service';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { PropertiesPanelComponent } from '../../properties-panel/properties-panel.component';
@@ -15,7 +15,7 @@ import { BasePropertiesDirective } from '../../base-properties/base-properties.d
   selector: 'app-resource-properties',
   standalone: true,
   imports: [
-    PlaceholderRowsComponent,
+    PropertyFieldsPlaceholderComponent,
     TileComponent,
     PropertiesPanelComponent,
     PropertiesListComponent,
@@ -43,6 +43,19 @@ export class ResourcePropertiesComponent extends BasePropertiesDirective {
   });
 
   isLoading = this.propertiesService.isLoadingResourceProperties;
+
+  // placeholder skeleton only for the initial fetch; later reloads (e.g. after save) keep content visible
+  private hasLoadedOnce = signal(false);
+  showPlaceholder = computed(() => this.isLoading() && !this.hasLoadedOnce());
+
+  constructor() {
+    super();
+    effect(() => {
+      if (!this.isLoading()) {
+        this.hasLoadedOnce.set(true);
+      }
+    });
+  }
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {

@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, Signal } from '@angular/core';
 import { PlaceholderRowsComponent } from '../../shared/elements/placeholder-rows.component';
+import { TileComponent } from '../../shared/tile/tile.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs/operators';
@@ -26,6 +27,7 @@ import { ResourceRelationsComponent } from './resource-relations/resource-relati
   standalone: true,
   imports: [
     PlaceholderRowsComponent,
+    TileComponent,
     PageComponent,
     ResourceFunctionsListComponent,
     ResourceTemplatesListComponent,

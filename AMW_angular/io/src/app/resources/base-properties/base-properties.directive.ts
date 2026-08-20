@@ -1,6 +1,6 @@
 import { computed, Directive, effect, inject, input, Signal, signal } from '@angular/core';
 import { forkJoin, Observable, of, Subject } from 'rxjs';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Property } from '../models/property';
 import { PropertyUpdate, ResourcePropertiesService } from '../services/resource-properties.service';
@@ -30,7 +30,9 @@ export abstract class BasePropertiesDirective {
 
   isSaving = signal(false);
   errorMessage = signal<string | null>(null);
-  successMessage = signal<string | null>(null);
+
+  // keeps the save spinner on (and drives inert-dimming) until the post-save reload of properties has finished
+  protected awaitingReloadAfterSave = signal(false);
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
@@ -57,6 +59,14 @@ export abstract class BasePropertiesDirective {
 
       this.reloadAfterDiscardingEdits(entityId, ctxId);
     });
+
+    effect(() => {
+      if (this.awaitingReloadAfterSave() && !this.isLoading()) {
+        this.awaitingReloadAfterSave.set(false);
+        this.isSaving.set(false);
+        this.editor.resetChanges();
+      }
+    });
   }
 
   context = computed(() => {
@@ -74,7 +84,6 @@ export abstract class BasePropertiesDirective {
   resetChanges() {
     this.editor.resetChanges();
     this.errorMessage.set(null);
-    this.successMessage.set(null);
   }
 
   addProperty() {
@@ -89,7 +98,6 @@ export abstract class BasePropertiesDirective {
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
       name,
@@ -106,24 +114,18 @@ export abstract class BasePropertiesDirective {
         ? this.bulkUpdateProperties(this.getEntityId(), updatedProperties, resetProperties, this.contextId())
         : of(void 0);
 
-    forkJoin([update$])
-      .pipe(
-        finalize(() => {
-          this.isSaving.set(false);
-        }),
-      )
-      .subscribe({
-        next: () => {
-          this.successMessage.set('Properties saved successfully');
-          this.reloadAfterDiscardingEdits(this.getEntityId(), this.contextId());
-          this.afterPropertiesSaved();
-          this.editor.resetChanges();
-          setTimeout(() => this.successMessage.set(null), 3000);
-        },
-        error: (error) => {
-          this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
-        },
-      });
+    forkJoin([update$]).subscribe({
+      next: () => {
+        this.toastService.success('Properties saved successfully');
+        this.awaitingReloadAfterSave.set(true);
+        this.reloadProperties(this.getEntityId(), this.contextId());
+        this.afterPropertiesSaved();
+      },
+      error: (error) => {
+        this.isSaving.set(false);
+        this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
+      },
+    });
   }
 
   protected onPropertyEdit(id: number) {

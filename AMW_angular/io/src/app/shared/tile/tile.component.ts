@@ -26,6 +26,9 @@ import { ButtonComponent } from '../button/button.component';
             }
           }
           {{ title() }}
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm ms-2" aria-hidden="true" role="status"></span>
+          }
         </div>
         @if (canAction() && (noCollapse() || showBody())) {
           <div class="tile-action-bar">
@@ -63,6 +66,7 @@ export class TileComponent {
   actionName = input.required<string>();
   canAction = input<boolean>(false);
   isCollapsed = input<boolean>(true);
+  loading = input<boolean>(false);
 
   noContent = input<boolean>(false);
   notAllowed = input<boolean>(false);

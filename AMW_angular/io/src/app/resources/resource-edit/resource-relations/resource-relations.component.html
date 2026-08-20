@@ -1,16 +1,16 @@
-@if (isLoadingRelations()) {
-  <app-placeholder-rows [rows]="6"></app-placeholder-rows>
-} @else {
-  <app-tile-component
-    [title]="'Related Resources'"
-    [actionName]="'Add Relation'"
-    [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
-    [isCollapsed]="false"
-    [noContent]="!hasRelations()"
-    [notAllowed]="false"
-    (tileAction)="showAddRelationModal()"
-  >
-  @if (hasRelations()) {
+<app-tile-component
+  [title]="'Related Resources'"
+  [actionName]="'Add Relation'"
+  [canAction]="!isLoadingRelations() && permissions().canUpdateProperty && this.contextId() === 1"
+  [isCollapsed]="false"
+  [loading]="isLoadingRelations() && !showRelationsPlaceholder()"
+  [noContent]="!showRelationsPlaceholder() && !hasRelations()"
+  [notAllowed]="false"
+  (tileAction)="showAddRelationModal()"
+>
+  @if (showRelationsPlaceholder()) {
+    <app-placeholder-rows [rows]="6"></app-placeholder-rows>
+  } @else if (hasRelations()) {
     <div class="relations-layout">
       <div class="relations-container">
         @if (canSetRuntime()) {
@@ -52,6 +52,9 @@
             <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
               <h3 class="relation-detail-title">{{ rel.relatedResourceName }}</h3>
             </a>
+            @if (isLoadingProperties() && !showPropertiesPlaceholder()) {
+              <span class="spinner-border spinner-border-sm" aria-hidden="true" role="status"></span>
+            }
             @if (rel.availableReleases && rel.availableReleases.length > 1) {
               <ng-select
                 id="selectRelease"
@@ -75,15 +78,14 @@
             }
           </div>
           <div class="relation-detail-body">
-            @if (isLoadingProperties()) {
-              <app-placeholder-rows [rows]="4"></app-placeholder-rows>
+            @if (showPropertiesPlaceholder()) {
+              <app-property-fields-placeholder [fields]="4"></app-property-fields-placeholder>
             } @else {
               <app-properties-panel
                 [canEdit]="permissions().canUpdateProperty"
                 [isSaving]="isSaving()"
                 [hasChanges]="hasChanges()"
                 [errorMessage]="errorMessage()"
-                [successMessage]="successMessage()"
                 (cancelAction)="resetChanges()"
                 (saveAction)="saveChanges()"
               >
@@ -121,7 +123,6 @@
     </div>
   }
 </app-tile-component>
-}
 
 <ng-template #addRelationModal let-modal>
   <app-modal-header [title]="'Add Related Resource'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>

@@ -16,6 +16,7 @@ import { NgOptionComponent, NgSelectComponent } from '@ng-select/ng-select';
 import { finalize } from 'rxjs/operators';
 import { TileComponent } from '../../../shared/tile/tile.component';
 import { PlaceholderRowsComponent } from '../../../shared/elements/placeholder-rows.component';
+import { PropertyFieldsPlaceholderComponent } from '../../../shared/elements/property-fields-placeholder.component';
 import { ButtonComponent } from '../../../shared/button/button.component';
 import { IconComponent } from '../../../shared/icon/icon.component';
 import { ModalHeaderComponent } from '../../../shared/modal-header/modal-header.component';
@@ -40,6 +41,7 @@ import { ResourceRelationTemplatesListComponent } from './resource-relation-temp
   imports: [
     TileComponent,
     PlaceholderRowsComponent,
+    PropertyFieldsPlaceholderComponent,
     RelationGroupComponent,
     ButtonComponent,
     FormsModule,
@@ -86,6 +88,12 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   protected groupedRelations: Signal<GroupedResourceRelations> = this.relationsService.relations;
   protected isLoadingRelations = this.relationsService.isLoadingRelations;
   protected isLoadingProperties = this.relationsService.isLoadingRelationProperties;
+
+  // placeholders only for the initial fetch; later reloads (e.g. after save/add/remove) keep content visible
+  private hasLoadedRelationsOnce = signal(false);
+  private hasLoadedPropertiesOnce = signal(false);
+  protected showRelationsPlaceholder = computed(() => this.isLoadingRelations() && !this.hasLoadedRelationsOnce());
+  protected showPropertiesPlaceholder = computed(() => this.isLoadingProperties() && !this.hasLoadedPropertiesOnce());
 
   protected hasRelations = computed(() => {
     const g = this.groupedRelations();
@@ -244,6 +252,16 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   constructor() {
     super();
+    effect(() => {
+      if (!this.isLoadingRelations()) {
+        this.hasLoadedRelationsOnce.set(true);
+      }
+    });
+    effect(() => {
+      if (!this.isLoadingProperties()) {
+        this.hasLoadedPropertiesOnce.set(true);
+      }
+    });
     effect(() => {
       const activations = this.resourceActivationService.activations();
       const activeIds = activations
@@ -410,7 +428,6 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     let propertyUpdate$: Observable<void> = of(void 0);
     if (hasPropertyChanges) {
@@ -444,24 +461,25 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     forkJoin([propertyUpdate$, activationUpdate$])
       .pipe(
         finalize(() => {
-          this.isSaving.set(false);
           this.isSavingActivations.set(false);
         }),
       )
       .subscribe({
         next: () => {
-          this.successMessage.set('Changes saved successfully');
+          this.toastService.success('Changes saved successfully');
           if (hasPropertyChanges) {
+            this.awaitingReloadAfterSave.set(true);
             this.reloadProperties(this.entityId()!, this.getRelationId()!, this.contextId());
             this.afterPropertiesSaved();
-            this.editor.resetChanges();
+          } else {
+            this.isSaving.set(false);
           }
           if (hasActivationChanges) {
             this.resourceActivationService.setRelationParams(this.entityId()!, this.getRelationId()!, this.contextId());
           }
-          setTimeout(() => this.successMessage.set(null), 3000);
         },
         error: (error) => {
+          this.isSaving.set(false);
           this.errorMessage.set('Failed to save changes: ' + (error.message || 'Unknown error'));
         },
       });
