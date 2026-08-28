@@ -33,7 +33,10 @@ public class AppServerDTO {
         this.deletable = appServer.getResource().isDeletable();
         this.runtimeName =  appServer.getResource().getRuntime() != null ? appServer.getResource().getRuntime().getName() : "";
         if (appServer.getResource().getRelease() != null) {
-            this.release = new ReleaseDTO(appServer.getResource().getRelease().getId(), appServer.getResource().getRelease().getName());
+            this.release = new ReleaseDTO(
+                    appServer.getResource().getRelease().getId(),
+                    appServer.getResource().getRelease().getName(),
+                    appServer.getResource().getRelease().getInstallationInProductionAt());
         }
 
         this.apps = new ArrayList<>();

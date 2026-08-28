@@ -282,5 +282,12 @@ function toResource(r: Resource): Resource {
 }
 
 function toRelease(r: any): Release {
-  return { properties: [], relations: [], resourceTags: [], id: r.id, release: r.name };
+  return {
+    properties: [],
+    relations: [],
+    resourceTags: [],
+    id: r.id,
+    release: r.name,
+    installationInProductionAt: r.installationInProductionAt,
+  };
 }
