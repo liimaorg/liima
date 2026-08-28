@@ -21,6 +21,7 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceGroupDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.ReleaseDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseCopyDTO;
 import ch.mobi.itc.mobiliar.rest.dtos.ResourceReleaseDTO;
 import ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto;
@@ -52,7 +53,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static ch.puzzle.itc.mobiliar.common.util.ApplicationServerContainer.APPSERVERCONTAINER;
 import static javax.ws.rs.core.Response.Status.*;
@@ -110,6 +113,32 @@ public class ResourceGroupsRestTest {
 
         // then
         assertTrue(resourcesResult.isEmpty());
+    }
+
+    @Test
+    public void getReleasesForResourceIncludesInstallationDate() {
+        ReleaseEntity release = new ReleaseEntity();
+        release.setId(22);
+        release.setName("RL-25.10");
+        Date installationDate = new Date(1750000000000L);
+        release.setInstallationInProductionAt(installationDate);
+
+        ResourceEntity resource = mock(ResourceEntity.class);
+        when(resource.getId()).thenReturn(11);
+        when(resource.getRelease()).thenReturn(release);
+
+        ResourceGroupEntity group = createResourceGroupEntity("group", "APPLICATION");
+        group.setId(7);
+        group.setResources(Set.of(resource));
+        when(resource.getResourceGroup()).thenReturn(group);
+        when(resourceLocatorMock.getResourceById(42)).thenReturn(resource);
+        when(resourceGroupLocatorMock.getResourceGroupById(7)).thenReturn(group);
+
+        Response response = rest.getReleasesForResource(42);
+
+        List<ReleaseDTO> releases = (List<ReleaseDTO>) response.getEntity();
+        assertEquals(1, releases.size());
+        assertEquals(installationDate, releases.get(0).getInstallationInProductionAt());
     }
 
     @Test
