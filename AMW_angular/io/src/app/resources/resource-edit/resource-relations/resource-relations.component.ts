@@ -78,6 +78,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   selectedResourceGroupId = signal<number | null>(null);
   addAsProvided = signal<boolean>(false);
   isAddingRelation = signal<boolean>(false);
+  requiresRelationConfirmation = signal(false);
 
   originalActiveAppIds = signal<number[]>([]);
   currentActiveAppIds = signal<number[]>([]);
@@ -118,7 +119,13 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const res = this.resource();
     const releases = this.resourceService.releasesForResourceGroup();
     if (!res?.release || !releases?.length) return false;
-    return releases.some((r) => (r.release ?? '') > (res.release ?? ''));
+    const currentRelease = releases.find((release) => release.release === res.release);
+    if (!currentRelease) return false;
+    const currentReleaseDate = this.releaseDate(currentRelease.installationInProductionAt);
+    return releases.some((release) => {
+      const releaseDate = this.releaseDate(release.installationInProductionAt);
+      return releaseDate > currentReleaseDate;
+    });
   });
 
   protected permissions = computed(() => {
@@ -282,6 +289,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     this.selectedChildTypeId.set(null);
     this.selectedResourceGroupId.set(null);
     this.addAsProvided.set(false);
+    this.requiresRelationConfirmation.set(false);
     this.childResourceTypes.set([]);
     this.availableResourceGroups.set([]);
 
@@ -342,6 +350,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     this.selectedResourceTypeId.set(typeId);
     this.selectedChildTypeId.set(null);
     this.selectedResourceGroupId.set(null);
+    this.requiresRelationConfirmation.set(false);
     this.childResourceTypes.set([]);
     this.availableResourceGroups.set([]);
     if (!typeId) return;
@@ -356,6 +365,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   onChildTypeChange(childTypeId: number | null): void {
     this.selectedChildTypeId.set(childTypeId);
     this.selectedResourceGroupId.set(null);
+    this.requiresRelationConfirmation.set(false);
     this.availableResourceGroups.set([]);
     if (childTypeId) {
       this.loadResourceGroups(childTypeId);
@@ -372,18 +382,19 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const res = this.resource();
     if (res?.release) {
       const selectedGroup = this.availableResourceGroups().find((g) => g.id === groupId);
-      if (selectedGroup?.releases?.length) {
-        const firstRelease = selectedGroup.releases[0];
-        const currentReleaseName = res.release;
-        if (firstRelease?.release && firstRelease.release > currentReleaseName) {
-          if (
-            !confirm(
-              `The selected resource does not exist for the release ${currentReleaseName}. Are you sure you want to add it for this release?`,
-            )
-          ) {
-            return;
-          }
-        }
+      const currentRelease = this.resourceService.releasesForResourceGroup().find((r) => r.release === res.release);
+      const candidateReleases = selectedGroup?.releases ?? [];
+      const onlyNewerReleases =
+        currentRelease != null &&
+        candidateReleases.length > 0 &&
+        candidateReleases.every((release) => {
+          const releaseDate = this.releaseDate(release.installationInProductionAt);
+          return releaseDate > this.releaseDate(currentRelease.installationInProductionAt);
+        });
+
+      if (onlyNewerReleases && !this.requiresRelationConfirmation()) {
+        this.requiresRelationConfirmation.set(true);
+        return;
       }
     }
 
@@ -583,6 +594,10 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
         this.toastService.error('Failed to load resource types.');
       },
     });
+  }
+
+  private releaseDate(value: number): number {
+    return value;
   }
 
   private removeRelation(): void {

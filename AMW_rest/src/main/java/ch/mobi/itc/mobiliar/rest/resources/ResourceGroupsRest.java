@@ -460,10 +460,12 @@ public class ResourceGroupsRest {
             return Response.status(Response.Status.NOT_FOUND).entity(new ExceptionDto("Resource group not found")).build();
         }
         ResourceGroup resourceGroup = ResourceGroup.createByResource(groupEntity);
-        LinkedHashMap<String, Integer> releaseMap = resourceGroup.getReleaseToResourceMap();
-        List<ReleaseDTO> releases = releaseMap.entrySet().stream()
-                .map(entry -> new ReleaseDTO(entry.getValue(), entry.getKey()))
-                .collect(Collectors.toList());
+        List<ReleaseDTO> releases = resourceGroup.getSortedReleases().stream()
+            .map(release -> new ReleaseDTO(
+                resourceGroup.getResourceForRelease(release.getId()).getId(),
+                release.getName(),
+                release.getInstallationInProductionAt()))
+            .collect(Collectors.toList());
         return Response.ok(releases).build();
     }
 
@@ -478,7 +480,10 @@ public class ResourceGroupsRest {
         }
         List<ReleaseEntity> availableReleases = releasing.getNotDefinedReleasesForResource(resource);
         List<ReleaseDTO> releaseDTOs = availableReleases.stream()
-                .map(release -> new ReleaseDTO(release.getId(), release.getName()))
+            .map(release -> new ReleaseDTO(
+                release.getId(),
+                release.getName(),
+                release.getInstallationInProductionAt()))
                 .collect(Collectors.toList());
         return Response.ok(releaseDTOs).build();
     }

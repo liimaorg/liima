@@ -23,7 +23,10 @@ public class AppDTO {
         this.id = app.getId();
         this.name = app.getName();
         if (app.getRelease() != null) {
-            this.release = new ReleaseDTO(app.getRelease().getId(), app.getRelease().getName());
+            this.release = new ReleaseDTO(
+                    app.getRelease().getId(),
+                    app.getRelease().getName(),
+                    app.getRelease().getInstallationInProductionAt());
         }
     }
 }

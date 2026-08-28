@@ -6,6 +6,7 @@ export interface Release {
   id: number;
   name?: string;
   release?: string;
+  installationInProductionAt: number;
   relations?: Relation[];
   properties?: Property[];
   resourceTags?: ResourceTag[];
