@@ -1,122 +1,124 @@
-<app-loading-indicator [isLoading]="isLoadingRelations()"></app-loading-indicator>
-<app-tile-component
-  [title]="'Related Resources'"
-  [actionName]="'Add Relation'"
-  [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
-  [isCollapsed]="false"
-  [noContent]="!hasRelations()"
-  [notAllowed]="false"
-  (tileAction)="showAddRelationModal()"
->
-  @if (hasRelations()) {
-    <div class="relations-layout">
-      <div class="relations-container">
-        @if (canSetRuntime()) {
-          <div class="set-runtime-container">
-            <app-button [variant]="'secondary'" [size]="'sm'" (click)="showSetRuntimeModal()">
-              <app-icon icon="plus"></app-icon>
-              Set Runtime
-            </app-button>
-          </div>
-        }
-        <app-relation-group
-          [title]="'Runtime'"
-          [items]="runtimeItems()"
-          [selectedKey]="selectedItemKey()"
-          (itemSelected)="onItemSelected($event)"
-        />
-        <app-relation-group
-          [title]="'Unresolved'"
-          [items]="unresolvedItems()"
-          [selectedKey]="selectedItemKey()"
-          (itemSelected)="onItemSelected($event)"
-        />
-        <app-relation-group
-          [title]="'Consumed Resources'"
-          [items]="consumedItems()"
-          [selectedKey]="selectedItemKey()"
-          (itemSelected)="onItemSelected($event)"
-        />
-        <app-relation-group
-          [title]="'Provided Resources'"
-          [items]="providedItems()"
-          [selectedKey]="selectedItemKey()"
-          (itemSelected)="onItemSelected($event)"
-        />
-      </div>
-      @if (selectedRelation(); as rel) {
-        <div class="relation-detail-panel">
-          <div class="relation-detail-header">
-            <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
-              <h3 class="relation-detail-title">{{ rel.relatedResourceName }}</h3>
-            </a>
-            @if (rel.availableReleases && rel.availableReleases.length > 1) {
-              <ng-select
-                id="selectRelease"
-                [clearable]="false"
-                [ngModel]="selectedRelationIdForRelease()"
-                (ngModelChange)="onReleaseChange($event)"
-                name="release"
-              >
-                @for (release of rel.availableReleases; track release.relationId) {
-                  <ng-option [value]="release.relationId">{{ release.releaseName }}</ng-option>
-                }
-              </ng-select>
-            } @else {
-              <span class="relation-release-value">{{ rel.relatedResourceRelease }}</span>
-            }
-            @if (permissions().canUpdateProperty && contextId() === 1) {
-              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveRelationConfirmation()">
-                <app-icon icon="trash"></app-icon>
-                Remove Relation
+@if (!isNode()) {
+  <app-loading-indicator [isLoading]="isLoadingRelations()"></app-loading-indicator>
+  <app-tile-component
+    [title]="'Related Resources'"
+    [actionName]="'Add Relation'"
+    [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
+    [isCollapsed]="false"
+    [noContent]="!hasRelations()"
+    [notAllowed]="false"
+    (tileAction)="showAddRelationModal()"
+  >
+    @if (hasRelations()) {
+      <div class="relations-layout">
+        <div class="relations-container">
+          @if (canSetRuntime()) {
+            <div class="set-runtime-container">
+              <app-button [variant]="'secondary'" [size]="'sm'" (click)="showSetRuntimeModal()">
+                <app-icon icon="plus"></app-icon>
+                Set Runtime
               </app-button>
-            }
-          </div>
-          <div class="relation-detail-body">
-            <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
-            <app-properties-panel
-              [canEdit]="permissions().canUpdateProperty"
-              [isSaving]="isSaving()"
-              [hasChanges]="hasChanges()"
-              [hasValidationErrors]="hasValidationErrors()"
-              [errorMessage]="errorMessage()"
-              [successMessage]="successMessage()"
-              (cancelAction)="resetChanges()"
-              (saveAction)="saveChanges()"
-            >
-              <app-properties-list
-                [properties]="properties()"
-                [canEdit]="false"
-                [canDecrypt]="permissions().canDecryptProperties"
-                [canDelete]="false"
-                [mode]="'resource'"
-                [resetToken]="resetToken()"
-                (valueChange)="onPropertyChange($event.name, $event.value)"
-                (resetToggled)="onPropertyReset($event.name, $event.checked)"
-                (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
-              ></app-properties-list>
-
-              <app-relation-active-applications
-                [resourceId]="resource()?.id!"
-                [relationId]="selectedRelation()?.id!"
-                [contextId]="contextId()"
-                [isApplicationServerToNode]="isApplicationServerToNodeRelation()"
-                [canEdit]="permissions().canUpdateProperty"
-                [activeApplicationIds]="currentActiveAppIds()"
-                (activationChange)="onActivationChange($event)"
-              ></app-relation-active-applications>
-            </app-properties-panel>
-          </div>
+            </div>
+          }
+          <app-relation-group
+            [title]="'Runtime'"
+            [items]="runtimeItems()"
+            [selectedKey]="selectedItemKey()"
+            (itemSelected)="onItemSelected($event)"
+          />
+          <app-relation-group
+            [title]="'Unresolved'"
+            [items]="unresolvedItems()"
+            [selectedKey]="selectedItemKey()"
+            (itemSelected)="onItemSelected($event)"
+          />
+          <app-relation-group
+            [title]="'Consumed Resources'"
+            [items]="consumedItems()"
+            [selectedKey]="selectedItemKey()"
+            (itemSelected)="onItemSelected($event)"
+          />
+          <app-relation-group
+            [title]="'Provided Resources'"
+            [items]="providedItems()"
+            [selectedKey]="selectedItemKey()"
+            (itemSelected)="onItemSelected($event)"
+          />
         </div>
-        <app-resource-relation-templates-list
-          [resource]="resource()!"
-          [relation]="rel"
-          [contextId]="contextId()"
-        ></app-resource-relation-templates-list>
-      }
-    </div>
-  }
-</app-tile-component>
+        @if (selectedRelation(); as rel) {
+          <div class="relation-detail-panel">
+            <div class="relation-detail-header">
+              <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
+                <h3 class="relation-detail-title">{{ rel.relatedResourceName }}</h3>
+              </a>
+              @if (rel.availableReleases && rel.availableReleases.length > 1) {
+                <ng-select
+                  id="selectRelease"
+                  [clearable]="false"
+                  [ngModel]="selectedRelationIdForRelease()"
+                  (ngModelChange)="onReleaseChange($event)"
+                  name="release"
+                >
+                  @for (release of rel.availableReleases; track release.relationId) {
+                    <ng-option [value]="release.relationId">{{ release.releaseName }}</ng-option>
+                  }
+                </ng-select>
+              } @else {
+                <span class="relation-release-value">{{ rel.relatedResourceRelease }}</span>
+              }
+              @if (permissions().canUpdateProperty && contextId() === 1) {
+                <app-button [variant]="'secondary'" [size]="'sm'" (click)="showRemoveRelationConfirmation()">
+                  <app-icon icon="trash"></app-icon>
+                  Remove Relation
+                </app-button>
+              }
+            </div>
+            <div class="relation-detail-body">
+              <app-loading-indicator [isLoading]="isLoadingProperties()"></app-loading-indicator>
+              <app-properties-panel
+                [canEdit]="permissions().canUpdateProperty"
+                [isSaving]="isSaving()"
+                [hasChanges]="hasChanges()"
+                [hasValidationErrors]="hasValidationErrors()"
+                [errorMessage]="errorMessage()"
+                [successMessage]="successMessage()"
+                (cancelAction)="resetChanges()"
+                (saveAction)="saveChanges()"
+              >
+                <app-properties-list
+                  [properties]="properties()"
+                  [canEdit]="false"
+                  [canDecrypt]="permissions().canDecryptProperties"
+                  [canDelete]="false"
+                  [mode]="'resource'"
+                  [resetToken]="resetToken()"
+                  (valueChange)="onPropertyChange($event.name, $event.value)"
+                  (resetToggled)="onPropertyReset($event.name, $event.checked)"
+                  (validationChanged)="onPropertyValidationChange($event.name, $event.invalid)"
+                ></app-properties-list>
+
+                <app-relation-active-applications
+                  [resourceId]="resource()?.id!"
+                  [relationId]="selectedRelation()?.id!"
+                  [contextId]="contextId()"
+                  [isApplicationServerToNode]="isApplicationServerToNodeRelation()"
+                  [canEdit]="permissions().canUpdateProperty"
+                  [activeApplicationIds]="currentActiveAppIds()"
+                  (activationChange)="onActivationChange($event)"
+                ></app-relation-active-applications>
+              </app-properties-panel>
+            </div>
+          </div>
+          <app-resource-relation-templates-list
+            [resource]="resource()!"
+            [relation]="rel"
+            [contextId]="contextId()"
+          ></app-resource-relation-templates-list>
+        }
+      </div>
+    }
+  </app-tile-component>
+}
 
 <ng-template #addRelationModal let-modal>
   <app-modal-header [title]="'Add Related Resource'" (cancelAction)="modal.dismiss('Cross click')"></app-modal-header>
