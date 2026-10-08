@@ -11,6 +11,8 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("create a deployment", () => {
   test("should create a deployment", async ({ page }) => {
+    test.setTimeout(60_000);
+
     await expect(page.locator(".page-title")).toHaveText("Deployments");
     await page.getByTestId("create-button").click();
     await expect(page.getByText(/Create new deployment/).first()).toBeVisible();
@@ -28,10 +30,18 @@ test.describe("create a deployment", () => {
     await page
       .locator('[data-cy="date-picker"]')
       .fill(tomorrow.toLocaleDateString("de-CH") + " 00:00");
-    await page.getByRole("button", { name: "Deploy", exact: true }).click();
-    await page
-      .getByText(/Tracking Id/)
-      .first()
-      .click();
+    const deployButton = page.getByRole("button", {
+      name: "Deploy",
+      exact: true,
+    });
+    await expect(deployButton).toBeEnabled();
+    await deployButton.click();
+    await expect(page.locator(".alert-success")).toBeVisible({
+      timeout: 30_000,
+    });
+    const trackingIdLink = page.getByRole("link", { name: /Tracking Id \d+/ });
+    await expect(trackingIdLink).toBeVisible();
+    await trackingIdLink.click();
+    await expect(page).toHaveURL(/#\/deployments\?filters=/);
   });
 });

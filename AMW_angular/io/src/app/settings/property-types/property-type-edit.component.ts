@@ -53,7 +53,7 @@ export class PropertyTypeEditComponent {
   }
 
   isValidForm() {
-    return this.propertyType.name !== '' && this.propertyType.validationRegex !== '';
+    return this.propertyType.name !== '' && this.propertyType.validationRegex !== '' && this.isValidRegex();
   }
 
   save() {
