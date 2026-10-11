@@ -126,9 +126,9 @@ export class PropertyFieldComponent {
     this.valueChange.emit(this.localValue);
   }
 
-  toggleReset(event: Event) {
-    const target = event.target as HTMLInputElement | null;
-    const checked = !!target?.checked;
+  toggleReset(tooltip?: NgbTooltip) {
+    tooltip?.close();
+    const checked = !this.resetChecked();
     this.resetChecked.set(checked);
 
     if (checked) {
