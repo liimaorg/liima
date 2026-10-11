@@ -58,7 +58,6 @@ export class ResourcesPageComponent implements OnDestroy {
   expandedResourceTypeId: number | null = null;
   expandedItems: ResourceType[] = [];
   selectedResourceType: WritableSignal<ResourceType | null> = signal(null);
-  selection: any;
 
   private selectedResourceTypeIdFromUrl = toSignal(
     this.route.queryParamMap.pipe(
@@ -70,19 +69,25 @@ export class ResourcesPageComponent implements OnDestroy {
     { initialValue: null },
   );
 
-  private autoSelectTrigger = computed(() => {
+  private autoSelectTrigger = effect(() => {
     const idFromUrl = this.selectedResourceTypeIdFromUrl();
-    if (idFromUrl === null) return;
-
     const allTypes = [...(this.predefinedResourceTypes() || []), ...(this.rootResourceTypes() || [])];
     if (allTypes.length === 0) return;
 
-    const resourceType = this.findTypeById(allTypes, idFromUrl);
-    if (resourceType) {
-      // Expand parent chain so child is visible in tree, get the immediate parent
-      const parentType = this.expandParents(allTypes, idFromUrl);
-      // Safely execute selection out-of-stack to avoid expression-changed bugs
-      setTimeout(() => this.selectFromUrl(resourceType, parentType));
+    // If URL parameter is provided, select that specific type
+    if (idFromUrl !== null) {
+      const resourceType = this.findTypeById(allTypes, idFromUrl);
+      if (resourceType) {
+        const parentType = this.expandParents(allTypes, idFromUrl);
+        setTimeout(() => this.selectFromUrl(resourceType, parentType));
+      }
+    }
+    // If no URL parameter and no selection yet, select first root type as default
+    else if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
+      const firstRootType = this.rootResourceTypes()[0];
+      this.loadResourceGroups(firstRootType);
+      this.selectedResourceType.set(firstRootType);
+      this.updateUrlForResourceType(firstRootType);
     }
   });
 
@@ -103,7 +108,7 @@ export class ResourcesPageComponent implements OnDestroy {
       const isDirectChild = type.children?.some((c) => c.id === targetId);
       if (isDirectChild) {
         // Add this parent to expanded items
-        if (!this.expandedItems.find((e) => e.id === type.id)) {
+        if (!this.isExpanded(type)) {
           this.expandedItems.push(type);
         }
         return type;
@@ -113,7 +118,7 @@ export class ResourcesPageComponent implements OnDestroy {
         const foundParent = this.expandParents(type.children, targetId);
         if (foundParent) {
           // Add this ancestor to expanded items
-          if (!this.expandedItems.find((e) => e.id === type.id)) {
+          if (!this.isExpanded(type)) {
             this.expandedItems.push(type);
           }
           return foundParent; // Return the immediate parent (deepest level)
@@ -124,11 +129,10 @@ export class ResourcesPageComponent implements OnDestroy {
   }
 
   private selectFromUrl(resourceType: ResourceType, parentType: ResourceType | null): void {
-    this.selection = resourceType;
     this.loadResourceGroups(resourceType);
     // For parent with children: expand it and update expandedItems
     if (resourceType.hasChildren) {
-      this.getUpdateExpandedItems(resourceType);
+      this.toggleExpandedItems(resourceType);
       this.expandedResourceTypeId = resourceType.id;
     } else {
       // For leaf: expand parent so child is visible
@@ -138,9 +142,6 @@ export class ResourcesPageComponent implements OnDestroy {
   }
 
   constructor() {
-    // Simply reference the computed signal so it stays active and listens for changes
-    this.autoSelectTrigger();
-
     // Initial page load: hide loader once resource types are available
     effect(() => {
       if (this.predefinedResourceTypes().length > 0 || this.rootResourceTypes().length > 0) {
@@ -169,31 +170,14 @@ export class ResourcesPageComponent implements OnDestroy {
     }
   });
 
-  selectedResourceTypeOrDefault: Signal<ResourceType | null> = computed(() => {
-    if (!this.selectedResourceType() && this.rootResourceTypes() && this.rootResourceTypes().length > 0) {
-      this.resourceService.setTypeForResourceGroupList(this.rootResourceTypes()[0]);
-      return this.rootResourceTypes()[0];
-    }
-    return this.selectedResourceType() || null;
-  });
-
   toggleChildrenAndOrLoadResourcesList(resourceType: ResourceType, updateUrl: boolean = true): void {
-    this.selection = resourceType;
     this.loadResourceGroups(resourceType);
-    if (resourceType && resourceType.hasChildren) this.getUpdateExpandedItems(resourceType);
+    if (resourceType && resourceType.hasChildren) this.toggleExpandedItems(resourceType);
     this.expandedResourceTypeId = this.expandedResourceTypeId === resourceType.id ? null : resourceType.id;
     this.selectedResourceType.set(resourceType);
 
     if (updateUrl) {
-      this.router
-        .navigate([], {
-          relativeTo: this.route,
-          queryParams: { selectedResourceTypeId: resourceType.id },
-          queryParamsHandling: 'merge',
-        })
-        .catch((error) => {
-          console.error('Navigation error:', error);
-        });
+      this.updateUrlForResourceType(resourceType);
     }
   }
 
@@ -203,8 +187,20 @@ export class ResourcesPageComponent implements OnDestroy {
     this.resourceService.setTypeForResourceGroupList(resourceType);
   }
 
-  isExpanded(resourceType: ResourceType) {
-    return this.expandedItems.find((element) => element.id === resourceType.id);
+  private updateUrlForResourceType(resourceType: ResourceType): void {
+    this.router
+      .navigate([], {
+        relativeTo: this.route,
+        queryParams: { selectedResourceTypeId: resourceType.id },
+        queryParamsHandling: 'merge',
+      })
+      .catch((error) => {
+        console.error('Navigation error:', error);
+      });
+  }
+
+  isExpanded(resourceType: ResourceType): boolean {
+    return this.expandedItems.some((element) => element.id === resourceType.id);
   }
 
   addResource(resource: any) {
@@ -215,7 +211,7 @@ export class ResourcesPageComponent implements OnDestroy {
         next: () => this.toastService.success('Resource saved successfully.'),
         error: (e) => console.error('Failed to create resource:', e),
         complete: () => {
-          const rt = this.selectedResourceTypeOrDefault();
+          const rt = this.selectedResourceType();
           if (rt) this.resourceService.setTypeForResourceGroupList(rt);
         },
       });
@@ -253,7 +249,7 @@ export class ResourcesPageComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => this.toastService.success('Resource type deleted successfully.'),
-        error: (e) => console.error('Failed to create resource:', e),
+        error: (e) => console.error('Failed to delete resource type:', e),
         complete: () => {
           this.resourceTypesService.refreshData();
           this.selectedResourceType.set(null);
@@ -265,8 +261,8 @@ export class ResourcesPageComponent implements OnDestroy {
     this.destroy$.next(undefined);
   }
 
-  private getUpdateExpandedItems(resourceType: ResourceType) {
-    const index = this.expandedItems?.findIndex((element: ResourceType) => element.id === resourceType.id);
+  private toggleExpandedItems(resourceType: ResourceType) {
+    const index = this.expandedItems.findIndex((element: ResourceType) => element.id === resourceType.id);
     if (index > -1) {
       this.expandedItems.splice(index, 1);
     } else {
