@@ -35,8 +35,6 @@ export abstract class BaseRelationsDirective {
   protected destroy$ = new Subject<void>();
 
   isSaving = signal(false);
-  errorMessage = signal<string | null>(null);
-  successMessage = signal<string | null>(null);
 
   protected editor = createPropertiesEditor(
     () => [...this.properties().filter((p) => !p.disabled)],
@@ -105,8 +103,6 @@ export abstract class BaseRelationsDirective {
     if (changes.size === 0 && resets.size === 0) return;
 
     this.isSaving.set(true);
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     const updatedProperties: PropertyUpdate[] = Array.from(changes.entries()).map(([name, value]) => ({
       name,
@@ -131,14 +127,13 @@ export abstract class BaseRelationsDirective {
       )
       .subscribe({
         next: () => {
-          this.successMessage.set('Properties saved successfully');
+          this.toastService.success('Properties saved successfully');
           this.reloadProperties(this.entityId()!, this.getRelationId()!, this.contextId());
           this.afterPropertiesSaved();
           this.editor.resetChanges();
-          setTimeout(() => this.successMessage.set(null), 3000);
         },
         error: (error) => {
-          this.errorMessage.set('Failed to save properties: ' + (error.message || 'Unknown error'));
+          this.toastService.error('Failed to save properties: ' + (error.message || 'Unknown error'));
         },
       });
   }
@@ -188,8 +183,6 @@ export abstract class BaseRelationsDirective {
 
   resetChanges() {
     this.editor.resetChanges();
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
   }
 
   protected abstract properties: Signal<Property[]>;

@@ -434,8 +434,6 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     if (!hasPropertyChanges && !hasActivationChanges) return;
 
     this.isSaving.set(true);
-    this.errorMessage.set(null);
-    this.successMessage.set(null);
 
     let propertyUpdate$: Observable<void> = of(void 0);
     if (hasPropertyChanges) {
@@ -475,7 +473,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       )
       .subscribe({
         next: () => {
-          this.successMessage.set('Changes saved successfully');
+          this.toastService.success('Changes saved successfully');
           if (hasPropertyChanges) {
             this.reloadProperties(this.entityId()!, this.getRelationId()!, this.contextId());
             this.afterPropertiesSaved();
@@ -484,10 +482,9 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
           if (hasActivationChanges) {
             this.resourceActivationService.setRelationParams(this.entityId()!, this.getRelationId()!, this.contextId());
           }
-          setTimeout(() => this.successMessage.set(null), 3000);
         },
         error: (error) => {
-          this.errorMessage.set('Failed to save changes: ' + (error.message || 'Unknown error'));
+          this.toastService.error('Failed to save changes: ' + (error.message || 'Unknown error'));
         },
       });
   }
