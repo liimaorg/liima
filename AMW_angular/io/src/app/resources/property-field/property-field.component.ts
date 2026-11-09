@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, effect } from '@angular/core';
+import { Component, input, output, signal, computed, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Property } from '../models/property';
 import { ButtonComponent } from '../../shared/button/button.component';
@@ -23,6 +23,7 @@ export class PropertyFieldComponent {
   canEdit = input<boolean>(false);
   canDecrypt = input<boolean>(false);
   canDelete = input<boolean>(false);
+  isLoading = input<boolean>(false);
   hideTooltip = input<boolean>(false);
   valueChange = output<string>();
   validationChange = output<boolean>();
@@ -41,7 +42,7 @@ export class PropertyFieldComponent {
   displayLabel = computed(() => this.property().displayName || this.property().name);
   hasError = computed(() => this.touched() && !!this.validationError());
   canReset = computed(() => !!this.property().definedInContext);
-  isDisabled = computed(() => this.property().disabled);
+  isDisabled = computed(() => this.property().disabled || this.isLoading());
   isEncrypted = computed(() => !!this.property().encrypted);
 
   showProperty = computed(() => {
@@ -95,7 +96,7 @@ export class PropertyFieldComponent {
       this.showDecrypted.set(false);
       this.touched.set(false);
       this.validationError.set(null);
-      this.validationChange.emit(false);
+      untracked(() => this.validate());
     });
   }
 
@@ -165,7 +166,7 @@ export class PropertyFieldComponent {
     // Skip required validation when reset is checked
     if (!this.resetChecked() && !isNullable && !isOptional && noValueSet && mik === '') {
       this.validationError.set('This field is required');
-      this.validationChange.emit(true);
+      this.validationChange.emit(this.touched());
       return;
     }
 
@@ -183,13 +184,13 @@ export class PropertyFieldComponent {
         const fullMatchRegex = new RegExp(`^(?:${regexString})$`);
         if (!fullMatchRegex.test(regexMatchValue)) {
           this.validationError.set('Value does not match the required pattern');
-          this.validationChange.emit(true);
+          this.validationChange.emit(this.touched());
           return;
         }
       } catch (e) {
         console.error('Invalid regex pattern:', regexString, e);
         this.validationError.set('Value does not match the required pattern');
-        this.validationChange.emit(true);
+        this.validationChange.emit(this.touched());
         return;
       }
     }

@@ -51,7 +51,7 @@
       (focus)="onFocus()"
       (blur)="onBlur()"
       [placeholder]="placeholder"
-      [disabled]="isDisabled() ?? false"
+      [disabled]="isDisabled()"
     />
   } @else {
     <textarea
@@ -63,7 +63,7 @@
       [(ngModel)]="localValue"
       (blur)="onBlur()"
       [placeholder]="placeholder"
-      [disabled]="isDisabled() ?? false"
+      [disabled]="isDisabled()"
     ></textarea>
   }
   @if (canReset() && (!property().encrypted || canDecrypt())) {

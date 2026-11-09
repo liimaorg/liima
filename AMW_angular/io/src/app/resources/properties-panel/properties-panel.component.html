@@ -16,20 +16,15 @@
       <app-button [variant]="'light'" [size]="'sm'" [dataTestId]="'button-cancel'" (click)="cancelAction.emit()"
         >Cancel</app-button
       >
-      <span
-        [ngbTooltip]="hasValidationErrors() ? 'Fix validation errors to enable saving' : ''"
-        [disableTooltip]="!hasValidationErrors()"
+      <app-button
+        [variant]="'primary'"
+        [size]="'sm'"
+        (click)="saveAction.emit()"
+        [dataTestId]="'button-save'"
+        [disabled]="isSaving()"
       >
-        <app-button
-          [variant]="'primary'"
-          [size]="'sm'"
-          (click)="saveAction.emit()"
-          [dataTestId]="'button-save'"
-          [disabled]="isSaving() || hasValidationErrors()"
-        >
-          {{ isSaving() ? 'Saving...' : 'Save' }}
-        </app-button>
-      </span>
+        {{ isSaving() ? 'Saving...' : 'Save' }}
+      </app-button>
     </div>
   }
 </div>

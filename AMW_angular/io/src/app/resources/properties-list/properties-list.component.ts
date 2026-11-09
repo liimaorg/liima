@@ -5,7 +5,6 @@ import {
   PropertiesDeleteAction,
   PropertiesEditAction,
   PropertiesResetToggleAction,
-  PropertiesValidationChangeAction,
   PropertiesValueChangeAction,
 } from '../models/properties-action';
 import { NgTemplateOutlet } from '@angular/common';
@@ -22,12 +21,12 @@ export class PropertiesListComponent {
   canEdit = input<boolean>(false);
   canDecrypt = input<boolean>(false);
   canDelete = input<boolean>(false);
+  isLoading = input<boolean>(false);
   mode = input<'resource' | 'resourceType'>('resource');
   resetToken = input<number>(0);
 
   valueChange = output<PropertiesValueChangeAction>();
   resetToggled = output<PropertiesResetToggleAction>();
-  validationChanged = output<PropertiesValidationChangeAction>();
   editClicked = output<PropertiesEditAction>();
   deleteClicked = output<PropertiesDeleteAction>();
 

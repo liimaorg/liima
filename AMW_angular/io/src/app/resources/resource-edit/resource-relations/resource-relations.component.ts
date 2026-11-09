@@ -280,8 +280,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   }
 
   onReleaseChange(relationId: number) {
-    this.activeRelationId.set(relationId);
-    this.setQueryParamForRelationId(relationId);
+    this.switchRelation(relationId);
   }
 
   showAddRelationModal(): void {
@@ -398,6 +397,10 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       }
     }
 
+    this.doAddRelation(groupId);
+  }
+
+  private doAddRelation(groupId: number): void {
     this.isAddingRelation.set(true);
     this.relationsService.addResourceRelation(this.entityId()!, groupId, this.addAsProvided()).subscribe({
       next: () => {
@@ -428,7 +431,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     const hasPropertyChanges = propertyChanges.size > 0 || propertyResets.size > 0;
     const hasActivationChanges = this.hasActivationChanges();
 
-    if ((!hasPropertyChanges && !hasActivationChanges) || this.hasValidationErrors()) return;
+    if (!hasPropertyChanges && !hasActivationChanges) return;
 
     this.isSaving.set(true);
     this.errorMessage.set(null);
