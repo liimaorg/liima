@@ -106,7 +106,7 @@ public class ResourceTypeDomainService {
 
 	protected Query fetchAllResourceTypes() {
 		return entityManager
-				.createQuery("select n from ResourceTypeEntity n left join fetch n.childrenResourceTypes as c order by n.name asc, c.name asc");
+				.createQuery("select n from ResourceTypeEntity n left join fetch n.childrenResourceTypes order by n.name asc");
 	}
 
 	/**

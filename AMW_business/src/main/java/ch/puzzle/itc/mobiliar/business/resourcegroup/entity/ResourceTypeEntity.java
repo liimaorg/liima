@@ -67,6 +67,7 @@ Comparable<ResourceTypeEntity> {
 
 	@Setter
 	@OneToMany(mappedBy = "parentResourceType", cascade = ALL, fetch = FetchType.EAGER)
+	@OrderBy("name ASC")
 	Set<ResourceTypeEntity> childrenResourceTypes;
 
 	public Set<ResourceTypeEntity> getChildrenResourceTypes() {
