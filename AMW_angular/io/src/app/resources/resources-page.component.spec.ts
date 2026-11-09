@@ -61,7 +61,7 @@ describe('ResourcesPageComponent', () => {
   });
 
   it.each([1, 2])(
-    'should collapse a parent on the first click after selecting type %i from the URL',
+    'should expand only ancestors and toggle on the first click after selecting type %i from the URL',
     async (typeId) => {
       vi.useFakeTimers();
       const child: ResourceType = {
@@ -86,7 +86,7 @@ describe('ResourcesPageComponent', () => {
       fixture.detectChanges();
       await vi.runAllTimersAsync();
       expect(component.selectedResourceType()).toBe(typeId === parent.id ? parent : child);
-      expect(component.isExpanded(parent)).toBe(true);
+      expect(component.isExpanded(parent)).toBe(typeId === child.id);
       setTypeForResourceGroupList.mockClear();
 
       component.toggleChildrenAndOrLoadResourcesList(parent);
@@ -94,14 +94,14 @@ describe('ResourcesPageComponent', () => {
       await vi.runAllTimersAsync();
 
       expect(component.selectedResourceType()).toBe(parent);
-      expect(component.isExpanded(parent)).toBe(false);
+      expect(component.isExpanded(parent)).toBe(typeId === parent.id);
       expect(setTypeForResourceGroupList).toHaveBeenCalledExactlyOnceWith(parent);
 
       component.toggleChildrenAndOrLoadResourcesList(parent);
       fixture.detectChanges();
       await vi.runAllTimersAsync();
 
-      expect(component.isExpanded(parent)).toBe(true);
+      expect(component.isExpanded(parent)).toBe(typeId === child.id);
 
       queryParamMap.next(convertToParamMap({ selectedResourceTypeId: child.id }));
       fixture.detectChanges();
@@ -115,4 +115,25 @@ describe('ResourcesPageComponent', () => {
       expect(component.isExpanded(parent)).toBe(true);
     },
   );
+
+  it('should select the default parent without expanding it when no URL parameter is provided', async () => {
+    vi.useFakeTimers();
+    const parent: ResourceType = {
+      id: 1,
+      name: 'Parent',
+      hasChildren: true,
+      hasParent: false,
+      children: [],
+      isApplication: false,
+      isDefaultResourceType: false,
+    };
+    rootResourceTypes.set([parent]);
+    fixture.detectChanges();
+    await vi.runAllTimersAsync();
+
+    expect(component.selectedResourceType()).toBe(parent);
+    expect(component.isExpanded(parent)).toBe(false);
+    expect(Number(queryParamMap.value.get('selectedResourceTypeId'))).toBe(parent.id);
+    expect(setTypeForResourceGroupList).toHaveBeenCalledExactlyOnceWith(parent);
+  });
 });

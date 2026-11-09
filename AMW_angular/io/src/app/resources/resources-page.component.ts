@@ -132,16 +132,7 @@ export class ResourcesPageComponent implements OnDestroy {
     if (this.selectedResourceType()?.id === resourceType.id) return;
 
     this.loadResourceGroups(resourceType);
-    // For parent with children: expand it and update expandedItems
-    if (resourceType.hasChildren) {
-      if (!this.isExpanded(resourceType)) {
-        this.expandedItems.push(resourceType);
-      }
-      this.expandedResourceTypeId = resourceType.id;
-    } else {
-      // For leaf: expand parent so child is visible
-      this.expandedResourceTypeId = parentType?.id ?? null;
-    }
+    this.expandedResourceTypeId = parentType?.id ?? null;
     this.selectedResourceType.set(resourceType);
   }
 
