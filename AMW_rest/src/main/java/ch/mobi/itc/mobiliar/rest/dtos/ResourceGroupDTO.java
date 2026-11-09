@@ -61,7 +61,10 @@ public class ResourceGroupDTO {
         this.id = resourceGroup.getId();
         this.name = resourceGroup.getName();
         this.type = resourceGroup.getResourceType() != null ? resourceGroup.getResourceType().getName() : null;
-        this.defaultRelease = new ReleaseDTO(defaultRelease.getId(), defaultRelease.getName());
+        this.defaultRelease = new ReleaseDTO(
+            defaultRelease.getId(),
+            defaultRelease.getName(),
+            defaultRelease.getInstallationInProductionAt());
         if (releases != null && !releases.isEmpty()) {
             this.releases = releases;
         }

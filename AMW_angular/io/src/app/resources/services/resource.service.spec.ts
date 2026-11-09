@@ -32,6 +32,7 @@ describe('ResourceService', () => {
       defaultRelease: {
         id: 22,
         release: 'release_2020',
+        installationInProductionAt: 1577836800000,
         relations: [],
         properties: [],
         resourceTags: [],
@@ -53,6 +54,7 @@ describe('ResourceService', () => {
     const mockRelease: Release = {
       id: 55,
       release: 'release2010',
+      installationInProductionAt: 1262304000000,
       relations: [
         {
           relatedResourceName: 'relResName',

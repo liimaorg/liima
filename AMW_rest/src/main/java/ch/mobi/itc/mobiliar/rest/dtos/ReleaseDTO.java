@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Date;
 
 @XmlRootElement(name = "release")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -17,4 +18,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ReleaseDTO {
     Integer id;
     String name;
+    Date installationInProductionAt;
 }
