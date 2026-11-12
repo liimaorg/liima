@@ -17,6 +17,9 @@ import { PropertyFieldTooltipComponent } from './property-field-info/property-fi
   },
 })
 export class PropertyFieldComponent {
+  private static nextInstanceId = 0;
+  private readonly instanceId = PropertyFieldComponent.nextInstanceId++;
+
   property = input.required<Property>();
   mode = input<'resource' | 'resourceType'>('resource');
   resetToken = input<number>(0);
@@ -37,8 +40,8 @@ export class PropertyFieldComponent {
   resetChecked = signal(false);
   showDecrypted = signal(false);
 
-  fieldId = computed(() => `property-${this.property().name}`);
-  resetId = computed(() => `reset-${this.property().name}`);
+  fieldId = computed(() => `property-${this.property().name}-${this.instanceId}`);
+  resetId = computed(() => `reset-${this.property().name}-${this.instanceId}`);
   displayLabel = computed(() => this.property().displayName || this.property().name);
   hasError = computed(() => this.touched() && !!this.validationError());
   canReset = computed(() => !!this.property().definedInContext);

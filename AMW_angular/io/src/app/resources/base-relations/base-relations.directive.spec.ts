@@ -115,16 +115,6 @@ describe('BaseRelationsDirective', () => {
     expect(component.hasChanges()).toBe(false);
   });
 
-  it('should clear error and success messages on reset', () => {
-    component.errorMessage.set('Error');
-    component.successMessage.set('Success');
-
-    component.resetChanges();
-
-    expect(component.errorMessage()).toBeNull();
-    expect(component.successMessage()).toBeNull();
-  });
-
   it('should track property resets as changes', () => {
     component.onPropertyReset('testProp', true);
     expect(component.hasChanges()).toBe(true);

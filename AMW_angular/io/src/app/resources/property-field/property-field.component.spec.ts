@@ -46,6 +46,25 @@ describe('PropertyFieldComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should generate unique field and reset ids for properties with the same name', () => {
+    const property = baseProperty({ name: 'namespace', definedInContext: true });
+    componentRef.setInput('property', property);
+    fixture.detectChanges();
+
+    const secondFixture = TestBed.createComponent(PropertyFieldComponent);
+    secondFixture.componentRef.setInput('property', property);
+    secondFixture.detectChanges();
+
+    expect(component.fieldId()).not.toBe(secondFixture.componentInstance.fieldId());
+    expect(component.resetId()).not.toBe(secondFixture.componentInstance.resetId());
+    expect(fixture.nativeElement.querySelector('label').getAttribute('for')).toBe(component.fieldId());
+    expect(secondFixture.nativeElement.querySelector('label').getAttribute('for')).toBe(
+      secondFixture.componentInstance.fieldId(),
+    );
+
+    secondFixture.destroy();
+  });
+
   it('should show required error when required and value+default+mik are empty', () => {
     componentRef.setInput(
       'property',
@@ -164,7 +183,7 @@ describe('PropertyFieldComponent', () => {
     );
     fixture.detectChanges();
 
-    const reset: HTMLButtonElement | null = fixture.nativeElement.querySelector(`#reset-pNull`);
+    const reset: HTMLButtonElement | null = fixture.nativeElement.querySelector(`#${component.resetId()}`);
     expect(reset).not.toBeNull();
   });
 
@@ -185,7 +204,7 @@ describe('PropertyFieldComponent', () => {
     const resetSpy = vi.fn();
     component.resetChange.subscribe(resetSpy);
 
-    const reset: HTMLButtonElement | null = fixture.nativeElement.querySelector(`#reset-p1`);
+    const reset: HTMLButtonElement | null = fixture.nativeElement.querySelector(`#${component.resetId()}`);
     expect(reset).not.toBeNull();
 
     // check reset => value becomes replacedValue and input is disabled
