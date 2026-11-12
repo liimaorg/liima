@@ -1,4 +1,5 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, effect, inject, Signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs/operators';
@@ -21,6 +22,7 @@ export class ResourceDependenciesComponent {
   private router = inject(Router);
   private dependenciesService = inject(ResourceDependenciesService);
   private authService = inject(AuthService);
+  private title = inject(Title);
 
   permissions = computed(() => {
     if (this.authService.restrictions().length > 0) {
@@ -53,6 +55,15 @@ export class ResourceDependenciesComponent {
       switchMap((id) => this.dependenciesService.getResourceDependencies(id)),
     ),
   );
+
+  constructor() {
+    effect(() => {
+      const resourceName = this.dependencies()?.resourceName;
+      this.title.setTitle(
+        resourceName ? `Deps for ${resourceName} - Liima` : 'Dependencies - Liima',
+      );
+    });
+  }
 
   isLoading = computed(() => !this.dependencies());
 

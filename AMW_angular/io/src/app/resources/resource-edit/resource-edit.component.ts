@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, Signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -50,6 +51,7 @@ export class ResourceEditComponent {
   private authService = inject(AuthService);
   private resourceService = inject(ResourceService);
   private resourcePropertiesService = inject(ResourcePropertiesService);
+  private title = inject(Title);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private modalService = inject(NgbModal);
@@ -73,6 +75,10 @@ export class ResourceEditComponent {
       if (resourceId) {
         this.resourceService.setIdForResource(resourceId);
       }
+    });
+    effect(() => {
+      const resource = this.resource();
+      this.title.setTitle(resource?.name ? `Edit ${resource.name} - Liima` : 'Edit Resource - Liima');
     });
   }
 

@@ -6,8 +6,8 @@ import { ResourceDependenciesComponent } from './resource-dependencies/resource-
 
 export const resourcesRoute = [
   { path: 'resources', component: ResourcesPageComponent, title: 'Resources - Liima' },
-  { path: 'resource/edit', component: ResourceEditComponent, title: 'Edit Resource - Liima' },
-  { path: 'resourceType/edit', component: ResourceTypeEditComponent, title: 'Edit Resource Type - Liima' },
-  { path: 'resource/test-generation', component: TestGenerationComponent, title: 'Test Generation - Liima' },
-  { path: 'resource/dependencies', component: ResourceDependenciesComponent, title: 'Resource Dependencies - Liima' },
+  { path: 'resource/edit', component: ResourceEditComponent },
+  { path: 'resourceType/edit', component: ResourceTypeEditComponent },
+  { path: 'resource/test-generation', component: TestGenerationComponent },
+  { path: 'resource/dependencies', component: ResourceDependenciesComponent },
 ];

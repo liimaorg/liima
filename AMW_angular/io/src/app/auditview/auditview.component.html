@@ -2,7 +2,7 @@
 <app-page>
   <div class="page-title">Audit View</div>
   <div class="page-content">
-    <h1>{{ name }}</h1>
+    <h1>{{ name() }}</h1>
 
     @if (successMessage) {
       <app-notification [message]="successMessage" [messageType]="'success'"></app-notification>

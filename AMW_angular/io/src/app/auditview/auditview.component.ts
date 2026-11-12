@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { AuditviewService } from './auditview.service';
 import { ResourceService } from '../resources/services/resource.service';
 import { AuditLogEntry } from './auditview-entry';
@@ -21,13 +22,21 @@ export class AuditviewComponent implements OnInit {
   private auditViewService = inject(AuditviewService);
   private resourceService = inject(ResourceService);
   private activatedRoute = inject(ActivatedRoute);
+  private title = inject(Title);
 
-  name: string | undefined;
+  name = signal<string | undefined>(undefined);
   auditLogEntries: AuditLogEntry[] = [];
   errorMessage: string | undefined;
   successMessage: string | undefined;
   resourceId: number | undefined;
   isLoading = signal(true);
+
+  constructor() {
+    effect(() => {
+      const resourceName = this.name();
+      this.title.setTitle(resourceName ? `Audit View for ${resourceName} - Liima` : 'Audit View - Liima');
+    });
+  }
 
   ngOnInit() {
     this.activatedRoute.queryParams.subscribe((param: any) => {
@@ -42,7 +51,7 @@ export class AuditviewComponent implements OnInit {
 
     if (this.resourceId) {
       this.resourceService.getResourceName(this.resourceId).subscribe({
-        next: (resource) => (this.name = resource.name),
+        next: (resource) => this.name.set(resource.name),
         error: (e) => (this.errorMessage = e),
       });
       this.auditViewService.getAuditLogForResource(this.resourceId).subscribe({
