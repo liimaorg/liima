@@ -1,5 +1,5 @@
 export interface RestrictionsCreation {
-  roleName: string;
+  roleName: string | null;
   userNames: string[];
   permissionNames: string[];
   resourceGroupIds: number[];

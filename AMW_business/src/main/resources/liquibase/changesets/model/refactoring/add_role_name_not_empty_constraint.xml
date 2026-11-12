@@ -1,0 +1,12 @@
+<databaseChangeLog
+        logicalFilePath="liquibase/changesets/model/refactoring/add_role_name_not_empty_constraint.xml"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="liima" id="add_role_name_not_empty_constraint">
+        <comment>Forbid null and empty role names</comment>
+        <addNotNullConstraint tableName="TAMW_ROLE" columnName="NAME" columnDataType="varchar(255)"/>
+        <sql>ALTER TABLE TAMW_ROLE ADD CONSTRAINT TAMW_ROLE_NAME_NOT_EMPTY CHECK (LENGTH(TRIM(NAME)) &gt; 0)</sql>
+    </changeSet>
+
+</databaseChangeLog>

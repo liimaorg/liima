@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 /**
  * A boundary for checking permissions of view elements
@@ -466,8 +467,11 @@ public class PermissionBoundary implements Serializable {
         if (resourceGroupIds != null && !resourceGroupIds.isEmpty() && resourceTypeNames != null && !resourceTypeNames.isEmpty()) {
             throw new AMWException("Only ResourceGroupId(s) OR ResourceTypeName(s) must be set");
         }
+        roleName = emptyToNull(roleName);
         if (userNames == null) {
             userNames = new ArrayList<>();
+        } else {
+            userNames = userNames.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
         }
         if (resourceGroupIds == null) {
             resourceGroupIds = new ArrayList<>();
@@ -729,6 +733,8 @@ public class PermissionBoundary implements Serializable {
     protected void validateRestriction(String roleName, String userName, String permissionName, Integer resourceGroupId, String resourceTypeName,
                                      ResourceTypePermission resourceTypePermission, String contextName, Action action,
                                      RestrictionEntity restriction) throws AMWException {
+        roleName = emptyToNull(roleName);
+        userName = emptyToNull(userName);
         if (roleName == null && userName == null) {
             throw new AMWException("Either a Role- or UserName is mandatory");
         }
@@ -828,6 +834,10 @@ public class PermissionBoundary implements Serializable {
     @HasPermission(permission = Permission.RESOURCE, action = Action.DELETE, resourceSpecific = true)
     public void removeAllRestrictionsForResourceGroup(ResourceGroupEntity resourceGroup) {
         restrictionRepository.deleteAllWithResourceGroup(resourceGroup);
+    }
+
+    private static String emptyToNull(String value) {
+        return value == null || value.isEmpty() ? null : value;
     }
 
     protected boolean isValidName(String rawString) {

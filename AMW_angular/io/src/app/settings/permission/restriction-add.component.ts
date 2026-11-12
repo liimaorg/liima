@@ -44,7 +44,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
   selectedResourceGroupNames: string[] = [];
   selectedContextNames: string[] = [];
 
-  @Input() roleName = '';
+  @Input() roleName: string | null = null;
   @Input() userNames: any[] = [];
   @Input() permissions: Permission[] = [];
   @Input() groupedEnvironments: { [key: string]: Environment[] } = {};
@@ -82,7 +82,7 @@ export class RestrictionAddComponent implements OnChanges, AfterViewChecked {
 
   persistRestriction() {
     const restrictionsCreation: RestrictionsCreation = {
-      roleName: this.roleName,
+      roleName: this.roleName || null,
       userNames: this.getSelectedUserNames(),
       permissionNames: this.selectedPermissionNames,
       resourceGroupIds: this.getSelectedGroupIds(),
