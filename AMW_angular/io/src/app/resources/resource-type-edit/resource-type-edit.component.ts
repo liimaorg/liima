@@ -1,4 +1,5 @@
-import { Component, computed, inject, Signal } from '@angular/core';
+import { Component, computed, effect, inject, Signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -40,6 +41,7 @@ import { RESOURCE_TYPE } from '../../core/amw-constants';
 export class ResourceTypeEditComponent {
   private authService = inject(AuthService);
   private resourceTypeService = inject(ResourceTypesService);
+  private title = inject(Title);
   private route = inject(ActivatedRoute);
 
   id = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
@@ -73,4 +75,11 @@ export class ResourceTypeEditComponent {
   protected readonly showGoTo = computed<boolean>(() => this.goToDeploymentsAvailable());
 
   protected readonly deploymentsQueryParams = computed(() => ({ filters: JSON.stringify([]) }));
+
+  constructor() {
+    effect(() => {
+      const resourceType = this.resourceType();
+      this.title.setTitle(resourceType?.name ? `Edit ${resourceType.name} - Liima` : 'Edit Resource Type - Liima');
+    });
+  }
 }

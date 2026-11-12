@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal, Signal } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { concatMap, finalize, map } from 'rxjs/operators';
@@ -51,6 +52,7 @@ export class TestGenerationComponent {
   private testGenerationService = inject(TestGenerationService);
   private resourceService = inject(ResourceService);
   private environmentService = inject(EnvironmentService);
+  private title = inject(Title);
   private route = inject(ActivatedRoute);
 
   resourceId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
@@ -101,6 +103,11 @@ export class TestGenerationComponent {
   }));
 
   constructor() {
+    effect(() => {
+      const resource = this.resource();
+      this.title.setTitle(resource?.name ? `Test Generation for ${resource.name} - Liima` : 'Test Generation - Liima');
+    });
+
     // Auto-generate when context, resource, or compare release changes
     effect(() => {
       const contextId = this.contextId();
