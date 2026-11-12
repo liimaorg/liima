@@ -42,6 +42,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -155,6 +156,19 @@ public class PermissionBoundaryTest {
             // when // then
             permissionBoundary.updateRestriction(1, null, null, null, null, null, null, null, null, true);
         });
+    }
+
+    @Test
+    public void shouldNotCreateRoleOnMultiCreateIfRoleNameIsEmpty() throws AMWException {
+        // given
+        when(permissionRepository.getUserRestrictionByName("user")).thenReturn(new UserRestrictionEntity("user"));
+        when(permissionRepository.getPermissionByName("valid")).thenReturn(resourcePermission);
+        // when
+        permissionBoundary.createMultipleRestrictions("", List.of("user", ""), List.of("valid"), null, null, null, null,
+                List.of(Action.ALL), false, false);
+        // then
+        verify(permissionRepository, never()).createRole(any());
+        verify(permissionRepository, never()).createUserRestriciton(any());
     }
 
     @Test
