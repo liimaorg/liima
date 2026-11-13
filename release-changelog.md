@@ -1,3 +1,6 @@
+# Unreleased
+* Add database constraints against duplicate resource relations.
+
 # v1.18.13
 * Angular:
   * Fix/findings Angular UI [#1024](https://github.com/liimaorg/liima/pull/1024)

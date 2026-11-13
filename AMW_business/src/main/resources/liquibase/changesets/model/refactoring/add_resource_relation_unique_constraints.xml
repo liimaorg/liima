@@ -1,0 +1,13 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="liima" id="add_resource_relation_unique_constraints">
+        <addUniqueConstraint tableName="TAMW_consumedResRel"
+                             columnNames="masterResource_id, slaveResource_id, identifier"
+                             constraintName="UK_CONSRESREL_MASTER_SLAVE_NAME"/>
+        <addUniqueConstraint tableName="TAMW_providedResRel"
+                             columnNames="masterResource_id, slaveResource_id, identifier"
+                             constraintName="UK_PROVRESREL_MASTER_SLAVE_NAME"/>
+    </changeSet>
+</databaseChangeLog>

@@ -69,6 +69,19 @@ public class ResourceRelationServicePersistenceTest {
 	ResourceRelationService service;
 
 	@Test
+	public void shouldRejectDuplicateConsumedRelationNames() {
+		ResourceEntity master = ResourceFactory.createNewResource("master");
+		ResourceEntity slave = ResourceFactory.createNewResource("slave");
+		master.addConsumedResourceRelation(slave, null, "slave");
+		master.addConsumedResourceRelation(slave, null, "slave");
+
+		assertThrows(javax.persistence.PersistenceException.class, () -> {
+			entityManager.persist(master);
+			entityManager.flush();
+		});
+	}
+
+	@Test
 	public void test_getConsumedRelationsByMasterAndSlave() {
 		// given
 		ResourceEntity master = ResourceFactory.createNewResource("master");
