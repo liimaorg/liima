@@ -29,13 +29,16 @@ import org.hibernate.envers.Audited;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.ALL;
 
 @Entity
 @Audited()
-@Table(name = "TAMW_consumedResRel")
+@Table(name = "TAMW_consumedResRel", uniqueConstraints = @UniqueConstraint(
+        name = "UK_CONSRESREL_MASTER_SLAVE_NAME",
+        columnNames = {"masterResource_id", "slaveResource_id", "identifier"}))
 public class ConsumedResourceRelationEntity extends AbstractResourceRelationEntity implements Auditable {
 
     @OneToMany(mappedBy = "consumedResourceRelation", cascade = ALL)

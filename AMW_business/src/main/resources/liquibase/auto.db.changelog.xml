@@ -126,5 +126,6 @@
 
     <!--1.18.14-->
     <include file="changesets/model/refactoring/add_role_name_not_empty_constraint.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/model/refactoring/add_resource_relation_unique_constraints.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
