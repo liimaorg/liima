@@ -19,6 +19,7 @@ test.describe("PropertyTypes -CRUD", () => {
 
     await page.getByTestId("button-add").click();
     await page.locator("#name").fill(propertyTypeName);
+    await page.locator("#name").blur();
     await page.locator("#regex").fill("*");
     await expect(
       page.getByText("Invalid regular expression pattern."),
@@ -29,7 +30,7 @@ test.describe("PropertyTypes -CRUD", () => {
     ).toHaveCount(0);
 
     await page.locator("#regex").fill("sd");
-    await page.locator("#regex").press("Tab"); // Trigger blur for form validation
+    await page.locator("#regex").blur();
     await expect(
       page.getByText("Invalid regular expression pattern."),
     ).toHaveCount(0);
@@ -42,13 +43,16 @@ test.describe("PropertyTypes -CRUD", () => {
         .filter({ hasText: "Property type saved." })
         .first(),
     ).toBeVisible({ timeout: 5000 });
+    await expect(
+      page.getByRole("row").filter({ hasText: propertyTypeName }),
+    ).toBeVisible();
     await page.getByTestId("toast-close").last().click();
     await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
 
     await page.getByTestId("button-add").click();
     await page.locator("#name").fill(propertyTypeName);
     await page.locator("#regex").fill("sd");
-    await page.locator("#regex").press("Tab");
+    await page.locator("#regex").blur();
     await expect(page.getByTestId("button-save")).toBeEnabled();
     await page.getByTestId("button-save").click();
     await expect(

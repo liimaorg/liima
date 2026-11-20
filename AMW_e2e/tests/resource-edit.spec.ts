@@ -2,10 +2,27 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function switchContext(page: Page, contextName: string) {
   const previousUrl = page.url();
+  const previousParams = new URLSearchParams(new URL(previousUrl).hash.split("?")[1]);
+  const resourceId = previousParams.get("id");
+  const previousContextId = previousParams.get("ctx");
+  const propertiesLoaded = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return (
+      url.pathname.endsWith(`/resources/${resourceId}/properties`) &&
+      url.searchParams.get("contextId") !== previousContextId
+    );
+  });
+
   await page.getByRole("button", { name: contextName }).click();
   await page.waitForURL((url) => url.href !== previousUrl);
-  // properties reload asynchronously and discard pending edits, so wait for it to settle
-  await page.waitForLoadState("networkidle");
+  const response = await propertiesLoaded;
+  expect(response.ok()).toBeTruthy();
+  // Wait for the properties request triggered by the context switch to finish.
+  await expect(
+    page.locator(
+      "app-resource-properties .properties-section > app-properties-list .properties-list:not([inert])",
+    ),
+  ).toBeVisible();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -22,7 +39,7 @@ test.describe.serial("Resource Edit Page - Properties", () => {
     await propertyInput.fill("whatever" + Math.random());
     await page.keyboard.press("Tab");
 
-    const saveButton = page.getByRole("button", { name: "Save" });
+    const saveButton = page.getByTestId("button-save");
     await expect(saveButton).toBeVisible();
     await expect(saveButton).toBeEnabled();
     await saveButton.click();

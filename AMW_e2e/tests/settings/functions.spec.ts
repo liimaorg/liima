@@ -44,7 +44,7 @@ test.describe.serial('CRUD for Functions', () => {
         await page.getByRole('button', {name: 'Save'}).click();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Function saved successfully.' }).first()).toBeVisible({ timeout: 5000 });
         // Wait for modal to close and table to refresh with both functions
-        await page.waitForSelector('.modal-dialog', { state: 'hidden' }).catch(() => {});
+        await expect(page.locator('.modal-dialog')).toBeHidden();
         await expect(page.getByRole('row').filter({ hasText: functionNameA })).toBeVisible({ timeout: 5000 });
         await expect(page.getByRole('row').filter({ hasText: functionNameB })).toBeVisible({ timeout: 5000 });
 
@@ -77,16 +77,20 @@ test.describe.serial('CRUD for Functions', () => {
         const functionName = `testFunctionEdit-${uid}-${testInfo.project.name}`;
 
         await page.getByTestId('button-add').click();
-        await page.locator('#name').fill(functionName);
+        const functionNameInput = page.getByRole('textbox', { name: 'Function name' });
+        await functionNameInput.fill(functionName);
+        await expect(functionNameInput).toHaveValue(functionName);
         await expect(page.getByTestId('button-save')).toBeDisabled();
         await page.locator('css=.cm-activeLine').fill('testContentBla');
         await page.locator('.cm-editor').click();
+        await expect(page.getByTestId('button-save')).toBeEnabled();
         await page.getByTestId('button-save').click();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Function saved successfully.' }).first()).toBeVisible({ timeout: 5000 });
 
         await page.getByRole('row').filter({ hasText: functionName })?.getByRole('button').first().click();
         await page.locator('css=.cm-activeLine').fill('{enter}differentContent');
         await page.locator('.cm-editor').click();
+        await expect(page.getByTestId('button-save')).toBeEnabled();
         await page.getByTestId('button-save').click();
         await expect(page.locator('ngb-toast').filter({ hasText: 'Function saved successfully.' }).first()).toBeVisible({ timeout: 5000 });
 
@@ -96,7 +100,7 @@ test.describe.serial('CRUD for Functions', () => {
         await expect(page.locator('app-diff-editor')).toBeVisible();
         await page.getByTestId('button-cancel').click();
         // Wait for modal to close and table to be ready
-        await page.waitForSelector('.modal-dialog', { state: 'hidden' }).catch(() => {});
+        await expect(page.locator('.modal-dialog')).toBeHidden();
         const deleteButton = page.getByRole('row').filter({ hasText: functionName }).getByRole('button').last();
         await deleteButton.click();
         await page.getByTestId('button-delete').click();
