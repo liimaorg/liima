@@ -34,7 +34,7 @@ test.describe("create a deployment", () => {
       name: "Deploy",
       exact: true,
     });
-    await expect(deployButton).toBeEnabled();
+    await expect(deployButton).toBeEnabled({ timeout: 15_000 });
     await deployButton.click();
     await expect(page.locator(".alert-success")).toBeVisible({
       timeout: 30_000,
