@@ -39,6 +39,9 @@ import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import javax.enterprise.context.RequestScoped;
@@ -70,6 +73,9 @@ public class ResourceRelationsByIdRest {
 
     @Inject
     RemoveResourceRelationUseCase removeResourceRelationUseCase;
+
+    @Inject
+    MergeDuplicateRelationsService mergeDuplicateRelationsService;
 
     @Inject
     ResourceActivationService resourceActivationService;
@@ -264,6 +270,27 @@ public class ResourceRelationsByIdRest {
         addResourceRelationUseCase.addRelation(command);
 
         return Response.status(Response.Status.CREATED).build();
+    }
+
+    @POST
+    @Path("/relations/merge-duplicates")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Preview or apply the complete duplicate-relation migration",
+            description = "Discovers all consumed/provided duplicates. Defaults to dry run with no writes. "
+                    + "Set dryRun=false to merge every group in one transaction; any failure rolls everything back. "
+                    + "Apply does not require a previous dry run. Back up the DB and pause all writers before running.")
+    @ApiResponse(responseCode = "200", description = "Migration report; apply has committed when this response is returned",
+            content = @Content(schema = @Schema(implementation = MergeDuplicateRelationsService.MigrationResult.class)))
+    @ApiResponse(responseCode = "409", description = "Invalid configuration or concurrent changes; no migration changes committed")
+    public Response mergeDuplicateRelations(
+            @Parameter(description = "Preview all groups without writes (true), or apply the entire migration (false)")
+            @DefaultValue("true") @QueryParam("dryRun") boolean dryRun) {
+        try {
+            return Response.ok(mergeDuplicateRelationsService.migrate(dryRun)).build();
+        } catch (MergeDuplicateRelationsService.MergeException e) {
+            return Response.status(Response.Status.CONFLICT)
+                    .entity(new ch.mobi.itc.mobiliar.rest.exceptions.ExceptionDto(e.getMessage())).build();
+        }
     }
 
     @DELETE

@@ -1,3 +1,6 @@
+# Unreleased
+* Add a REST-only duplicate-relation migration with automatic discovery, a full dry run and atomic application of all groups, including configured relations.
+
 # v1.18.13
 * Angular:
   * Fix/findings Angular UI [#1024](https://github.com/liimaorg/liima/pull/1024)

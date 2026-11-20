@@ -25,6 +25,7 @@ import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.GetRelationPropertiesUseCase;
 import ch.puzzle.itc.mobiliar.business.property.entity.ResourceEditProperty;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.MergeDuplicateRelationsService;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,35 @@ public class ResourceRelationsByIdRestTest {
 
     @Mock
     ContextLocator contextLocator;
+
+    @Mock
+    MergeDuplicateRelationsService mergeDuplicateRelationsService;
+
+    @Test
+    public void mergeDuplicatesReturnsTheWholeMigrationReceiptForApply() {
+        MergeDuplicateRelationsService.MigrationResult receipt = new MergeDuplicateRelationsService.MigrationResult();
+        receipt.setApplied(true);
+        when(mergeDuplicateRelationsService.migrate(false)).thenReturn(receipt);
+        Response response = rest.mergeDuplicateRelations(false);
+        assertEquals(200, response.getStatus());
+        assertEquals(receipt, response.getEntity());
+    }
+
+    @Test
+    public void mergeDuplicatesCanPreviewTheWholeMigration() {
+        MergeDuplicateRelationsService.MigrationResult preview = new MergeDuplicateRelationsService.MigrationResult();
+        when(mergeDuplicateRelationsService.migrate(true)).thenReturn(preview);
+        Response response = rest.mergeDuplicateRelations(true);
+        assertEquals(200, response.getStatus());
+        assertEquals(preview, response.getEntity());
+    }
+
+    @Test
+    public void mergeDuplicatesReturnsConflictWhenAnyGroupFails() {
+        when(mergeDuplicateRelationsService.migrate(false))
+                .thenThrow(new MergeDuplicateRelationsService.MergeException("Invalid relation ownership"));
+        assertEquals(409, rest.mergeDuplicateRelations(false).getStatus());
+    }
 
     @Test
     public void getRelationProperties_shouldPropagateNotFoundExceptionIfContextNotFound() throws ResourceNotFoundException, NotFoundException {

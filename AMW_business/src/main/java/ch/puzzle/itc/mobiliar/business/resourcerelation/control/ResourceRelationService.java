@@ -267,6 +267,28 @@ public class ResourceRelationService implements Serializable {
 							 String typeIdentifier, Integer releaseId) throws ElementAlreadyExistsException {
 		ResourceEntity master = entityManager.find(ResourceEntity.class, masterId);
 		ResourceGroupEntity slaveGroup = entityManager.find(ResourceGroupEntity.class, slaveGroupId);
+		Set<String> existingIdentifiers = new HashSet<>();
+		if (!provided && master.getConsumedMasterRelations() != null) {
+			for (ConsumedResourceRelationEntity relation : master.getConsumedMasterRelations()) {
+				if (slaveGroupId.equals(relation.getSlaveResource().getResourceGroup().getId())
+						&& (releaseId == null || releaseId.equals(relation.getSlaveResource().getRelease().getId()))) {
+					existingIdentifiers.add(relation.buildIdentifer());
+				}
+			}
+		}
+		if (!provided && relationName == null && master.getResourceType().isDefaultResourceType()) {
+			relationName = slaveGroup.getName();
+			if (!existingIdentifiers.isEmpty()) {
+				int suffix = existingIdentifiers.size();
+				do {
+					relationName = slaveGroup.getName() + "_" + suffix++;
+				} while (existingIdentifiers.contains(relationName));
+			}
+		}
+		if (!provided && relationName != null && existingIdentifiers.contains(relationName)) {
+			throw new ElementAlreadyExistsException("A relation with this name already exists for the resource group",
+					ConsumedResourceRelationEntity.class, relationName);
+		}
 		ResourceRelationTypeEntity resourceRelationType = resourceTypeProvider
 				.getOrCreateResourceRelationTypeIncludingParents(master.getResourceType(), slaveGroup.getResources()
 					.iterator().next().getResourceType(), typeIdentifier);
