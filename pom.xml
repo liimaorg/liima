@@ -8,9 +8,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Define the version of JBoss' Java EE APIs we want to import. Any
-            dependencies from org.jboss.spec will have their version defined by this
-            BOM -->
+        <!-- Keep aligned with the Docker image. -->
+        <version.wildfly>26.1.3.Final</version.wildfly>
+        <maven.compiler.release>11</maven.compiler.release>
         <sonar.language>java</sonar.language>
 
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
@@ -32,6 +32,8 @@
         <version.surefire.maven.plugin>3.5.6</version.surefire.maven.plugin>
         <version.site.maven.plugin>3.21.0</version.site.maven.plugin>
         <version.release.maven.plugin>3.3.1</version.release.maven.plugin>
+        <version.enforcer.maven.plugin>3.6.2</version.enforcer.maven.plugin>
+        <version.extra-enforcer-rules>1.11.0</version.extra-enforcer-rules>
 
         <version.liquibase>4.33.0</version.liquibase>
         <version.assertj-core>3.27.7</version.assertj-core>
@@ -39,6 +41,7 @@
         <version.hamcrest>3.0</version.hamcrest>
         <version.junit>5.14.1</version.junit>
         <version.mockito>5.23.0</version.mockito>
+        <version.byte-buddy>1.17.7</version.byte-buddy>
         <version.lombok>1.18.46</version.lombok>
     </properties>
 
@@ -63,9 +66,45 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>jboss-public</id>
+            <url>https://repository.jboss.org/nexus/repository/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${version.enforcer.maven.plugin}</version>
+                <executions>
+                    <execution>
+                        <id>enforce-java-compatibility</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <enforceBytecodeVersion>
+                                    <maxJdkVersion>${maven.compiler.release}</maxJdkVersion>
+                                </enforceBytecodeVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>extra-enforcer-rules</artifactId>
+                        <version>${version.extra-enforcer-rules}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -92,7 +131,7 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${version.compiler.plugin}</version>
                     <configuration>
-                        <release>11</release>
+                        <release>${maven.compiler.release}</release>
                         <annotationProcessorPaths>
                             <path>
                                 <groupId>org.projectlombok</groupId>
@@ -304,78 +343,30 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.spec</groupId>
-                <artifactId>jboss-javaee-web-8.0</artifactId>
-                <version>1.0.4.Final</version>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>wildfly-jakartaee8</artifactId>
+                <version>${version.wildfly}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
 
-            <!-- JSR-303 (Bean Validation) Implementation -->
-            <!-- Provides portable constraints such as @Email -->
-            <!-- Hibernate Validator is shipped in JBoss AS 7 -->
-            <dependency>
-                <groupId>org.hibernate.validator</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>6.2.0.Final</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- should match version from JBoss EAP / WildFly-->
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>5.3.38.Final</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-envers</artifactId>
-                <version>5.3.20.Final</version>
-                <scope>provided</scope>
-            </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.20.0</version>
             </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>2.13.4.2</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>2.18.11</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>2.12.6</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>2.3.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-impl</artifactId>
-                <version>2.3.3</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.bind</groupId>
-                <artifactId>jaxb-core</artifactId>
-                <version>2.3.0.1</version>
-                <scope>provided</scope>
-            </dependency>
             <!-- Test dependencies -->
+            <!-- Mockito needs a newer Byte Buddy than the WildFly BOM supplies. -->
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>${version.byte-buddy}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy-agent</artifactId>
+                <version>${version.byte-buddy}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>

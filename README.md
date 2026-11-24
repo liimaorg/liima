@@ -21,8 +21,8 @@ Follow [ReadMe file](./AMW_docker/README.md) in order to run Liima locally on do
 Build the Liima ear
 
 Preconditions:
-- JDK 11
-- Maven 3.5+
+- JDK 11 or newer (Java 11 remains the runtime target)
+- Maven 3.6.3+
 - [Angular CLI](https://cli.angular.io/) is required for Angular development
 - [Lombok](https://projectlombok.org/) is required in the IDE
 
@@ -35,6 +35,27 @@ Or build Liima inside a container:
 ```
 docker run -it -u $(id -u):$(id -g) -e MAVEN_CONFIG=$HOME/.m2 -e HOME=$HOME -v "$PWD":/usr/src/amw -v "$HOME":"$HOME" -w /usr/src/amw maven:3.9.12-eclipse-temurin-11-noble mvn -Duser.home=$HOME clean install
 ```
+
+### Dependency compatibility
+
+The supported baseline is JDK 11 and WildFly 26.1.3.Final. The parent POM imports
+`org.wildfly.bom:wildfly-jakartaee8:26.1.3.Final`. Keep `version.wildfly` aligned
+with the Docker image. Keep server-provided dependencies in `provided` scope without
+individual version overrides. The Jakarta EE 8 artifacts still contain `javax.*`
+packages; they do not require a Jakarta EE 9+ source migration.
+Some BOM-managed artifacts, such as JAXB, require the public JBoss repository.
+If Maven uses a repository mirror, it must proxy that repository or exclude
+`jboss-public` from its `mirrorOf` pattern (for example, `*,!jboss-public`).
+
+Application-owned libraries and test tools are managed separately. Builds may use
+newer JDKs with `--release 11`; CI verifies compatibility on JDK 11. Maven Enforcer
+rejects dependencies with bytecode newer than Java 11, including provided and test
+dependencies. Dependabot groups minor/patch Maven
+updates and leaves major updates separate. WildFly BOM updates have their own
+group and are limited to 26.x; WildFly 27+ requires a Jakarta EE migration.
+The Java EE API, JUnit 6+, and Liquibase 5+ remain excluded from automatic updates.
+
+GitHub integration tests use the public WildFly 26.1.3 image on JDK 11.
 
 ### Create new Release
 
