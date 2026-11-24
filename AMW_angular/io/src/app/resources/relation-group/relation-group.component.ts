@@ -16,7 +16,7 @@ export interface RelationGroupItem {
   styleUrl: './relation-group.component.scss',
 })
 export class RelationGroupComponent {
-  title = input.required<string>();
+  title = input<string>();
   items = input.required<RelationGroupItem[]>();
   selectedKey = input<string | number | null>(null);
   itemSelected = output<RelationGroupItem>();

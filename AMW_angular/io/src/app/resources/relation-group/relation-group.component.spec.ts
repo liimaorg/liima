@@ -29,6 +29,17 @@ describe('RelationGroupComponent', () => {
     ]);
   });
 
+  it('omits the section heading when no title is provided without hiding type groups', () => {
+    expect(element.querySelector('.section-title')?.textContent).toBe('Consumed Resources');
+
+    fixture.componentRef.setInput('title', undefined);
+    fixture.detectChanges();
+
+    expect(element.querySelector('.section-title')).toBeNull();
+    expect(element.querySelectorAll('.relation-type-heading')).toHaveLength(2);
+    expect(element.querySelectorAll('.relation-item')).toHaveLength(3);
+  });
+
   it('preserves selection, unresolved styling and mouse and keyboard interaction', () => {
     fixture.componentRef.setInput('selectedKey', 3);
     fixture.detectChanges();
