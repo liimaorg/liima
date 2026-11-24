@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 
 export interface RelationGroupItem {
   key: string | number | undefined;
@@ -20,6 +20,19 @@ export class RelationGroupComponent {
   items = input.required<RelationGroupItem[]>();
   selectedKey = input<string | number | null>(null);
   itemSelected = output<RelationGroupItem>();
+
+  protected itemGroups = computed(() => {
+    const groups = new Map<string, RelationGroupItem[]>();
+    for (const item of this.items()) {
+      const items = groups.get(item.type);
+      if (items) {
+        items.push(item);
+      } else {
+        groups.set(item.type, [item]);
+      }
+    }
+    return Array.from(groups, ([type, items]) => ({ type, items }));
+  });
 
   selectItem(item: RelationGroupItem) {
     this.itemSelected.emit(item);

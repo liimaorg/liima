@@ -2,20 +2,22 @@
   <div class="relations-section">
     <h3 class="section-title">{{ title() }}</h3>
     <div class="relations-list">
-      @for (item of items(); track item.key) {
-        <div
-          class="relation-item"
-          [class.relation-item--unresolved]="item.unresolved"
-          [class.relation-item--selected]="item.key === selectedKey()"
-          tabindex="0"
-          (click)="selectItem(item)"
-          (keydown.enter)="selectItem(item)"
-        >
-          <div class="relation-info">
-            <div class="relation-type">{{ item.type }}</div>
-            <div class="relation-name">{{ item.name }} {{ item.identifier ? `(${item.identifier})` : '' }}</div>
+      @for (group of itemGroups(); track group.type) {
+        <h4 class="relation-type relation-type-heading">{{ group.type }}</h4>
+        @for (item of group.items; track item.key) {
+          <div
+            class="relation-item"
+            [class.relation-item--unresolved]="item.unresolved"
+            [class.relation-item--selected]="item.key === selectedKey()"
+            tabindex="0"
+            (click)="selectItem(item)"
+            (keydown.enter)="selectItem(item)"
+          >
+            <div class="relation-info">
+              <div class="relation-name">{{ item.name }} {{ item.identifier ? `(${item.identifier})` : '' }}</div>
+            </div>
           </div>
-        </div>
+        }
       }
     </div>
   </div>
