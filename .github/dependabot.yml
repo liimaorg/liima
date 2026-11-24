@@ -20,8 +20,24 @@ updates:
       interval: "daily"
     allow:
       - dependency-type: "production"
+    ignore:
+      # WildFly 27+ moves to Jakarta EE 10 and requires a separate migration.
+      - dependency-name: "org.wildfly.bom:*"
+        versions: ["[27,)"]
+      - dependency-name: "javax:javaee-api"
+      # JUnit 6 requires Java 17; builds and tests still run on Java 11.
+      - dependency-name: "org.junit*:*"
+        versions: ["[6,)"]
+      - dependency-name: "org.liquibase:*"
+        versions: ["[5,)"]
     groups:
+      wildfly-platform:
+        patterns:
+          - "org.wildfly.bom:*"
       maven-production:
         dependency-type: "production"
         patterns:
           - "*"
+        update-types:
+          - "minor"
+          - "patch"

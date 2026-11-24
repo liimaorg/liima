@@ -18,6 +18,8 @@ test.describe("PropertyTypes -CRUD", () => {
     const propertyTypeName = `test-property-type-${crypto.randomUUID()}`;
 
     await page.getByTestId("button-add").click();
+    await expect(page.locator("#name")).toHaveClass(/ng-pristine/);
+    await expect(page.locator("#regex")).toHaveClass(/ng-pristine/);
     await page.locator("#name").fill(propertyTypeName);
     await page.locator("#name").blur();
     await page.locator("#regex").fill("*");
@@ -50,6 +52,8 @@ test.describe("PropertyTypes -CRUD", () => {
     await expect(page.locator("ngb-toast")).toHaveCount(0, { timeout: 5000 });
 
     await page.getByTestId("button-add").click();
+    await expect(page.locator("#name")).toHaveClass(/ng-pristine/);
+    await expect(page.locator("#regex")).toHaveClass(/ng-pristine/);
     await page.locator("#name").fill(propertyTypeName);
     await page.locator("#regex").fill("sd");
     await page.locator("#regex").blur();
@@ -73,6 +77,7 @@ test.describe("PropertyTypes -CRUD", () => {
     // Wait for the modal content to be visible
     await expect(page.locator(".modal-dialog")).toBeVisible();
     await expect(page.locator("#encrypted")).toBeVisible();
+    await expect(page.locator("#encrypted")).toHaveClass(/ng-pristine/);
     await page.locator("#encrypted").click();
     await expect(page.getByTestId("button-save")).toBeEnabled();
     await page.getByTestId("button-save").click();
