@@ -39,6 +39,13 @@ pnpm run test:ui
 
 This will start the playwright ui that lets you run individual tests and inspect the runs. 
 
+## Waiting for forms
+
+Angular template-driven modal controls can be visible before `ngModel` finishes
+initializing. Wait for the control's `ng-pristine` class before its first edit;
+otherwise the initial model value can overwrite Playwright's input. Visibility
+or an extra blur alone does not establish that the control is ready.
+
 ## Run tests on CI
 
 Start the docker container, wait for the application startup and execute all tests with:

@@ -24,6 +24,7 @@ test.describe.serial('CRUD for Functions', () => {
         await page.getByRole('button', {name: 'Add function', exact: true}).click()
 
         await expect(page.getByRole('heading', {name: 'Add function'})).toBeVisible();
+        await expect(page.getByRole('textbox', {name: 'Function name'})).toHaveClass(/ng-pristine/);
         await page.getByRole('textbox', {name: 'Function name'}).fill(functionNameA)
         await expect(page.getByRole('button', {name: 'Save'})).toBeDisabled();
         await page.locator('css=.cm-activeLine').fill('testContent');
@@ -36,6 +37,7 @@ test.describe.serial('CRUD for Functions', () => {
         await page.getByRole('button', {name: 'Add function', exact: true}).click();
 
         await expect(page.getByRole('heading', {name: 'Add function'})).toBeVisible();
+        await expect(page.getByRole('textbox', {name: 'Function name'})).toHaveClass(/ng-pristine/);
         await page.locator('css=.cm-activeLine').fill('testContent');
         await page.locator('.cm-editor').click();
         await expect(page.getByRole('button', {name: 'Save'})).toBeDisabled();
@@ -78,6 +80,7 @@ test.describe.serial('CRUD for Functions', () => {
 
         await page.getByTestId('button-add').click();
         const functionNameInput = page.getByRole('textbox', { name: 'Function name' });
+        await expect(functionNameInput).toHaveClass(/ng-pristine/);
         await functionNameInput.fill(functionName);
         await expect(functionNameInput).toHaveValue(functionName);
         await expect(page.getByTestId('button-save')).toBeDisabled();

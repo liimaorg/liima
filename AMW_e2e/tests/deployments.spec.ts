@@ -22,14 +22,17 @@ test.describe("create a deployment", () => {
       .getByText(/testapplicationserver/)
       .first()
       .click();
+    await expect(page.locator("#selectRelease .ng-value-label")).toHaveText(/\S/);
     await page.locator('[data-cy="D"]').click();
     await page.locator('[data-cy="I"]').click();
+    await expect(page.locator("#applications").getByRole("row").first()).toBeVisible();
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     await page
       .locator('[data-cy="date-picker"]')
       .fill(tomorrow.toLocaleDateString("de-CH") + " 00:00");
+    await page.locator('[data-cy="date-picker"]').blur();
     const deployButton = page.getByRole("button", {
       name: "Deploy",
       exact: true,
