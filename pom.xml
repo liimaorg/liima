@@ -29,20 +29,20 @@
         <version.deploy.maven.plugin>3.1.4</version.deploy.maven.plugin>
         <version.source.maven.plugin>3.4.0</version.source.maven.plugin>
         <version.javadoc.maven.plugin>3.12.0</version.javadoc.maven.plugin>
-        <version.surefire.maven.plugin>3.5.6</version.surefire.maven.plugin>
+        <version.surefire.maven.plugin>3.6.1</version.surefire.maven.plugin>
         <version.site.maven.plugin>3.21.0</version.site.maven.plugin>
         <version.release.maven.plugin>3.3.1</version.release.maven.plugin>
         <version.enforcer.maven.plugin>3.6.2</version.enforcer.maven.plugin>
-        <version.extra-enforcer-rules>1.11.0</version.extra-enforcer-rules>
+        <version.extra-enforcer-rules>1.12.1</version.extra-enforcer-rules>
 
         <version.liquibase>4.33.0</version.liquibase>
         <version.assertj-core>3.27.7</version.assertj-core>
-        <version.swagger>2.2.41</version.swagger>
+        <version.swagger>2.2.56</version.swagger>
         <version.hamcrest>3.0</version.hamcrest>
-        <version.junit>5.14.1</version.junit>
-        <version.mockito>5.23.0</version.mockito>
+        <version.junit>5.14.4</version.junit>
+        <version.mockito>5.24.0</version.mockito>
         <version.byte-buddy>1.17.7</version.byte-buddy>
-        <version.lombok>1.18.46</version.lombok>
+        <version.lombok>1.18.48</version.lombok>
     </properties>
 
 
@@ -353,7 +353,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.20.0</version>
+                <version>3.22.0</version>
             </dependency>
             <!-- Test dependencies -->
             <!-- Mockito needs a newer Byte Buddy than the WildFly BOM supplies. -->
