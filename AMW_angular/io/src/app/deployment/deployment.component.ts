@@ -28,6 +28,8 @@ import { ResourceTypesService } from '../resources/services/resource-types.servi
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, takeUntil } from 'rxjs/operators';
 
+const DIFF_VERSIONS = 'diff versions';
+
 @Component({
   selector: 'app-deployment',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -409,7 +411,10 @@ export class DeploymentComponent implements OnInit, AfterViewInit, OnDestroy {
     deploymentRequest.simulate = this.simulate;
     deploymentRequest.sendEmail = this.doSendEmail;
     deploymentRequest.requestOnly = this.requestOnly;
-    deploymentRequest.appsWithVersion = this.appsWithVersion();
+    // "diff versions" is only a display placeholder; an empty version keeps each environment's own version
+    deploymentRequest.appsWithVersion = this.appsWithVersion().map((app) =>
+      app.version === DIFF_VERSIONS ? { ...app, version: '' } : app,
+    );
     if (!this.isRedeployment()) {
       deploymentRequest.stateToDeploy =
         this.selectedResourceTag() && this.selectedResourceTag().tagDate

@@ -564,7 +564,7 @@ public class DeploymentBoundary {
 
             deployment.setContext(context);
 
-            deployment.setApplicationsWithVersion(applicationWithVersion);
+            deployment.setApplicationsWithVersion(resolveVersionsForContext(applicationWithVersion, contextId));
 
             deployment.setDeploymentRequestUser(permissionService.getCurrentUserName());
 
@@ -604,6 +604,28 @@ public class DeploymentBoundary {
             log.info("Deployment for appServer " + group.getName() + " env " + contextId + " created");
         }
         return requestOnly;
+    }
+
+    private List<ApplicationWithVersion> resolveVersionsForContext(List<ApplicationWithVersion> apps, Integer contextId) {
+        if (apps == null) {
+            return null;
+        }
+        List<ApplicationWithVersion> resolved = new LinkedList<>();
+        for (ApplicationWithVersion app : apps) {
+            String version = app.getVersion();
+            if (StringUtils.isBlank(version) || DIFF_VERSIONS.equals(version)) {
+                try {
+                    ResourceEntity application = em.find(ResourceEntity.class, app.getApplicationId());
+                    String contextVersion = getVersion(application, Collections.singletonList(contextId));
+                    version = contextVersion != null ? contextVersion : StringUtils.EMPTY;
+                } catch (NumberFormatException | AMWException e) {
+                    throw new AMWRuntimeException("Could not determine version of application " + app.getApplicationName()
+                            + " for environment " + contextId, e);
+                }
+            }
+            resolved.add(new ApplicationWithVersion(app.getApplicationName(), app.getApplicationId(), version));
+        }
+        return resolved;
     }
 
     private void createAndAddDeploymentParameterForDeployment(DeploymentEntity deployment, List<DeploymentParameter> deployParams) {

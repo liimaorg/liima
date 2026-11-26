@@ -247,6 +247,28 @@ describe('DeploymentComponent (create deployment)', () => {
     expect(component.isReadyForDeployment()).toBeFalsy();
   });
 
+  it('should send an empty version for apps with "diff versions" so each environment keeps its own', () => {
+    component.selectedAppserver.set({ name: 'testServer' } as Resource);
+    component.selectedRelease.set({ id: 1, release: 'testRelease' } as Release);
+    component.environments.set([
+      { id: 2, name: 'A', selected: true } as Environment,
+      { id: 3, name: 'B', selected: true } as Environment,
+    ]);
+    component.appsWithVersion.set([
+      { applicationId: 4, applicationName: 'diffApp', version: 'diff versions' } as AppWithVersion,
+      { applicationId: 5, applicationName: 'sameApp', version: '1.2.3' } as AppWithVersion,
+    ]);
+    vi.spyOn(deploymentService, 'createDeployment').mockReturnValue(of({ trackingId: 1 } as Deployment));
+
+    component.requestDeployment();
+
+    const request = vi.mocked(deploymentService.createDeployment).mock.calls[0][0];
+    expect(request.appsWithVersion).toEqual([
+      { applicationId: 4, applicationName: 'diffApp', version: '' },
+      { applicationId: 5, applicationName: 'sameApp', version: '1.2.3' },
+    ]);
+  });
+
   it('should not be readyForDeployment if a release ist set, an environment is selected but appWithVersions is empty', () => {
     // given
     component.selectedAppserver.set({ name: 'testServer' } as Resource);
