@@ -9,6 +9,7 @@
 - Prefer editing over rewriting whole files.
 - Do not re-read files you have already read unless the file may have changed.
 - Test your code before declaring done.
+- Update `release-changelog.md` under `# Unreleased` for code changes that affect user-visible behavior or fix a user-facing bug.
 - No sycophantic openers or closing fluff.
 - Keep solutions simple and direct. No over-engineering.
 - If unsure: say so. Never guess or invent file paths.

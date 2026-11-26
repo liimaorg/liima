@@ -1,4 +1,5 @@
 # Unreleased
+* Preserve resource-group permissions when deleting a release; remove them only when deleting the last release and its group.
 * Add a REST-only duplicate-relation migration with automatic discovery, a full dry run and atomic application of all groups, including configured relations.
 
 # v1.18.13
