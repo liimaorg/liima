@@ -33,7 +33,7 @@
         <version.site.maven.plugin>3.21.0</version.site.maven.plugin>
         <version.release.maven.plugin>3.3.1</version.release.maven.plugin>
         <version.enforcer.maven.plugin>3.6.2</version.enforcer.maven.plugin>
-        <version.extra-enforcer-rules>1.12.1</version.extra-enforcer-rules>
+        <version.extra-enforcer-rules>1.13.0</version.extra-enforcer-rules>
 
         <version.liquibase>4.33.0</version.liquibase>
         <version.assertj-core>3.27.7</version.assertj-core>
