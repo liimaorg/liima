@@ -9,6 +9,18 @@ with various versions, including the automated deployment of those apps.
 
 Liima Docs are available under https://github.com/liimaorg/docs
 
+### Property validation patterns
+
+Property type validation patterns and server-side property validation use
+[RE2/J](https://github.com/google/re2j) to avoid catastrophic regex backtracking.
+Matches must cover the entire property value. Java-specific constructs such as
+lookarounds, backreferences, atomic groups, and possessive quantifiers are not
+supported. Before upgrading, check existing validation patterns for compatibility
+with [RE2 syntax](https://github.com/google/re2/wiki/Syntax).
+Unsupported patterns are rejected by the property type API. Existing unsupported
+patterns are reported as property validation errors and logged; there is no
+fallback to the Java regex engine.
+
 ## Run Liima locally on docker
 
 Preconditions:

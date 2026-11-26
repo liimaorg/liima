@@ -65,6 +65,10 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.google.re2j</groupId>
+			<artifactId>re2j</artifactId>
+		</dependency>
 		<!-- Dependency on the EJB module so we can use it's services if needed -->
 		<dependency>
 			<groupId>ch.puzzle.itc.mobiliar</groupId>

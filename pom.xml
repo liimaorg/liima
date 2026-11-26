@@ -355,6 +355,11 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>3.22.0</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.re2j</groupId>
+                <artifactId>re2j</artifactId>
+                <version>1.8</version>
+            </dependency>
             <!-- Test dependencies -->
             <!-- Mockito needs a newer Byte Buddy than the WildFly BOM supplies. -->
             <dependency>

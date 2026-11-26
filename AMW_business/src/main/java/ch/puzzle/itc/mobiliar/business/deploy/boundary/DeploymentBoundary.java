@@ -798,9 +798,17 @@ public class DeploymentBoundary {
     }
 
     public String readContentOfDeploymentLog(String logFilename, long maxSize) throws IOException {
-        String logsPath = ConfigurationService.getProperty(ConfigKey.LOGS_PATH);
-        String name = logsPath + File.separator + logFilename;
-        File file = new File(name);
+        Path logDirectory = Paths.get(ConfigurationService.getProperty(ConfigKey.LOGS_PATH)).toRealPath();
+        Path logPath = logDirectory.resolve(logFilename).normalize();
+        if (!logPath.startsWith(logDirectory)) {
+            throw new IOException("Log file path is outside the configured logs directory");
+        }
+
+        Path resolvedLogPath = logPath.toRealPath();
+        if (!resolvedLogPath.startsWith(logDirectory)) {
+            throw new IOException("Log file path is outside the configured logs directory");
+        }
+        File file = resolvedLogPath.toFile();
 
         long fileSize = file.length();
         long startPosition = fileSize > maxSize ? fileSize - maxSize : 0;

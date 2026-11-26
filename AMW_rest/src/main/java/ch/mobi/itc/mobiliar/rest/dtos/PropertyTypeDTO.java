@@ -3,6 +3,7 @@ package ch.mobi.itc.mobiliar.rest.dtos;
 
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagEntity;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class PropertyTypeDTO {
     private boolean encrypted;
     @NotNull(message = "PropertyType validation regex must not be null.")
     @NotEmpty(message = "PropertyType validation regex must not be empty.")
+    @Schema(description = "RE2/J validation pattern. Lookarounds and backreferences are not supported.")
     private String validationRegex;
     private List<PropertyTagDTO> propertyTags;
 
