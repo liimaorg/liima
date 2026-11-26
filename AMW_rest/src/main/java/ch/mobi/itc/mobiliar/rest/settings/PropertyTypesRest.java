@@ -9,6 +9,8 @@ import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTagType;
 import ch.puzzle.itc.mobiliar.business.property.entity.PropertyTypeEntity;
 import ch.puzzle.itc.mobiliar.common.exception.*;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
+import com.google.re2j.Pattern;
+import com.google.re2j.PatternSyntaxException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +25,6 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -122,14 +123,17 @@ public class PropertyTypesRest {
             );
 
         if (checkIfRegexpSyntaxError(request.getValidationRegex())) {
-            throw new ValidationException("Invalid property type validation pattern.");
+            throw new ValidationException("Invalid or unsupported property type validation pattern. RE2/J syntax is required.");
         }
         return propertyTypeEntity;
     }
 
     private boolean checkIfRegexpSyntaxError(String regexp) {
+        if (regexp == null || regexp.isEmpty()) {
+            return true;
+        }
         try {
-            "".matches(regexp);
+            Pattern.compile(regexp);
             return false;
         } catch (PatternSyntaxException e) {
             return true;

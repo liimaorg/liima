@@ -21,10 +21,14 @@
 package ch.puzzle.itc.mobiliar.business.property.entity;
 
 import ch.puzzle.itc.mobiliar.business.generator.control.TemplateUtils;
+import com.google.re2j.Pattern;
+import com.google.re2j.PatternSyntaxException;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Read only entity for the resource edit screen to display properties
@@ -33,6 +37,8 @@ import org.apache.commons.lang3.StringUtils;
  * @author cweber
  */
 public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
+
+    private static final Logger log = Logger.getLogger(ResourceEditProperty.class.getName());
 
     public enum Origin {
         INSTANCE, RELATION, TYPE, TYPE_REL
@@ -392,11 +398,10 @@ public class ResourceEditProperty implements Comparable<ResourceEditProperty> {
         }
 
         try {
-            return value != null && !value.matches(getValidationLogic());
+            return value != null && !Pattern.matches(getValidationLogic(), value);
         }
-        catch (Exception e) {
-            // TODO: SEHR WICHTIG!!!!!! Entweder anzeigen, dass ein validationfehler passiert ist
-            // oder regexp bei der Erfassung auf gültigkeit prüfen!!!
+        catch (PatternSyntaxException e) {
+            log.log(Level.WARNING, "Invalid or unsupported property validation pattern for descriptor " + descriptorId, e);
             return true;
         }
     }

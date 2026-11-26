@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import ch.puzzle.itc.mobiliar.builders.ResourceEditPropertyBuilder;
+import java.time.Duration;
 
 /**
  * Purpose of this test is to guarantee that the correct arguments get set within the constructor - since the constructor is used within the native queries
@@ -33,6 +34,36 @@ public class ResourceEditPropertyTest {
 
 
 	private ResourceEditProperty resourceEditProperty;
+
+	@Test
+	public void shouldValidateTheEntirePropertyValue() {
+	    resourceEditProperty = new ResourceEditPropertyBuilder()
+	            .withLoadedFor(ResourceEditProperty.Origin.INSTANCE)
+	            .withValue("valid").withValidationRegex("[a-z]+").build();
+	    assertFalse(resourceEditProperty.getClassNameForPropertyInputField(1).contains("fieldValidationError"));
+
+	    resourceEditProperty.setDecryptedPropertyValue("valid123");
+	    assertTrue(resourceEditProperty.getClassNameForPropertyInputField(1).contains("fieldValidationError"));
+	}
+
+	@Test
+	public void shouldValidateAmbiguousPatternsWithoutBacktracking() {
+	    resourceEditProperty = new ResourceEditPropertyBuilder()
+	            .withLoadedFor(ResourceEditProperty.Origin.INSTANCE)
+	            .withValue("a".repeat(20_000) + "!").withValidationRegex("(a|aa)+$").build();
+
+	    assertTimeout(Duration.ofSeconds(2), () ->
+	            assertTrue(resourceEditProperty.getClassNameForPropertyInputField(1).contains("fieldValidationError")));
+	}
+
+	@Test
+	public void shouldReportUnsupportedStoredPatternsAsValidationErrors() {
+	    resourceEditProperty = new ResourceEditPropertyBuilder()
+	            .withLoadedFor(ResourceEditProperty.Origin.INSTANCE)
+	            .withValue("aa").withValidationRegex("(a)\\1").build();
+
+	    assertTrue(resourceEditProperty.getClassNameForPropertyInputField(1).contains("fieldValidationError"));
+	}
 
 	@Test
     public void constructorCardinalityArgumentShouldSetCardinality(){

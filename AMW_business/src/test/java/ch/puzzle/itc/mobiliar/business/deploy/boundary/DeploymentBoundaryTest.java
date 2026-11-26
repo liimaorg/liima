@@ -37,6 +37,8 @@ import ch.puzzle.itc.mobiliar.business.generator.control.GenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.extracted.GenerationModus;
 import ch.puzzle.itc.mobiliar.business.utils.database.DatabaseUtil;
 import ch.puzzle.itc.mobiliar.common.util.ConfigKey;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.Path;
@@ -47,6 +49,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.Query;
+import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -92,6 +95,22 @@ public class DeploymentBoundaryTest
 
 	@TempDir
 	public Path tempFolder;
+
+	private String originalLogsPath;
+
+	@BeforeEach
+	public void saveLogsPath() {
+		originalLogsPath = System.getProperty(ConfigKey.LOGS_PATH.getValue());
+	}
+
+	@AfterEach
+	public void restoreLogsPath() {
+		if (originalLogsPath == null) {
+			System.clearProperty(ConfigKey.LOGS_PATH.getValue());
+		} else {
+			System.setProperty(ConfigKey.LOGS_PATH.getValue(), originalLogsPath);
+		}
+	}
 
 	@Test
 	public void deploymentCleanupEmptyFolder() throws Exception {
@@ -301,6 +320,60 @@ public class DeploymentBoundaryTest
 			// then
 			assertThat(ex.getMessage(), containsString("colToSort not found"));
 		}
+	}
+
+	@Test
+	public void shouldRejectDeploymentLogOutsideConfiguredDirectory() throws Exception {
+		Path logsDirectory = Files.createDirectory(tempFolder.resolve("logs"));
+		Files.write(tempFolder.resolve("outside.log"), "outside".getBytes());
+		System.setProperty(ConfigKey.LOGS_PATH.getValue(), logsDirectory.toString());
+
+		assertRejectedLogPath("../outside.log");
+	}
+
+	@Test
+	public void shouldRejectAbsoluteDeploymentLogOutsideConfiguredDirectory() throws Exception {
+		Path logsDirectory = Files.createDirectory(tempFolder.resolve("logs"));
+		Path outside = Files.writeString(tempFolder.resolve("outside.log"), "outside");
+		System.setProperty(ConfigKey.LOGS_PATH.getValue(), logsDirectory.toString());
+
+		assertRejectedLogPath(outside.toString());
+	}
+
+	@Test
+	public void shouldRejectDeploymentLogInSiblingDirectoryWithSamePrefix() throws Exception {
+		Path logsDirectory = Files.createDirectory(tempFolder.resolve("logs"));
+		Path sibling = Files.createDirectory(tempFolder.resolve("logs-other"));
+		Files.writeString(sibling.resolve("outside.log"), "outside");
+		System.setProperty(ConfigKey.LOGS_PATH.getValue(), logsDirectory.toString());
+
+		assertRejectedLogPath("../logs-other/outside.log");
+	}
+
+	@Test
+	public void shouldRejectDeploymentLogSymlinkOutsideConfiguredDirectory() throws Exception {
+		Path logsDirectory = Files.createDirectory(tempFolder.resolve("logs"));
+		Path outside = Files.writeString(tempFolder.resolve("outside.log"), "outside");
+		Files.createSymbolicLink(logsDirectory.resolve("deployment.log"), outside);
+		System.setProperty(ConfigKey.LOGS_PATH.getValue(), logsDirectory.toString());
+
+		assertRejectedLogPath("deployment.log");
+	}
+
+	@Test
+	public void shouldReadDeploymentLogInsideConfiguredDirectory() throws Exception {
+		Path logsDirectory = Files.createDirectory(tempFolder.resolve("logs"));
+		Files.write(logsDirectory.resolve("deployment.log"), "log content".getBytes());
+		System.setProperty(ConfigKey.LOGS_PATH.getValue(), logsDirectory.toString());
+
+		assertEquals("log content\n",
+				deploymentBoundary.readContentOfDeploymentLog("deployment.log", 1024));
+	}
+
+	private void assertRejectedLogPath(String filename) {
+		IOException exception = assertThrows(IOException.class,
+				() -> deploymentBoundary.readContentOfDeploymentLog(filename, 1024));
+		assertEquals("Log file path is outside the configured logs directory", exception.getMessage());
 	}
 
 }
