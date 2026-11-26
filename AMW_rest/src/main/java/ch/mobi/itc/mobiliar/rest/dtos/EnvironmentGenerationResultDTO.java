@@ -16,7 +16,7 @@ public class EnvironmentGenerationResultDTO {
     private String error;
 
     public EnvironmentGenerationResultDTO(EnvironmentGenerationResult generationResult) {
-        this.releaseName = generationResult.getGenerationContext().getApplicationServer().getRelease().getName();
+        this.releaseName = generationResult.getGenerationContext().getTargetRelease().getName();
         this.applicationServerName = generationResult.getGenerationContext().getApplicationServer().getName();
         if(generationResult.getEnvironmentException() != null){
             error = generationResult.getEnvironmentException().getMessage();

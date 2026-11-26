@@ -15,49 +15,37 @@
       <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
         <app-button [variant]="'primary'" (click)="generate()" [disabled]="generating()">Generate</app-button>
 
-        <div ngbDropdown>
-          <app-button [additionalClasses]="'dropdown-toggle'" [variant]="'secondary'" ngbDropdownToggle>
-            {{ compareReleaseName() || "Don't compare" }}
-          </app-button>
-          <ul ngbDropdownMenu>
-            <li ngbDropdownItem>
-              <a
-                class="dropdown-item"
-                tabindex="0"
-                (click)="setCompareRelease(null)"
-                (keyup.enter)="setCompareRelease(null)"
-              >
-                Don't compare
-              </a>
-            </li>
-            @for (release of releases(); track release.id) {
-              @if (release.id !== resourceId()) {
-                <li ngbDropdownItem>
-                  <a
-                    class="dropdown-item"
-                    tabindex="0"
-                    (click)="setCompareRelease(release.id)"
-                    (keyup.enter)="setCompareRelease(release.id)"
-                    >{{ release.name }}</a
-                  >
-                </li>
-              }
-            }
-          </ul>
-        </div>
-
-        <span class="text-muted">
-          {{ releaseName() }}
-          @if (isCompareMode()) {
-            vs {{ compareReleaseName() }}
+        <select
+          class="form-select w-auto"
+          aria-label="Release to generate"
+          [ngModel]="releaseName()"
+          (ngModelChange)="setRelease($event)"
+          [disabled]="generating()"
+        >
+          @for (release of releases(); track release.id) {
+            <option [ngValue]="release.name">{{ release.name }}</option>
           }
-          in {{ contextName() }}
-        </span>
+        </select>
+
+        <select
+          class="form-select w-auto"
+          aria-label="Compare with release"
+          [ngModel]="compareReleaseName() || null"
+          (ngModelChange)="setCompareRelease($event)"
+          [disabled]="generating()"
+        >
+          <option [ngValue]="null">Don't compare</option>
+          @for (release of releases(); track release.id) {
+            @if (release.name !== releaseName()) {
+              <option [ngValue]="release.name">{{ release.name }}</option>
+            }
+          }
+        </select>
       </div>
 
-      @if (errorMessage()) {
+      @if (releaseErrorMessage() || errorMessage()) {
         <div class="alert alert-danger mt-3" role="alert">
-          {{ errorMessage() }}
+          {{ releaseErrorMessage() || errorMessage() }}
         </div>
       }
 

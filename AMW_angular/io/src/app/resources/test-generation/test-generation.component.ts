@@ -1,18 +1,21 @@
-import { Component, computed, effect, inject, signal, Signal } from '@angular/core';
+import { Component, computed, effect, inject, linkedSignal, signal, Signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { concatMap, finalize, map } from 'rxjs/operators';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { catchError, concatMap, finalize, map, startWith, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { LoadingIndicatorComponent } from '../../shared/elements/loading-indicator.component';
 import { PageComponent } from '../../layout/page/page.component';
 import { ButtonComponent } from '../../shared/button/button.component';
 import { IconComponent } from '../../shared/icon/icon.component';
 import { CodeEditorComponent } from '../../shared/codemirror/code-editor.component';
 import { DiffEditorComponent } from '../../shared/codemirror/diff-editor.component';
-import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { TestGenerationService } from '../services/test-generation.service';
 import { ResourceService } from '../services/resource.service';
 import { EnvironmentService } from '../../deployment/environment.service';
+import { ReleasesService } from '../../settings/releases/releases.service';
+import { Release } from '../../settings/releases/release';
+import { Resource } from '../models/resource';
 import {
   ComparedApplication,
   ComparedGenerationResult,
@@ -24,7 +27,7 @@ import {
 } from '../models/test-generation-result';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { ContextsListComponent } from '../contexts-list/contexts-list.component';
-import { Release } from '../models/release';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-test-generation',
@@ -36,12 +39,9 @@ import { Release } from '../models/release';
     IconComponent,
     RouterLink,
     NgClass,
+    FormsModule,
     CodeEditorComponent,
     DiffEditorComponent,
-    NgbDropdown,
-    NgbDropdownMenu,
-    NgbDropdownToggle,
-    NgbDropdownItem,
     NgTemplateOutlet,
     ContextsListComponent,
   ],
@@ -52,29 +52,55 @@ export class TestGenerationComponent {
   private testGenerationService = inject(TestGenerationService);
   private resourceService = inject(ResourceService);
   private environmentService = inject(EnvironmentService);
+  private releasesService = inject(ReleasesService);
   private title = inject(Title);
   private route = inject(ActivatedRoute);
 
   resourceId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('id')))), { initialValue: 0 });
   contextId = toSignal(this.route.queryParamMap.pipe(map((params) => Number(params.get('ctx')))), { initialValue: 1 });
 
-  resource: Signal<any> = this.resourceService.resource;
-  releases: Signal<Release[]> = this.resourceService.releasesForResourceGroup;
+  resource: Signal<Resource | null> = this.resourceService.resource;
+  releaseErrorMessage = signal<string | null>(null);
+  private appServerId = computed(() => this.resource()?.applicationServerId ?? this.resource()?.id);
+  private appServerReleases = toSignal(
+    toObservable(this.appServerId).pipe(
+      switchMap((id) => {
+        this.releaseErrorMessage.set(null);
+        return id
+          ? this.resourceService.getReleasesForResource(id).pipe(
+              startWith([]),
+              catchError(() => {
+                this.releaseErrorMessage.set('Failed to load application server releases.');
+                return of([]);
+              }),
+            )
+          : of([]);
+      }),
+    ),
+    { initialValue: [] },
+  );
+  releases: Signal<Release[]> = computed(() => {
+    const appServerReleases = this.appServerReleases();
+    if (appServerReleases.length === 0) return [];
+    const oldestReleaseDate = Math.min(...appServerReleases.map((release) => release.installationInProductionAt));
+    return this.releasesService
+      .allReleases()
+      .filter(
+        (release) =>
+          release.installationInProductionAt !== null && release.installationInProductionAt >= oldestReleaseDate,
+      );
+  });
+  selectedReleaseName = linkedSignal(() => this.resource()?.release ?? null);
   generating = signal(false);
   result = signal<EnvironmentGenerationResult | null>(null);
   compareResult = signal<ComparedGenerationResult | null>(null);
-  compareReleaseId = signal<number | null>(null);
+  selectedCompareReleaseName = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
   expandedTemplates = signal<Set<string>>(new Set());
 
-  isCompareMode = computed(() => this.compareReleaseId() !== null);
+  isCompareMode = computed(() => this.compareReleaseName() !== '');
 
-  compareReleaseName = computed(() => {
-    const id = this.compareReleaseId();
-    if (!id) return '';
-    const release = this.releases().find((r) => r.id === id);
-    return release?.release ?? release?.name ?? '';
-  });
+  compareReleaseName = computed(() => this.selectedCompareReleaseName() ?? '');
 
   isLoading = computed(() => {
     if (this.resourceId()) {
@@ -92,9 +118,7 @@ export class TestGenerationComponent {
   });
 
   releaseName = computed(() => {
-    const releases = this.resourceService.releasesForResourceGroup();
-    const release = releases.find((r) => r.id === this.resourceId());
-    return release?.release ?? release?.name ?? '';
+    return this.selectedReleaseName() ?? '';
   });
 
   backQueryParams = computed(() => ({
@@ -172,8 +196,17 @@ export class TestGenerationComponent {
     }
   }
 
-  setCompareRelease(releaseId: number | null) {
-    this.compareReleaseId.set(releaseId);
+  setRelease(releaseName: string) {
+    this.selectedReleaseName.set(releaseName);
+    if (this.selectedCompareReleaseName() === releaseName) {
+      this.selectedCompareReleaseName.set(null);
+    }
+    this.result.set(null);
+    this.compareResult.set(null);
+  }
+
+  setCompareRelease(releaseName: string | null) {
+    this.selectedCompareReleaseName.set(releaseName);
     this.result.set(null);
     this.compareResult.set(null);
   }

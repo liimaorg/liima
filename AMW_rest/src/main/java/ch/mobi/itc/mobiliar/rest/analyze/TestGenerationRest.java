@@ -20,6 +20,7 @@ import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationResult;
 import ch.puzzle.itc.mobiliar.business.generator.control.GeneratorDomainServiceWithAppServerRelations;
 import ch.puzzle.itc.mobiliar.business.releasing.boundary.ReleaseLocator;
+import ch.puzzle.itc.mobiliar.business.releasing.entity.ReleaseEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.boundary.ResourceLocator;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
@@ -58,7 +59,7 @@ public class TestGenerationRest {
     @Path("/{resourceGroupName}/{releaseName}/{env}")
     @Produces(APPLICATION_JSON)
     @Operation(summary = "Generate test configuration for a resource",
-               description = "Generates test configuration for the specified resource group, release, and environment")
+               description = "Generates test configuration in the specified release and environment, using the exact or closest past resource release")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Test generation successful", content = @Content(mediaType = "application/json", schema = @Schema(implementation = EnvironmentGenerationResultDTO.class))),
         @ApiResponse(responseCode = "404", description = "Resource not found"),
@@ -69,6 +70,12 @@ public class TestGenerationRest {
                                    @Parameter(description = "Release name") @PathParam("releaseName") String releaseName,
                                    @Parameter(description = "Environment name") @PathParam("env") String env) throws IOException, ValidationException {
         ResourceEntity resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+        if (resource == null) {
+            ReleaseEntity resourceRelease = resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName);
+            if (resourceRelease != null) {
+                resource = resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, resourceRelease.getName());
+            }
+        }
         if (resource == null) {
             return Response.status(NOT_FOUND).entity(new ExceptionDto("Resource not found")).build();
         }
