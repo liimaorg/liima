@@ -1,4 +1,9 @@
 # Unreleased
+* Angular: clear unresolved-relation selection when browser navigation selects a concrete relation, keeping the detail panel in sync with the URL.
+* Reject numeric-only names when creating or renaming resource relations; existing numeric names retain their legacy template identifiers and can be saved unchanged.
+* Validate relation-name uniqueness when adding or renaming consumed and provided relations, scoped to the master and concrete slave resource, including unnamed relations.
+* Keep the first resource relation unnamed by default and omit the relation-name field from Angular's Add Relation dialog; additional relations to the same resource group still receive distinct names.
+* Angular: select unresolved relations and resolve them with a filtered resource picker, preserving the relation name and type so resolved entries disappear. Non-default resources offer Add Relation only in the selected unresolved relation's detail panel and keep type-defined relation names read-only.
 * Preserve resource-group permissions when deleting a release; remove them only when deleting the last release and its group.
 * Add a REST-only duplicate-relation migration with automatic discovery, a full dry run and atomic application of all groups, including configured relations.
 

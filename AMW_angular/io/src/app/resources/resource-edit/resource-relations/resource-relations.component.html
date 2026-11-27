@@ -3,7 +3,7 @@
   <app-tile-component
     [title]="'Related Resources'"
     [actionName]="'Add Relation'"
-    [canAction]="permissions().canUpdateProperty && this.contextId() === 1"
+    [canAction]="isDefaultResourceType() && permissions().canUpdateProperty && this.contextId() === 1"
     [isCollapsed]="false"
     [noContent]="!hasRelations()"
     [notAllowed]="false"
@@ -45,7 +45,22 @@
             (itemSelected)="onItemSelected($event)"
           />
         </div>
-        @if (selectedRelation(); as rel) {
+        @if (selectedUnresolvedRelation(); as unresolved) {
+          <div class="relation-detail-panel">
+            <div class="relation-detail-header">
+              <h3 class="relation-detail-title">{{ unresolved.name }}</h3>
+              @if (permissions().canUpdateProperty && contextId() === 1) {
+                <app-button [variant]="'secondary'" [size]="'sm'" (click)="showAddRelationModal()">
+                  <app-icon icon="plus"></app-icon>
+                  Add Relation
+                </app-button>
+              }
+            </div>
+            <div class="relation-detail-body">
+              No resource is assigned to this relation. Add a resource of type {{ unresolved.type }} to resolve it.
+            </div>
+          </div>
+        } @else if (selectedRelation(); as rel) {
           <div class="relation-detail-panel">
             <div class="relation-detail-header">
               <a class="nav-link" [routerLink]="['/resource/edit']" [queryParams]="{ ctx: 1, id: rel.slaveId }">
@@ -123,14 +138,13 @@
     @if (hasNewerRelease()) {
       <div class="alert alert-warning" role="alert">
         A newer release for this resource exists. You are adding a relation to release
-        <strong>{{ resource()?.release }}</strong
-        >.
+        <strong>{{ resource()?.release }}</strong>.
       </div>
     }
     @if (requiresRelationConfirmation()) {
       <div class="alert alert-warning" role="alert">
-        The selected resource does not exist for release <strong>{{ resource()?.release }}</strong>.
-        Click Continue to add the relation anyway.
+        The selected resource does not exist for release <strong>{{ resource()?.release }}</strong>. Click Continue to
+        add the relation anyway.
       </div>
     }
     <div class="mb-3">
@@ -141,7 +155,8 @@
         (ngModelChange)="onResourceTypeChange($event)"
         placeholder="Search or select a resource type..."
         [searchable]="true"
-        [clearable]="true"
+        [clearable]="!resolvingRelation()"
+        [readonly]="!!resolvingRelation()"
       >
         @for (type of resourceTypes(); track type.id) {
           <ng-option [value]="type.id">{{ type.name }}</ng-option>
@@ -241,8 +256,7 @@
   ></app-modal-header>
   <div class="modal-body">
     <p class="text">
-      Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.relatedResourceName }}</b
-      >?
+      Are you sure you want to delete the resource relation <b>{{ selectedRelation()?.relatedResourceName }}</b>?
     </p>
     <p class="text">If you continue, all defined property values for the relation will be lost.</p>
   </div>

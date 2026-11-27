@@ -41,6 +41,8 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -164,21 +166,22 @@ public class UpdateRelationPropertiesServiceTest {
                 () -> service.updateResourceRelationIdentifier(1, ""));
     }
 
-    @Test
-    public void shouldUpdateRelationIdentifierWhenChanged() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"oldIdentifier", "1"})
+    public void shouldUpdateRelationIdentifierWhenChanged(String oldIdentifier) throws Exception {
         // given - use non-default resource type to avoid qualified identifier logic
         ResourceTypeEntity masterType = createResourceType("CUSTOM_MASTER");
         ResourceTypeEntity slaveType = createResourceType("DATABASE");
         ResourceEntity master = createResourceWithRelease("master", masterType, 1, 100, "Release 1.0");
         ResourceEntity slave = createResourceWithRelease("slave", slaveType, 2, 101, "Release 1.0");
         ResourceRelationTypeEntity relType = createRelationType(50, "typeId", masterType, slaveType);
-        ConsumedResourceRelationEntity relation = createConsumedRelation(10, "oldIdentifier", master, slave, relType);
+        ConsumedResourceRelationEntity relation = createConsumedRelation(10, oldIdentifier, master, slave, relType);
 
         // Mock is called 3 times: twice in updateResourceRelationIdentifier, once in handleRelationIdentifierUpdate via getConsumedRelation
         when(resourceRelationService.getResourceRelation(10)).thenReturn(relation, relation, relation);
 
         ResourceEditRelation resourceEditRelation = mock(ResourceEditRelation.class);
-        when(resourceEditRelation.getQualifiedIdentifier()).thenReturn("oldIdentifier");
+        when(resourceEditRelation.getQualifiedIdentifier()).thenReturn(oldIdentifier);
         when(resourceEditRelation.getSlaveName()).thenReturn("slave");
         when(resourceEditRelation.hasIdentifierChanged("newIdentifier")).thenReturn(true);
         when(resourceRelationMapper.toResourceEditRelation(relation)).thenReturn(resourceEditRelation);
@@ -212,6 +215,57 @@ public class UpdateRelationPropertiesServiceTest {
         // then
         assertEquals("sameIdentifier", relation.getIdentifier());
         verify(entityManager, never()).merge(any(ConsumedResourceRelationEntity.class));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "1", "001", "\u0661"})
+    public void shouldRejectChangingRelationNamesToNumericOnlyNames(String identifier) {
+        ConsumedResourceRelationEntity relation = new ConsumedResourceRelationEntity();
+        relation.setIdentifier("original");
+        when(resourceRelationService.getResourceRelation(10)).thenReturn(relation);
+
+        assertThrows(ValidationException.class,
+                () -> service.updateResourceRelationIdentifier(10, identifier));
+
+        assertEquals("original", relation.getIdentifier());
+        verifyNoInteractions(resourceRelationMapper, entityManager);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void shouldPreserveUnchangedLegacyNumericNamesButRejectDifferentNumericNames(boolean provided) throws Exception {
+        AbstractResourceRelationEntity relation = provided
+                ? new ProvidedResourceRelationEntity() : new ConsumedResourceRelationEntity();
+        relation.setIdentifier("1");
+        when(resourceRelationService.getResourceRelation(10)).thenReturn(relation);
+
+        service.updateResourceRelationIdentifier(10, "1");
+        assertThrows(ValidationException.class,
+                () -> service.updateResourceRelationIdentifier(10, "2"));
+
+        assertEquals("1", relation.getIdentifier());
+        verifyNoInteractions(resourceRelationMapper, entityManager);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void shouldRejectDuplicateRelationNamesBeforeChangingTheRelation(boolean provided) {
+        ResourceEntity master = createResource("master", createResourceType("APPLICATION"), 1);
+        ResourceEntity slave = createResource("slave", createResourceType("DATABASE"), 2);
+        AbstractResourceRelationEntity relation = provided
+                ? new ProvidedResourceRelationEntity() : new ConsumedResourceRelationEntity();
+        relation.setId(10);
+        relation.setMasterResource(master);
+        relation.setSlaveResource(slave);
+        relation.setIdentifier("original");
+        when(resourceRelationService.getResourceRelation(10)).thenReturn(relation);
+        when(resourceRelationService.isRelationNameUsed(master, slave, provided, "taken", 10)).thenReturn(true);
+
+        assertThrows(ValidationException.class, () -> service.updateResourceRelationIdentifier(10, "taken"));
+
+        assertEquals("original", relation.getIdentifier());
+        verifyNoInteractions(resourceRelationMapper);
+        verify(entityManager, never()).merge(any());
     }
 
     @Test

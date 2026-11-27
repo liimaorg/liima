@@ -21,6 +21,9 @@
 package ch.mobi.itc.mobiliar.rest.resources;
 
 import ch.mobi.itc.mobiliar.rest.dtos.PropertyExtendedDTO;
+import ch.mobi.itc.mobiliar.rest.dtos.AddResourceRelationRequestDTO;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationUseCase;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.boundary.AddResourceRelationCommand;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.property.boundary.GetRelationPropertiesUseCase;
@@ -32,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.ws.rs.core.Response;
@@ -45,12 +49,31 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class ResourceRelationsByIdRestTest {
 
     @InjectMocks
     ResourceRelationsByIdRest rest;
+
+    @Mock
+    AddResourceRelationUseCase addResourceRelationUseCase;
+
+    @Test
+    public void addRelationPreservesTheSelectedTypeIdentifierAndRelationName() throws Exception {
+        AddResourceRelationRequestDTO request = new AddResourceRelationRequestDTO();
+        request.setSlaveResourceGroupId(2);
+        request.setRelationName("secondary");
+        request.setTypeIdentifier("secondary");
+
+        assertEquals(201, rest.addResourceRelation(1, request).getStatus());
+
+        ArgumentCaptor<AddResourceRelationCommand> command = ArgumentCaptor.forClass(AddResourceRelationCommand.class);
+        verify(addResourceRelationUseCase).addRelation(command.capture());
+        assertEquals("secondary", command.getValue().getRelationName());
+        assertEquals("secondary", command.getValue().getTypeIdentifier());
+    }
 
     @Mock
     GetRelationPropertiesUseCase getRelationPropertiesUseCase;

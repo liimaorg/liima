@@ -265,6 +265,9 @@ public class ResourceRelationService implements Serializable {
 
 	private void addResourceRelation(Integer masterId, Integer slaveGroupId, boolean provided, String relationName,
 							 String typeIdentifier, Integer releaseId) throws ElementAlreadyExistsException {
+		if (StringUtils.isNumeric(relationName)) {
+			throw new IllegalArgumentException("Relation name must not contain only digits");
+		}
 		ResourceEntity master = entityManager.find(ResourceEntity.class, masterId);
 		ResourceGroupEntity slaveGroup = entityManager.find(ResourceGroupEntity.class, slaveGroupId);
 		Set<String> existingIdentifiers = new HashSet<>();
@@ -276,38 +279,59 @@ public class ResourceRelationService implements Serializable {
 				}
 			}
 		}
-		if (!provided && relationName == null && master.getResourceType().isDefaultResourceType()) {
-			relationName = slaveGroup.getName();
-			if (!existingIdentifiers.isEmpty()) {
-				int suffix = existingIdentifiers.size();
-				do {
-					relationName = slaveGroup.getName() + "_" + suffix++;
-				} while (existingIdentifiers.contains(relationName));
-			}
+		if (!provided && relationName == null && master.getResourceType().isDefaultResourceType()
+				&& !existingIdentifiers.isEmpty()) {
+			int suffix = existingIdentifiers.size();
+			do {
+				relationName = slaveGroup.getName() + "_" + suffix++;
+			} while (existingIdentifiers.contains(relationName));
 		}
-		if (!provided && relationName != null && existingIdentifiers.contains(relationName)) {
-			throw new ElementAlreadyExistsException("A relation with this name already exists for the resource group",
-					ConsumedResourceRelationEntity.class, relationName);
+		List<ResourceEntity> slaves = new ArrayList<>();
+		for (ResourceEntity slave : slaveGroup.getResources()) {
+			if (releaseId == null || releaseId.equals(slave.getRelease().getId())) {
+				if (isRelationNameUsed(master, slave, provided, provided ? null : relationName, null)) {
+					throw new ElementAlreadyExistsException(
+							"A relation with this name already exists for the master and slave resource",
+							provided ? ProvidedResourceRelationEntity.class : ConsumedResourceRelationEntity.class,
+							relationName);
+				}
+				slaves.add(slave);
+			}
 		}
 		ResourceRelationTypeEntity resourceRelationType = resourceTypeProvider
 				.getOrCreateResourceRelationTypeIncludingParents(master.getResourceType(), slaveGroup.getResources()
 					.iterator().next().getResourceType(), typeIdentifier);
 
-        for (ResourceEntity slave : slaveGroup.getResources()) {
-            if (releaseId == null || slave.getRelease().getId().equals(releaseId)) {
-
-                if (provided) {
-                    master.addProvidedResourceRelation(slave, resourceRelationType);
-                } else {
-                    master.addConsumedResourceRelation(slave, resourceRelationType, relationName);
-                }
-                log.info("Relation between resourceId: " + master.getId() + " and resourceId: "
-                        + slave.getId() + " added");
+        for (ResourceEntity slave : slaves) {
+            if (provided) {
+                master.addProvidedResourceRelation(slave, resourceRelationType);
+            } else {
+                master.addConsumedResourceRelation(slave, resourceRelationType, relationName);
             }
+            log.info("Relation between resourceId: " + master.getId() + " and resourceId: "
+                    + slave.getId() + " added");
         }
 
 		entityManager.persist(master);
 
+	}
+
+	/** Checks the stored identifier, including null, rather than the generated display identifier. */
+	public boolean isRelationNameUsed(ResourceEntity master, ResourceEntity slave, boolean provided,
+			String identifier, Integer excludedRelationId) {
+		Collection<? extends AbstractResourceRelationEntity> relations = provided
+				? master.getProvidedMasterRelations() : master.getConsumedMasterRelations();
+		if (relations == null) {
+			return false;
+		}
+		for (AbstractResourceRelationEntity relation : relations) {
+			if ((excludedRelationId == null || !excludedRelationId.equals(relation.getId()))
+					&& slave.getId().equals(relation.getSlaveResource().getId())
+					&& Objects.equals(identifier, relation.getIdentifier())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 

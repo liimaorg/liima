@@ -36,6 +36,9 @@ import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.test.testrunner.PersistenceTestExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -288,6 +291,65 @@ public class ResourceRelationServicePersistenceTest {
 		assertNotNull(result);
 		assertEquals(master.getId(), result.getMasterResourceId());
 		assertEquals(slave.getId(), result.getSlaveResourceTypeId());
+		assertNull(result.getIdentifier());
+	}
+
+	@Test
+	public void resolvingNamedRelationPersistsTheSelectedTypeRelation() throws Exception {
+		ResourceEntityBuilder builder = new ResourceEntityBuilder();
+		ResourceEntity master = builder.buildResourceEntity("master", null, "Custom", null, false);
+		ResourceEntity slave = builder.buildResourceEntity("slave", null, "FeatureTeam", null, false);
+		entityManager.persist(master);
+		entityManager.persist(slave);
+
+		ResourceRelationTypeEntity primary = new ResourceRelationTypeEntity();
+		primary.setResourceTypes(master.getResourceType(), slave.getResourceType());
+		primary.setIdentifier("featureteam");
+		entityManager.persist(primary);
+		ResourceRelationTypeEntity secondary = new ResourceRelationTypeEntity();
+		secondary.setResourceTypes(master.getResourceType(), slave.getResourceType());
+		secondary.setIdentifier("featureteam_1");
+		entityManager.persist(secondary);
+
+		ResourceTypeProvider provider = new ResourceTypeProvider();
+		provider.entityManager = entityManager;
+		service.resourceTypeProvider = provider;
+
+		service.doAddResourceRelationForAllReleases(master.getId(), slave.getResourceGroup().getId(),
+				false, "featureteam_1", "featureteam_1");
+		entityManager.flush();
+		entityManager.clear();
+
+		Set<ConsumedResourceRelationEntity> relations =
+				entityManager.find(ResourceEntity.class, master.getId()).getConsumedMasterRelations();
+		assertEquals(1, relations.size());
+		ConsumedResourceRelationEntity resolved = relations.iterator().next();
+		assertEquals(secondary.getId(), resolved.getResourceRelationType().getId());
+		assertEquals("featureteam_1", resolved.getIdentifier());
+	}
+
+	@ParameterizedTest
+	@NullSource
+	@ValueSource(strings = {"named"})
+	public void rejectsDuplicateStoredNamesAfterReloadingRelations(String identifier) throws Exception {
+		ResourceEntityBuilder builder = new ResourceEntityBuilder();
+		ResourceEntity master = builder.buildResourceEntity("master", null, "Custom", null, false);
+		ResourceEntity slave = builder.buildResourceEntity("slave", null, "Database", null, false);
+		entityManager.persist(master);
+		entityManager.persist(slave);
+		ResourceTypeProvider provider = new ResourceTypeProvider();
+		provider.entityManager = entityManager;
+		service.resourceTypeProvider = provider;
+
+		service.doAddResourceRelationForAllReleases(master.getId(), slave.getResourceGroup().getId(),
+				false, identifier, null);
+		entityManager.flush();
+		entityManager.clear();
+
+		assertThrows(ElementAlreadyExistsException.class,
+				() -> service.doAddResourceRelationForAllReleases(master.getId(), slave.getResourceGroup().getId(),
+						false, identifier, null));
+		assertEquals(1, entityManager.find(ResourceEntity.class, master.getId()).getConsumedMasterRelations().size());
 	}
 
 }

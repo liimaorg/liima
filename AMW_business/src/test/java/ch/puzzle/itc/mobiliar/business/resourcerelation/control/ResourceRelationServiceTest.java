@@ -11,18 +11,23 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvider;
 import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ResourceRelationTypeEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ConsumedResourceRelationEntity;
+import ch.puzzle.itc.mobiliar.business.resourcerelation.entity.ProvidedResourceRelationEntity;
 import ch.puzzle.itc.mobiliar.business.security.control.PermissionService;
 import ch.puzzle.itc.mobiliar.common.exception.ElementAlreadyExistsException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.Spy;
 
 import javax.persistence.EntityManager;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
@@ -34,8 +39,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 public class ResourceRelationServiceTest {
@@ -111,7 +119,7 @@ public class ResourceRelationServiceTest {
     }
 
     @Test
-    public void shouldGenerateDistinctNamesAcrossSlaveReleases() throws Exception {
+    public void shouldKeepFirstRelationUnnamedAndGenerateDistinctNamesForAdditionalRelationsAcrossReleases() throws Exception {
         ResourceEntity master = prepareRelationResources("APPLICATION");
 
         resourceRelationService.doAddResourceRelationForAllReleases(1, 2, false, null, null);
@@ -119,7 +127,7 @@ public class ResourceRelationServiceTest {
         resourceRelationService.doAddResourceRelationForAllReleases(1, 2, false, null, null);
 
         assertEquals(6, master.getConsumedMasterRelations().size());
-        assertEquals(Set.of("slave", "slave_1", "slave_2"), master.getConsumedMasterRelations().stream()
+        assertEquals(new HashSet<>(Arrays.asList(null, "slave_1", "slave_2")), master.getConsumedMasterRelations().stream()
                 .map(relation -> relation.getIdentifier()).collect(Collectors.toSet()));
     }
 
@@ -157,6 +165,57 @@ public class ResourceRelationServiceTest {
 
         assertEquals(2, master.getConsumedMasterRelations().stream()
                 .filter(relation -> "slave_1".equals(relation.getIdentifier())).count());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"0", "1", "001", "\u0661"})
+    public void shouldRejectNumericOnlyNamesBeforeAddingAnyRelations(String identifier) {
+        assertThrows(IllegalArgumentException.class,
+                () -> resourceRelationService.doAddResourceRelationForAllReleases(1, 2, false, identifier, null));
+        assertThrows(IllegalArgumentException.class,
+                () -> resourceRelationService.doAddResourceRelationForSpecificRelease(1, 2, true, identifier, null, 3));
+        verifyNoInteractions(entityManager, resourceTypeProvider);
+    }
+
+    @Test
+    public void shouldAllowOnlyOneUnnamedCustomRelationForEachSlave() throws Exception {
+        ResourceEntity master = prepareRelationResources("custom");
+        resourceRelationService.doAddResourceRelationForAllReleases(1, 2, false, null, null);
+
+        assertThrows(ElementAlreadyExistsException.class,
+                () -> resourceRelationService.doAddResourceRelationForAllReleases(1, 2, false, null, null));
+        assertEquals(2, master.getConsumedMasterRelations().size());
+    }
+
+    @Test
+    public void shouldScopeNamesToTheConcreteSlaveAndRelationDirectionAndExcludeTheCurrentRelation() throws Exception {
+        ResourceEntity master = prepareRelationResources("APPLICATION");
+        resourceRelationService.doAddResourceRelationForAllReleases(1, 2, false, "named", null);
+        ConsumedResourceRelationEntity current = master.getConsumedMasterRelations().iterator().next();
+        current.setId(20);
+        ResourceEntity slave = current.getSlaveResource();
+
+        assertTrue(resourceRelationService.isRelationNameUsed(master, slave, false, "named", null));
+        assertFalse(resourceRelationService.isRelationNameUsed(master, slave, false, "named", 20));
+        assertFalse(resourceRelationService.isRelationNameUsed(master, slave, true, "named", null));
+
+        ProvidedResourceRelationEntity provided = master.addProvidedResourceRelation(slave, current.getResourceRelationType());
+        provided.setId(21);
+        assertTrue(resourceRelationService.isRelationNameUsed(master, slave, true, null, null));
+        assertFalse(resourceRelationService.isRelationNameUsed(master, slave, true, null, 21));
+        assertFalse(resourceRelationService.isRelationNameUsed(master, slave, false, null, null));
+    }
+
+    @Test
+    public void shouldRejectRepeatedUnnamedProvidedRelationsIndependentlyOfConsumedRelations() throws Exception {
+        ResourceEntity master = prepareRelationResources("APPLICATION");
+        resourceRelationService.doAddResourceRelationForAllReleases(1, 2, false, null, null);
+        resourceRelationService.doAddResourceRelationForAllReleases(1, 2, true, null, null);
+
+        assertThrows(ElementAlreadyExistsException.class,
+                () -> resourceRelationService.doAddResourceRelationForAllReleases(1, 2, true, null, null));
+        assertEquals(2, master.getProvidedMasterRelations().size());
+        assertEquals(2, master.getConsumedMasterRelations().size());
     }
 
     private ResourceEntity prepareRelationResources(String masterTypeName) {

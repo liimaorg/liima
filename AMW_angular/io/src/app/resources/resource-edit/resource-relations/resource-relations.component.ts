@@ -79,6 +79,26 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   addAsProvided = signal<boolean>(false);
   isAddingRelation = signal<boolean>(false);
   requiresRelationConfirmation = signal(false);
+  resolvingRelation = signal<UnresolvedRelation | null>(null);
+  private selectedUnresolvedKey = linkedSignal<
+    { relations: GroupedResourceRelations; relationId: number | null },
+    string | null
+  >({
+    source: () => ({ relations: this.groupedRelations(), relationId: this.selectedRelationId() }),
+    computation: ({ relations, relationId }, previous) => {
+      // Selecting an unresolved row clears rel without leaving that row.
+      if (previous?.source.relations === relations && relationId == null) {
+        return previous.value;
+      }
+      return null;
+    },
+  });
+  selectedUnresolvedRelation = computed(
+    () =>
+      this.groupedRelations().unresolved.find(
+        (relation) => this.toUnresolvedItem(relation).key === this.selectedUnresolvedKey(),
+      ) ?? null,
+  );
 
   originalActiveAppIds = signal<number[]>([]);
   currentActiveAppIds = signal<number[]>([]);
@@ -152,7 +172,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   });
 
   // set by url, input, onItemSelected and onReleaseChange
-  protected activeRelationId = linkedSignal(() => {
+  protected activeRelationId = linkedSignal<number | null>(() => {
     const relId = this.selectedRelationId();
     if (relId != null && relId > 0) return relId;
     const g = this.groupedRelations();
@@ -160,7 +180,8 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   });
 
   // needed for css highlighting on switching releases
-  selectedItemKey = computed<number | null>(() => {
+  selectedItemKey = computed<number | string | null>(() => {
+    if (this.selectedUnresolvedRelation()) return this.selectedUnresolvedKey();
     const relId = this.activeRelationId();
     if (relId == null) return null;
     const g = this.groupedRelations();
@@ -176,6 +197,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   // resolves selected releation and handles releases fallback
   selectedRelation = computed<ResourceRelation | null>(() => {
+    if (this.selectedUnresolvedRelation()) return null;
     const relId = this.activeRelationId();
     if (relId == null) return null;
     const g = this.groupedRelations();
@@ -245,7 +267,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     context: 'Global',
     nullable: true,
     optional: true,
-    disabled: this.contextId() !== 1,
+    disabled: !this.isDefaultResourceType() || this.contextId() !== 1,
   }));
 
   hasActivationChanges = computed(() => {
@@ -283,7 +305,38 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     this.switchRelation(relationId);
   }
 
+  override onItemSelected(item: RelationGroupItem): void {
+    if (item.key === this.selectedItemKey()) return;
+    const select = () => {
+      this.selectedUnresolvedKey.set(item.unresolved && typeof item.key === 'string' ? item.key : null);
+      if (item.unresolved) {
+        this.activeRelationId.set(null);
+        void this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { rel: null },
+          queryParamsHandling: 'merge',
+        });
+      } else {
+        super.onItemSelected(item);
+      }
+    };
+    if (this.hasChanges()) {
+      void this.confirmDialogService
+        .confirm('You have unsaved changes. Discard them and switch relation?', { confirmLabel: 'Discard' })
+        .then((proceed) => {
+          if (!proceed) return;
+          this.resetChanges();
+          select();
+        });
+    } else {
+      select();
+    }
+  }
+
   showAddRelationModal(): void {
+    const unresolved = this.selectedUnresolvedRelation();
+    this.resolvingRelation.set(unresolved);
+    this.resourceTypes.set([]);
     this.selectedResourceTypeId.set(null);
     this.selectedChildTypeId.set(null);
     this.selectedResourceGroupId.set(null);
@@ -292,7 +345,9 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     this.childResourceTypes.set([]);
     this.availableResourceGroups.set([]);
 
-    if (this.isDefaultResourceType()) {
+    if (unresolved) {
+      this.loadRelatedResourceTypes(unresolved);
+    } else if (this.isDefaultResourceType()) {
       this.loadAllResourceTypes();
     } else {
       this.loadRelatedResourceTypes();
@@ -401,20 +456,30 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
   }
 
   private doAddRelation(groupId: number): void {
+    const unresolved = this.resolvingRelation();
+    const name = unresolved?.identifier || unresolved?.name;
     this.isAddingRelation.set(true);
-    this.relationsService.addResourceRelation(this.entityId()!, groupId, this.addAsProvided()).subscribe({
-      next: () => {
-        this.toastService.success('Relation added successfully.');
-        this.modalService.dismissAll();
-        this.isAddingRelation.set(false);
-        this.reloadRelation(this.entityId()!);
-      },
-      error: (err) => {
-        console.error('Failed to add relation:', err);
-        this.toastService.error('Failed to add relation: ' + (err.message || 'Unknown error'));
-        this.isAddingRelation.set(false);
-      },
-    });
+    this.relationsService
+      .addResourceRelation(
+        this.entityId()!,
+        groupId,
+        this.addAsProvided(),
+        name || undefined,
+        unresolved?.identifier || unresolved?.type.toLowerCase(),
+      )
+      .subscribe({
+        next: () => {
+          this.toastService.success('Relation added successfully.');
+          this.modalService.dismissAll();
+          this.isAddingRelation.set(false);
+          this.reloadRelation(this.entityId()!);
+        },
+        error: (err) => {
+          console.error('Failed to add relation:', err);
+          this.toastService.error('Failed to add relation: ' + (err.message || 'Unknown error'));
+          this.isAddingRelation.set(false);
+        },
+      });
   }
 
   showRemoveRelationConfirmation(): void {
@@ -542,7 +607,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
 
   protected toUnresolvedItem(unresolved: UnresolvedRelation): RelationGroupItem {
     return {
-      key: `${unresolved.type}::${unresolved.name}`,
+      key: `unresolved::${unresolved.resRelTypeId ?? `${unresolved.type}::${unresolved.name}`}`,
       name: unresolved.name,
       type: unresolved.type,
       unresolved: true,
@@ -559,7 +624,7 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     });
   }
 
-  private isDefaultResourceType(): boolean {
+  protected isDefaultResourceType(): boolean {
     const type = this.resource()?.type;
     const defaultTypes = ['APPLICATION', 'APPLICATIONSERVER', 'NODE', 'RUNTIME'];
     const cleanType = this.getCleanType(type);
@@ -567,8 +632,8 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
     return defaultTypes.includes(cleanType);
   }
 
-  private loadRelatedResourceTypes(): void {
-    const unresolvedTypes = new Set(this.groupedRelations().unresolved.map((u) => u.type));
+  private loadRelatedResourceTypes(selected?: UnresolvedRelation): void {
+    const unresolvedTypes = new Set(selected ? [selected.type] : this.groupedRelations().unresolved.map((u) => u.type));
 
     if (unresolvedTypes.size === 0) {
       return;
@@ -578,6 +643,14 @@ export class ResourceRelationsComponent extends BaseRelationsDirective {
       next: (types) => {
         const filteredTypes = types.filter((t) => unresolvedTypes.has(t.name));
         this.resourceTypes.set(filteredTypes);
+        if (selected) {
+          const type = filteredTypes.find((t) => t.name === selected.type);
+          if (type?.id == null) {
+            this.toastService.error('The resource type for this unresolved relation is unavailable.');
+            return;
+          }
+          this.onResourceTypeChange(type.id);
+        }
       },
       error: (err) => {
         console.error('Failed to load resource types:', err);

@@ -255,13 +255,22 @@ export class ResourceRelationsService extends BaseService {
     slaveResourceGroupId: number,
     provided: boolean,
     relationName?: string,
+    typeIdentifier?: string,
   ): Observable<void> {
-    const body: { slaveResourceGroupId: number; provided: boolean; relationName?: string } = {
+    const body: {
+      slaveResourceGroupId: number;
+      provided: boolean;
+      relationName?: string;
+      typeIdentifier?: string;
+    } = {
       slaveResourceGroupId,
       provided,
     };
     if (relationName) {
       body.relationName = relationName;
+    }
+    if (typeIdentifier !== undefined) {
+      body.typeIdentifier = typeIdentifier;
     }
     return this.http
       .post<void>(`${this.getBaseUrl()}/resources/${resourceId}/relations`, body, {

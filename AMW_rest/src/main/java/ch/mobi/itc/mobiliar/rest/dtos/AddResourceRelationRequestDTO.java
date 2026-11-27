@@ -45,4 +45,9 @@ public class AddResourceRelationRequestDTO {
      * Optional relation name/identifier.
      */
     private String relationName;
+
+    /**
+     * Identifier of the type-level relation being resolved. Omit for a new relation.
+     */
+    private String typeIdentifier;
 }

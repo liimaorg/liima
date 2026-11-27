@@ -21,6 +21,7 @@ import ch.puzzle.itc.mobiliar.common.exception.NotAuthorizedException;
 import ch.puzzle.itc.mobiliar.common.exception.NotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ResourceNotFoundException;
 import ch.puzzle.itc.mobiliar.common.exception.ValidationException;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -149,6 +150,17 @@ public class UpdateRelationPropertiesService implements UpdateRelationProperties
         AbstractResourceRelationEntity relationEntity = resourceRelationService.getResourceRelation(relationId);
         if (relationEntity == null) {
             throw new ResourceNotFoundException("Relation with id " + relationId + " not found");
+        }
+        if (StringUtils.isNumeric(newIdentifier)) {
+            if (newIdentifier.equals(relationEntity.getIdentifier())) {
+                return;
+            }
+            throw new ValidationException("Relation name must not contain only digits");
+        }
+        if (resourceRelationService.isRelationNameUsed(relationEntity.getMasterResource(),
+                relationEntity.getSlaveResource(), relationEntity instanceof ProvidedResourceRelationEntity,
+                newIdentifier, relationId)) {
+            throw new ValidationException("A relation with this name already exists for the master and slave resource");
         }
         AbstractResourceRelationEntity resourceRelation = resourceRelationService.getResourceRelation(relationId);
         ResourceEditRelation relation = resourceRelationMapper.toResourceEditRelation(resourceRelation);
