@@ -24,6 +24,8 @@ import static ch.puzzle.itc.mobiliar.business.releasing.ReleaseHelper.createRL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,8 @@ import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -52,6 +56,7 @@ import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeProvide
 import ch.puzzle.itc.mobiliar.business.resourcegroup.control.ResourceTypeRepository;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.Resource;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceEntity;
+import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceFactory;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceGroupEntity;
 import ch.puzzle.itc.mobiliar.business.resourcegroup.entity.ResourceTypeEntity;
 import ch.puzzle.itc.mobiliar.business.security.boundary.PermissionBoundary;
@@ -208,8 +213,10 @@ public class ResourceBoundaryPersistenceTest {
         });
     }
 
-    @Test
-    public void shouldDeleteRestrictionsWhenDeletingResource() throws AMWException {
+    @ParameterizedTest
+    @CsvSource({"true, false", "false, false", "true, true", "false, true"})
+    public void shouldDeleteRestrictionsOnlyWhenDeletingLastResourceRelease(boolean lastRelease,
+                                                                            boolean defaultResourceType) throws AMWException {
         // given
         ResourceTypeEntity appType = new ResourceTypeEntity();
         appType.setName("application");
@@ -225,6 +232,14 @@ public class ResourceBoundaryPersistenceTest {
         Resource r1 = resourceBoundary.createNewResourceByName("app1",
                 appType.getId(),
                 release1.getId());
+        if (!lastRelease) {
+            ReleaseEntity release2 = createRL("release2", null);
+            entityManager.persist(release2);
+            ResourceEntity r2 = ResourceFactory.createNewResource(r1.getEntity().getResourceGroup());
+            r2.setRelease(release2);
+            r2.setResourceType(appType);
+            entityManager.persist(r2);
+        }
         when(commonService.getResourceEntityById(r1.getId())).thenReturn(r1.getEntity());
         when(permissionBoundary.hasPermission(any(Permission.class), ArgumentMatchers.<ContextEntity>any(),
                 any(Action.class),
@@ -233,11 +248,18 @@ public class ResourceBoundaryPersistenceTest {
                 .thenReturn(r1.getEntity().getResourceGroup());
 
         // when
-        resourceBoundary.removeResource(r1.getId());
+        if (defaultResourceType) {
+            resourceBoundary.removeResourceEntityOfDefaultResType(r1.getId());
+        } else {
+            resourceBoundary.removeResource(r1.getId());
+        }
 
         // then
-        verify(permissionBoundary).removeAllRestrictionsForResourceGroup(r1.getEntity().getResourceGroup());
-        verify(resourceGroupRepository).remove(r1.getEntity().getResourceGroup());
+        verify(resourceRepository).remove(r1.getEntity());
+        verify(permissionBoundary, lastRelease ? times(1) : never())
+                .removeAllRestrictionsForResourceGroup(r1.getEntity().getResourceGroup());
+        verify(resourceGroupRepository, lastRelease ? times(1) : never())
+                .remove(r1.getEntity().getResourceGroup());
     }
 
 }

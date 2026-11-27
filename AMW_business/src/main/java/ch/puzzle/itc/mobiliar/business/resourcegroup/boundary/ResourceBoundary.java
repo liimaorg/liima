@@ -279,8 +279,6 @@ public class ResourceBoundary {
                 Action.DELETE, resourceEntity, resourceEntity.getResourceType())) {
             throw new NotAuthorizedException();
         }
-        permissionBoundary.removeAllRestrictionsForResourceGroup(resourceEntity.getResourceGroup());
-
         Integer groupId = resourceEntity.getResourceGroup().getId();
         //Special logic for the removal of an application server: If the current application server instance is the only release previously consuming this resource, the relation has to be attached to the default application server container.
         if (resourceEntity.getResourceType().getName().equals(DefaultResourceTypeDefinition.APPLICATIONSERVER.name())) {
@@ -307,6 +305,7 @@ public class ResourceBoundary {
         ResourceGroupEntity group = resourceGroupRepository.find(groupId);
         if (group != null && (group.getResources() == null || group.getResources().isEmpty() ||
                 (group.getResources().size() == 1 && group.getResources().iterator().next().getId().equals(resourceEntity.getId())))) {
+            permissionBoundary.removeAllRestrictionsForResourceGroup(group);
             resourceGroupRepository.remove(group);
         }
     }
