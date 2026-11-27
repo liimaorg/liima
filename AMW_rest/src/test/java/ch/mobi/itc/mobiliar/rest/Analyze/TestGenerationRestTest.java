@@ -1,6 +1,7 @@
 package ch.mobi.itc.mobiliar.rest.Analyze;
 
 import ch.mobi.itc.mobiliar.rest.analyze.TestGenerationRest;
+import ch.mobi.itc.mobiliar.rest.dtos.EnvironmentGenerationResultDTO;
 import ch.puzzle.itc.mobiliar.business.environment.boundary.ContextLocator;
 import ch.puzzle.itc.mobiliar.business.environment.entity.ContextEntity;
 import ch.puzzle.itc.mobiliar.business.generator.control.EnvironmentGenerationResult;
@@ -91,6 +92,40 @@ public class TestGenerationRestTest {
 
         // then
         assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
+        verifyNoInteractions(generatorDomainServiceWithAppServerRelations);
+    }
+
+    @Test
+    public void shouldGenerateNewerReleaseUsingClosestPastResource() throws IOException, ValidationException, AMWException {
+        ReleaseEntity targetRelease = new ReleaseEntity();
+        targetRelease.setName(releaseName);
+        targetRelease.setId(11);
+        ReleaseEntity pastRelease = new ReleaseEntity();
+        pastRelease.setName("PreviousRelease");
+        pastRelease.setId(10);
+        ContextEntity context = new ContextEntity();
+        context.setId(12);
+
+        when(resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName)).thenReturn(pastRelease);
+        doReturn(null).when(resourceLocator).getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+        when(resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, pastRelease.getName())).thenReturn(resourceEntity);
+        when(resourceEntity.getId()).thenReturn(13);
+        when(resourceEntity.getResourceType()).thenReturn(resourceTypeEntity);
+        when(releaseLocator.getReleaseByName(releaseName)).thenReturn(targetRelease);
+        when(contextLocator.getContextByName(env)).thenReturn(context);
+        when(generatorDomainServiceWithAppServerRelations.generateApplicationServerForTest(12, 13, 11, null)).thenReturn(environmentGenerationResult);
+        GenerationContext generationContext = mock(GenerationContext.class);
+        when(environmentGenerationResult.getGenerationContext()).thenReturn(generationContext);
+        when(generationContext.getTargetRelease()).thenReturn(targetRelease);
+        when(generationContext.getApplicationServer()).thenReturn(resourceEntity);
+        when(resourceEntity.getName()).thenReturn(resourceGroupName);
+        when(environmentGenerationResult.getNodeGenerationResults()).thenReturn(new java.util.ArrayList<>());
+
+        Response response = rest.testGeneration(resourceGroupName, releaseName, env);
+
+        assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+        assertThat(((EnvironmentGenerationResultDTO) response.getEntity()).getReleaseName(), is(releaseName));
+        verify(generatorDomainServiceWithAppServerRelations).generateApplicationServerForTest(12, 13, 11, null);
     }
 
     @Test
@@ -162,7 +197,11 @@ public class TestGenerationRestTest {
         when(resourceEntity.getId()).thenReturn(13);
         when(resourceEntity.getResourceType()).thenReturn(resourceTypeEntity);
         when(resourceTypeEntity.isApplicationResourceType()).thenReturn(true);
-        when(resourceLocator.getResourceByGroupNameAndRelease(anyString(), anyString())).thenReturn(resourceEntity);
+        ReleaseEntity pastRelease = new ReleaseEntity();
+        pastRelease.setName("PreviousRelease");
+        when(resourceLocator.getExactOrClosestPastReleaseByGroupNameAndRelease(resourceGroupName, releaseName)).thenReturn(pastRelease);
+        doReturn(null).when(resourceLocator).getResourceByGroupNameAndRelease(resourceGroupName, releaseName);
+        when(resourceLocator.getResourceByGroupNameAndRelease(resourceGroupName, pastRelease.getName())).thenReturn(resourceEntity);
         when(resourceLocator.getApplicationServerForApplication(resourceEntity)).thenReturn(resourceEntity);
         when(releaseLocator.getReleaseByName(releaseName)).thenReturn(release);
         when(contextLocator.getContextByName(env)).thenReturn(context);
@@ -224,7 +263,7 @@ public class TestGenerationRestTest {
         when(environmentGenerationResult.hasErrors()).thenReturn(true);
         when(environmentGenerationResult.getGenerationContext()).thenReturn(generationContext);
         when(generationContext.getApplicationServer()).thenReturn(appServerForResult);
-        when(appServerForResult.getRelease()).thenReturn(releaseForResult);
+        when(generationContext.getTargetRelease()).thenReturn(releaseForResult);
         when(appServerForResult.getName()).thenReturn("TestAppServer");
         when(releaseForResult.getName()).thenReturn(releaseName);
         when(environmentGenerationResult.getNodeGenerationResults()).thenReturn(new java.util.ArrayList<>());
