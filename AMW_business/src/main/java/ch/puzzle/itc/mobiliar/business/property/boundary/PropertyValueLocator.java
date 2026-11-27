@@ -31,7 +31,8 @@ public class PropertyValueLocator {
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException("Property value must not be blank");
         }
-        String pattern = value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
+        // `*` is a wildcard; without it the value must match exactly.
+        String pattern = JpaWildcardConverter.convertWildCards(value.replace("\\", "\\\\"));
         List<PropertyValueLocation> locations = new ArrayList<>();
         locations.addAll(findByValue(ResourceContextEntity.class, pattern));
         locations.addAll(findByValue(ResourceTypeContextEntity.class, pattern));
@@ -51,7 +52,7 @@ public class PropertyValueLocator {
         Root<T> definition = query.from(definitionType);
         Join<T, PropertyEntity> property = definition.join("properties");
         query.multiselect(definition.alias("definition"), property.alias("property"));
-        // LIKE without wildcards supports Oracle CLOBs, unlike equality.
+        // LIKE also works on Oracle CLOBs, unlike equality.
         query.where(builder.isFalse(property.get("descriptor").get("encrypt")),
                 builder.like(property.get("value"), pattern, JpaWildcardConverter.ESCAPE_CHARACTER));
 

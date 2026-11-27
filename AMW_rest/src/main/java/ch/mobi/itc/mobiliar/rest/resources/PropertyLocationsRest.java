@@ -25,9 +25,9 @@ public class PropertyLocationsRest {
 
 
     // `GET /AMW_rest/resources/properties/locations?value=test` returns a
-    // JSON array of definitions with that exact, case-sensitive stored value.
-    // URL-encode the `value` query parameter; `%`, `_` and `*` are literal characters,
-    // not wildcards. The endpoint uses the same authentication as the other REST APIs.
+    // JSON array of definitions with a stored value matching it exactly (case-sensitive).
+    // URL-encode the `value` query parameter; `*` is a wildcard (e.g. `*host*`
+    // for contains, `host*` for starts with), `%` and `_` are literal. The endpoint uses the same authentication as the other REST APIs.
 
     // Each result contains `propertyId`, `descriptorId`, `propertyName`, `propertyValue`,
     // `definedOn`, `ownerId`, `ownerName`, `targetId`, `targetName`, `contextId`,
@@ -44,12 +44,12 @@ public class PropertyLocationsRest {
     // a missing or blank `value` returns `400`.
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Find where an exact property value is defined",
+    @Operation(summary = "Find where a property value is defined",
             description = "Returns stored, unencrypted property values on resources, resource types, "
                     + "consumed/provided relations and resource-type relations. Includes IDs for scripting. "
                     + "Does not resolve inheritance, defaults or audit history. No matches returns an empty list.")
     public Response getLocations(
-            @Parameter(description = "Exact property value; wildcards are treated literally", required = true)
+            @Parameter(description = "Property value; exact match unless it contains `*` wildcards", required = true)
             @QueryParam("value") String value) {
         if (value == null || value.trim().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Property value must not be blank").build();

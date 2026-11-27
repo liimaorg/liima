@@ -118,9 +118,9 @@ class PropertyValueLocatorPersistenceTest {
 
     @Test
     void matchesFullValuesLiterallyWithoutWildcardsOrTruncation() {
-        String value = " %_\\*!'host" + "x".repeat(250) + " ";
+        String value = " %_\\!'host" + "x".repeat(250) + " ";
         PropertyEntity expected = addProperty(master.getOrCreateContext(context), value, false);
-        addProperty(master.getOrCreateContext(context), value + "suffix", false);
+        addProperty(master.getOrCreateContext(context), "a" + value + "suffix", false);
         addProperty(master.getOrCreateContext(context), value.replace("%_", "ab"), false);
         entityManager.flush();
         entityManager.clear();
@@ -130,6 +130,22 @@ class PropertyValueLocatorPersistenceTest {
         assertEquals(1, locations.size());
         assertEquals(expected.getId(), locations.get(0).getPropertyId());
         assertEquals(value, locations.get(0).getPropertyValue());
+    }
+
+    @Test
+    void asteriskIsAWildcardAndDisablesImplicitContains() {
+        PropertyEntity prefixed = addProperty(master.getOrCreateContext(context), "jdbc\\:db2\\://hostsys1.mobi.ch\\:5057/DB", false);
+        addProperty(master.getOrCreateContext(context), "xjdbc\\:db2\\://hostsys1.mobi.ch\\:5057/DB", false);
+        entityManager.flush();
+        entityManager.clear();
+
+        List<PropertyValueLocation> locations = locator.findByValue("jdbc\\:db2\\://host*:5057*");
+        assertEquals(1, locations.size());
+        assertEquals(prefixed.getId(), locations.get(0).getPropertyId());
+        assertEquals(2, locator.findByValue("*jdbc\\:db2\\://host*").size());
+
+        assertEquals(1, locations.size());
+        assertEquals(prefixed.getId(), locations.get(0).getPropertyId());
     }
 
     @Test
