@@ -21,6 +21,6 @@ public class AddResourceRelationService implements AddResourceRelationUseCase {
                 command.getSlaveResourceGroupId(),
                 command.getProvided(),
                 command.getRelationName(),
-                null);
+                command.getTypeIdentifier());
     }
 }

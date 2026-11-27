@@ -264,7 +264,8 @@ public class ResourceRelationsByIdRest {
                 resourceId,
                 request.getSlaveResourceGroupId(),
                 request.getProvided(),
-                request.getRelationName()
+                request.getRelationName(),
+                request.getTypeIdentifier()
         );
 
         addResourceRelationUseCase.addRelation(command);

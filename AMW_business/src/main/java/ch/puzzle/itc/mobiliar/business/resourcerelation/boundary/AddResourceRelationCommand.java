@@ -42,6 +42,7 @@ public class AddResourceRelationCommand {
     private final Boolean provided;
 
     private final String relationName;
+    private final String typeIdentifier;
 
     /**
      * @param masterResourceId      the ID of the master resource
@@ -51,10 +52,16 @@ public class AddResourceRelationCommand {
      */
     public AddResourceRelationCommand(Integer masterResourceId, Integer slaveResourceGroupId, 
                                        Boolean provided, String relationName) {
+        this(masterResourceId, slaveResourceGroupId, provided, relationName, null);
+    }
+
+    public AddResourceRelationCommand(Integer masterResourceId, Integer slaveResourceGroupId,
+                                      Boolean provided, String relationName, String typeIdentifier) {
         this.masterResourceId = masterResourceId;
         this.slaveResourceGroupId = slaveResourceGroupId;
         this.provided = provided;
         this.relationName = relationName;
+        this.typeIdentifier = typeIdentifier;
         validate(this);
     }
 }
